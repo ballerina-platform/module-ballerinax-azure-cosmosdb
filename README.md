@@ -1,0 +1,1 @@
+# module-ballerinax-azure-cosmosdb
