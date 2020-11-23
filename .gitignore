@@ -24,3 +24,5 @@ hs_err_pid*
 
 #
 ballerina.conf
+
+./module-ballerinax-azure-cosmosdb/target/
