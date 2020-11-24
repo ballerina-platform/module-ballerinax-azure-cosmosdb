@@ -20,3 +20,5 @@ final  string FORWARD_SLASH = "/";
 
 #Constant field `FORWARD_SLASH`. Holds the value of "".
 final  string EMPTY_STRING = "";
+
+#REST request and response headers

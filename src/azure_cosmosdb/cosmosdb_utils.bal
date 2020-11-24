@@ -47,7 +47,6 @@ isolated function getResourceId(string url) returns string {
 # + return - The prepared URL
 isolated function prepareUrl(string[] paths) returns string {
     string url = EMPTY_STRING;
-
     if (paths.length() > 0) {
         foreach var path in paths {
             if (!path.startsWith(FORWARD_SLASH)) {
