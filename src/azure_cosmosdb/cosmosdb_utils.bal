@@ -80,17 +80,17 @@ isolated function prepareError(string message, error? err = ()) returns error {
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.  
 isolated function setHeaders(http:Request req, string host, string keyToken, string tokenType, string tokenVersion,
 RequestHeaderParameters params) returns http:Request|error {
-    req.setHeader("x-ms-version",params.apiVersion);
-    req.setHeader("Host",host);
-    req.setHeader("Accept","*/*");
-    req.setHeader("Connection","keep-alive");
+    req.setHeader(API_VERSION_HEADER,params.apiVersion);
+    req.setHeader(HOST_HEADER,host);
+    req.setHeader(ACCEPT_HEADER,"*/*");
+    req.setHeader(CONNECTION_HEADER,"keep-alive");
 
     string?|error date = getTime();
     if date is string {
-        string? s = generateTokenNew(params.verb,params.resourceType,params.resourceId,keyToken,tokenType,tokenVersion);
-        req.setHeader("x-ms-date",date);
-        if s is string {
-            req.setHeader("Authorization",s);
+        string? token = generateTokenNew(params.verb,params.resourceType,params.resourceId,keyToken,tokenType,tokenVersion);
+        req.setHeader(DATE_HEADER,date);
+        if token is string {
+            req.setHeader(AUTHORIZATION_HEADER,token);
         } else {
             return prepareError("Authorization token is null");
         }
