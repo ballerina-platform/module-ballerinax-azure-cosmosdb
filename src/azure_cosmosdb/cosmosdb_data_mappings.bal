@@ -20,7 +20,6 @@ isolated function mapResponseHeadersToObject(http:Response|http:ClientError http
         responseHeaders.etagHeader = getHeaderIfExist(httpResponse,"etag");
         responseHeaders.dateHeader = getHeaderIfExist(httpResponse,"Date");
         return responseHeaders;
-
     } else {
         return prepareError("Error occurred while invoking the REST API");
     }

@@ -11,9 +11,9 @@ isolated function getResourceType(string url) returns string {
     string resourceType = EMPTY_STRING;
     string[] urlParts = stringutils:split(url,FORWARD_SLASH);
     int count = urlParts.length()-1;
-    if count % 2 != 0{
+    if count % 2 != 0 {
         resourceType = urlParts[count];
-        if count > 1{
+        if count > 1 {
             int? i = str:lastIndexOf(url,FORWARD_SLASH);
         }
     } else {
@@ -29,8 +29,8 @@ isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
     string[] urlParts = stringutils:split(url,FORWARD_SLASH);
     int count = urlParts.length()-1;
-    if count % 2 != 0{
-        if count > 1{
+    if count % 2 != 0 {
+        if count > 1 {
             int? i = str:lastIndexOf(url,FORWARD_SLASH);
             if i is int {
                 resourceId = str:substring(url,1,i);
@@ -86,7 +86,7 @@ RequestHeaderParameters params) returns http:Request|error {
     req.setHeader("Accept","*/*");
     req.setHeader("Connection","keep-alive");
 
-    string? date = check getTime();
+    string?|error date = getTime();
     if date is string
     {
         string? s = generateTokenNew(params.verb,params.resourceType,params.resourceId,keyToken,tokenType,tokenVersion);
@@ -131,7 +131,7 @@ string tokenVersion) returns string? {
 isolated function setThroughputOrAutopilotHeader(http:Request req, ThroughputProperties? throughputProperties) returns 
 http:Request|error {
 
-    if throughputProperties is ThroughputProperties{
+    if throughputProperties is ThroughputProperties {
         if throughputProperties.throughput is int &&  throughputProperties.maxThroughput is () {
             //validate throughput The minimum is 400 up to 1,000,000 (or higher by requesting a limit increase).
             req.setHeader("x-ms-offer-throughput",throughputProperties.maxThroughput.toString());
@@ -178,7 +178,7 @@ isolated function parseResponseToJson(http:Response|http:ClientError httpRespons
 isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string? {
     if httpResponse.hasHeader(headername) {
         return httpResponse.getHeader(headername);
-    }else{
+    }else {
         return ();
     }
 }
