@@ -1,7 +1,7 @@
 import ballerina/http;
 
-isolated function mapParametersToHeaderType(string httpVerb, string url) returns RequestHeaderParamaters {
-    RequestHeaderParamaters params = {};
+isolated function mapParametersToHeaderType(string httpVerb, string url) returns RequestHeaderParameters {
+    RequestHeaderParameters params = {};
     params.verb = httpVerb;
     params.resourceType = getResourceType(url);
     params.resourceId = getResourceId(url);

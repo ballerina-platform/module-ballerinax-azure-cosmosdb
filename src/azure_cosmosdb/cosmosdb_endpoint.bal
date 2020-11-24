@@ -23,21 +23,24 @@ public  client class Client {
     }
 
     # To create a database inside a resource
-    # + databaseId -  id/name for the database
+    # + properties -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header 
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
+    public remote function createDatabase(DatabaseProperties properties, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database|error{
+        json jsonPayload;
         http:Request req = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES]);
-        RequestHeaderParamaters header = mapParametersToHeaderType(POST,requestPath);
-        json body = {
-            id: databaseId
-        };
-
+        RequestHeaderParameters header = mapParametersToHeaderType(POST,requestPath);
+        if properties.id == "" {
+            return prepareError("Invalid database id: Cannot be empty");
+        }
+        json|error payload = properties.cloneWithType(json);
+        if payload is json {
+            req.setJsonPayload(payload);
+        }
         req = check setHeaders(req,self.host,self.masterKey,self.keyType,self.tokenVersion,header);
         req = check setThroughputOrAutopilotHeader(req,throughputProperties);
-        req.setJsonPayload(body);
         var response = self.azureCosmosClient->post(requestPath,req);
         [json,Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonreponse);   

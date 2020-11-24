@@ -81,7 +81,7 @@ isolated function prepareError(string message, error? err = ()) returns error {
 # + params - an object of type HeaderParamaters
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.  
 isolated function setHeaders(http:Request req, string host, string keyToken, string tokenType, string tokenVersion,
-RequestHeaderParamaters params) returns http:Request|error{
+RequestHeaderParameters params) returns http:Request|error{
     req.setHeader("x-ms-version",params.apiVersion);
     req.setHeader("Host",host);
     req.setHeader("Accept","*/*");

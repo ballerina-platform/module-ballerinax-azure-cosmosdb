@@ -34,7 +34,7 @@ public type Headers record {|
     string? dateHeader = ();
 |};
 
-public type RequestHeaderParamaters record {|
+public type RequestHeaderParameters record {|
     string verb = "";
     string apiVersion = API_VERSION;
     string resourceType = "";
