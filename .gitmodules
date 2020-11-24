@@ -1,0 +1,3 @@
+[submodule "TokenGenerate"]
+	path = TokenGenerate
+	url = https://github.com/sachinira/module-ballerinax-azure-cosmosdb
