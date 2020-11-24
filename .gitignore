@@ -22,14 +22,12 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-#
+#Ballerina configuartion file
 ballerina.conf
 
-#
+#Target folder
 /target
 
-#
+#json files created inside resources folder
 /src/azure_cosmosdb/resources/*.json
 
-#
-.lock
