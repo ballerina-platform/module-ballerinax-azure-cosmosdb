@@ -1,6 +1,5 @@
 import ballerina/java;
 import ballerina/time;
-import ballerina/io;
 import ballerina/http;
 import ballerina/stringutils;
 import ballerina/lang.'string as str;
@@ -95,10 +94,10 @@ RequestHeaderParameters params) returns http:Request|error{
         if s is string {
             req.setHeader("Authorization",s);
         } else {
-            io:println("token is null");
+            return prepareError("Authorization token is null");
         }
     } else {
-        io:println("date is null");
+        return prepareError("Date header is invalid/null");
     }
     return req;
 }
