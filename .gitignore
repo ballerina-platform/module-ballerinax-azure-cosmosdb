@@ -31,3 +31,4 @@ ballerina.conf
 #json files created inside resources folder
 /src/azure_cosmosdb/resources/*.json
 
+/TokenGenerate
