@@ -12,7 +12,7 @@ public  client class Client {
 
     public http:Client azureCosmosClient;
 
-    function init(AzureCosmosConfiguration azureConfig){
+    function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = azureConfig.baseUrl;
         self.masterKey = azureConfig.masterKey;
         self.host = azureConfig.host;
@@ -26,8 +26,8 @@ public  client class Client {
     # + properties -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header 
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createDatabase(DatabaseProperties properties, ThroughputProperties? throughputProperties = ()) returns 
-    @tainted Database|error{
+    public remote function createDatabase(DatabaseProperties properties, ThroughputProperties? throughputProperties = ()) 
+    returns @tainted Database|error {
         json jsonPayload;
         http:Request req = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES]);

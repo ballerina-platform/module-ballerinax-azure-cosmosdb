@@ -7,7 +7,7 @@ import ballerina/lang.'string as str;
 # To construct resource type  which is used to create the hashed token signature 
 # + url - string parameter part of url to extract the resource type
 # + return - Returns the resource type extracted from url as a string  
-isolated function getResourceType(string url) returns string{
+isolated function getResourceType(string url) returns string {
     string resourceType = EMPTY_STRING;
     string[] urlParts = stringutils:split(url,FORWARD_SLASH);
     int count = urlParts.length()-1;
@@ -25,7 +25,7 @@ isolated function getResourceType(string url) returns string{
 # To construct resource id  which is used to create the hashed token signature 
 # + url - string parameter part of url to extract the resource id
 # + return - Returns the resource id extracted from url as a string 
-isolated function getResourceId(string url) returns string{
+isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
     string[] urlParts = stringutils:split(url,FORWARD_SLASH);
     int count = urlParts.length()-1;
@@ -80,7 +80,7 @@ isolated function prepareError(string message, error? err = ()) returns error {
 # + params - an object of type HeaderParamaters
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.  
 isolated function setHeaders(http:Request req, string host, string keyToken, string tokenType, string tokenVersion,
-RequestHeaderParameters params) returns http:Request|error{
+RequestHeaderParameters params) returns http:Request|error {
     req.setHeader("x-ms-version",params.apiVersion);
     req.setHeader("Host",host);
     req.setHeader("Accept","*/*");
@@ -105,7 +105,7 @@ RequestHeaderParameters params) returns http:Request|error{
 # To construct the hashed token signature for a token 
 # + return - If successful, returns string representing UTC date and time 
 #               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.  
-isolated function getTime() returns string?|error{
+isolated function getTime() returns string?|error {
     time:Time time1 = time:currentTime();
     var time2 = check time:toTimeZone(time1, "Europe/London");
     string|error timeString = time:format(time2, "EEE, dd MMM yyyy HH:mm:ss z");
@@ -121,7 +121,7 @@ isolated function getTime() returns string?|error{
 # + tokenVersion - denotes the version of the token, currently 1.0.
 # + return - If successful, returns string which is the  hashed token signature. Else returns ().  
 isolated function generateTokenNew(string verb, string resourceType, string resourceId, string keyToken, string tokenType, 
-string tokenVersion) returns string?{
+string tokenVersion) returns string? {
     var token = generateTokenJava(java:fromString(verb),java:fromString(resourceType),java:fromString(resourceId),
     java:fromString(keyToken),java:fromString(tokenType),java:fromString(tokenVersion));
     return java:toString(token);
@@ -129,7 +129,7 @@ string tokenVersion) returns string?{
 }
 
 isolated function setThroughputOrAutopilotHeader(http:Request req, ThroughputProperties? throughputProperties) returns 
-http:Request|error{
+http:Request|error {
 
     if throughputProperties is ThroughputProperties{
         if throughputProperties.throughput is int &&  throughputProperties.maxThroughput is () {
@@ -146,7 +146,8 @@ http:Request|error{
 }
 
 
-isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns  @tainted [json,Headers]|error{
+isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns  @tainted [json,Headers]|error
+{
     var responseBody = check parseResponseToJson(httpResponse);
     var responseHeaders = check mapResponseHeadersToObject(httpResponse);
     return [responseBody,responseHeaders];
@@ -174,7 +175,7 @@ isolated function parseResponseToJson(http:Response|http:ClientError httpRespons
     }
 }
 
-isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string?{
+isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string? {
     if httpResponse.hasHeader(headername) {
         return httpResponse.getHeader(headername);
     }else{

@@ -14,10 +14,10 @@ public type DatabaseProperties record {|
     string id = "";
 |};
 
-public type Database record {
+public type Database record {|
     string id = "";
     Headers reponseHeaders?;
-};
+|};
 
 public type ThroughputProperties record {
     int? throughput = ();

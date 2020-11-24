@@ -8,7 +8,8 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
     return params;
 }
 
-isolated function mapResponseHeadersToObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error{
+isolated function mapResponseHeadersToObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error 
+{
     Headers responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse,"x-ms-continuation");

@@ -17,10 +17,10 @@ AzureCosmosConfiguration config = {
                         }
 };
 
-@test:Config{
+@test:Config {
     //enable: false
 }
-function createDB(){
+function createDB() {
     io:println("--------------Create database------------------------\n\n");
 
     Client AzureCosmosClient = new(config);
