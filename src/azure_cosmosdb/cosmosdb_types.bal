@@ -9,6 +9,11 @@ public type AzureCosmosConfiguration record {|
     http:ClientSecureSocket? secureSocketConfig;
 |};
 
+
+public type DatabaseProperties record {|
+    string id = "";
+|};
+
 public type Database record {
     string id = "";
     Headers reponseHeaders?;
