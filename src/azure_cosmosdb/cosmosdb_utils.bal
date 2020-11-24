@@ -179,6 +179,6 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headername
 
 isolated function generateTokenJava(handle verb, handle resourceType, handle resourceId, handle keyToken, handle tokenType, 
 handle tokenVersion) returns handle = @java:Method {
-    name: "generate",
-    'class: "com.sachini.TokenCreate"
+    name: "generateToken",
+    'class: "org.ballerinalang.cosmosdb.AuthToken"
 } external;
