@@ -86,8 +86,7 @@ RequestHeaderParameters params) returns http:Request|error {
     req.setHeader("Connection","keep-alive");
 
     string?|error date = getTime();
-    if date is string
-    {
+    if date is string {
         string? s = generateTokenNew(params.verb,params.resourceType,params.resourceId,keyToken,tokenType,tokenVersion);
         req.setHeader("x-ms-date",date);
         if s is string {
@@ -144,7 +143,6 @@ http:Request|error {
     return req;
 }
 
-
 isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns  @tainted [json,Headers]|error
 {
     var responseBody = check parseResponseToJson(httpResponse);
@@ -177,7 +175,7 @@ isolated function parseResponseToJson(http:Response|http:ClientError httpRespons
 isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string? {
     if httpResponse.hasHeader(headername) {
         return httpResponse.getHeader(headername);
-    }else {
+    } else {
         return ();
     }
 }
