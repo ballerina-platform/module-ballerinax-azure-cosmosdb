@@ -27,3 +27,6 @@ ballerina.conf
 
 #
 /target
+
+#
+/src/azure_cosmosdb/resources/*.json
