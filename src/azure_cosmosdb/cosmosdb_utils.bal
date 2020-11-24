@@ -105,7 +105,7 @@ RequestHeaderParameters params) returns http:Request|error {
 #               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.  
 isolated function getTime() returns string?|error {
     time:Time time1 = time:currentTime();
-    var time2 = check time:toTimeZone(time1, "Europe/London");
+    var time2 = check time:toTimeZone(time1, GMT_ZONE);
     string|error timeString = time:format(time2, "EEE, dd MMM yyyy HH:mm:ss z");
     return timeString;
 }
@@ -123,18 +123,15 @@ string tokenVersion) returns string? {
     var token = generateTokenJava(java:fromString(verb),java:fromString(resourceType),java:fromString(resourceId),
     java:fromString(keyToken),java:fromString(tokenType),java:fromString(tokenVersion));
     return java:toString(token);
-
 }
 
 isolated function setThroughputOrAutopilotHeader(http:Request req, ThroughputProperties? throughputProperties) returns 
 http:Request|error {
-
     if throughputProperties is ThroughputProperties {
         if throughputProperties.throughput is int &&  throughputProperties.maxThroughput is () {
-            //validate throughput The minimum is 400 up to 1,000,000 (or higher by requesting a limit increase).
-            req.setHeader("x-ms-offer-throughput",throughputProperties.maxThroughput.toString());
+            req.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
         } else if throughputProperties.throughput is () &&  throughputProperties.maxThroughput != () {
-            req.setHeader("x-ms-cosmos-offer-autopilot-settings",throughputProperties.maxThroughput.toString());
+            req.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
         } else if throughputProperties.throughput is int &&  throughputProperties.maxThroughput != () {
             return 
             prepareError("Cannot set both x-ms-offer-throughput and x-ms-cosmos-offer-autopilot-settings headers at once");

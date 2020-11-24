@@ -29,6 +29,8 @@ const string ACCEPT_HEADER = "Accept";
 const string CONNECTION_HEADER = "Connection";
 const string DATE_HEADER = "x-ms-date";
 const string AUTHORIZATION_HEADER = "Authorization";
+const string THROUGHPUT_HEADER = "x-ms-offer-throughput";
+const string AUTOPILET_THROUGHPUT_HEADER = "x-ms-cosmos-offer-autopilot-settings";
 
 #Constant fields of Azure SQL API REST response  headers.
 const string CONTINUATION_HEADER = "x-ms-continuation";
@@ -38,3 +40,6 @@ const string RESOURCE_USAGE_HEADER = "x-ms-resource-usage";
 const string ITEM_COUNT_HEADER = "x-ms-item-count";
 const string RESPONSE_DATE_HEADER = "Date";
 const string ETAG_HEADER = "etag";
+
+#Constant field for GMT time zone
+const string GMT_ZONE = "Europe/London";
