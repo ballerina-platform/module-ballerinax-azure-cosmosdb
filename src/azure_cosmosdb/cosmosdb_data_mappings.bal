@@ -12,13 +12,13 @@ isolated function mapResponseHeadersToObject(http:Response|http:ClientError http
 {
     Headers responseHeaders = {};
     if (httpResponse is http:Response) {
-        responseHeaders.continuationHeader = getHeaderIfExist(httpResponse,"x-ms-continuation");
-        responseHeaders.sessionTokenHeader = getHeaderIfExist(httpResponse,"x-ms-session-token");
-        responseHeaders.requestChargeHeader = getHeaderIfExist(httpResponse,"x-ms-request-charge");
-        responseHeaders.resourceUsageHeader = getHeaderIfExist(httpResponse,"x-ms-resource-usage");
-        responseHeaders.itemCountHeader = getHeaderIfExist(httpResponse,"x-ms-item-count");
-        responseHeaders.etagHeader = getHeaderIfExist(httpResponse,"etag");
-        responseHeaders.dateHeader = getHeaderIfExist(httpResponse,"Date");
+        responseHeaders.continuationHeader = getHeaderIfExist(httpResponse,CONTINUATION_HEADER);
+        responseHeaders.sessionTokenHeader = getHeaderIfExist(httpResponse,SESSION_TOKEN_HEADER);
+        responseHeaders.requestChargeHeader = getHeaderIfExist(httpResponse,REQUEST_CHARGE_HEADER);
+        responseHeaders.resourceUsageHeader = getHeaderIfExist(httpResponse,RESOURCE_USAGE_HEADER);
+        responseHeaders.itemCountHeader = getHeaderIfExist(httpResponse,ITEM_COUNT_HEADER);
+        responseHeaders.etagHeader = getHeaderIfExist(httpResponse,ETAG_HEADER);
+        responseHeaders.dateHeader = getHeaderIfExist(httpResponse,RESPONSE_DATE_HEADER);
         return responseHeaders;
     } else {
         return prepareError("Error occurred while invoking the REST API");

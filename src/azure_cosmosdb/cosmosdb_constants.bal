@@ -29,3 +29,12 @@ const string ACCEPT_HEADER = "Accept";
 const string CONNECTION_HEADER = "Connection";
 const string DATE_HEADER = "x-ms-date";
 const string AUTHORIZATION_HEADER = "Authorization";
+
+#Constant fields of Azure SQL API REST response  headers.
+const string CONTINUATION_HEADER = "x-ms-continuation";
+const string SESSION_TOKEN_HEADER = "x-ms-session-token";
+const string REQUEST_CHARGE_HEADER = "x-ms-request-charge";
+const string RESOURCE_USAGE_HEADER = "x-ms-resource-usage";
+const string ITEM_COUNT_HEADER = "x-ms-item-count";
+const string RESPONSE_DATE_HEADER = "Date";
+const string ETAG_HEADER = "etag";
