@@ -24,7 +24,10 @@ function createDB(){
     io:println("--------------Create database------------------------\n\n");
 
     Client AzureCosmosClient = new(config);
-    var result = AzureCosmosClient->createDatabase("hiiiii2");
+
+    DatabaseProperties db = {};
+    db.id = "h";
+    var result = AzureCosmosClient->createDatabase(db);
     if (result is Database) {
         io:println(result);
     } else {

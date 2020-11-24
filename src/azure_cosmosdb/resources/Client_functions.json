@@ -1,1 +1,1 @@
-{"ballerinax/azure_cosmosdb:0.1.0:Client" : [{"function":{"name":"createDatabase","requiredParams":[{"databaseId":"string"},{"throughputProperties":"ballerinax/azure_cosmosdb:0.1.0:ThroughputProperties?"}],"returnType":"ballerinax/azure_cosmosdb:0.1.0:Database"}}]}
+{"ballerinax/azure_cosmosdb:0.1.0:Client" : [{"function":{"name":"createDatabase","requiredParams":[{"properties":"ballerinax/azure_cosmosdb:0.1.0:DatabaseProperties"},{"throughputProperties":"ballerinax/azure_cosmosdb:0.1.0:ThroughputProperties?"}],"returnType":"ballerinax/azure_cosmosdb:0.1.0:Database"}}]}
