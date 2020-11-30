@@ -29,6 +29,10 @@ ballerina.conf
 /target
 
 #json files created inside resources folder
-/src/azure_cosmosdb/resources/*.json
+/cosmosdb-ballerina/src/azure_cosmosdb/resources/*.json
 
-/TokenGenerate
+#Intellij
+.idea
+
+/TokenGenerate/TokenGenerate.iml
+/TokenGenerate/target
