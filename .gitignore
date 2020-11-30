@@ -34,5 +34,5 @@ ballerina.conf
 #Intellij
 .idea
 
-/TokenGenerate/TokenGenerate.iml
-/TokenGenerate/target
+/cosmosdb-authtoken-native/cosmosdb-authtoken-native.iml
+/cosmosdb-authtoken-native/target
