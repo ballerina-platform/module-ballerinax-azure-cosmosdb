@@ -1,7 +1,7 @@
 import ballerina/http;
 
-isolated function mapParametersToHeaderType(string httpVerb, string url) returns RequestHeaderParameters {
-    RequestHeaderParameters params = {};
+isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
+    HeaderParameters params = {};
     params.verb = httpVerb;
     params.resourceType = getResourceType(url);
     params.resourceId = getResourceId(url);
@@ -25,12 +25,37 @@ isolated function mapResponseHeadersToObject(http:Response|http:ClientError http
     }
 }
 
-isolated function mapJsonToDatabaseType([json, Headers] jsonPayload) returns Database {
+isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Database {
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    Database db = {};
+    db.id = payload.id != ()? payload.id.toString() : EMPTY_STRING;
+    db._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    db._self = payload._self != ()? payload._self.toString() : EMPTY_STRING;
+    if headers is Headers {
+        db["reponseHeaders"] = headers;
+    }    
+    return db;
+}
+
+isolated function mapJsonToDbList([json, Headers] jsonPayload) returns @tainted DatabaseList {
     json payload;
     Headers headers;
     [payload,headers] = jsonPayload;
-    Database db = {};
-    db.id = payload.id.toString();
-    db.reponseHeaders = headers;
-    return db;
+    DatabaseList dbl = {};
+    dbl._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    dbl.Databases =  convertToDatabaseArray(<json[]>payload.Databases);
+    dbl.reponseHeaders = headers;
+    return dbl;
+}
+
+isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
+    Database[] databases = [];
+    int i = 0;
+    foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
+        databases[i] = mapJsonToDatabaseType([jsonDatabase,()]);
+        i = i + 1;
+    }
+    return databases;
 }

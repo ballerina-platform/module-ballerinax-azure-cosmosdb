@@ -9,14 +9,23 @@ public type AzureCosmosConfiguration record {|
     http:ClientSecureSocket? secureSocketConfig;
 |};
 
-public type DatabaseProperties record {|
-    string id = "";
+public type ResourceProperties record {|
+    string databaseId = "";
+    string containerId = "";
 |};
 
 public type Database record {|
     string id = "";
-    Headers reponseHeaders?;
+    string _rid?;
+    string _self?;
+    Headers?...;
 |};
+
+public type DatabaseList record {
+    string _rid = "";
+    Database[] Databases = [];
+    Headers? reponseHeaders = ();
+};
 
 public type ThroughputProperties record {
     int? throughput = ();
@@ -33,7 +42,7 @@ public type Headers record {|
     string? dateHeader = ();
 |};
 
-public type RequestHeaderParameters record {|
+public type HeaderParameters record {|
     string verb = "";
     string apiVersion = API_VERSION;
     string resourceType = "";
