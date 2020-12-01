@@ -12,8 +12,8 @@ AzureCosmosConfiguration config = {
     tokenVersion : getConfigValue("TOKEN_VERSION"),
     secureSocketConfig :{
                             trustStore: {
-                            path: getConfigValue("b7a.home") + "/bre/security/ballerinaTruststore.p12",
-                            password: "ballerina"
+                            path: getConfigValue("b7a_home") + "/bre/security/ballerinaTruststore.p12",
+                            password: getConfigValue("SSL_PASSWORD")
                             }
                         }
 };
