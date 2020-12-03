@@ -27,6 +27,7 @@ StoredProcedure storedPrcedure = {};
 UserDefinedFunction udf = {};
 User user = {};
 Permission permission = {};
+OfferList offerList = {};
 
 @test:Config{
     groups: ["database"]
@@ -929,6 +930,83 @@ function test_deletePermission(){
     } else {
         var output = "";
     } 
+}
+
+@test:Config{
+    groups: ["offer"]
+}
+function test_listOffers(){
+    log:printInfo("ACTION : listOffers()");
+
+    Client AzureCosmosClient = new(config);
+    var result = AzureCosmosClient->listOffers();  
+    if result is OfferList {
+        offerList = <@untainted>result;
+    } else {
+        test:assertFail(msg = result.message());
+    }   
+}
+
+@test:Config{
+    groups: ["offer"], 
+    dependsOn: ["test_listOffers"]
+}
+function test_getOffer(){
+    log:printInfo("ACTION : getOffer()");
+
+    Client AzureCosmosClient = new(config);
+    var result = AzureCosmosClient->getOffer(offerList.offers[0].id);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["offer"]
+}
+function test_replaceOffer(){
+    log:printInfo("ACTION : replaceOffer()");
+
+    Client AzureCosmosClient = new(config);
+    Offer replaceOfferBody = {
+        offerVersion: "V2", 
+        offerType: "Invalid",    
+        content: {  
+            "offerThroughput": 600
+        },  
+        'resource: string `dbs/${database._rid.toString()}/colls/${container._rid.toString()}/`,  
+        offerResourceId: string `${container._rid.toString()}`, 
+        id: offerList.offers[0].id, 
+        _rid: offerList.offers[0]._rid 
+    };
+    var result = AzureCosmosClient->replaceOffer(replaceOfferBody);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    } 
+}
+
+@test:Config{
+    groups: ["offer"], 
+    dependsOn: ["test_createDatabase",  "test_createContainer"],
+    enable: false
+}
+function test_queryOffer(){
+    log:printInfo("ACTION : queryOffer()");
+
+    Client AzureCosmosClient = new(config);
+    Query offerQuery = {
+    query: string `SELECT * FROM ${container.id} WHERE (${container.id}["_self"]) = ${container._self.toString()} "`
+    };
+    var result = AzureCosmosClient->queryOffer(offerQuery);   
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
 }
 
 function getConfigValue(string key) returns string {
