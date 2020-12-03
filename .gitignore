@@ -26,14 +26,8 @@ hs_err_pid*
 ballerina.conf
 
 #Target folder of ballerina project
-/cosmosdb-ballerina/target
+/target
 
 #json files created inside resources folder
-/cosmosdb-ballerina/src/azure_cosmosdb/resources/*.json
+/src/azure_cosmosdb/resources/*.json
 
-#Intellij
-.idea
-
-#files of java project
-/cosmosdb-authtoken-native/cosmosdb-authtoken-native.iml
-/cosmosdb-authtoken-native/target
