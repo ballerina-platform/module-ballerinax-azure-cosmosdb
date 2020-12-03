@@ -44,6 +44,23 @@ public type ContainerList record {|
     int _count = 0;
 |};
 
+public type Document record {|
+    string id = "";
+    string? _rid?;
+    string? _self?;
+    json? documentBody = {};
+    string? documentId?;
+    any? partitionKey = ();
+    Headers?...;
+|};
+
+public type DocumentList record {|
+    string _rid = "";
+    Document[] documents = [];
+    int _count = 0;
+    Headers reponseHeaders?;
+|};
+
 public type IndexingPolicy record {|
     string indexingMode = "";
     boolean automatic = true;
@@ -109,6 +126,19 @@ public type HeaderParameters record {|
     string apiVersion = API_VERSION;
     string resourceType = "";
     string resourceId = "";
+|};
+
+public type RequestHeaderOptions record {|
+    boolean? isUpsertRequest = ();
+    string? indexingDirective = ();
+    int? maxItemCount = ();
+    string? continuationToken = ();
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? changeFeedOption = (); 
+    string? ifNoneMatch = (); 
+    string? PartitionKeyRangeId = ();
+    string? ifMatch = ();
 |};
 
 public type AzureError  distinct  error;

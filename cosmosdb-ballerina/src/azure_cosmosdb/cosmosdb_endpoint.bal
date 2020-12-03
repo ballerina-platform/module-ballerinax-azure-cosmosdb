@@ -196,4 +196,135 @@ public  client class Client {
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToPartitionKeyType(jsonreponse);
     }
+
+        # To create a Document inside a collection
+    # + properties - object of type ResourceProperties
+    # + document - object of type Document 
+    # + requestOptions - object of type RequestHeaderOptions
+    # + return - If successful, returns Document. Else returns error.  
+    public remote function createDocument(@tainted ResourceProperties properties, Document document, 
+    RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_DOCUMENTS]);
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request = setPartitionKeyHeader(request, document.partitionKey);
+        if requestOptions is RequestHeaderOptions {
+            request = setRequestOptions(request, requestOptions);
+        }
+        json requestBodyId = {
+            id: document.id
+        };  
+        json Final = check requestBodyId.mergeJson(document.documentBody);     
+        request.setJsonPayload(Final);
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonreponse = check mapResponseToTuple(response);
+        return mapJsonToDocument(jsonreponse);
+    }
+
+    # To list one document inside a collection
+    # + properties - object of type ResourceProperties
+    # + document - object of type Document 
+    # + requestOptions - object of type RequestHeaderOptions
+    # + return - If successful, returns Document. Else returns error.  
+    public remote function getDocument(@tainted ResourceProperties properties, @tainted Document document, 
+    RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request = setPartitionKeyHeader(request, document.partitionKey);
+        if requestOptions is RequestHeaderOptions {
+            request = setRequestOptions(request, requestOptions);
+        }
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonreponse = check mapResponseToTuple(response);
+        return mapJsonToDocument(jsonreponse);
+    }
+
+    # To list all the documents inside a collection
+    # + properties - object of type ResourceProperties
+    # + requestOptions - object of type RequestHeaderOptions
+    # + return - If successful, returns DocumentList. Else returns error. 
+    public remote function getDocumentList(@tainted ResourceProperties properties, RequestHeaderOptions? requestOptions = ()) 
+    returns @tainted DocumentList|error { 
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_DOCUMENTS]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        if requestOptions is RequestHeaderOptions{
+            request = setRequestOptions(request, requestOptions);
+        }
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonreponse = check mapResponseToTuple(response);
+        DocumentList list =  check mapJsonToDocumentList(jsonreponse); 
+        return list;    
+    }
+
+    # To replace a document inside a collection
+    # + properties - object of type ResourceProperties
+    # + document - object of type Document 
+    # + requestOptions - object of type RequestHeaderOptions
+    # set x-ms-documentdb-partitionkey header
+    # + return - If successful, returns a Document. Else returns error. 
+    public remote function replaceDocument(@tainted ResourceProperties properties, @tainted Document document, 
+    RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {         
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
+        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request = setPartitionKeyHeader(request, document.partitionKey);
+        if requestOptions is RequestHeaderOptions{
+            request = setRequestOptions(request, requestOptions);
+        }
+        json requestBodyId = {
+            id: document.id
+        };  
+        json Final = check requestBodyId.mergeJson(document.documentBody); 
+        request.setJsonPayload(<@untainted>Final);
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonreponse = check mapResponseToTuple(response);
+        return mapJsonToDocument(jsonreponse);
+    }
+
+    # To delete a document inside a collection
+    # + properties - object of type ResourceProperties
+    # + document - object of type Document 
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
+    public remote function deleteDocument(@tainted ResourceProperties properties, @tainted Document document) returns 
+    @tainted boolean|error {  
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_DOCUMENTS, document.id]);//error
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request = setPartitionKeyHeader(request, document.partitionKey);
+        var response = self.azureCosmosClient->delete(requestPath, request);
+        return check getDeleteResponse(response);
+    }
+
+    # To query documents inside a collection
+    # + properties - object of type ResourceProperties
+    # + cqlQuery - json object of type Query containing the CQL query
+    # + requestOptions - object of type RequestOptions
+    # + partitionKey - the value provided for the partition key specified in the document
+    # + return - If successful, returns a json. Else returns error. 
+    public remote function queryDocuments(@tainted ResourceProperties properties, any partitionKey, Query cqlQuery, 
+    RequestHeaderOptions? requestOptions = ()) returns @tainted json|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_DOCUMENTS]);
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request = setPartitionKeyHeader(request, partitionKey);
+        request.setPayload(<json>cqlQuery.cloneWithType(json));
+        request = check setHeadersForQuery(request);
+        var response = self.azureCosmosClient->post(requestPath, request);
+        json jsonresponse = check mapResponseToJson(response);
+        return (jsonresponse);
+    }
 }
