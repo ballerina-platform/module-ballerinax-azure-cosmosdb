@@ -45,7 +45,7 @@ isolated function mapJsonToDbList([json, Headers] jsonPayload) returns @tainted 
     [payload,headers] = jsonPayload;
     DatabaseList dbl = {};
     dbl._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
-    dbl.Databases =  convertToDatabaseArray(<json[]>payload.Databases);
+    dbl.databases =  convertToDatabaseArray(<json[]>payload.Databases);
     dbl.reponseHeaders = headers;
     return dbl;
 }

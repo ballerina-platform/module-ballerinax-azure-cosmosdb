@@ -21,7 +21,7 @@ public  client class Client {
         self.azureCosmosClient = new (self.baseUrl,httpClientConfig);
     }
 
-    # To create a database inside a resource
+# To create a database inside a resource
     # + databaseId -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
     # 'x-ms-cosmos-offer-autopilot-settings' headers 
@@ -29,17 +29,17 @@ public  client class Client {
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database|error {
         json jsonPayload;
-        http:Request req = new;
+        http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES]);
-        HeaderParameters header = mapParametersToHeaderType(POST,requestPath);
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         json body = {
             id:databaseId
         };
-        req.setJsonPayload(body);
-        req = check setHeaders(req,self.host,self.masterKey,self.keyType,self.tokenVersion,header);
-        req = check setThroughputOrAutopilotHeader(req,throughputProperties);
-        var response = self.azureCosmosClient->post(requestPath,req);
-        [json,Headers] jsonreponse = check mapResponseToTuple(response);
+        request.setJsonPayload(body);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request = check setThroughputOrAutopilotHeader(request, throughputProperties);
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonreponse);   
     }
 
@@ -52,46 +52,45 @@ public  client class Client {
     returns @tainted Database?|error {
         var result = self->getDatabase(databaseId);
         if result is error{
-            return self->createDatabase(databaseId,throughputProperties);
+            return self->createDatabase(databaseId, throughputProperties);
         }
         return ();  
     }
 
     # To retrive a given database inside a resource
-    # + databaseId -  id/name of the database to retrieve
+    # + databaseId -  id/name of the database 
     # + return - If successful, returns Database. Else returns error.  
     public remote function getDatabase(string databaseId) returns @tainted Database|error {
-        http:Request req = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES,databaseId]);
-        HeaderParameters header = mapParametersToHeaderType(GET,requestPath);
-        req = check setHeaders(req,self.host,self.masterKey,self.keyType,self.tokenVersion,header);
-        var response = self.azureCosmosClient->get(requestPath,req);
-        [json,Headers] jsonreponse = check mapResponseToTuple(response);
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonreponse);  
     }
 
     # To list all databases inside a resource
     # + return - If successful, returns DatabaseList. else returns error.  
     public remote function getAllDatabases() returns @tainted DatabaseList|error {
-        http:Request req = new;
+        http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES]);
-        HeaderParameters header = mapParametersToHeaderType(GET,requestPath);
-
-        req = check setHeaders(req,self.host,self.masterKey,self.keyType,self.tokenVersion,header);
-        var response = self.azureCosmosClient->get(requestPath,req);
-        [json,Headers] jsonresponse = check mapResponseToTuple(response);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonresponse = check mapResponseToTuple(response);
         return mapJsonToDbList(jsonresponse); 
     }
 
     # To delete a given database inside a resource
     # + databaseId -  id/name of the database to retrieve
-    # + return - If successful, returns DeleteResponse specifying delete is sucessfull. Else returns error.  
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDatabase(string databaseId) returns @tainted boolean|error {
-        http:Request req = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES,databaseId]);
-        HeaderParameters header = mapParametersToHeaderType(DELETE,requestPath);
-        req = check setHeaders(req,self.host,self.masterKey,self.keyType,self.tokenVersion,header);
-        var response = self.azureCosmosClient->delete(requestPath,req);
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId]);
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->delete(requestPath, request);
         return check getDeleteResponse(response);
     }
 }
