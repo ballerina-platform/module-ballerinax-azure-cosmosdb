@@ -197,7 +197,7 @@ public  client class Client {
         return mapJsonToPartitionKeyType(jsonreponse);
     }
 
-        # To create a Document inside a collection
+    # To create a Document inside a collection
     # + properties - object of type ResourceProperties
     # + document - object of type Document 
     # + requestOptions - object of type RequestHeaderOptions

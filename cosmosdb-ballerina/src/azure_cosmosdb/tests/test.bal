@@ -23,6 +23,7 @@ Database database = {};
 DatabaseList databaseList = {};
 Container container = {};
 ContainerList containerList = {};
+Document document = {};
 
 @test:Config{
     groups: ["database"]
@@ -316,6 +317,162 @@ function test_GetPartitionKeyRanges(){
             containerId: container.id
     };
     var result = AzureCosmosClient->getPartitionKeyRanges(resourceProperties);
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }   
+}
+
+@test:Config{
+    groups: ["document"], 
+    dependsOn: ["test_createDatabase",  "test_createContainer"]
+}
+function test_createDocument(){
+    log:printInfo("ACTION : createDocument()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    Document createDoc = {
+        id: string `document-${uuid.toString()}`, 
+        documentBody :{
+            "LastName": "keeeeeee",  
+        "Parents": [  
+            {  
+            "FamilyName": null,  
+            "FirstName": "Thomas"  
+            },  
+            {  
+            "FamilyName": null,  
+            "FirstName": "Mary Kay"  
+            }  
+        ],  
+        "Children": [  
+            {  
+            "FamilyName": null,  
+            "FirstName": "Henriette Thaulow",  
+            "Gender": "female",  
+            "Grade": 5,  
+            "Pets": [  
+                {  
+                "GivenName": "Fluffy"  
+                }  
+            ]  
+            }  
+        ],  
+        "Address": {  
+            "State": "WA",  
+            "County": "King",  
+            "City": "Seattle"  
+        },  
+        "IsRegistered": true, 
+        "AccountNumber": 1234
+        }, 
+        partitionKey : 1234  
+    };
+    RequestHeaderOptions options = {
+        isUpsertRequest: true
+    };
+    var result = AzureCosmosClient->createDocument(resourceProperty,  createDoc,  options);
+    if result is Document {
+        document = <@untainted>result;
+    } else {
+        test:assertFail(msg = result.message());
+    }   
+}
+
+@test:Config{
+    groups: ["document"], 
+    dependsOn: ["test_createDatabase",  "test_createContainer",  "test_createDocument"]
+}
+function test_getDocumentList(){
+    log:printInfo("ACTION : getDocumentList()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    var result = AzureCosmosClient->getDocumentList(resourceProperty);
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }
+}
+
+@test:Config{
+    groups: ["document"], 
+    dependsOn: ["test_createDatabase",  "test_createContainer",  "test_createDocument"]
+}
+function test_GetOneDocument(){
+    log:printInfo("ACTION : GetOneDocument()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    @tainted Document getDoc =  {
+        id: document.id, 
+        partitionKey : 1234  
+    };
+    var result = AzureCosmosClient->getDocument(resourceProperty, getDoc);
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["document"], 
+    dependsOn: ["test_createDatabase", "test_createContainer", "test_GetOneDocument"]
+}
+function test_deleteDocument(){
+    log:printInfo("ACTION : deleteDocument()");
+    
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    @tainted Document deleteDoc =  {
+        id: document.id, 
+        partitionKey : 1234  
+    };
+    var result = AzureCosmosClient->deleteDocument(resourceProperty, deleteDoc);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["document"], 
+    dependsOn: ["test_createDatabase", "test_createContainer"],
+    enable: false
+}
+function test_queryDocuments(){
+    log:printInfo("ACTION : queryDocuments()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    int partitionKey = 1234;//get the pk from endpoint
+    Query sqlQuery = {
+        query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
+        parameters: []
+    };
+    //QueryParameter[] params = [{name: "@id",  value: "46c25391-e11d-4327-b7c5-28f44bcf3f2f"}];
+    var result = AzureCosmosClient->queryDocuments(resourceProperty, partitionKey, sqlQuery);   
     if result is error {
         test:assertFail(msg = result.message());
     } else {
