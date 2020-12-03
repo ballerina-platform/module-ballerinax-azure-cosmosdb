@@ -24,6 +24,7 @@ DatabaseList databaseList = {};
 Container container = {};
 ContainerList containerList = {};
 Document document = {};
+StoredProcedure storedPrcedure = {};
 
 @test:Config{
     groups: ["database"]
@@ -473,6 +474,120 @@ function test_queryDocuments(){
     };
     //QueryParameter[] params = [{name: "@id",  value: "46c25391-e11d-4327-b7c5-28f44bcf3f2f"}];
     var result = AzureCosmosClient->queryDocuments(resourceProperty, partitionKey, sqlQuery);   
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }   
+}
+
+@test:Config{
+    groups: ["storedProcedure"], 
+    dependsOn: ["test_createDatabase", "test_createContainer"]
+}
+function test_createStoredProcedure(){
+    log:printInfo("ACTION : createStoredProcedure()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    string createSprocBody = "function () {\r\n    var context = getContext();\r\n    var response = context.getResponse();\r\n\r\n    response.setBody(\"Hello,  World\");\r\n}"; 
+    StoredProcedure sp = {
+        id: string `sproc-${uuid.toString()}`, 
+        body:createSprocBody
+    };
+    var result = AzureCosmosClient->createStoredProcedure(resourceProperty, sp);  
+    if result is StoredProcedure {
+        storedPrcedure = <@untainted> result;
+    } else {
+        test:assertFail(msg = result.message());
+    }   
+}
+
+@test:Config{
+    groups: ["storedProcedure"], 
+    dependsOn: ["test_createStoredProcedure"]
+}
+function test_replaceStoredProcedure(){
+    log:printInfo("ACTION : replaceStoredProcedure()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    string replaceSprocBody = "function heloo(personToGreet) {\r\n    var context = getContext();\r\n    var response = context.getResponse();\r\n\r\n    response.setBody(\"Hello,  \" + personToGreet);\r\n}";
+    StoredProcedure sp = {
+        id: storedPrcedure.id, 
+        body: replaceSprocBody
+    }; 
+    var result = AzureCosmosClient->replaceStoredProcedure(resourceProperty, sp);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }   
+}
+
+@test:Config{
+    groups: ["storedProcedure"], 
+    dependsOn: ["test_createDatabase", "test_createContainer"]
+}
+function test_getAllStoredProcedures(){
+    log:printInfo("ACTION : replaceStoredProcedure()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    var result = AzureCosmosClient->listStoredProcedures(resourceProperty);   
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["storedProcedure"], 
+    dependsOn: ["test_createStoredProcedure", "test_replaceStoredProcedure"]
+}
+function test_executeOneStoredProcedure(){
+    log:printInfo("ACTION : executeOneStoredProcedure()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    string executeSprocId = storedPrcedure.id;
+    string[] arrayofparameters = ["Sachi"];
+    var result = AzureCosmosClient->executeStoredProcedure(resourceProperty, executeSprocId, arrayofparameters);   
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }        
+}
+
+@test:Config{
+    groups: ["storedProcedure"], 
+    dependsOn: ["test_createStoredProcedure", "test_replaceStoredProcedure", "test_executeOneStoredProcedure"]
+}
+function test_deleteOneStoredProcedure(){
+    log:printInfo("ACTION : deleteOneStoredProcedure()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    string deleteSprocId = storedPrcedure.id;
+    var result = AzureCosmosClient->deleteStoredProcedure(resourceProperty, deleteSprocId);   
     if result is error {
         test:assertFail(msg = result.message());
     } else {
