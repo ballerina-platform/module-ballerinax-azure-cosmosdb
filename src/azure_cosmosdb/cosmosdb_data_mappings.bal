@@ -220,6 +220,34 @@ isolated function mapJsonToUserDefinedFunctionListType([json, Headers] jsonPaylo
     return udflist;
 }
 
+isolated function mapJsonToTriggerType([json, Headers?] jsonPayload) returns @tainted Trigger {
+    Trigger trigger = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    trigger._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    trigger.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    trigger.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
+    trigger.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
+    trigger.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
+    if headers is Headers {
+        trigger["reponseHeaders"] = headers;
+    }
+    return trigger;
+}
+
+isolated function mapJsonToTriggerListType([json, Headers] jsonPayload) returns @tainted TriggerList|error {
+    TriggerList triggerlist = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    triggerlist._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    triggerlist.triggers = ConvertToTriggerArray(<json[]>payload.Triggers);
+    triggerlist._count = convertToInt(payload._count);
+    triggerlist["reponseHeaders"] = headers;
+    return triggerlist;
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -311,4 +339,14 @@ isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @ta
         i = i + 1;
     }
     return strings;
+}
+
+isolated function ConvertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns @tainted Trigger[] { 
+    Trigger[] triggers = [];
+    int i = 0;
+    foreach json trigger in sourceTriggerArrayJsonObject { 
+        triggers[i] = mapJsonToTriggerType([trigger,()]);
+        i = i + 1;
+    }
+    return triggers;
 }

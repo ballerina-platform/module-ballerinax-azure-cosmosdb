@@ -132,6 +132,20 @@ public type UserDefinedFunctionList record {|
     Headers?...;
 |};
 
+public type Trigger record {|
+    *StoredProcedure;
+    string triggerOperation = "";
+    string triggerType = "";
+    Headers?...;
+|};
+
+public type TriggerList record {|
+    string _rid = "";
+    Trigger[] triggers = [];
+    int _count = 0;
+    Headers?...;
+|};
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();

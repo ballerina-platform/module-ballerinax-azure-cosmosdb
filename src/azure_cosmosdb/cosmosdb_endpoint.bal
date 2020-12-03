@@ -477,4 +477,69 @@ public  client class Client {
         var response = self.azureCosmosClient->delete(requestPath, request);
         return check getDeleteResponse(response);
     }
+
+        # To create a trigger inside a collection
+    # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
+    # creation, deletion, and replacement of a document. Triggers are written in JavaScript. 
+    # + properties - object of type ResourceProperties
+    # + trigger - object of type Trigger
+    # + return - If successful, returns a Trigger. Else returns error. 
+    public remote function createTrigger(@tainted ResourceProperties properties, Trigger trigger) returns @tainted 
+    Trigger|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_TRIGGER]);       
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<json>trigger.cloneWithType(json));
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToTriggerType(jsonResponse);      
+    }
+    
+    # To replace an existing trigger inside a collection
+    # + properties - object of type ResourceProperties
+    # + trigger - object of type Trigger
+    # + return - If successful, returns a Trigger. Else returns error. 
+    public remote function replaceTrigger(@tainted ResourceProperties properties, @tainted Trigger trigger) returns 
+    @tainted Trigger|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_TRIGGER, trigger.id]);       
+        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json));
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToTriggerType(jsonResponse); 
+    }
+
+    # To list existing triggers inside a collection
+    # + properties - object of type ResourceProperties
+    # + return - If successful, returns a TriggerList. Else returns error. 
+    public remote function listTriggers(@tainted ResourceProperties properties) returns @tainted TriggerList|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_TRIGGER]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToTriggerListType(jsonResponse);      
+    }
+
+    # To delete an existing trigger inside a collection
+    # + properties - object of type ResourceProperties
+    # + triggerId - id of the trigger to be deleted
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
+    public remote function deleteTrigger(@tainted ResourceProperties properties, string triggerId) returns @tainted 
+    boolean|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_TRIGGER, triggerId]);       
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->delete(requestPath, request);
+        return check getDeleteResponse(response);
+    }
 }
