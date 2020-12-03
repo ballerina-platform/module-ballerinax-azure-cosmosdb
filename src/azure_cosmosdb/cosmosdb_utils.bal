@@ -192,10 +192,14 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
 # + return - If successful, returns string representing UTC date and time 
 #               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.  
 isolated function getTime() returns string?|error {
-    time:Time time1 = time:currentTime();
-    var time2 = check time:toTimeZone(time1, GMT_ZONE);
-    string|error timeString = time:format(time2, "EEE, dd MMM yyyy HH:mm:ss z");
-    return timeString;
+    time:Time currentTime = time:currentTime();
+    var timeInTimeZone = check time:toTimeZone(currentTime, GMT_ZONE);
+    string|error timeString = time:format(timeInTimeZone, "EEE, dd MMM yyyy HH:mm:ss z");
+    if timeString is string {
+        return timeString;
+    } else {
+        return prepareError("Time is not correct");
+    }
 }
 
 # To construct the hashed token signature for a token to set  'Authorization' header
@@ -220,7 +224,7 @@ string tokenVersion, string date) returns string?|error {
         check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");   
         return authorization;
     } else {     
-       // io:println("Decoding error");
+        return prepareError("Base64 Decoding error");
     }
 }
 
