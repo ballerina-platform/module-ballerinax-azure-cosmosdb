@@ -26,6 +26,7 @@ Document document = {};
 StoredProcedure storedPrcedure = {};
 UserDefinedFunction udf = {};
 User user = {};
+Permission permission = {};
 
 @test:Config{
     groups: ["database"]
@@ -712,7 +713,15 @@ function test_createUser(){
 
 @test:Config{
     groups: ["user"], 
-    dependsOn: ["test_createUser","test_getUser"]
+    dependsOn: [
+        "test_createUser",
+        "test_getUser",
+        "test_createPermission", 
+        "test_replacePermission", 
+        "test_listPermissions", 
+        "test_getPermission", 
+        "test_deletePermission"
+        ]
 }
 function test_replaceUserId(){
     log:printInfo("ACTION : replaceUserId()");
@@ -795,6 +804,126 @@ function test_deleteUser(){
         databaseId: database.id
     };
     var result = AzureCosmosClient->deleteUser(resourceProperty, deleteUserId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    } 
+}
+
+@test:Config{
+    groups: ["permission"], 
+    dependsOn: ["test_createDatabase", "test_createUser",  "test_createContainer"]
+}
+function test_createPermission(){
+    log:printInfo("ACTION : createPermission()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string permissionUserId = user.id;
+    string permissionId = string `permission-${uuid.toString()}`;
+    string permissionMode = "Read";
+    string permissionResource = string `dbs/${database._rid.toString()}/colls/${container._rid.toString()}`;
+    Permission createPermission = {
+        id: permissionId, 
+        permissionMode: permissionMode, 
+        'resource: permissionResource
+    };
+
+    var result = AzureCosmosClient->createPermission(resourceProperty, permissionUserId, createPermission);  
+    if result is Permission {
+        permission = <@untainted>result;
+    } else {
+        test:assertFail(msg = result.message());
+    }   
+}
+
+@test:Config{
+    groups: ["permission"], 
+    dependsOn: ["test_createPermission"]
+}
+function test_replacePermission(){
+    log:printInfo("ACTION : replacePermission()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string permissionUserId = user.id;
+    string permissionId = permission.id;
+    string permissionMode = "All";
+    string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
+    Permission replacePermission = {
+        id:permissionId, 
+        permissionMode:permissionMode, 
+        'resource:permissionResource
+    };
+    var result = AzureCosmosClient->replacePermission(resourceProperty, permissionUserId, replacePermission);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["permission"], 
+    dependsOn: ["test_createPermission"]
+}
+function test_listPermissions(){
+    log:printInfo("ACTION : listPermissions()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string permissionUserId = user.id;
+    var result = AzureCosmosClient->listPermissions(resourceProperty, permissionUserId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    } 
+}
+
+@test:Config{
+    groups: ["permission"], 
+    dependsOn: ["test_createPermission"]
+}
+function test_getPermission(){
+    log:printInfo("ACTION : getPermission()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string permissionUserId = user.id;
+    string permissionId = permission.id;
+    var result = AzureCosmosClient->getPermission(resourceProperty, permissionUserId, permissionId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }
+}
+
+@test:Config{
+    groups: ["permission"], 
+    dependsOn: ["test_createPermission", "test_getPermission", "test_listPermissions", "test_replacePermission"]
+}
+function test_deletePermission(){
+    log:printInfo("ACTION : deletePermission()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string permissionUserId = user.id;
+    string permissionId = permission.id;
+    var result = AzureCosmosClient->deletePermission(resourceProperty, permissionUserId, permissionId);  
     if result is error {
         test:assertFail(msg = result.message());
     } else {
