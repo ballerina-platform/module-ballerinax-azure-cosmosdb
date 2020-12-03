@@ -142,3 +142,15 @@ public type RequestHeaderOptions record {|
 |};
 
 public type AzureError  distinct  error;
+
+type JsonMap map<json>;
+
+public type Query record {|
+    string query = "";
+    QueryParameter[]? parameters = [];
+|};
+
+public type QueryParameter record {|
+    string name = "";
+    string value = "";
+|};

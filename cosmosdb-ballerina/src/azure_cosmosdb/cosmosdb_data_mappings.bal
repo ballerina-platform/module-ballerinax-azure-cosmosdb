@@ -79,6 +79,46 @@ isolated function mapJsonToContainerListType([json, Headers] jsonPayload) return
     return cll;
 }
 
+isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @tainted Document {  
+    Document doc = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    doc.id = payload.id != () ? payload.id.toString(): EMPTY_STRING;
+    doc._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+    doc._self = payload._self != () ? payload._self.toString(): EMPTY_STRING;
+    JsonMap|error document = payload.cloneWithType(JsonMap);
+    if document is JsonMap {
+        doc.documentBody = mapJsonToDocumentBody(document);
+    }
+    if headers is Headers {
+        doc["reponseHeaders"] = headers;
+    }
+    return doc;
+}
+
+isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
+    var deleteKeys = ["id","_rid","_self","_etag","_ts","_attachments"];
+    foreach var 'key in deleteKeys {
+        if reponsePayload.hasKey('key) {
+            var removedValue = reponsePayload.remove('key);
+        }
+    }
+    return reponsePayload;
+}
+
+isolated function mapJsonToDocumentListType([json, Headers] jsonPayload) returns @tainted DocumentList|error {
+    DocumentList documentlist = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    documentlist._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+    documentlist._count = convertToInt(payload._count);
+    documentlist.documents = check convertToDocumentArray(<json[]>payload.Documents);
+    documentlist.reponseHeaders = headers;
+    return documentlist;
+} 
+
 isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
     IndexingPolicy indp = {};
     indp.indexingMode = jsonPayload.indexingMode != ()? jsonPayload.indexingMode.toString() : EMPTY_STRING;
@@ -179,6 +219,16 @@ isolated function convertToContainerArray(json[] sourceCollectionArrayJsonObject
         i = i + 1;
     }
     return collections;
+}
+
+isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns @tainted Document[]|error { 
+    Document[] documents = [];
+    int i = 0;
+    foreach json document in sourceDocumentArrayJsonObject { 
+        documents[i] = mapJsonToDocumentType([document,()]);
+        i = i + 1;
+    }
+    return documents;
 }
 
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {

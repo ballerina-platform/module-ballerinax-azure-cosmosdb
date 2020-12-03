@@ -220,7 +220,7 @@ public  client class Client {
         request.setJsonPayload(Final);
         var response = self.azureCosmosClient->post(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToDocument(jsonreponse);
+        return mapJsonToDocumentType(jsonreponse);
     }
 
     # To list one document inside a collection
@@ -241,7 +241,7 @@ public  client class Client {
         }
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToDocument(jsonreponse);
+        return mapJsonToDocumentType(jsonreponse);
     }
 
     # To list all the documents inside a collection
@@ -260,7 +260,7 @@ public  client class Client {
         }
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        DocumentList list =  check mapJsonToDocumentList(jsonreponse); 
+        DocumentList list =  check mapJsonToDocumentListType(jsonreponse); 
         return list;    
     }
 
@@ -288,7 +288,7 @@ public  client class Client {
         request.setJsonPayload(<@untainted>Final);
         var response = self.azureCosmosClient->put(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToDocument(jsonreponse);
+        return mapJsonToDocumentType(jsonreponse);
     }
 
     # To delete a document inside a collection

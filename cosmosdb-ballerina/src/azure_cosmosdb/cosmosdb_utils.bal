@@ -124,6 +124,15 @@ isolated function setPartitionKeyHeader(http:Request request, any partitionKey) 
     return request;
 }
 
+# To set the required headers related to query operations
+# + request - http:Request to set the header
+# + return -  returns the header value in string.
+isolated function setHeadersForQuery(http:Request request) returns http:Request|error {
+    var header = request.setContentType("application/query+json");
+    request.setHeader(ISQUERY_HEADER, "True");
+    return request;
+}
+
 # To set the optional headers
 # + request - http:Request to set the header
 # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
