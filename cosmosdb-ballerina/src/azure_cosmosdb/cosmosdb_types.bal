@@ -106,6 +106,19 @@ public type PartitionKeyRange record {|
     Headers reponseHeaders?;
 |};
 
+public type StoredProcedure record {|
+    string? _rid?;
+    string id = "";
+    string body = "";
+    Headers?...;
+|};
+
+public type StoredProcedureList record {|
+    string _rid = "";
+    StoredProcedure[] storedProcedures = [];
+    int _count = 0;
+    Headers?...;
+|}; 
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();
