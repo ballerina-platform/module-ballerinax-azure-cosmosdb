@@ -25,6 +25,7 @@ Container container = {};
 ContainerList containerList = {};
 Document document = {};
 StoredProcedure storedPrcedure = {};
+UserDefinedFunction udf = {};
 
 @test:Config{
     groups: ["database"]
@@ -593,6 +594,99 @@ function test_deleteOneStoredProcedure(){
     } else {
         var output = "";
     }   
+}
+
+@test:Config{
+    groups: ["userDefinedFunction"], 
+    dependsOn: ["test_createDatabase", "test_createContainer"]
+}
+function test_createUDF(){
+    log:printInfo("ACTION : createUDF()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    string udfId = string `udf-${uuid.toString()}`;
+    string createUDFBody = "function tax(income) {\r\n    if(income == undefined) \r\n        throw 'no input';\r\n    if (income < 1000) \r\n        return income * 0.1;\r\n    else if (income < 10000) \r\n        return income * 0.2;\r\n    else\r\n        return income * 0.4;\r\n}"; 
+    UserDefinedFunction createUdf = {
+        id: udfId, 
+        body: createUDFBody
+    };
+    var result = AzureCosmosClient->createUserDefinedFunction(resourceProperty, createUdf);  
+    if result is UserDefinedFunction {
+        udf = <@untainted> result;
+    } else {
+        test:assertFail(msg = result.message());
+    }   
+}
+
+@test:Config{
+    groups: ["userDefinedFunction"], 
+    dependsOn: ["test_createDatabase", "test_createContainer", "test_createUDF"]
+}
+function test_replaceUDF(){
+    log:printInfo("ACTION : replaceUDF()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    string replaceUDFBody = "function taxIncome(income) {\r\n if(income == undefined) \r\n throw 'no input';\r\n if (income < 1000) \r\n return income * 0.1;\r\n else if (income < 10000) \r\n return income * 0.2;\r\n else\r\n return income * 0.4;\r\n}"; 
+    UserDefinedFunction replacementUdf = {
+        id: udf.id, 
+        body:replaceUDFBody
+    };
+    var result = AzureCosmosClient->replaceUserDefinedFunction(resourceProperty, replacementUdf);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }   
+}
+
+@test:Config{
+    groups: ["userDefinedFunction"], 
+    dependsOn: ["test_createDatabase",  "test_createContainer",  "test_createUDF"]
+}
+function test_listAllUDF(){
+    log:printInfo("ACTION : listAllUDF()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    var result = AzureCosmosClient->listUserDefinedFunctions(resourceProperty);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["userDefinedFunction"], 
+    dependsOn: ["test_createUDF",  "test_replaceUDF", "test_listAllUDF"]
+}
+function test_deleteUDF(){
+    log:printInfo("ACTION : deleteUDF()");
+
+    Client AzureCosmosClient = new(config);
+    string deleteUDFId = udf.id;
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    var result = AzureCosmosClient->deleteUserDefinedFunction(resourceProperty, deleteUDFId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }
 }
 
 function getConfigValue(string key) returns string {
