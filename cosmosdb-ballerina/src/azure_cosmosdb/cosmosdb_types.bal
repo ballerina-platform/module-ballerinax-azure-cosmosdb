@@ -27,6 +27,68 @@ public type DatabaseList record {
     Headers? reponseHeaders = ();
 };
 
+public type Container record {|
+    string id = "";
+    string? _rid = ();
+    string? _self = ();
+    boolean allowMaterializedViews?;
+    IndexingPolicy indexingPolicy?;
+    PartitionKey partitionKey?;
+    Headers?...;
+|};
+
+public type ContainerList record {|
+    string _rid = "";
+    Container[] containers = [];
+    Headers reponseHeaders?;
+    int _count = 0;
+|};
+
+public type IndexingPolicy record {|
+    string indexingMode = "";
+    boolean automatic = true;
+    IncludedPath[] includedPaths?;
+    IncludedPath[] excludedPaths?;
+|};
+
+public type IncludedPath record {|
+    string path = "";
+    Index[] indexes?;
+|};
+
+public type ExcludedPath record {|
+    string path?;
+|};
+
+public type Index record {|
+    string kind = "";
+    string dataType = "";
+    int precision?;
+|};
+
+public type PartitionKey record {|
+    string[] paths = [];
+    string kind = "";
+    int? 'version = ();
+|};
+
+public type PartitionKeyList record {|
+    string _rid = "";
+    PartitionKeyRange[] PartitionKeyRanges = [];
+    Headers reponseHeaders?;
+    int _count = 0;
+|};
+
+public type PartitionKeyRange record {|
+    string id = "";
+    string minInclusive = "";
+    string maxExclusive = "";
+    int ridPrefix?;
+    int throughputFraction?;
+    string status = "";
+    Headers reponseHeaders?;
+|};
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();
