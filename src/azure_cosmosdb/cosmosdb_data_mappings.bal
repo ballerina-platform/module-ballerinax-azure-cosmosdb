@@ -280,6 +280,7 @@ isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns 
     [payload,headers] = jsonPayload;
     permission.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     permission._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    permission._token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
     permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
     permission.'resource = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     if headers is Headers {
