@@ -220,7 +220,7 @@ string tokenVersion, string date) returns string?|error {
         check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");   
         return authorization;
     } else {     
-       // io:println("Decoding error");
+        return prepareError("Base64 Decoding error");
     }
 }
 
