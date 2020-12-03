@@ -100,6 +100,68 @@ HeaderParameters params) returns http:Request|error {
     return req;
 }
 
+isolated function setThroughputOrAutopilotHeader(http:Request req, ThroughputProperties? throughputProperties) returns 
+http:Request|error {
+    if throughputProperties is ThroughputProperties {
+        if throughputProperties.throughput is int &&  throughputProperties.maxThroughput is () {
+            req.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+        } else if throughputProperties.throughput is () &&  throughputProperties.maxThroughput != () {
+            req.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+        } else if throughputProperties.throughput is int &&  throughputProperties.maxThroughput != () {
+            return 
+            prepareError("Cannot set both x-ms-offer-throughput and x-ms-cosmos-offer-autopilot-settings headers at once");
+        }
+    }
+    return req;
+}
+
+# To set the optional header related to partitionkey value
+# + request - http:Request to set the header
+# + partitionKey - the value of the partition key
+# + return -  returns the header value in string.
+isolated function setPartitionKeyHeader(http:Request request, any partitionKey) returns http:Request {
+    request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKey.toString()}]`);
+    return request;
+}
+
+# To set the optional headers
+# + request - http:Request to set the header
+# + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
+# + return -  returns the header value in string.
+isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request {
+    if requestOptions.indexingDirective is string {
+        request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions.indexingDirective.toString());
+    }
+    if requestOptions.isUpsertRequest == true {
+        request.setHeader(IS_UPSERT_HEADER, requestOptions.isUpsertRequest.toString());
+    }
+    if requestOptions.maxItemCount is int{
+        request.setHeader(MAX_ITEM_COUNT_HEADER, requestOptions.maxItemCount.toString()); 
+    }
+    if requestOptions.continuationToken is string {
+        request.setHeader(CONTINUATION_HEADER, requestOptions.continuationToken.toString());
+    }
+    if requestOptions.consistancyLevel is string {
+        request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions.consistancyLevel.toString());
+    }
+    if requestOptions.sessionToken is string {
+        request.setHeader(SESSION_TOKEN_HEADER, requestOptions.sessionToken.toString());
+    }
+    if requestOptions.changeFeedOption is string {
+        request.setHeader(A_IM_HEADER, requestOptions.changeFeedOption.toString()); 
+    }
+    if requestOptions.ifNoneMatch is string {
+        request.setHeader(NON_MATCH_HEADER, requestOptions.ifNoneMatch.toString());
+    }
+    if requestOptions.PartitionKeyRangeId is string {
+        request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions.PartitionKeyRangeId.toString());
+    }
+    if requestOptions.PartitionKeyRangeId is string {
+        request.setHeader(IF_MATCH_HEADER, requestOptions.PartitionKeyRangeId.toString());
+    }
+    return request;
+}
+
 # To construct the hashed token signature for a token 
 # + return - If successful, returns string representing UTC date and time 
 #               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.  
@@ -123,21 +185,6 @@ string tokenVersion) returns string? {
     var token = generateTokenJava(java:fromString(verb),java:fromString(resourceType),java:fromString(resourceId),
     java:fromString(keyToken),java:fromString(tokenType),java:fromString(tokenVersion));
     return java:toString(token);
-}
-
-isolated function setThroughputOrAutopilotHeader(http:Request req, ThroughputProperties? throughputProperties) returns 
-http:Request|error {
-    if throughputProperties is ThroughputProperties {
-        if throughputProperties.throughput is int &&  throughputProperties.maxThroughput is () {
-            req.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-        } else if throughputProperties.throughput is () &&  throughputProperties.maxThroughput != () {
-            req.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-        } else if throughputProperties.throughput is int &&  throughputProperties.maxThroughput != () {
-            return 
-            prepareError("Cannot set both x-ms-offer-throughput and x-ms-cosmos-offer-autopilot-settings headers at once");
-        }
-    }
-    return req;
 }
 
 isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns @tainted [json, Headers]|error {
