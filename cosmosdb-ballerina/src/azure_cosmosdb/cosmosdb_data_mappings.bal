@@ -168,6 +168,32 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
     return ind; 
 }
 
+isolated function mapJsonToStoredProcedureType([json, Headers?] jsonPayload) returns @tainted StoredProcedure {
+    StoredProcedure sproc = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    sproc._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    sproc.id = payload.id != () ? payload.id.toString(): EMPTY_STRING;
+    sproc.body = payload.body !=() ? payload.body.toString(): EMPTY_STRING;
+    if headers is Headers {
+        sproc["reponseHeaders"] = headers;
+    }
+    return sproc;
+}
+
+isolated function mapJsonToStoredProcedureListType([json, Headers] jsonPayload) returns @tainted StoredProcedureList {
+    StoredProcedureList sproclist = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    sproclist._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+    sproclist.storedProcedures = convertToStoredProcedureArray(<json[]>payload.StoredProcedures);
+    sproclist._count = convertToInt(payload._count);
+    sproclist["reponseHeaders"] = headers;
+    return sproclist;
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -229,6 +255,16 @@ isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) r
         i = i + 1;
     }
     return documents;
+}
+
+isolated function convertToStoredProcedureArray(json[] sourceSprocArrayJsonObject) returns @tainted StoredProcedure[] { 
+    StoredProcedure[] sprocs = [];
+    int i = 0;
+    foreach json storedProcedure in sourceSprocArrayJsonObject { 
+        sprocs[i] = mapJsonToStoredProcedureType([storedProcedure,()]);
+        i = i + 1;
+    }
+    return sprocs;
 }
 
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {

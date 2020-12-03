@@ -119,6 +119,7 @@ public type StoredProcedureList record {|
     int _count = 0;
     Headers?...;
 |}; 
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();

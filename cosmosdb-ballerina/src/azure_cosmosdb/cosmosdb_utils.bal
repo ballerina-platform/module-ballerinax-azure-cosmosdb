@@ -1,8 +1,11 @@
 import ballerina/java;
 import ballerina/time;
 import ballerina/http;
+import ballerina/crypto;
+import ballerina/encoding;
 import ballerina/stringutils;
 import ballerina/lang.'string as str;
+import ballerina/lang.array as array; 
 
 # To construct resource type  which is used to create the hashed token signature 
 # + url - string parameter part of url to extract the resource type
@@ -87,7 +90,7 @@ HeaderParameters params) returns http:Request|error {
 
     string?|error date = getTime();
     if date is string {
-        string? token = generateTokenNew(params.verb,params.resourceType,params.resourceId,keyToken,tokenType,tokenVersion);
+        string? token = check generateToken(params.verb,params.resourceType,params.resourceId,keyToken,tokenType,tokenVersion,date);//
         req.setHeader(DATE_HEADER,date);
         if token is string {
             req.setHeader(AUTHORIZATION_HEADER,token);
@@ -188,12 +191,23 @@ isolated function getTime() returns string?|error {
 # + keyToken - master or resource token
 # + tokenType - denotes the type of token: master or resource.
 # + tokenVersion - denotes the version of the token, currently 1.0.
-# + return - If successful, returns string which is the  hashed token signature. Else returns ().  
-isolated function generateTokenNew(string verb, string resourceType, string resourceId, string keyToken, string tokenType, 
-string tokenVersion) returns string? {
-    var token = generateTokenJava(java:fromString(verb),java:fromString(resourceType),java:fromString(resourceId),
-    java:fromString(keyToken),java:fromString(tokenType),java:fromString(tokenVersion));
-    return java:toString(token);
+# + date - current GMT date and time
+# + return - If successful, returns string which is the  hashed token signature. Else returns (). 
+isolated function generateToken(string verb, string resourceType, string resourceId, string keyToken, string tokenType, 
+string tokenVersion, string date) returns string?|error {    
+    string authorization;
+    string payload = verb.toLowerAscii()+"\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
+    + date.toLowerAscii() +"\n" + "" + "\n";
+    var decoded = array:fromBase64(keyToken);
+    if decoded is byte[] {
+        byte[] digest = crypto:hmacSha256(payload.toBytes(),decoded);
+        string signature = array:toBase64(digest);
+        authorization = 
+        check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");   
+        return authorization;
+    } else {     
+       // io:println("Decoding error");
+    }
 }
 
 isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns @tainted [json, Headers]|error {

@@ -327,4 +327,89 @@ public  client class Client {
         json jsonresponse = check mapResponseToJson(response);
         return (jsonresponse);
     }
+
+    # To create a new stored procedure inside a collection
+    # A stored procedure is a piece of application logic written in JavaScript that 
+    # is registered and executed against a collection as a single transaction.
+    # + properties - object of type ResourceProperties
+    # + storedProcedure - object of type StoredProcedure
+    # + return - If successful, returns a StoredProcedure. Else returns error. 
+    public remote function createStoredProcedure(@tainted ResourceProperties properties, StoredProcedure 
+    storedProcedure) returns @tainted StoredProcedure|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<json>storedProcedure.cloneWithType(json));
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToStoredProcedureType(jsonResponse);    
+    }
+
+    # To replace a stored procedure with new one inside a collection
+    # + properties - object of type ResourceProperties
+    # + storedProcedure - object of type StoredProcedure
+    # + return - If successful, returns a StoredProcedure. Else returns error. 
+    public remote function replaceStoredProcedure(@tainted ResourceProperties properties, @tainted StoredProcedure 
+    storedProcedure) returns @tainted StoredProcedure|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedure.id]);
+        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json));
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToStoredProcedureType(jsonResponse);  
+    }
+
+    # To list all stored procedures inside a collection
+    # + properties - object of type ResourceProperties
+    # + return - If successful, returns a StoredProcedureList. Else returns error. 
+    public remote function listStoredProcedures(@tainted ResourceProperties properties) returns @tainted 
+    StoredProcedureList|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToStoredProcedureListType(jsonResponse);  
+    }
+
+    # To delete a stored procedure inside a collection
+    # + properties - object of type ResourceProperties
+    # + storedProcedureId - id of the stored procedure to delete
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
+    public remote function deleteStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId) returns 
+    @tainted boolean|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);        
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->delete(requestPath, request);
+        return check getDeleteResponse(response);
+    }
+
+    # To execute a stored procedure inside a collection
+    # ***********function only works correctly for string parameters************
+    # + properties - object of type ResourceProperties
+    # + storedProcedureId - id of the stored procedure to execute
+    # + parameters - The list of function paramaters to pass to javascript function as an array.
+    # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
+    public remote function executeStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId, 
+    any[]? parameters) returns @tainted json|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);       
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setTextPayload(parameters.toString());
+        var response = self.azureCosmosClient->post(requestPath, request);
+        json jsonreponse = check mapResponseToJson(response);
+        return jsonreponse;   
+    }
 }
