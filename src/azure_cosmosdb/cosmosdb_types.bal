@@ -158,6 +158,22 @@ public type UserList  record {|
     Headers? reponseHeaders = ();
 |};
 
+public type Permission record {|
+    string? _rid?;
+    string id = "";
+    string permissionMode = "";
+    string 'resource = "";
+    int ttl?;
+    Headers?...;
+|};
+
+public type PermissionList  record {|
+    string _rid = "";
+    Permission[] permissions = [];
+    int _count = 0;
+    Headers? reponseHeaders = ();
+|};
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();

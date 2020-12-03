@@ -1,4 +1,3 @@
-import ballerina/io;
 import ballerina/test;
 import ballerina/config;
 import ballerina/system;
@@ -713,7 +712,7 @@ function test_createUser(){
 
 @test:Config{
     groups: ["user"], 
-    dependsOn: ["test_createUser"]
+    dependsOn: ["test_createUser","test_getUser"]
 }
 function test_replaceUserId(){
     log:printInfo("ACTION : replaceUserId()");
@@ -739,8 +738,6 @@ function test_replaceUserId(){
 }
 function test_getUser(){
     log:printInfo("ACTION : getUser()");
-io:println(database.id);
-io:println(user.id);
 
     Client AzureCosmosClient = new(config);
     @tainted ResourceProperties resourceProperty = {

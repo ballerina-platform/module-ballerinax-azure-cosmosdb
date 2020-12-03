@@ -273,6 +273,33 @@ isolated function mapJsonToUserListType([json, Headers?] jsonPayload) returns @t
     return userlist;
 }
 
+isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns @tainted Permission {
+    Permission permission = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    permission.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    permission._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
+    permission.'resource = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
+    if headers is Headers {
+        permission["reponseHeaders"] = headers;
+    }
+    return permission;
+}
+
+isolated function mapJsonToPermissionListType([json, Headers?] jsonPayload) returns @tainted PermissionList {
+    PermissionList permissionList = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    permissionList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    permissionList.permissions = ConvertToPermissionArray(<json[]>payload.Permissions);
+    permissionList._count = convertToInt(payload._count);
+    permissionList["reponseHeaders"] = headers;
+    return permissionList;
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -384,4 +411,14 @@ isolated function ConvertToUserArray(json[] sourceTriggerArrayJsonObject) return
         i = i + 1;
     }
     return users;
+}
+
+isolated function ConvertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns @tainted Permission[] { 
+    Permission[] permissions = [];
+    int i = 0;
+    foreach json permission in sourcePermissionArrayJsonObject { 
+        permissions[i] = mapJsonToPermissionType([permission,()]);
+        i = i + 1;
+    }
+    return permissions;
 }

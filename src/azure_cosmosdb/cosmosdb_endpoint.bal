@@ -622,4 +622,90 @@ public  client class Client {
         var response = self.azureCosmosClient->delete(requestPath, request);
         return check getDeleteResponse(response);
     }
+
+    # To create a permission for a user 
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to which the permission belongs
+    # + permission - object of type Permission
+    # + return - If successful, returns a Permission. Else returns error.
+    public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission)
+    returns @tainted Permission|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        RESOURCE_PATH_PERMISSION]);       
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<@untainted><json>permission.cloneWithType(json));
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToPermissionType(jsonResponse);
+    }
+
+    # To replace an existing permission
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to which the permission belongs
+    # + permission - object of type Permission
+    # + return - If successful, returns a Permission. Else returns error.
+    public remote function replacePermission(@tainted ResourceProperties properties, string userId, @tainted 
+    Permission permission)
+    returns @tainted Permission|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        RESOURCE_PATH_PERMISSION, permission.id]);       
+        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<@untainted><json>permission.cloneWithType(json));
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToPermissionType(jsonResponse);
+    }
+
+    # To list permissions belong to a user
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to the permissions belong
+    # + return - If successful, returns a PermissionList. Else returns error.
+    public remote function listPermissions(@tainted ResourceProperties properties, string userId) returns @tainted 
+    PermissionList|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        RESOURCE_PATH_PERMISSION]);       
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToPermissionListType(jsonResponse);
+    }
+
+    # To get information of a permission belongs to a user
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to the permission belongs
+    # + permissionId - object of type Permission
+    # + return - If successful, returns a Permission. Else returns error.
+    public remote function getPermission(@tainted ResourceProperties properties, string userId, string permissionId)
+    returns @tainted Permission|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        RESOURCE_PATH_PERMISSION, permissionId]);       
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToPermissionType(jsonResponse);
+    }
+
+    # To delete a permission belongs to a user
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to the permission belongs
+    # + permissionId - id of the permission to delete
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
+    public remote function deletePermission(@tainted ResourceProperties properties, string userId, string permissionId) 
+    returns @tainted boolean|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        RESOURCE_PATH_PERMISSION, permissionId]);       
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->delete(requestPath, request);
+        return check getDeleteResponse(response);
+    }
 }
