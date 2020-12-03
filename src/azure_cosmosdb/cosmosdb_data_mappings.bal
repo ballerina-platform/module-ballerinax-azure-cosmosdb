@@ -194,6 +194,32 @@ isolated function mapJsonToStoredProcedureListType([json, Headers] jsonPayload) 
     return sproclist;
 }
 
+isolated function mapJsonToUserDefinedFunctionType([json, Headers?] jsonPayload) returns @tainted UserDefinedFunction {
+    UserDefinedFunction udf = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    udf._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    udf.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    udf.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
+    if headers is Headers {
+        udf["reponseHeaders"] = headers;
+    }
+    return udf;
+}
+
+isolated function mapJsonToUserDefinedFunctionListType([json, Headers] jsonPayload) returns @tainted UserDefinedFunctionList|error {
+    UserDefinedFunctionList udflist = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    udflist._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    udflist.UserDefinedFunctions = userDefinedFunctionArray(<json[]>payload.UserDefinedFunctions);
+    udflist._count = convertToInt(payload._count);
+    udflist["reponseHeaders"] = headers;
+    return udflist;
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -265,6 +291,16 @@ isolated function convertToStoredProcedureArray(json[] sourceSprocArrayJsonObjec
         i = i + 1;
     }
     return sprocs;
+}
+
+isolated function userDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunction[] { 
+    UserDefinedFunction[] udfs = [];
+    int i = 0;
+    foreach json userDefinedFunction in sourceUdfArrayJsonObject { 
+        udfs[i] = mapJsonToUserDefinedFunctionType([userDefinedFunction,()]);
+        i = i + 1;
+    }
+    return udfs;
 }
 
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {

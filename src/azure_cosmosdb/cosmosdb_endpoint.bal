@@ -93,7 +93,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-        # To create a collection inside a database
+    # To create a collection inside a database
     # + properties - object of type ResourceProperties
     # + partitionKey - 
     # + indexingPolicy -
@@ -411,5 +411,70 @@ public  client class Client {
         var response = self.azureCosmosClient->post(requestPath, request);
         json jsonreponse = check mapResponseToJson(response);
         return jsonreponse;   
+    }
+
+    # To create a new user defined function inside a collection
+    # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
+    # + properties - object of type ResourceProperties
+    # + userDefinedFunction - object of type UserDefinedFunction
+    # + return - If successful, returns a UserDefinedFunction. Else returns error. 
+    public remote function createUserDefinedFunction(@tainted ResourceProperties properties, 
+    UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_UDF]);       
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<json>userDefinedFunction.cloneWithType(json));
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserDefinedFunctionType(jsonResponse);      
+    }
+
+    # To replace an existing user defined function inside a collection
+    # + properties - object of type ResourceProperties
+    # + userDefinedFunction - object of type UserDefinedFunction
+    # + return - If successful, returns a UserDefinedFunction. Else returns error. 
+    public remote function replaceUserDefinedFunction(@tainted ResourceProperties properties, 
+    @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_UDF, userDefinedFunction.id]);      
+        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json));
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserDefinedFunctionType(jsonResponse);      
+    }
+
+    # To get a list of existing user defined functions inside a collection
+    # + properties - object of type ResourceProperties
+    # + return - If successful, returns a UserDefinedFunctionList. Else returns error. 
+    public remote function listUserDefinedFunctions(@tainted ResourceProperties properties) returns @tainted 
+    UserDefinedFunctionList|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_UDF]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserDefinedFunctionListType(jsonResponse);      
+    }
+
+    # To delete an existing user defined function inside a collection
+    # + properties - object of type ResourceProperties
+    # + userDefinedFunctionid - id of UDF to delete
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
+    public remote function deleteUserDefinedFunction(@tainted ResourceProperties properties, string userDefinedFunctionid) 
+    returns @tainted boolean|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_UDF, userDefinedFunctionid]);        
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->delete(requestPath, request);
+        return check getDeleteResponse(response);
     }
 }

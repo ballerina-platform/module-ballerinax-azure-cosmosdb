@@ -120,6 +120,18 @@ public type StoredProcedureList record {|
     Headers?...;
 |}; 
 
+public type UserDefinedFunction record {|
+    *StoredProcedure;
+    Headers?...;
+|};
+
+public type UserDefinedFunctionList record {|
+    string _rid = "";
+    UserDefinedFunction[] UserDefinedFunctions = [];
+    int _count = 0;
+    Headers?...;
+|};
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();
