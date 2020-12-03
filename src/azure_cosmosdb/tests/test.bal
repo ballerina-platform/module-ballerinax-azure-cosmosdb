@@ -1,4 +1,4 @@
-//import ballerina/io;
+import ballerina/io;
 import ballerina/test;
 import ballerina/config;
 import ballerina/system;
@@ -26,6 +26,7 @@ ContainerList containerList = {};
 Document document = {};
 StoredProcedure storedPrcedure = {};
 UserDefinedFunction udf = {};
+User user = {};
 
 @test:Config{
     groups: ["database"]
@@ -687,6 +688,121 @@ function test_deleteUDF(){
     } else {
         var output = "";
     }
+}
+
+@test:Config{
+    groups: ["user"], 
+    dependsOn: ["test_createDatabase"]
+}
+function test_createUser(){
+    log:printInfo("ACTION : createUser()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string userId = string `user-${uuid.toString()}`;
+    var result = AzureCosmosClient->createUser(resourceProperty, userId);  
+    if result is User {
+        user = <@untainted>result;
+    } else {
+        test:assertFail(msg = result.message());
+    }   
+}
+
+@test:Config{
+    groups: ["user"], 
+    dependsOn: ["test_createUser"]
+}
+function test_replaceUserId(){
+    log:printInfo("ACTION : replaceUserId()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    string newReplaceId = string `user-${uuid.toString()}`;
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string replaceUser = user.id;
+    var result = AzureCosmosClient->replaceUserId(resourceProperty, replaceUser, newReplaceId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["user"], 
+    dependsOn: ["test_createUser"]
+}
+function test_getUser(){
+    log:printInfo("ACTION : getUser()");
+io:println(database.id);
+io:println(user.id);
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    string getUserId = user.id;
+    var result = AzureCosmosClient->getUser(resourceProperty, getUserId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }  
+}
+
+@test:Config{
+    groups: ["user"], 
+    dependsOn: ["test_createUser"]
+}
+function test_listUsers(){
+    log:printInfo("ACTION : listUsers()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    var result = AzureCosmosClient->listUsers(resourceProperty);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    } 
+}
+
+@test:Config{
+    groups: ["user"], 
+    dependsOn: [
+        "test_createUser",  
+        "test_replaceUserId",  
+        "test_getUser",  
+        "test_listUsers", 
+        "test_createPermission", 
+        "test_replacePermission", 
+        "test_listPermissions", 
+        "test_getPermission", 
+        "test_deletePermission"
+    ],
+    enable: false
+}
+function test_deleteUser(){
+    log:printInfo("ACTION : deleteUser()");
+
+    Client AzureCosmosClient = new(config);
+    string deleteUserId = user.id;
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id
+    };
+    var result = AzureCosmosClient->deleteUser(resourceProperty, deleteUserId);  
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    } 
 }
 
 function getConfigValue(string key) returns string {

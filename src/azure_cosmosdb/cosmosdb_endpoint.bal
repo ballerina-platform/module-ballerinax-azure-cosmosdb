@@ -542,4 +542,84 @@ public  client class Client {
         var response = self.azureCosmosClient->delete(requestPath, request);
         return check getDeleteResponse(response);
     }
+
+    # To create a user for a database
+    # + properties - object of type ResourceProperties
+    # + userId - the id which should be given to the new user
+    # + return - If successful, returns a User. Else returns error.
+    public remote function createUser(@tainted ResourceProperties properties, string userId) returns @tainted 
+    User|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);       
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        json reqBody = {
+            id:userId
+        };
+        request.setJsonPayload(reqBody);
+        var response = self.azureCosmosClient->post(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserType(jsonResponse);     
+    }
+    
+    # To replace the id of an existing user for a database
+    # + properties - object of type ResourceProperties
+    # + userId - the id which should be given to the new user
+    # + newUserId - the new id for the user
+    # + return - If successful, returns a User. Else returns error.
+    public remote function replaceUserId(@tainted ResourceProperties properties, string userId, string newUserId) returns 
+    @tainted User|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);       
+        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        json reqBody = {
+            id:newUserId
+        };
+        request.setJsonPayload(reqBody);
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserType(jsonResponse); 
+    }
+
+    # To get information of a user from a database
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to get information
+    # + return - If successful, returns a User. Else returns error.
+    public remote function getUser(@tainted ResourceProperties properties, string userId) returns @tainted User|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserType(jsonResponse);      
+    }
+
+    # To list users in a database
+    # + properties - object of type ResourceProperties
+    # + return - If successful, returns a UserList. Else returns error.
+    public remote function listUsers(@tainted ResourceProperties properties) returns @tainted UserList|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserListType(jsonResponse);     
+    }
+
+    # To delete a user from a database
+    # + properties - object of type ResourceProperties
+    # + userId - the id of user to delete
+    # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
+    public remote function deleteUser(@tainted ResourceProperties properties, string userId) returns @tainted 
+    boolean|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);       
+        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->delete(requestPath, request);
+        return check getDeleteResponse(response);
+    }
 }

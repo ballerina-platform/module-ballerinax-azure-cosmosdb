@@ -146,6 +146,18 @@ public type TriggerList record {|
     Headers?...;
 |};
 
+public type User  record {|
+    *Database;
+    Headers?...;
+|};
+
+public type UserList  record {|
+    string _rid = "";
+    User[] users = [];
+    int _count = 0;
+    Headers? reponseHeaders = ();
+|};
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();

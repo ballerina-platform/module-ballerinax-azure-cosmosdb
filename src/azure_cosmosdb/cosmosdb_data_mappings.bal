@@ -248,6 +248,31 @@ isolated function mapJsonToTriggerListType([json, Headers] jsonPayload) returns 
     return triggerlist;
 }
 
+isolated function mapJsonToUserType([json, Headers?] jsonPayload) returns @tainted User {
+    User user = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    user._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    if headers is Headers {
+        user["reponseHeaders"] = headers;
+    }
+    return user;
+}
+
+isolated function mapJsonToUserListType([json, Headers?] jsonPayload) returns @tainted UserList {
+    UserList userlist = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    userlist._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    userlist.users = ConvertToUserArray(<json[]>payload.Users);
+    userlist._count = convertToInt(payload._count);
+    userlist["reponseHeaders"] = headers;
+    return userlist;
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -349,4 +374,14 @@ isolated function ConvertToTriggerArray(json[] sourceTriggerArrayJsonObject) ret
         i = i + 1;
     }
     return triggers;
+}
+
+isolated function ConvertToUserArray(json[] sourceTriggerArrayJsonObject) returns @tainted User[] { 
+    User[] users = [];
+    int i = 0;
+    foreach json user in sourceTriggerArrayJsonObject { 
+        users[i] = mapJsonToUserType([user,()]);
+        i = i + 1;
+    }
+    return users;
 }
