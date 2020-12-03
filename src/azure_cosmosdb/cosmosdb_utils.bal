@@ -1,4 +1,3 @@
-import ballerina/java;
 import ballerina/time;
 import ballerina/http;
 import ballerina/crypto;
@@ -298,9 +297,3 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headername
         return ();
     }
 }
-
-isolated function generateTokenJava(handle verb, handle resourceType, handle resourceId, handle keyToken, handle tokenType, 
-handle tokenVersion) returns handle = @java:Method {
-    name: "generateToken",
-    'class: "org.ballerinalang.cosmosdb.AuthToken"
-} external;
