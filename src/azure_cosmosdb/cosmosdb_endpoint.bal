@@ -708,4 +708,61 @@ public  client class Client {
         var response = self.azureCosmosClient->delete(requestPath, request);
         return check getDeleteResponse(response);
     }
+
+        # To get information of offers inside resource
+    # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
+    # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
+    # levels and pre-defined performance levels. 
+    # + return - If successful, returns a OfferList. Else returns error.
+    public remote function listOffers() returns @tainted OfferList|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);       
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToOfferListType(jsonResponse);
+    }
+
+    # To get information of an offer
+    # + offerId - the id of offer
+    # + return - If successful, returns a Offer. Else returns error.
+    public remote function getOffer(string offerId) returns @tainted Offer|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_OFFER, offerId]);       
+        HeaderParameters header = mapOfferHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        var response = self.azureCosmosClient->get(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToOfferType(jsonResponse);
+    }
+
+    # To replace an existing offer
+    # + offer - an object of type Offer
+    # + return - If successful, returns a Offer. Else returns error.
+    public remote function replaceOffer(Offer offer) returns @tainted Offer|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_OFFER, offer.id]);       
+        HeaderParameters header = mapOfferHeaderType(PUT, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(offer);
+        var response = self.azureCosmosClient->put(requestPath, request);
+        [json, Headers] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToOfferType(jsonResponse);
+    }
+
+    # To get information of a user from a database
+    # + cqlQuery - the CQL query to execute
+    # + return - If successful, returns a json. Else returns error.
+    public remote function queryOffer(Query cqlQuery) returns @tainted json|error {
+        http:Request request = new;
+        string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);
+        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
+        request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
+        request.setJsonPayload(<json>cqlQuery.cloneWithType(json));
+        request = check setHeadersForQuery(request);
+        var response = self.azureCosmosClient->post(requestPath, request);
+        json jsonresponse = check mapResponseToJson(response);
+        return (jsonresponse);
+    }
 }

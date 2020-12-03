@@ -175,6 +175,24 @@ public type PermissionList  record {|
     Headers? reponseHeaders = ();
 |};
 
+public type Offer record {|
+    string id = "";
+    string _rid = "";
+    string offerVersion = "";
+    string? offerType = ();  
+    json content = {};
+    string 'resource = "";
+    string offerResourceId = "";
+    Headers?...;
+|};
+
+public type OfferList record {|
+    string _rid = "";
+    Offer[] offers = [];
+    int _count = 0;
+    Headers?...;
+|};
+
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();

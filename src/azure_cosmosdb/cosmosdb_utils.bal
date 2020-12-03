@@ -24,6 +24,21 @@ isolated function getResourceType(string url) returns string {
     return resourceType;
 }
 
+
+# To construct resource id for offers which is used to create the hashed token signature 
+# + url - string parameter part of url to extract the resource id
+# + return - Returns the resource id extracted from url as a string 
+isolated function getResourceIdForOffer(string url) returns string {
+    string resourceId = EMPTY_STRING;
+    string[] urlParts = stringutils:split(url, FORWARD_SLASH);
+    int count = urlParts.length()-1;
+    int? i = str:lastIndexOf(url, FORWARD_SLASH);
+    if i is int {
+        resourceId = str:substring(url, i+1);
+    }  
+    return resourceId.toLowerAscii();
+}
+
 # To construct resource id  which is used to create the hashed token signature 
 # + url - string parameter part of url to extract the resource id
 # + return - Returns the resource id extracted from url as a string 

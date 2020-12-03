@@ -8,6 +8,14 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
     return params;
 }
 
+isolated function mapOfferHeaderType(string httpVerb, string url) returns HeaderParameters {
+    HeaderParameters params = {};
+    params.verb = httpVerb;
+    params.resourceType = getResourceType(url);
+    params.resourceId = getResourceIdForOffer(url);
+    return params;
+}
+
 isolated function mapResponseHeadersToObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error 
 {
     Headers responseHeaders = {};
@@ -301,6 +309,36 @@ isolated function mapJsonToPermissionListType([json, Headers?] jsonPayload) retu
     return permissionList;
 }
 
+isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tainted Offer {
+    Offer offer = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    offer._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    offer.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    offer.offerVersion = payload.offerVersion != () ? payload.offerVersion.toString() : EMPTY_STRING;
+    offer.offerType = payload.offerType != () ? payload.offerType.toString() : EMPTY_STRING;
+    offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
+    offer.'resource = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
+    offer.offerResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
+    if headers is Headers {
+        offer["reponseHeaders"] = headers;
+    }
+    return offer;
+}
+
+isolated function mapJsonToOfferListType([json, Headers?] jsonPayload) returns @tainted OfferList {
+    OfferList offerList = {};
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    offerList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    offerList.offers = ConvertToOfferArray(<json[]>payload.Offers);
+    offerList._count = convertToInt(payload._count);
+    offerList["reponseHeaders"] = headers;
+    return offerList;
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -422,4 +460,14 @@ isolated function ConvertToPermissionArray(json[] sourcePermissionArrayJsonObjec
         i = i + 1;
     }
     return permissions;
+}
+
+isolated function ConvertToOfferArray(json[] sourceOfferArrayJsonObject) returns @tainted Offer[] { 
+    Offer[] offers = [];
+    int i = 0;
+    foreach json offer in sourceOfferArrayJsonObject { 
+        offers[i] = mapJsonToOfferType([offer,()]);
+        i = i + 1;
+    }
+    return offers;
 }
