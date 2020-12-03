@@ -78,7 +78,7 @@ public  client class Client {
         request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        return mapJsonToDbList(jsonresponse); 
+        return mapJsonToDatabasebList(jsonresponse); 
     }
 
     # To delete a given database inside a resource
@@ -114,7 +114,7 @@ public  client class Client {
         request.setJsonPayload(<@untainted>finalc);
         var response = self.azureCosmosClient->post(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToCollectionType(jsonreponse);
+        return mapJsonToContainerType(jsonreponse);
     }
 
     # To create a database inside a resource
@@ -152,7 +152,7 @@ public  client class Client {
         request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToCollectionListType(jsonreponse);
+        return mapJsonToContainerListType(jsonreponse);
     }
 
     # To retrive one collection inside a database
@@ -166,7 +166,7 @@ public  client class Client {
         request = check setHeaders(request, self.host, self.masterKey, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToCollectionType(jsonreponse);
+        return mapJsonToContainerType(jsonreponse);
     }
 
     # To delete one collection inside a database

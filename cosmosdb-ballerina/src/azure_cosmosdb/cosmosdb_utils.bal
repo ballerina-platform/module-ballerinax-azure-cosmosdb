@@ -195,6 +195,32 @@ isolated function createResponseFailMessage(http:Response httpResponse, json err
     return prepareError(errorMessage);
 }
 
+# Convert json string values to boolean
+# + value - json value which has reprsents boolean value
+# + return - boolean value of specified json
+isolated function convertToBoolean(json|error value) returns boolean { 
+    if (value is json) {
+        boolean|error result = 'boolean:fromString(value.toString());
+        if (result is boolean) {
+            return result;
+        }
+    }
+    return false;
+}
+
+# Convert json string values to int
+# + value - json value which has reprsents int value
+# + return - int value of specified json
+isolated function convertToInt(json|error value) returns int {
+    if (value is json) {
+        int|error result = 'int:fromString(value.toString());
+        if (result is int) {
+            return result;
+        }
+    }
+    return 0;
+}
+
 isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string? {
     if httpResponse.hasHeader(headername) {
         return httpResponse.getHeader(headername);

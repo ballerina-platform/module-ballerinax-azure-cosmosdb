@@ -39,7 +39,7 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
     return db;
 }
 
-isolated function mapJsonToDbList([json, Headers] jsonPayload) returns @tainted DatabaseList {
+isolated function mapJsonToDatabasebList([json, Headers] jsonPayload) returns @tainted DatabaseList {
     json payload;
     Headers headers;
     [payload,headers] = jsonPayload;
@@ -50,6 +50,84 @@ isolated function mapJsonToDbList([json, Headers] jsonPayload) returns @tainted 
     return dbl;
 }
 
+isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @tainted Container {
+    json payload;
+    Headers? headers;
+    [payload,headers] = jsonPayload;
+    Container coll = {};
+    coll.id = payload.id.toString();
+    coll._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    coll._self = payload._self != ()? payload._self.toString() : EMPTY_STRING;
+    coll.allowMaterializedViews = convertToBoolean(payload.allowMaterializedViews);
+    coll.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
+    coll.partitionKey = convertJsonToPartitionKey(<json>payload.partitionKey);
+    if headers is Headers {
+        coll["reponseHeaders"] = headers;
+    }
+    return coll;
+}
+
+isolated function mapJsonToContainerListType([json, Headers] jsonPayload) returns @tainted ContainerList {
+    ContainerList cll = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    cll._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+    cll._count = convertToInt(payload._count);
+    cll.containers = convertToContainerArray(<json[]>payload.DocumentCollections);
+    cll.reponseHeaders = headers;
+    return cll;
+}
+
+isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
+    IndexingPolicy indp = {};
+    indp.indexingMode = jsonPayload.indexingMode != ()? jsonPayload.indexingMode.toString() : EMPTY_STRING;
+    indp.automatic = convertToBoolean(jsonPayload.automatic);
+    indp.includedPaths =  convertToIncludedPathsArray(<json[]>jsonPayload.includedPaths);
+    indp.excludedPaths =  convertToIncludedPathsArray(<json[]>jsonPayload.excludedPaths);
+    return indp;
+}
+
+isolated function convertJsonToPartitionKey(json jsonPayload) returns @tainted PartitionKey {
+    PartitionKey pk = {};
+    pk.paths = convertToStringArray(<json[]>jsonPayload.paths);
+    pk.kind = jsonPayload.kind != () ? jsonPayload.kind.toString(): EMPTY_STRING;
+    pk.'version = convertToInt(jsonPayload.'version);
+    return pk;
+}
+
+isolated function mapJsonToPartitionKeyType([json, Headers] jsonPayload) returns @tainted PartitionKeyList {
+    PartitionKeyList pkl = {};
+    PartitionKeyRange pkr = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    pkl._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+    pkl.PartitionKeyRanges = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
+    pkl.reponseHeaders = headers;
+    pkl._count = convertToInt(payload._count);
+    return pkl;
+}
+
+isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted IncludedPath {
+    IncludedPath ip = {};
+    ip.path = jsonPayload.path.toString();
+    if jsonPayload.indexes is error {
+        return ip;
+    } else {
+        ip.indexes = convertToIndexArray(<json[]>jsonPayload.indexes);
+    }
+    return ip;
+}
+
+isolated function mapJsonToIndexType(json jsonPayload) returns Index {
+    Index ind = {};
+    ind.kind = jsonPayload.kind != () ? jsonPayload.kind.toString(): EMPTY_STRING;
+    ind.dataType = jsonPayload.dataType.toString();
+    ind.precision = convertToInt(jsonPayload.precision);
+    return ind; 
+}
+
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
     Database[] databases = [];
     int i = 0;
@@ -58,4 +136,57 @@ isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) r
         i = i + 1;
     }
     return databases;
+}
+
+isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
+    IncludedPath[] includedpaths = [];
+    int i = 0;
+    foreach json jsonPath in sourcePathArrayJsonObject {
+        includedpaths[i] = <IncludedPath>mapJsonToIncludedPathsType(jsonPath);
+        i = i + 1;
+    }
+    return includedpaths;
+}
+
+isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns @tainted PartitionKeyRange[] { 
+    PartitionKeyRange[] pkranges = [];
+    int i = 0;
+    foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
+        pkranges[i].id = jsonPartitionKey.id.toString();
+        pkranges[i].minInclusive = jsonPartitionKey.minInclusive.toString();
+        pkranges[i].maxExclusive = jsonPartitionKey.maxExclusive.toString();
+        pkranges[i].status = jsonPartitionKey.status.toString();
+        i = i + 1;
+    }
+    return pkranges;
+}
+
+isolated function convertToIndexArray(json[] sourcePathArrayJsonObject) returns @tainted Index[] {
+    Index[] indexes = [];
+    int i = 0;
+    foreach json index in sourcePathArrayJsonObject {
+        indexes[i] = mapJsonToIndexType(index);
+        i = i + 1;
+    }
+    return indexes;
+}
+
+isolated function convertToContainerArray(json[] sourceCollectionArrayJsonObject) returns @tainted Container[] {
+    Container[] collections = [];
+    int i = 0;
+    foreach json jsonCollection in sourceCollectionArrayJsonObject {
+        collections[i] = mapJsonToContainerType([jsonCollection,()]);
+        i = i + 1;
+    }
+    return collections;
+}
+
+isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {
+    string[] strings = [];
+    int i = 0;
+    foreach json str in sourceArrayJsonObject {
+        strings[i] = str.toString();
+        i = i + 1;
+    }
+    return strings;
 }
