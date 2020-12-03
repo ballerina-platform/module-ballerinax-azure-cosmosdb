@@ -21,6 +21,8 @@ AzureCosmosConfiguration config = {
 
 Database database = {};
 DatabaseList databaseList = {};
+Container container = {};
+ContainerList containerList = {};
 
 @test:Config{
     groups: ["database"]
@@ -196,6 +198,129 @@ function test_deleteDatabase(){
     } else {
         var output = "";
     }
+}
+
+@test:Config{
+    groups: ["container"], 
+    dependsOn: ["test_createDatabase"]
+}
+function test_createContainer(){
+    log:printInfo("ACTION : createContainer()");
+
+    Client AzureCosmosClient = new(config);
+    var uuid = createRandomUUID();
+    @tainted ResourceProperties propertiesNewCollection = {
+            databaseId: database.id, 
+            containerId: string `container-${uuid.toString()}`
+    };
+    PartitionKey pk = {
+        paths: ["/AccountNumber"], 
+        kind :"Hash", 
+        'version: 2
+    };
+    var result = AzureCosmosClient->createContainer(propertiesNewCollection, pk);
+    if (result is Container) {
+        container = <@untainted>result;
+    } else {
+        test:assertFail(msg = result.message());
+    } 
+}
+
+@test:Config{
+    groups: ["container"], 
+    dependsOn: ["test_createDatabase",  "test_createContainer"]
+}
+function test_getOneContainer(){
+    log:printInfo("ACTION : getOneContainer()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties getCollection = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    var result = AzureCosmosClient->getContainer(getCollection);
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }
+}
+
+@test:Config{
+    groups: ["container"], 
+    dependsOn: ["test_createDatabase"]
+}
+function test_getAllContainers(){
+    log:printInfo("ACTION : getAllContainers()");
+
+    Client AzureCosmosClient = new(config);
+    var result = AzureCosmosClient->getAllContainers(database.id);
+    if (result is ContainerList) {
+        containerList = <@untainted>result;
+    } else {
+        test:assertFail(msg = result.message());
+    }
+}
+
+@test:Config{
+    groups: ["container"], 
+    dependsOn: [
+        "test_getAllContainers", 
+        "test_GetPartitionKeyRanges", 
+        "test_createDocument", 
+        "test_getDocumentList", 
+        "test_GetOneDocument", 
+        "test_deleteDocument", 
+        "test_queryDocuments", 
+        "test_createStoredProcedure", 
+        "test_replaceStoredProcedure", 
+        "test_getAllStoredProcedures", 
+        "test_executeOneStoredProcedure", 
+        "test_deleteOneStoredProcedure", 
+        "test_createUDF", 
+        "test_replaceUDF", 
+        "test_listAllUDF", 
+        "test_deleteUDF", 
+        "test_createTrigger", 
+        "test_replaceTrigger", 
+        "test_listTriggers", 
+        "test_deleteTrigger"
+    ], 
+    enable: false
+}
+function test_deleteContainer(){
+    log:printInfo("ACTION : deleteContainer()");
+
+    Client AzureCosmosClient = new(config); 
+    @tainted ResourceProperties deleteCollectionData = {
+            databaseId: database.id, 
+            containerId: container.id
+    };
+    var result = AzureCosmosClient->deleteContainer(deleteCollectionData);
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }
+}
+
+@test:Config{
+    groups: ["partitionKey"]
+}
+function test_GetPartitionKeyRanges(){
+    log:printInfo("ACTION : GetPartitionKeyRanges()");
+
+    Client AzureCosmosClient = new(config);
+    @tainted ResourceProperties resourceProperties = {
+            databaseId: database.id, 
+            containerId: container.id
+    };
+    var result = AzureCosmosClient->getPartitionKeyRanges(resourceProperties);
+    if result is error {
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+    }   
 }
 
 function getConfigValue(string key) returns string {
