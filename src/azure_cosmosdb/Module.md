@@ -98,10 +98,6 @@ public function main() {
     var result = AzureCosmosClient->queryDocuments(properties, [1234], cqlQuery);     
     log:printInfo("Returned Filtered documents '" + result.toString() + "'.");
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 6279ae72784ce2febe1b43b0fe480ea20f157768
     log:printInfo("------------------ Delete Document -------------------");
     var result = AzureCosmosClient->deleteDocument(properties, document.id, [1234]);  
 
