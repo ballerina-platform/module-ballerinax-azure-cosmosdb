@@ -645,14 +645,21 @@ public  client class Client {
     # + properties - object of type ResourceProperties
     # + userId - the id of user to which the permission belongs
     # + permission - object of type Permission
+    # + validityPeriod - optional validity period parameter which specify  ttl
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission)
-    returns @tainted Permission|error {
+    public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission, 
+    int? validityPeriod = ()) returns @tainted Permission|error {
+        if self.keyType == TOKEN_TYPE_RESOURCE {
+            return prepareError("Enter a valid master key and token type should be master key");
+        }
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        if validityPeriod is int {
+            request = check setExpiryHeader(request,validityPeriod);
+        }
         request.setJsonPayload(<@untainted><json>permission.cloneWithType(json));
         var response = self.azureCosmosClient->post(requestPath, request);
         [json, Headers] jsonResponse = check mapResponseToTuple(response);
