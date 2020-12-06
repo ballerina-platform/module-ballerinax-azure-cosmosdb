@@ -145,7 +145,7 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     if requestOptions.isUpsertRequest == true {
         request.setHeader(IS_UPSERT_HEADER, requestOptions.isUpsertRequest.toString());
     }
-    if requestOptions.maxItemCount is int{
+    if requestOptions.maxItemCount is int {
         request.setHeader(MAX_ITEM_COUNT_HEADER, requestOptions.maxItemCount.toString()); 
     }
     if requestOptions.continuationToken is string {

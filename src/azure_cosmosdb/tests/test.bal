@@ -1314,7 +1314,7 @@ function test_replaceOffer(){
         offerVersion: "V2", 
         offerType: "Invalid",    
         content: {  
-            "offerThroughput": 600
+            "offerThroughput": 400
         },  
         'resource: string `dbs/${database?._rid.toString()}/colls/${container?._rid.toString()}/`,  
         offerResourceId: string `${container?._rid.toString()}`, 
@@ -1338,7 +1338,7 @@ function test_replaceOfferWithOptionalParameter(){
     Offer replaceOfferBody = {
         offerVersion: "V2", 
         content: {  
-            "offerThroughput": 600
+            "offerThroughput": 400
         },  
         'resource: string `dbs/${database?._rid.toString()}/colls/${container?._rid.toString()}/`,  
         offerResourceId: string `${container?._rid.toString()}`, 
