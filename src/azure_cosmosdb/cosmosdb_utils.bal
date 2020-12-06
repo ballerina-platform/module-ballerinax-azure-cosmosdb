@@ -101,23 +101,30 @@ HeaderParameters params) returns http:Request|error {
     return request;
 }
 
-isolated function setThroughputOrAutopilotHeader(http:Request req, ThroughputProperties? throughputProperties) returns 
+isolated function setThroughputOrAutopilotHeader(http:Request request, ThroughputProperties? throughputProperties) returns 
 http:Request|error {
-    if throughputProperties is ThroughputProperties {
+  if throughputProperties is ThroughputProperties {
         if throughputProperties.throughput is int &&  throughputProperties.maxThroughput is () {
-            req.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+            if <int>throughputProperties.throughput >= 400 {
+                request.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+            } else {
+                return prepareError("The minimum manual throughput is 400 RU/s");
+            }
         } else if throughputProperties.throughput is () &&  throughputProperties.maxThroughput != () {
-            req.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+            request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
         } else if throughputProperties.throughput is int &&  throughputProperties.maxThroughput != () {
             return 
-            prepareError("Cannot set both x-ms-offer-throughput and x-ms-cosmos-offer-autopilot-settings headers at once");
+            prepareError("Cannot set both throughput and maxThroughput headers at once");
         }
     }
-    return req;
+    return request;
 }
 
-isolated function setPartitionKeyHeader(http:Request request, any partitionKey) returns http:Request {
-    request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKey.toString()}]`);
+isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) returns http:Request|error {
+    if partitionKey is () {
+        return prepareError("Partition key values are null");
+    }
+    request.setHeader(PARTITION_KEY_HEADER, string `${partitionKey.toString()}`);
     return request;
 }
 
@@ -127,21 +134,31 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
     return request;
 }
 
-isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request {
+isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request|error {
     if requestOptions.indexingDirective is string {
-        request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions.indexingDirective.toString());
+        if requestOptions.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions.indexingDirective == INDEXING_TYPE_EXCLUDE {
+            request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions.indexingDirective.toString());
+        } else {
+            return prepareError("Indexing directive should be either Exclude or Include");
+        }
     }
     if requestOptions.isUpsertRequest == true {
         request.setHeader(IS_UPSERT_HEADER, requestOptions.isUpsertRequest.toString());
     }
-    if requestOptions.maxItemCount is int {
+    if requestOptions.maxItemCount is int{
         request.setHeader(MAX_ITEM_COUNT_HEADER, requestOptions.maxItemCount.toString()); 
     }
     if requestOptions.continuationToken is string {
         request.setHeader(CONTINUATION_HEADER, requestOptions.continuationToken.toString());
     }
     if requestOptions.consistancyLevel is string {
-        request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions.consistancyLevel.toString());
+        if requestOptions.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions.consistancyLevel == 
+        CONSISTANCY_LEVEL_BOUNDED || requestOptions.consistancyLevel == CONSISTANCY_LEVEL_SESSION || 
+        requestOptions.consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL {
+            request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions.consistancyLevel.toString());
+        } else {
+            return prepareError("Consistacy level should be one of Strong, Bounded, Session, or Eventual");
+        }
     }
     if requestOptions.sessionToken is string {
         request.setHeader(SESSION_TOKEN_HEADER, requestOptions.sessionToken.toString());
@@ -152,13 +169,25 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     if requestOptions.ifNoneMatch is string {
         request.setHeader(NON_MATCH_HEADER, requestOptions.ifNoneMatch.toString());
     }
-    if requestOptions.PartitionKeyRangeId is string {
-        request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions.PartitionKeyRangeId.toString());
+    if requestOptions.partitionKeyRangeId is string {
+        request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions.partitionKeyRangeId.toString());
     }
-    if requestOptions.PartitionKeyRangeId is string {
-        request.setHeader(IF_MATCH_HEADER, requestOptions.PartitionKeyRangeId.toString());
+    if requestOptions.ifMatch is string {
+        request.setHeader(IF_MATCH_HEADER, requestOptions.ifMatch.toString());
+    }
+    if requestOptions.enableCrossPartition == true {
+        request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions.enableCrossPartition.toString());
     }
     return request;
+}
+
+isolated function setExpiryHeader(http:Request request, int validationPeriod) returns http:Request|error {
+    if validationPeriod >= 3600 && validationPeriod <= 18000 {
+        request.setHeader(EXPIRY_HEADER, validationPeriod.toString());
+        return request;
+    }else {
+        return prepareError("Resource token validity period must be between 3600 and 18000");
+    }
 }
 
 isolated function getTime() returns string?|error {

@@ -2,7 +2,7 @@ import ballerina/http;
 
 public type AzureCosmosConfiguration record {|
     string baseUrl;    
-    string masterKey;
+    string keyOrResourceToken;
     string host;
     string tokenType;
     string tokenVersion;
@@ -50,10 +50,9 @@ public type Document record {|
     string? _self?;
     json? documentBody = {};
     string? documentId?;
-    any? partitionKey = ();
+    any[]? partitionKey = [];
     Headers?...;
 |};
-
 public type DocumentList record {|
     string _rid = "";
     Document[] documents = [];
@@ -222,9 +221,10 @@ public type RequestHeaderOptions record {|
     string? continuationToken = ();
     string? consistancyLevel = ();
     string? sessionToken = ();
-    string? changeFeedOption = (); 
-    string? ifNoneMatch = (); 
-    string? PartitionKeyRangeId = ();
+    string? changeFeedOption = ();
+    string? ifNoneMatch = ();  
+    string? partitionKeyRangeId = ();
+    boolean? enableCrossPartition = ();
     string? ifMatch = ();
 |};
 

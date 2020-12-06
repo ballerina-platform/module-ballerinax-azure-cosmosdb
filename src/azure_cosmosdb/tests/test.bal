@@ -6,7 +6,7 @@ import ballerina/log;
 
 AzureCosmosConfiguration config = {
     baseUrl : getConfigValue("BASE_URL"), 
-    masterKey : getConfigValue("KEY_OR_RESOURCE_TOKEN"), 
+    keyOrResourceToken : getConfigValue("KEY_OR_RESOURCE_TOKEN"), 
     host : getConfigValue("HOST"), 
     tokenType : getConfigValue("TOKEN_TYPE"), 
     tokenVersion : getConfigValue("TOKEN_VERSION"), 
@@ -376,7 +376,7 @@ function test_createDocument(){
         "IsRegistered": true, 
         "AccountNumber": 1234
         }, 
-        partitionKey : 1234  
+        partitionKey : [1234  
     };
     RequestHeaderOptions options = {
         isUpsertRequest: true

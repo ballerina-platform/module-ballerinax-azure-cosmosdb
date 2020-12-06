@@ -47,7 +47,7 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
     return db;
 }
 
-isolated function mapJsonToDatabasebList([json, Headers] jsonPayload) returns @tainted DatabaseList {
+isolated function mapJsonToDatabaseListType([json, Headers] jsonPayload) returns @tainted DatabaseList {
     json payload;
     Headers headers;
     [payload,headers] = jsonPayload;
@@ -68,7 +68,7 @@ isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @
     coll._self = payload._self != ()? payload._self.toString() : EMPTY_STRING;
     coll.allowMaterializedViews = convertToBoolean(payload.allowMaterializedViews);
     coll.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
-    coll.partitionKey = convertJsonToPartitionKey(<json>payload.partitionKey);
+    coll.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
     if headers is Headers {
         coll["reponseHeaders"] = headers;
     }
@@ -136,7 +136,7 @@ isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted Ind
     return indp;
 }
 
-isolated function convertJsonToPartitionKey(json jsonPayload) returns @tainted PartitionKey {
+isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @tainted PartitionKey {
     PartitionKey pk = {};
     pk.paths = convertToStringArray(<json[]>jsonPayload.paths);
     pk.kind = jsonPayload.kind != () ? jsonPayload.kind.toString(): EMPTY_STRING;
@@ -144,7 +144,7 @@ isolated function convertJsonToPartitionKey(json jsonPayload) returns @tainted P
     return pk;
 }
 
-isolated function mapJsonToPartitionKeyType([json, Headers] jsonPayload) returns @tainted PartitionKeyList {
+isolated function mapJsonToPartitionKeyListType([json, Headers] jsonPayload) returns @tainted PartitionKeyList {
     PartitionKeyList pkl = {};
     PartitionKeyRange pkr = {};
     json payload;
@@ -155,6 +155,19 @@ isolated function mapJsonToPartitionKeyType([json, Headers] jsonPayload) returns
     pkl.reponseHeaders = headers;
     pkl._count = convertToInt(payload._count);
     return pkl;
+}
+
+isolated function mapJsonToPartitionKeyRange([json, Headers] jsonPayload) returns @tainted PartitionKeyRange {
+    PartitionKeyRange pkr = {};
+    json payload;
+    Headers headers;
+    [payload,headers] = jsonPayload;
+    pkr.id = payload.id.toString();
+    pkr.minInclusive = payload.minInclusive.toString();
+    pkr.maxExclusive = payload.maxExclusive.toString();
+    pkr.status = payload.status.toString();
+    pkr.reponseHeaders = headers;
+    return pkr;
 }
 
 isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted IncludedPath {
