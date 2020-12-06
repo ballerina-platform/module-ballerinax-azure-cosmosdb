@@ -32,11 +32,7 @@ There is only one client provided by Ballerina to interact with CosmosDB.
   
 ## Sample
 
-<<<<<<< HEAD
 First, import the `ballerinax/azure_cosmosdb` module into the Ballerina project.
-=======
-First, import the `ballerinax/cosmosdb` module into the Ballerina project.
->>>>>>> 6279ae72784ce2febe1b43b0fe480ea20f157768
 
 ```ballerina
 import ballerina/log;
