@@ -6,7 +6,7 @@ import ballerina/log;
 
 AzureCosmosConfiguration config = {
     baseUrl : getConfigValue("BASE_URL"), 
-    masterKey : getConfigValue("MASTER_KEY"), 
+    masterKey : getConfigValue("KEY_OR_RESOURCE_TOKEN"), 
     host : getConfigValue("HOST"), 
     tokenType : getConfigValue("TOKEN_TYPE"), 
     tokenVersion : getConfigValue("TOKEN_VERSION"), 
