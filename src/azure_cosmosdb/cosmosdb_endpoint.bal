@@ -1,14 +1,13 @@
 import ballerina/http;
 
 # Azure Cosmos DB Client object.
-# + azureCosmosClient - The HTTP Client
 public  client class Client {
     private string baseUrl;
     private string keyOrResourceToken;
     private string host;
     private string keyType;
     private string tokenVersion;
-    public http:Client azureCosmosClient;
+    private http:Client azureCosmosClient;
 
     function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = azureConfig.baseUrl;
@@ -142,7 +141,7 @@ public  client class Client {
     public remote function createContainerIfNotExist(@tainted ResourceProperties properties, PartitionKey partitionKey, 
     IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container?|error {
         var result = self->getContainer(properties);
-        if result is error{
+        if result is error {
             return self->createContainer(properties, partitionKey);
         } else {
             return prepareError("The collection with specific id alrady exist");
@@ -204,8 +203,8 @@ public  client class Client {
     public remote function getPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted 
     PartitionKeyList|error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, properties.containerId, 
-        RESOURCE_PATH_PK_RANGES]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        properties.containerId, RESOURCE_PATH_PK_RANGES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->get(requestPath, request);
@@ -272,7 +271,7 @@ public  client class Client {
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if requestOptions is RequestHeaderOptions{
+        if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
         }
         var response = self.azureCosmosClient->get(requestPath, request);
@@ -295,7 +294,7 @@ public  client class Client {
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if requestOptions is RequestHeaderOptions{
+        if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
         }
         json requestBodyId = {
@@ -496,7 +495,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-        # To create a trigger inside a collection
+    # To create a trigger inside a collection
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript. 
     # + properties - object of type ResourceProperties
