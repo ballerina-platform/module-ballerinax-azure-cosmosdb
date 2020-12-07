@@ -11,7 +11,7 @@ The Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from
 
 There is only one client provided by Ballerina to interact with CosmosDB.
 
-1. **cosmosdb:Client** - This connects to the running CosmosDB resource and perform different actions
+1. **azure_cosmosdb:Client** - This connects to the running CosmosDB resource and perform different actions
 
     ```ballerina
     AzureCosmosConfiguration azureConfig = {
@@ -92,7 +92,7 @@ public function main() {
 
     log:printInfo("------------------ Query Documents -------------------");
     Query cqlQuery = {
-        query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
+        query: string `SELECT * FROM ${container1.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
         parameters: []
     };
     var result = AzureCosmosClient->queryDocuments(properties, [1234], cqlQuery);     
