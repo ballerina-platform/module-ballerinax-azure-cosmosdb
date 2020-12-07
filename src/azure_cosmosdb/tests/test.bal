@@ -1,4 +1,3 @@
-//import ballerina/io;
 import ballerina/test;
 import ballerina/java;
 import ballerina/config;
@@ -37,10 +36,10 @@ User test_user = {};
 Permission permission = {};
 OfferList offerList = {};
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_createDatabase(){
+function test_createDatabase() {
     log:printInfo("ACTION : createDatabase()");
 
     var uuid = createRandomUUIDBallerina();
@@ -53,10 +52,10 @@ function test_createDatabase(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_createDatabaseUsingInvalidId(){
+function test_createDatabaseUsingInvalidId() {
     log:printInfo("ACTION : createDatabaseUsingInvalidId()");
 
     var uuid = createRandomUUIDBallerina();
@@ -69,11 +68,11 @@ function test_createDatabaseUsingInvalidId(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"], 
     dependsOn: ["test_createDatabase"]
 }
-function test_createDatabaseIfNotExist(){
+function test_createDatabaseIfNotExist() {
     log:printInfo("ACTION : createIfNotExist()");
 
     var uuid = createRandomUUIDBallerina();
@@ -86,11 +85,11 @@ function test_createDatabaseIfNotExist(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"], 
     dependsOn: ["test_createDatabase"]
 }
-function test_createDatabaseIfExist(){
+function test_createDatabaseIfExist() {
     log:printInfo("ACTION : createDatabaseIfExist()");
 
     var uuid = createRandomUUIDBallerina();
@@ -103,10 +102,10 @@ function test_createDatabaseIfExist(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_createDatabaseWithManualThroughput(){
+function test_createDatabaseWithManualThroughput() {
     log:printInfo("ACTION : createDatabaseWithManualThroughput()");
 
     var uuid = createRandomUUIDBallerina();
@@ -122,10 +121,10 @@ function test_createDatabaseWithManualThroughput(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_createDatabaseWithInvalidManualThroughput(){
+function test_createDatabaseWithInvalidManualThroughput() {
     log:printInfo("ACTION : createDatabaseWithInvalidManualThroughput()");
 
     var uuid = createRandomUUIDBallerina();
@@ -141,10 +140,10 @@ function test_createDatabaseWithInvalidManualThroughput(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_createDBWithAutoscalingThroughput(){
+function test_createDBWithAutoscalingThroughput() {
     log:printInfo("ACTION : createDBWithAutoscalingThroughput()");
 
     var uuid = createRandomUUIDBallerina();
@@ -160,10 +159,10 @@ function test_createDBWithAutoscalingThroughput(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_createDatabaseWithBothHeaders(){
+function test_createDatabaseWithBothHeaders() {
     log:printInfo("ACTION : createDatabaseWithBothHeaders()");
 
     var uuid = createRandomUUIDBallerina();
@@ -180,10 +179,10 @@ function test_createDatabaseWithBothHeaders(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"]
 }
-function test_listAllDatabases(){
+function test_listAllDatabases() {
     log:printInfo("ACTION : listAllDatabases()");
 
     var result = AzureCosmosClient->getAllDatabases();
@@ -194,11 +193,11 @@ function test_listAllDatabases(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"], 
     dependsOn: ["test_createDatabase"]
 }
-function test_listOneDatabase(){
+function test_listOneDatabase() {
     log:printInfo("ACTION : listOneDatabase()");
 
     var result = AzureCosmosClient->getDatabase(database.id);
@@ -209,7 +208,7 @@ function test_listOneDatabase(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["database"],
     dependsOn: [
         "test_createDatabase",
@@ -239,7 +238,7 @@ function test_listOneDatabase(){
         "test_replaceOfferWithOptionalParameter"
     ]
 }
-function test_deleteDatabase(){
+function test_deleteDatabase() {
     log:printInfo("ACTION : deleteDatabase()");
 
     var result1 = AzureCosmosClient->deleteDatabase(database.id);
@@ -253,11 +252,11 @@ function test_deleteDatabase(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["container"], 
     dependsOn: ["test_createDatabase"]
 }
-function test_createContainer(){
+function test_createContainer() {
     log:printInfo("ACTION : createContainer()");
 
     var uuid = createRandomUUIDBallerina();
@@ -278,11 +277,11 @@ function test_createContainer(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["container"], 
     dependsOn: ["test_createContainer"]
 }
-function test_createCollectionWithManualThroughputAndIndexingPolicy(){
+function test_createCollectionWithManualThroughputAndIndexingPolicy() {
     log:printInfo("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
     
     IndexingPolicy ip = {
@@ -319,11 +318,11 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy(){
     } 
 }
  
-@test:Config{
+@test:Config {
     groups: ["container"], 
     dependsOn: ["test_createDatabase",  "test_getOneContainer"]
 }
-function test_createContainerIfNotExist(){
+function test_createContainerIfNotExist() {
     log:printInfo("ACTION : createContainerIfNotExist()");
 
     var uuid = createRandomUUIDBallerina();
@@ -344,11 +343,11 @@ function test_createContainerIfNotExist(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["container"], 
     dependsOn: ["test_createContainer"]
 }
-function test_getOneContainer(){
+function test_getOneContainer() {
     log:printInfo("ACTION : getOneContainer()");
 
     @tainted ResourceProperties getCollection = {
@@ -363,11 +362,11 @@ function test_getOneContainer(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["container"], 
     dependsOn: ["test_createDatabase"]
 }
-function test_getAllContainers(){
+function test_getAllContainers() {
     log:printInfo("ACTION : getAllContainers()");
 
     var result = AzureCosmosClient->getAllContainers(database.id);
@@ -378,7 +377,7 @@ function test_getAllContainers(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["container"], 
     dependsOn: [
         "test_getOneContainer",
@@ -395,7 +394,7 @@ function test_getAllContainers(){
         "test_GetOneDocumentWithRequestOptions"
     ]
 }
-function test_deleteContainer(){
+function test_deleteContainer() {
     log:printInfo("ACTION : deleteContainer()");
 
     @tainted ResourceProperties deleteCollectionData = {
@@ -410,11 +409,11 @@ function test_deleteContainer(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["partitionKey"],
     dependsOn: ["test_createContainer"]
 }
-function test_GetPartitionKeyRanges(){
+function test_GetPartitionKeyRanges() {
     log:printInfo("ACTION : GetPartitionKeyRanges()");
 
     @tainted ResourceProperties resourceProperties = {
@@ -429,11 +428,11 @@ function test_GetPartitionKeyRanges(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createContainer"]
 }
-function test_createDocument(){
+function test_createDocument() {
     log:printInfo("ACTION : createDocument()");
 
     var uuid = createRandomUUIDBallerina();
@@ -487,11 +486,11 @@ function test_createDocument(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createContainer"]
 }
-function test_createDocumentWithRequestOptions(){
+function test_createDocumentWithRequestOptions() {
     log:printInfo("ACTION : createDocumentWithRequestOptions()");
 
     var uuid = createRandomUUIDBallerina();
@@ -555,11 +554,11 @@ function test_createDocumentWithRequestOptions(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createDocument"]
 }
-function test_getDocumentList(){
+function test_getDocumentList() {
     log:printInfo("ACTION : getDocumentList()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -574,11 +573,11 @@ function test_getDocumentList(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createDocument"]
 }
-function test_getDocumentListWithRequestOptions(){
+function test_getDocumentListWithRequestOptions() {
     log:printInfo("ACTION : getDocumentListWithRequestOptions()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -603,11 +602,11 @@ function test_getDocumentListWithRequestOptions(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createDocument"]
 }
-function test_GetOneDocument(){
+function test_GetOneDocument() {
     log:printInfo("ACTION : GetOneDocument()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -622,11 +621,11 @@ function test_GetOneDocument(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createDocument"]
 }
-function test_GetOneDocumentWithRequestOptions(){
+function test_GetOneDocumentWithRequestOptions() {
     log:printInfo("ACTION : GetOneDocument()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -655,11 +654,11 @@ function test_GetOneDocumentWithRequestOptions(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createContainer", "test_createDocument", "test_GetOneDocument", "test_GetOneDocumentWithRequestOptions"]
 }
-function test_deleteDocument(){
+function test_deleteDocument() {
     log:printInfo("ACTION : deleteDocument()");
     
     @tainted ResourceProperties resourceProperty = {
@@ -674,11 +673,11 @@ function test_deleteDocument(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createContainer"]
 }
-function test_queryDocuments(){
+function test_queryDocuments() {
     log:printInfo("ACTION : queryDocuments()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -698,11 +697,11 @@ function test_queryDocuments(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["document"], 
     dependsOn: ["test_createContainer"]
 }
-function test_queryDocumentsWithRequestOptions(){
+function test_queryDocumentsWithRequestOptions() {
     log:printInfo("ACTION : queryDocuments()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -734,11 +733,11 @@ function test_queryDocumentsWithRequestOptions(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["storedProcedure"], 
     dependsOn: ["test_createContainer"]
 }
-function test_createStoredProcedure(){
+function test_createStoredProcedure() {
     log:printInfo("ACTION : createStoredProcedure()");
 
     var uuid = createRandomUUIDBallerina();
@@ -759,11 +758,11 @@ function test_createStoredProcedure(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["storedProcedure"], 
     dependsOn: ["test_createStoredProcedure"]
 }
-function test_replaceStoredProcedure(){
+function test_replaceStoredProcedure() {
     log:printInfo("ACTION : replaceStoredProcedure()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -783,11 +782,11 @@ function test_replaceStoredProcedure(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["storedProcedure"], 
     dependsOn: ["test_createContainer"]
 }
-function test_getAllStoredProcedures(){
+function test_getAllStoredProcedures() {
     log:printInfo("ACTION : replaceStoredProcedure()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -802,11 +801,11 @@ function test_getAllStoredProcedures(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["storedProcedure"], 
     dependsOn: ["test_replaceStoredProcedure"]
 }
-function test_executeOneStoredProcedure(){
+function test_executeOneStoredProcedure() {
     log:printInfo("ACTION : executeOneStoredProcedure()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -823,11 +822,11 @@ function test_executeOneStoredProcedure(){
     }        
 }
 
-@test:Config{
+@test:Config {
     groups: ["storedProcedure"], 
     dependsOn: ["test_createStoredProcedure", "test_executeOneStoredProcedure"]
 }
-function test_deleteOneStoredProcedure(){
+function test_deleteOneStoredProcedure() {
     log:printInfo("ACTION : deleteOneStoredProcedure()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -843,11 +842,11 @@ function test_deleteOneStoredProcedure(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["userDefinedFunction"], 
     dependsOn: ["test_createContainer"]
 }
-function test_createUDF(){
+function test_createUDF() {
     log:printInfo("ACTION : createUDF()");
 
     var uuid = createRandomUUIDBallerina();
@@ -869,11 +868,11 @@ function test_createUDF(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["userDefinedFunction"], 
     dependsOn: ["test_createContainer", "test_createUDF"]
 }
-function test_replaceUDF(){
+function test_replaceUDF() {
     log:printInfo("ACTION : replaceUDF()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -893,11 +892,11 @@ function test_replaceUDF(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["userDefinedFunction"], 
     dependsOn: ["test_createContainer",  "test_createUDF"]
 }
-function test_listAllUDF(){
+function test_listAllUDF() {
     log:printInfo("ACTION : listAllUDF()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -912,11 +911,11 @@ function test_listAllUDF(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["userDefinedFunction"], 
     dependsOn: ["test_replaceUDF", "test_listAllUDF"]
 }
-function test_deleteUDF(){
+function test_deleteUDF() {
     log:printInfo("ACTION : deleteUDF()");
 
     string deleteUDFId = udf.id;
@@ -932,11 +931,11 @@ function test_deleteUDF(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["trigger"], 
     dependsOn: ["test_createContainer"]
 }
-function test_createTrigger(){
+function test_createTrigger() {
     log:printInfo("ACTION : createTrigger()");
 
     var uuid = createRandomUUIDBallerina();
@@ -962,11 +961,11 @@ function test_createTrigger(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["trigger"], 
     dependsOn: ["test_createTrigger"]
 }
-function test_replaceTrigger(){
+function test_replaceTrigger() {
     log:printInfo("ACTION : replaceTrigger()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -990,11 +989,11 @@ function test_replaceTrigger(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["trigger"], 
     dependsOn: ["test_createTrigger"]
 }
-function test_listTriggers(){
+function test_listTriggers() {
     log:printInfo("ACTION : listTriggers()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -1009,11 +1008,11 @@ function test_listTriggers(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["trigger"], 
     dependsOn: ["test_replaceTrigger", "test_listTriggers"]
 }
-function test_deleteTrigger(){
+function test_deleteTrigger() {
     log:printInfo("ACTION : deleteTrigger()");
 
     string deleteTriggerId = trigger.id;
@@ -1029,11 +1028,11 @@ function test_deleteTrigger(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["user"], 
     dependsOn: ["test_createDatabase"]
 }
-function test_createUser(){
+function test_createUser() {
     log:printInfo("ACTION : createUser()");
 
     var uuid = createRandomUUIDBallerina();
@@ -1049,11 +1048,11 @@ function test_createUser(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["user"], 
     dependsOn: ["test_createUser","test_getUser"]
 }
-function test_replaceUserId(){
+function test_replaceUserId() {
     log:printInfo("ACTION : replaceUserId()");
 
     var uuid = createRandomUUIDBallerina();
@@ -1070,11 +1069,11 @@ function test_replaceUserId(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["user"], 
     dependsOn: ["test_createUser"]
 }
-function test_getUser(){
+function test_getUser() {
     log:printInfo("ACTION : getUser()");
 
     Client AzureCosmosClient = new(config);
@@ -1090,11 +1089,11 @@ function test_getUser(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["user"], 
     dependsOn: ["test_createUser"]
 }
-function test_listUsers(){
+function test_listUsers() {
     log:printInfo("ACTION : listUsers()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -1108,7 +1107,7 @@ function test_listUsers(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["user"], 
     dependsOn: [
         "test_replaceUserId", 
@@ -1116,7 +1115,7 @@ function test_listUsers(){
         "test_createPermissionWithTTL"
     ]
 }
-function test_deleteUser(){
+function test_deleteUser() {
     log:printInfo("ACTION : deleteUser()");
 
     string deleteUserId = test_user.id;
@@ -1131,11 +1130,11 @@ function test_deleteUser(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: ["test_createDatabase", "test_createUser"]
 }
-function test_createPermission(){
+function test_createPermission() {
     log:printInfo("ACTION : createPermission()");
 
     var uuid = createRandomUUIDBallerina();
@@ -1160,11 +1159,11 @@ function test_createPermission(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: ["test_createDatabase", "test_createUser"]
 }
-function test_createPermissionWithTTL(){
+function test_createPermissionWithTTL() {
     log:printInfo("ACTION : createPermission()");
 
     var uuid = createRandomUUIDBallerina();
@@ -1189,11 +1188,11 @@ function test_createPermissionWithTTL(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: ["test_createPermission"]
 }
-function test_replacePermission(){
+function test_replacePermission() {
     log:printInfo("ACTION : replacePermission()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -1216,11 +1215,11 @@ function test_replacePermission(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: ["test_createPermission"]
 }
-function test_listPermissions(){
+function test_listPermissions() {
     log:printInfo("ACTION : listPermissions()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -1235,11 +1234,11 @@ function test_listPermissions(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: ["test_createPermission"]
 }
-function test_getPermission(){
+function test_getPermission() {
     log:printInfo("ACTION : getPermission()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -1255,11 +1254,11 @@ function test_getPermission(){
     }
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: [ "test_getPermission", "test_listPermissions", "test_replacePermission"]
 }
-function test_deletePermission(){
+function test_deletePermission() {
     log:printInfo("ACTION : deletePermission()");
 
     @tainted ResourceProperties resourceProperty = {
@@ -1275,10 +1274,10 @@ function test_deletePermission(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["offer"]
 }
-function test_listOffers(){
+function test_listOffers() {
     log:printInfo("ACTION : listOffers()");
 
     var result = AzureCosmosClient->listOffers();  
@@ -1289,11 +1288,11 @@ function test_listOffers(){
     }   
 }
 
-@test:Config{
+@test:Config {
     groups: ["offer"], 
     dependsOn: ["test_listOffers"]
 }
-function test_getOffer(){
+function test_getOffer() {
     log:printInfo("ACTION : getOffer()");
 
     var result = AzureCosmosClient->getOffer(offerList.offers[0].id);  
@@ -1304,10 +1303,10 @@ function test_getOffer(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["offer"]
 }
-function test_replaceOffer(){
+function test_replaceOffer() {
     log:printInfo("ACTION : replaceOffer()");
 
     Offer replaceOfferBody = {
@@ -1329,10 +1328,10 @@ function test_replaceOffer(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["offer"]
 }
-function test_replaceOfferWithOptionalParameter(){
+function test_replaceOfferWithOptionalParameter() {
     log:printInfo("ACTION : replaceOfferWithOptionalParameter()");
 
     Offer replaceOfferBody = {
@@ -1353,11 +1352,11 @@ function test_replaceOfferWithOptionalParameter(){
     } 
 }
 
-@test:Config{
+@test:Config {
     groups: ["offer"], 
     dependsOn: ["test_createDatabase",  "test_createContainer"]
 }
-function test_queryOffer(){
+function test_queryOffer() {
     log:printInfo("ACTION : queryOffer()");
 
     Query offerQuery = {
@@ -1371,12 +1370,12 @@ function test_queryOffer(){
     }  
 }
 
-@test:Config{
+@test:Config {
     groups: ["permission"], 
     dependsOn: ["test_createPermission"],
     enable: false
 }
-function test_getCollection_Resource_Token(){
+function test_getCollection_Resource_Token() {
     log:printInfo("ACTION : createCollection_Resource_Token()");
 
     @tainted ResourceProperties resourceProperty = {
