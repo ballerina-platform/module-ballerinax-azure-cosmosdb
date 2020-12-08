@@ -1304,7 +1304,8 @@ function test_getOffer() {
 }
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    dependsOn: ["test_listOffers"]
 }
 function test_replaceOffer() {
     log:printInfo("ACTION : replaceOffer()");
@@ -1315,8 +1316,8 @@ function test_replaceOffer() {
         content: {  
             "offerThroughput": 400
         },  
-        'resource: string `dbs/${database?._rid.toString()}/colls/${container?._rid.toString()}/`,  
-        offerResourceId: string `${container?._rid.toString()}`, 
+        'resource: offerList.offers[0]["resource"],  
+        offerResourceId: offerList.offers[0].offerResourceId, 
         id: offerList.offers[0].id, 
         _rid: offerList.offers[0]["_rid"] 
     };
@@ -1329,7 +1330,8 @@ function test_replaceOffer() {
 }
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    dependsOn: ["test_listOffers"]
 }
 function test_replaceOfferWithOptionalParameter() {
     log:printInfo("ACTION : replaceOfferWithOptionalParameter()");
@@ -1339,8 +1341,8 @@ function test_replaceOfferWithOptionalParameter() {
         content: {  
             "offerThroughput": 400
         },  
-        'resource: string `dbs/${database?._rid.toString()}/colls/${container?._rid.toString()}/`,  
-        offerResourceId: string `${container?._rid.toString()}`, 
+        'resource: offerList.offers[0]["resource"],  
+        offerResourceId: offerList.offers[0].offerResourceId,  
         id: offerList.offers[0].id, 
         _rid: offerList.offers[0]["_rid"] 
     };
@@ -1431,6 +1433,7 @@ function createRandomUUIDBallerina() returns string {
         return "";
     }
 }
+
 function createRandomUUID() returns handle = @java:Method {
     name : "randomUUID", 
     'class : "java.util.UUID"

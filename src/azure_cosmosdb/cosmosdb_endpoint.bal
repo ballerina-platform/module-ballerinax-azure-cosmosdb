@@ -19,8 +19,7 @@ public  client class Client {
         self.azureCosmosClient = new (self.baseUrl,httpClientConfig);
     }
 
-
-    # To create a database inside a resource
+    # Create a database inside a resource
     # + databaseId -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
     # 'x-ms-cosmos-offer-autopilot-settings' headers 
@@ -45,7 +44,7 @@ public  client class Client {
         return mapJsonToDatabaseType(jsonreponse);   
     }
 
-    # To create a database inside a resource
+    # Create a database inside a resource
     # + databaseId -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
     # 'x-ms-cosmos-offer-autopilot-settings' headers
@@ -62,7 +61,7 @@ public  client class Client {
         return ();  
     }
 
-    # To retrive a given database inside a resource
+    # Retrive a given database inside a resource
     # + databaseId -  id/name of the database 
     # + return - If successful, returns Database. Else returns error.  
     public remote function getDatabase(string databaseId) returns @tainted Database|error {
@@ -78,7 +77,7 @@ public  client class Client {
         return mapJsonToDatabaseType(jsonreponse);  
     }
 
-    # To list all databases inside a resource
+    # List all databases inside a resource
     # + return - If successful, returns DatabaseList. else returns error.  
     public remote function getAllDatabases() returns @tainted DatabaseList|error {
         if self.keyType == TOKEN_TYPE_RESOURCE {
@@ -93,7 +92,7 @@ public  client class Client {
         return mapJsonToDatabaseListType(jsonresponse); 
     }
 
-    # To delete a given database inside a resource
+    # Delete a given database inside a resource
     # + databaseId -  id/name of the database to retrieve
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDatabase(string databaseId) returns @tainted boolean|error {
@@ -108,7 +107,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To create a collection inside a database
+    # Create a collection inside a database
     # + properties - object of type ResourceProperties
     # + partitionKey - required object of type PartitionKey
     # + indexingPolicy - optional object of type IndexingPolicy
@@ -132,7 +131,7 @@ public  client class Client {
         return mapJsonToContainerType(jsonreponse);
     }
 
-    # To create a database inside a resource
+    # Create a database inside a resource
     # + properties -  object of type ResourceProperties
     # + partitionKey - 
     # + indexingPolicy -
@@ -157,7 +156,7 @@ public  client class Client {
     //     return self->createContainer(properties, throughputProperties);
     // }
 
-    # To list all collections inside a database
+    # List all collections inside a database
     # + databaseId -  id/name of the database where the collections are in.
     # + return - If successful, returns ContainerList. Else returns error.  
     public remote function getAllContainers(string databaseId) returns @tainted ContainerList|error {
@@ -170,7 +169,7 @@ public  client class Client {
         return mapJsonToContainerListType(jsonreponse);
     }
 
-    # To retrive one collection inside a database
+    # Retrive one collection inside a database
     # + properties - object of type ResourceProperties
     # + return - If successful, returns Container. Else returns error.  
     public remote function getContainer(@tainted ResourceProperties properties) returns @tainted Container|error {
@@ -184,7 +183,7 @@ public  client class Client {
         return mapJsonToContainerType(jsonreponse);
     }
 
-    # To delete one collection inside a database
+    # Delete one collection inside a database
     # + properties - object of type ResourceProperties
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteContainer(@tainted ResourceProperties properties) returns @tainted json|error {
@@ -197,7 +196,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To retrieve a list of partition key ranges for the collection
+    # Retrieve a list of partition key ranges for the collection
     # + properties -  id/name of the database which collection is in.
     # + return - If successful, returns PartitionKeyList. Else returns error.  
     public remote function getPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted 
@@ -212,7 +211,7 @@ public  client class Client {
         return mapJsonToPartitionKeyListType(jsonreponse);
     }
 
-        # To create a Document inside a collection
+    # Create a Document inside a collection
     # + properties - object of type ResourceProperties
     # + document - object of type Document 
     # + requestOptions - object of type RequestHeaderOptions
@@ -238,7 +237,7 @@ public  client class Client {
         return mapJsonToDocumentType(jsonreponse);
     }
 
-    # To list one document inside a collection
+    # List one document inside a collection
     # + properties - object of type ResourceProperties
     # + documentId - id of  Document,
     # + partitionKey - array containing value of parition key field.
@@ -260,7 +259,7 @@ public  client class Client {
         return mapJsonToDocumentType(jsonreponse);
     }
 
-    # To list all the documents inside a collection
+    # List all the documents inside a collection
     # + properties - object of type ResourceProperties
     # + requestOptions - object of type RequestHeaderOptions
     # + return - If successful, returns DocumentList. Else returns error. 
@@ -280,7 +279,7 @@ public  client class Client {
         return list;    
     }
 
-    # To replace a document inside a collection
+    # Replace a document inside a collection
     # + properties - object of type ResourceProperties
     # + document - object of type Document 
     # + requestOptions - object of type RequestHeaderOptions
@@ -307,7 +306,7 @@ public  client class Client {
         return mapJsonToDocumentType(jsonreponse);
     }
 
-    # To delete a document inside a collection
+    # Delete a document inside a collection
     # + properties - object of type ResourceProperties
     # + documentId - id of the Document 
     # + partitionKey - array containing value of parition key field.
@@ -324,7 +323,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To query documents inside a collection
+    # Query documents inside a collection
     # + properties - object of type ResourceProperties
     # + cqlQuery - json object of type Query containing the CQL query
     # + requestOptions - object of type RequestOptions
@@ -345,7 +344,7 @@ public  client class Client {
         return (jsonresponse);
     }
 
-    # To create a new stored procedure inside a collection
+    # Create a new stored procedure inside a collection
     # A stored procedure is a piece of application logic written in JavaScript that 
     # is registered and executed against a collection as a single transaction.
     # + properties - object of type ResourceProperties
@@ -364,7 +363,7 @@ public  client class Client {
         return mapJsonToStoredProcedureType(jsonResponse);    
     }
 
-    # To replace a stored procedure with new one inside a collection
+    # Replace a stored procedure with new one inside a collection
     # + properties - object of type ResourceProperties
     # + storedProcedure - object of type StoredProcedure
     # + return - If successful, returns a StoredProcedure. Else returns error. 
@@ -381,7 +380,7 @@ public  client class Client {
         return mapJsonToStoredProcedureType(jsonResponse);  
     }
 
-    # To list all stored procedures inside a collection
+    # List all stored procedures inside a collection
     # + properties - object of type ResourceProperties
     # + return - If successful, returns a StoredProcedureList. Else returns error. 
     public remote function listStoredProcedures(@tainted ResourceProperties properties) returns @tainted 
@@ -396,7 +395,7 @@ public  client class Client {
         return mapJsonToStoredProcedureListType(jsonResponse);  
     }
 
-    # To delete a stored procedure inside a collection
+    # Delete a stored procedure inside a collection
     # + properties - object of type ResourceProperties
     # + storedProcedureId - id of the stored procedure to delete
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
@@ -411,7 +410,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To execute a stored procedure inside a collection
+    # Execute a stored procedure inside a collection
     # ***********function only works correctly for string parameters************
     # + properties - object of type ResourceProperties
     # + storedProcedureId - id of the stored procedure to execute
@@ -430,7 +429,7 @@ public  client class Client {
         return jsonreponse;   
     }
 
-    # To create a new user defined function inside a collection
+    # Create a new user defined function inside a collection
     # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
     # + properties - object of type ResourceProperties
     # + userDefinedFunction - object of type UserDefinedFunction
@@ -448,7 +447,7 @@ public  client class Client {
         return mapJsonToUserDefinedFunctionType(jsonResponse);      
     }
 
-    # To replace an existing user defined function inside a collection
+    # Replace an existing user defined function inside a collection
     # + properties - object of type ResourceProperties
     # + userDefinedFunction - object of type UserDefinedFunction
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
@@ -465,7 +464,7 @@ public  client class Client {
         return mapJsonToUserDefinedFunctionType(jsonResponse);      
     }
 
-    # To get a list of existing user defined functions inside a collection
+    # Get a list of existing user defined functions inside a collection
     # + properties - object of type ResourceProperties
     # + return - If successful, returns a UserDefinedFunctionList. Else returns error. 
     public remote function listUserDefinedFunctions(@tainted ResourceProperties properties) returns @tainted 
@@ -480,7 +479,7 @@ public  client class Client {
         return mapJsonToUserDefinedFunctionListType(jsonResponse);      
     }
 
-    # To delete an existing user defined function inside a collection
+    # Delete an existing user defined function inside a collection
     # + properties - object of type ResourceProperties
     # + userDefinedFunctionid - id of UDF to delete
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
@@ -495,7 +494,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To create a trigger inside a collection
+    # Create a trigger inside a collection
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript. 
     # + properties - object of type ResourceProperties
@@ -514,7 +513,7 @@ public  client class Client {
         return mapJsonToTriggerType(jsonResponse);      
     }
     
-    # To replace an existing trigger inside a collection
+    # Replace an existing trigger inside a collection
     # + properties - object of type ResourceProperties
     # + trigger - object of type Trigger
     # + return - If successful, returns a Trigger. Else returns error. 
@@ -531,7 +530,7 @@ public  client class Client {
         return mapJsonToTriggerType(jsonResponse); 
     }
 
-    # To list existing triggers inside a collection
+    # List existing triggers inside a collection
     # + properties - object of type ResourceProperties
     # + return - If successful, returns a TriggerList. Else returns error. 
     public remote function listTriggers(@tainted ResourceProperties properties) returns @tainted TriggerList|error {
@@ -545,7 +544,7 @@ public  client class Client {
         return mapJsonToTriggerListType(jsonResponse);      
     }
 
-    # To delete an existing trigger inside a collection
+    # Delete an existing trigger inside a collection
     # + properties - object of type ResourceProperties
     # + triggerId - id of the trigger to be deleted
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
@@ -560,7 +559,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To create a user for a database
+    # Create a user in a database
     # + properties - object of type ResourceProperties
     # + userId - the id which should be given to the new user
     # + return - If successful, returns a User. Else returns error.
@@ -579,7 +578,7 @@ public  client class Client {
         return mapJsonToUserType(jsonResponse);     
     }
     
-    # To replace the id of an existing user for a database
+    # Replace the id of an existing user for a database
     # + properties - object of type ResourceProperties
     # + userId - the id which should be given to the new user
     # + newUserId - the new id for the user
@@ -613,7 +612,7 @@ public  client class Client {
         return mapJsonToUserType(jsonResponse);      
     }
 
-    # To list users in a database
+    # Lists users in a database account
     # + properties - object of type ResourceProperties
     # + return - If successful, returns a UserList. Else returns error.
     public remote function listUsers(@tainted ResourceProperties properties) returns @tainted UserList|error {
@@ -626,7 +625,7 @@ public  client class Client {
         return mapJsonToUserListType(jsonResponse);     
     }
 
-    # To delete a user from a database
+    # Delete a user from a database account
     # + properties - object of type ResourceProperties
     # + userId - the id of user to delete
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
@@ -640,7 +639,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # To create a permission for a user 
+    # Create a permission for a user 
     # + properties - object of type ResourceProperties
     # + userId - the id of user to which the permission belongs
     # + permission - object of type Permission
@@ -665,7 +664,7 @@ public  client class Client {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # To replace an existing permission
+    # Replace an existing permission
     # + properties - object of type ResourceProperties
     # + userId - the id of user to which the permission belongs
     # + permission - object of type Permission
@@ -684,7 +683,7 @@ public  client class Client {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # To list permissions belong to a user
+    # Lists permissions belong to a user
     # + properties - object of type ResourceProperties
     # + userId - the id of user to the permissions belong
     # + return - If successful, returns a PermissionList. Else returns error.
@@ -717,7 +716,7 @@ public  client class Client {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # To delete a permission belongs to a user
+    # Deletes a permission belongs to a user
     # + properties - object of type ResourceProperties
     # + userId - the id of user to the permission belongs
     # + permissionId - id of the permission to delete
@@ -733,7 +732,7 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-        # To get information of offers inside resource
+    # Gets information of offers inside database account
     # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 
@@ -748,7 +747,7 @@ public  client class Client {
         return mapJsonToOfferListType(jsonResponse);
     }
 
-    # To get information of an offer
+    # Get information of an offer
     # + offerId - the id of offer
     # + return - If successful, returns a Offer. Else returns error.
     public remote function getOffer(string offerId) returns @tainted Offer|error {
@@ -761,7 +760,7 @@ public  client class Client {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # To replace an existing offer
+    # Replace an existing offer
     # + offer - an object of type Offer
     # + return - If successful, returns a Offer. Else returns error.
     public remote function replaceOffer(Offer offer) returns @tainted Offer|error {
@@ -775,7 +774,7 @@ public  client class Client {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # To get information of a user from a database
+    # Perform queries on Offer resources
     # + cqlQuery - the CQL query to execute
     # + return - If successful, returns a json. Else returns error.
     public remote function queryOffer(Query cqlQuery) returns @tainted json|error {

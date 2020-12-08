@@ -1,7 +1,7 @@
 import ballerina/http;
 
 public type AzureCosmosConfiguration record {|
-    string baseUrl;    
+    string baseUrl;
     string keyOrResourceToken;
     string host;
     string tokenType;
@@ -53,6 +53,7 @@ public type Document record {|
     any[]? partitionKey = [];
     Headers?...;
 |};
+
 public type DocumentList record {|
     string _rid = "";
     Document[] documents = [];
@@ -117,7 +118,7 @@ public type StoredProcedureList record {|
     StoredProcedure[] storedProcedures = [];
     int _count = 0;
     Headers?...;
-|}; 
+|};
 
 public type UserDefinedFunction record {|
     *StoredProcedure;
@@ -145,12 +146,12 @@ public type TriggerList record {|
     Headers?...;
 |};
 
-public type User  record {|
+public type User record {|
     *Database;
     Headers?...;
 |};
 
-public type UserList  record {|
+public type UserList record {|
     string _rid = "";
     User[] users = [];
     int _count = 0;
@@ -167,7 +168,7 @@ public type Permission record {|
     Headers?...;
 |};
 
-public type PermissionList  record {|
+public type PermissionList record {|
     string _rid = "";
     Permission[] permissions = [];
     int _count = 0;
@@ -178,8 +179,8 @@ public type Offer record {|
     string id = "";
     string _rid = "";
     string offerVersion = "";
-    string? offerType = ();  
-    json content = {};
+    string? offerType = ();
+    json content =     {};
     string 'resource = "";
     string offerResourceId = "";
     Headers?...;
@@ -222,13 +223,13 @@ public type RequestHeaderOptions record {|
     string? consistancyLevel = ();
     string? sessionToken = ();
     string? changeFeedOption = ();
-    string? ifNoneMatch = ();  
+    string? ifNoneMatch = ();
     string? partitionKeyRangeId = ();
     boolean? enableCrossPartition = ();
     string? ifMatch = ();
 |};
 
-public type AzureError  distinct  error;
+public type AzureError distinct error;
 
 type JsonMap map<json>;
 
