@@ -1,0 +1,1 @@
+{"ballerinax/azure_cosmosdb:0.1.0:RequestHeaderOptions":{"isUpsertRequest":"boolean","indexingDirective":"string","maxItemCount":"int","continuationToken":"string","consistancyLevel":"string","sessionToken":"string","changeFeedOption":"string","ifNoneMatch":"string","partitionKeyRangeId":"string","enableCrossPartition":"boolean","ifMatch":"string"}}

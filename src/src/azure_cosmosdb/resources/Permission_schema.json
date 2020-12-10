@@ -1,0 +1,1 @@
+{"ballerinax/azure_cosmosdb:0.1.0:Permission":{"id":"string","permissionMode":"string","resourcePath":"string","validityPeriod":"int","token":"string"}}

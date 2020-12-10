@@ -47,15 +47,14 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
     return database;
 }
 
-isolated function mapJsonToDatabaseListType([json, Headers] jsonPayload) returns @tainted DatabaseList {
+function mapJsonToDatabaseIteratorType([json, Headers] jsonPayload) returns @tainted DatabaseIterator {
     json payload;
     Headers headers;
-    [payload, headers] = jsonPayload;
-    DatabaseList dbl = {};
-    dbl._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
-    dbl.databases =  convertToDatabaseArray(<json[]>payload.Databases);
-    dbl.reponseHeaders = headers;
-    return dbl;
+    [payload,headers] = jsonPayload;
+    stream<Database> databaseStream = convertToDatabaseStream(<json[]>payload.Databases);
+    int count = convertToInt(payload._count);
+    DatabaseIterator iterator = new(databaseStream, count, headers);
+    return iterator;
 }
 
 isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @tainted Container {
@@ -352,14 +351,15 @@ isolated function mapJsonToOfferListType([json, Headers?] jsonPayload) returns @
     return offerList;
 }
 
-isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns @tainted Database[] {
+function convertToDatabaseStream(json[] sourceDatabaseArrayJsonObject) returns @tainted stream<Database> {
     Database[] databases = [];
     int i = 0;
     foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
-        databases[i] = mapJsonToDatabaseType([jsonDatabase, ()]);
+        databases[i] = mapJsonToDatabaseType([jsonDatabase,()]);
         i = i + 1;
     }
-    return databases;
+    stream<Database> db = databases.toStream();
+    return db;
 }
 
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 

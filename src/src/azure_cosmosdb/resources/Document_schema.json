@@ -1,0 +1,1 @@
+{"ballerinax/azure_cosmosdb:0.1.0:Document":{"id":"string","attachments":"string","documentBody":"json?","documentId":"string?","partitionKey":"any[]?"}}

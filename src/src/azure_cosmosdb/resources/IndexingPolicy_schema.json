@@ -1,0 +1,1 @@
+{"ballerinax/azure_cosmosdb:0.1.0:IndexingPolicy":{"indexingMode":"string","automatic":"boolean","includedPaths":"ballerinax/azure_cosmosdb:0.1.0:IncludedPath[]","excludedPaths":"ballerinax/azure_cosmosdb:0.1.0:IncludedPath[]"}}

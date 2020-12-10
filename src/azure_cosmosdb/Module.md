@@ -91,12 +91,14 @@ public function main() {
     Document document = azureCosmosClient->getDocument(properties, document1.id, [1234])
 
     log:printInfo("------------------ Query Documents -------------------");
-    Query cqlQuery = {
+    Query sqlQuery = {
         query: string `SELECT * FROM ${container1.id.toString()} f WHERE f.Address.City = 'Seattle'`,
         parameters: []
     };
-    var result = AzureCosmosClient->queryDocuments(properties, [1234], cqlQuery);
-    log:printInfo("Returned Filtered documents '" + result.toString() + "'.");
+    var resultStream = AzureCosmosClient->queryDocuments(properties, [1234], sqlQuery);
+    error? e = result.forEach(function (json document){
+                    log:printInfo(document);
+                });    
 
     log:printInfo("------------------ Delete Document -------------------");
     var result = AzureCosmosClient->deleteDocument(properties, document.id, [1234]);

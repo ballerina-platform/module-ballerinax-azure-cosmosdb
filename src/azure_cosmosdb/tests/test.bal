@@ -194,20 +194,15 @@ function test_createDatabaseWithBothHeaders(){
 function test_listAllDatabases(){
     log:printInfo("ACTION : listAllDatabases()");
 
-//     var result = AzureCosmosClient->getAllDatabases();
-//     if(result is DatabaseIterator){
-//         //databaseList = <@untainted>result;
-//         //io:println(result);
-//             var database = result.getStream().next();
-//             io:println(database?.value);
-//             io:println(result.getCount());
-//             io:println(result.getHeaders());
-
-        
-
-//     } else {
-//         test:assertFail(msg = result.message());
-//     }
+    var result = AzureCosmosClient->getAllDatabases();
+    if(result is DatabaseIterator){
+        var database = result.getStream().next();
+        io:println(database?.value);
+        io:println(result.getCount());
+        io:println(result.getHeaders());
+    } else {
+        test:assertFail(msg = result.message());
+    }
 }
 
 @test:Config{
@@ -732,7 +727,10 @@ function test_queryDocuments(){
     } else {
         var output = "";
         var doc = result.next();
-        io:println(doc);
+        error? e = result.forEach(function (json document){
+            io:println(document);
+        });
+
     }   
 }
 

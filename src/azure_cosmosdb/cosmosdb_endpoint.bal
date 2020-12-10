@@ -79,17 +79,17 @@ public  client class Client {
 
     # List all databases inside a resource
     # + return - If successful, returns DatabaseList. else returns error.  
-    public remote function getAllDatabases() returns @tainted DatabaseList|error {
-        if self.keyType == TOKEN_TYPE_RESOURCE {
-            return prepareError("Enter a valid master key and token type should be master key");
+    public remote function getAllDatabases() returns @tainted DatabaseIterator|error {
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        return mapJsonToDatabaseListType(jsonresponse); 
+        return mapJsonToDatabaseIteratorType(<@untainted>jsonresponse); 
     }
 
     # Delete a given database inside a resource
