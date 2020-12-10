@@ -78,3 +78,27 @@ const string RESOURCE_PATH_PERMISSION = "permissions";
 const string RESOURCE_PATH_OFFER = "offers";
 
 const string API_VERSION = "2018-12-31";
+const string RESPONSE_HEADERS = "reponseHeaders";
+const string CONTENT_TYPE_QUERY = "application/query+json";
+const string CONNECTION_VALUE = "keep-alive";
+const string ACTIVITY_ID = "ActivityId";
+const int MIN_REQUEST_UNITS = 400;
+const int MIN_TIME_TO_LIVE = 3600;
+const int MAX_TIME_TO_LIVE = 18000;
+const string UTF8_URL_ENCODING = "UTF-8";
+
+const string MINIMUM_MANUAL_THROUGHPUT_ERROR = "The minimum manual throughput is 400 RU/s";
+const string SETTING_BOTH_VALUES_ERROR = "Cannot set both throughput and maxThroughput headers at once";
+const string NULL_PARTITIONKEY_VALUE_ERROR = "Partition key values are null";
+const string INDEXING_DIRECTIVE_ERROR = "Indexing directive should be either Exclude or Include";
+const string CONSISTANCY_LEVEL_ERROR = "Consistacy level should be one of Strong, Bounded, Session, or Eventual"; 
+const string VALIDITY_PERIOD_ERROR = "Resource token validity period must be between 3600 and 18000";
+const string MASTER_KEY_ERROR = "Enter a valid master key and token type should be master key";
+
+const string JSON_PAYLOAD_ACCESS_ERROR = "Error occurred while accessing the JSON payload of the response";
+const string REST_API_INVOKING_ERROR = "Error occurred while invoking the REST API";
+const string NULL_RESOURCE_TYPE_ERROR = "ResourceType is incorrect/null";
+const string NULL_DATE_ERROR = "Date is invalid/null";
+const string NULL_AUTHORIZATION_SIGNATURE_ERROR = "Authorization token is null";
+const string DECODING_ERROR = "Base64 Decoding error";
+const string TIME_STRING_ERROR = "Time string is not correct";

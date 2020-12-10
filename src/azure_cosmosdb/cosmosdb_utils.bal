@@ -77,26 +77,26 @@ HeaderParameters params) returns http:Request|error {
     request.setHeader(API_VERSION_HEADER,params.apiVersion);
     request.setHeader(HOST_HEADER,host);
     request.setHeader(ACCEPT_HEADER,"*/*");
-    request.setHeader(CONNECTION_HEADER,"keep-alive");
+    request.setHeader(CONNECTION_HEADER, CONNECTION_VALUE);
     string?|error date = getTime();
-    if date is string {
+    if(date is string) {
         string? signature = ();
-        if tokenType.toLowerAscii() == TOKEN_TYPE_MASTER {
+        if(tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
             signature = check generateMasterTokenSignature(params.verb, params.resourceType, params.resourceId, keyToken,
             tokenType, tokenVersion,date);
-        } else if tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE {
-            signature = check encoding:encodeUriComponent(keyToken, "UTF-8"); 
+        } else if(tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
+            signature = check encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING); 
         } else {
-            return prepareError("ResourceType is incorrect/null");
+            return prepareError(NULL_RESOURCE_TYPE_ERROR);
         }
         request.setHeader(DATE_HEADER,date);
-        if signature is string {
+        if(signature is string) {
             request.setHeader(AUTHORIZATION_HEADER,signature);
         } else {
-            return prepareError("Authorization token is null");
+            return prepareError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
         }
     } else {
-        return prepareError("Date is invalid/null");
+        return prepareError(NULL_DATE_ERROR);
     }
     return request;
 }
@@ -135,69 +135,69 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
 }
 
 isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request|error {
-    if requestOptions?.indexingDirective is string {
-        if requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE {
+    if(requestOptions?.indexingDirective is string) {
+        if(requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
         } else {
-            return prepareError("Indexing directive should be either Exclude or Include");
+            return prepareError(INDEXING_DIRECTIVE_ERROR);
         }
     }
-    if requestOptions?.isUpsertRequest == true {
+    if(requestOptions?.isUpsertRequest == true) {
         request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
-    if requestOptions?.maxItemCount is int {
+    if(requestOptions?.maxItemCount is int) {
         request.setHeader(MAX_ITEM_COUNT_HEADER, requestOptions?.maxItemCount.toString()); 
     }
-    if requestOptions?.continuationToken is string {
+    if(requestOptions?.continuationToken is string) {
         request.setHeader(CONTINUATION_HEADER, requestOptions?.continuationToken.toString());
     }
-    if requestOptions?.consistancyLevel is string {
-        if requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
+    if(requestOptions?.consistancyLevel is string) {
+        if(requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
         CONSISTANCY_LEVEL_BOUNDED || requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION || 
-        requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL {
+        requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
             request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
         } else {
-            return prepareError("Consistacy level should be one of Strong, Bounded, Session, or Eventual");
+            return prepareError(CONSISTANCY_LEVEL_ERROR);
         }
     }
-    if requestOptions?.sessionToken is string {
+    if(requestOptions?.sessionToken is string) {
         request.setHeader(SESSION_TOKEN_HEADER, requestOptions?.sessionToken.toString());
     }
-    if requestOptions?.changeFeedOption is string {
+    if(requestOptions?.changeFeedOption is string) {
         request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString()); 
     }
-    if requestOptions?.ifNoneMatch is string {
+    if(requestOptions?.ifNoneMatch is string) {
         request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatch.toString());
     }
-    if requestOptions?.partitionKeyRangeId is string {
+    if(requestOptions?.partitionKeyRangeId is string) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
     }
-    if requestOptions?.ifMatch is string {
+    if(requestOptions?.ifMatch is string) {
         request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatch.toString());
     }
-    if requestOptions?.enableCrossPartition == true {
+    if(requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
     }
     return request;
 }
 
 isolated function setExpiryHeader(http:Request request, int validationPeriod) returns http:Request|error {
-    if validationPeriod >= 3600 && validationPeriod <= 18000 {
+    if(validationPeriod >= MIN_TIME_TO_LIVE && validationPeriod <= MAX_TIME_TO_LIVE) {
         request.setHeader(EXPIRY_HEADER, validationPeriod.toString());
         return request;
     }else {
-        return prepareError("Resource token validity period must be between 3600 and 18000");
+        return prepareError(VALIDITY_PERIOD_ERROR);
     }
 }
 
 isolated function getTime() returns string?|error {
-    time:Time currentTime = time:currentTime();
-    var timeInTimeZone = check time:toTimeZone(currentTime, GMT_ZONE);
-    string|error timeString = time:format(timeInTimeZone, "EEE, dd MMM yyyy HH:mm:ss z");
-    if timeString is string {
+    time:Time time1 = time:currentTime();
+    var timeWithZone = check time:toTimeZone(time1, GMT_ZONE);
+    string|error timeString = time:format(timeWithZone, "EEE, dd MMM yyyy HH:mm:ss z");
+    if(timeString is string) {
         return timeString;
     } else {
-        return prepareError("Time is not correct");
+        return prepareError(TIME_STRING_ERROR);
     }
 }
 
@@ -207,14 +207,14 @@ string tokenVersion, string date) returns string?|error {
     string payload = verb.toLowerAscii()+"\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
     + date.toLowerAscii() +"\n" + "" + "\n";
     var decoded = array:fromBase64(keyToken);
-    if decoded is byte[] {
+    if(decoded is byte[]) {
         byte[] digest = crypto:hmacSha256(payload.toBytes(),decoded);
         string signature = array:toBase64(digest);
         authorization = 
         check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");   
         return authorization;
-    } else {     
-        return prepareError("Base64 Decoding error");
+    } else {   
+        return prepareError(DECODING_ERROR);
     }
 }
 
@@ -225,18 +225,18 @@ isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse
 }
 
 isolated function mapResponseToJson(http:Response|http:ClientError httpResponse) returns @tainted json|error { 
-    if (httpResponse is http:Response) {
+    if(httpResponse is http:Response) {
         var jsonResponse = httpResponse.getJsonPayload();
-        if (jsonResponse is json) {
-            if (httpResponse.statusCode != http:STATUS_OK && httpResponse.statusCode != http:STATUS_CREATED) {
-                return createResponseFailMessage(httpResponse,jsonResponse);
+        if(jsonResponse is json) {
+            if(httpResponse.statusCode != http:STATUS_OK && httpResponse.statusCode != http:STATUS_CREATED) {
+                return createResponseFailMessage(httpResponse, jsonResponse);
             }
             return jsonResponse;
         } else {
-            return prepareError("Error occurred while accessing the JSON payload of the response");
+            return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
         }
     } else {
-        return prepareError("Error occurred while invoking the REST API");
+        return prepareError(REST_API_INVOKING_ERROR);
     }
 }
   

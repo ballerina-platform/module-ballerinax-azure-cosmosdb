@@ -19,24 +19,23 @@ public  client class Client {
         self.azureCosmosClient = new (self.baseUrl,httpClientConfig);
     }
 
-    # Create a database inside a resource
+    # To create a database inside a resource
     # + databaseId -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
     # 'x-ms-cosmos-offer-autopilot-settings' headers 
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database|error {
-        if self.keyType == TOKEN_TYPE_RESOURCE {
-            return prepareError("Enter a valid master key and token type should be master key");
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
         }
-        json jsonPayload;
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        json body = {
+        json jsonPayload = {
             id:databaseId
         };
-        request.setJsonPayload(body);
+        request.setJsonPayload(jsonPayload);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setThroughputOrAutopilotHeader(request, throughputProperties);
         var response = self.azureCosmosClient->post(requestPath, request);
@@ -44,38 +43,39 @@ public  client class Client {
         return mapJsonToDatabaseType(jsonreponse);   
     }
 
-    # Create a database inside a resource
+    # To create a database inside a resource
     # + databaseId -  id/name for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
     # 'x-ms-cosmos-offer-autopilot-settings' headers
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabaseIfNotExist(string databaseId, ThroughputProperties? throughputProperties = ()) 
     returns @tainted Database?|error {
-        if self.keyType == TOKEN_TYPE_RESOURCE {
-            return prepareError("Enter a valid master key and token type should be master key");
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
         }
         var result = self->getDatabase(databaseId);
-        if result is error {
+        if(result is error) {
             return self->createDatabase(databaseId, throughputProperties);
         }
         return ();  
     }
 
-    # Retrive a given database inside a resource
+    # To retrive a given database inside a resource
     # + databaseId -  id/name of the database 
     # + return - If successful, returns Database. Else returns error.  
     public remote function getDatabase(string databaseId) returns @tainted Database|error {
-        if self.keyType == TOKEN_TYPE_RESOURCE {
-            return prepareError("Enter a valid master key and token type should be master key");
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonreponse);  
     }
+
 
     # List all databases inside a resource
     # + return - If successful, returns DatabaseList. else returns error.  
@@ -96,11 +96,11 @@ public  client class Client {
     # + databaseId -  id/name of the database to retrieve
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDatabase(string databaseId) returns @tainted boolean|error {
-        if self.keyType == TOKEN_TYPE_RESOURCE {
-            return prepareError("Enter a valid master key and token type should be master key");
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId]);
         HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->delete(requestPath, request);
@@ -116,16 +116,22 @@ public  client class Client {
     public remote function createContainer(@tainted ResourceProperties properties, PartitionKey partitionKey, 
     IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container|error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        json body = {
+        json jsonPayload = {
             "id": properties.containerId, 
-            "partitionKey": <json>partitionKey.cloneWithType(json)
+            "partitionKey": {
+                paths: <json>partitionKey.paths.cloneWithType(json),
+                kind : partitionKey.kind,
+                Version: partitionKey?.keyVersion
+            }
         };
-        json finalc = check body.mergeJson(<json>indexingPolicy.cloneWithType(json));
+        if(indexingPolicy != ()) {
+            jsonPayload = check jsonPayload.mergeJson({"indexingPolicy": <json>indexingPolicy.cloneWithType(json)});
+        }
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setThroughputOrAutopilotHeader(request, throughputProperties);
-        request.setJsonPayload(<@untainted>finalc);
+        request.setJsonPayload(<@untainted>jsonPayload);
         var response = self.azureCosmosClient->post(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToContainerType(jsonreponse);
@@ -219,19 +225,19 @@ public  client class Client {
     public remote function createDocument(@tainted ResourceProperties properties, Document document, 
     RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if requestOptions is RequestHeaderOptions {
+        if(requestOptions is RequestHeaderOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
-        json requestBodyId = {
+        json jsonPayload = {
             id: document.id
         };  
-        json Final = check requestBodyId.mergeJson(document.documentBody);     
-        request.setJsonPayload(Final);
+        jsonPayload = check jsonPayload.mergeJson(document.documentBody);     
+        request.setJsonPayload(jsonPayload);
         var response = self.azureCosmosClient->post(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonreponse);
@@ -288,19 +294,19 @@ public  client class Client {
     public remote function replaceDocument(@tainted ResourceProperties properties, @tainted Document document, 
     RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {         
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if requestOptions is RequestHeaderOptions {
+        if(requestOptions is RequestHeaderOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
-        json requestBodyId = {
+        json jsonPayload = {
             id: document.id
         };  
-        json Final = check requestBodyId.mergeJson(document.documentBody); 
-        request.setJsonPayload(<@untainted>Final);
+        jsonPayload = check jsonPayload.mergeJson(document.documentBody); 
+        request.setJsonPayload(<@untainted>jsonPayload);
         var response = self.azureCosmosClient->put(requestPath, request);
         [json, Headers] jsonreponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonreponse);
@@ -647,18 +653,23 @@ public  client class Client {
     # + return - If successful, returns a Permission. Else returns error.
     public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission, 
     int? validityPeriod = ()) returns @tainted Permission|error {
-        if self.keyType == TOKEN_TYPE_RESOURCE {
-            return prepareError("Enter a valid master key and token type should be master key");
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if validityPeriod is int {
+        if(validityPeriod is int) {
             request = check setExpiryHeader(request,validityPeriod);
         }
-        request.setJsonPayload(<@untainted><json>permission.cloneWithType(json));
+        json jsonPayload = {
+            "id" : permission.id,
+            "permissionMode" : permission.permissionMode,
+            "resource": permission.resourcePath
+        };
+        request.setJsonPayload(jsonPayload);
         var response = self.azureCosmosClient->post(requestPath, request);
         [json, Headers] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
@@ -668,16 +679,27 @@ public  client class Client {
     # + properties - object of type ResourceProperties
     # + userId - the id of user to which the permission belongs
     # + permission - object of type Permission
+    # + validityPeriod - optional validity period parameter which specify  ttl
     # + return - If successful, returns a Permission. Else returns error.
     public remote function replacePermission(@tainted ResourceProperties properties, string userId, @tainted 
-    Permission permission)
-    returns @tainted Permission|error {
+    Permission permission, int? validityPeriod = ()) returns @tainted Permission|error {
+        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+            return prepareError(MASTER_KEY_ERROR);
+        }
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permission.id]);       
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        request.setJsonPayload(<@untainted><json>permission.cloneWithType(json));
+        if(validityPeriod is int) {
+            request = check setExpiryHeader(request,validityPeriod);
+        }
+        json jsonPayload = {
+            "id" : permission.id,
+            "permissionMode" : permission.permissionMode,
+            "resource": permission.resourcePath
+        };
+        request.setJsonPayload(<@untainted>jsonPayload);
         var response = self.azureCosmosClient->put(requestPath, request);
         [json, Headers] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
@@ -762,13 +784,28 @@ public  client class Client {
 
     # Replace an existing offer
     # + offer - an object of type Offer
+    # + offerType - 
     # + return - If successful, returns a Offer. Else returns error.
-    public remote function replaceOffer(Offer offer) returns @tainted Offer|error {
+    public remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_OFFER, offer.id]);       
+        string requestPath = prepareUrl([RESOURCE_PATH_OFFER, offer.id]);       
         HeaderParameters header = mapOfferHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        request.setJsonPayload(offer);
+        json jsonPaylod = {
+            "offerVersion": offer.offerVersion,
+            "content": offer.content,
+            "resource": offer.resourceSelfLink,
+            "offerResourceId": offer.offerResourceId,
+            "id": offer.id,
+            "_rid": offer?.resourceId
+        };
+        if(offerType is string && offer.offerVersion == "V1") {
+            json selectedType = {
+                "offerType": offerType
+            };
+            jsonPaylod = check jsonPaylod.mergeJson(selectedType);
+        }
+        request.setJsonPayload(jsonPaylod);
         var response = self.azureCosmosClient->put(requestPath, request);
         [json, Headers] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToOfferType(jsonResponse);

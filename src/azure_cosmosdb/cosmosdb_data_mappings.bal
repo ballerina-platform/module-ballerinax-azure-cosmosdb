@@ -39,8 +39,8 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
     [payload,headers] = jsonPayload;
     Database db = {};
     db.id = payload.id != ()? payload.id.toString() : EMPTY_STRING;
-    db._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
-    db._self = payload._self != ()? payload._self.toString() : EMPTY_STRING;
+    db.resourceId = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    db.selfReference = payload._self != ()? payload._self.toString() : EMPTY_STRING;
     if headers is Headers {
         db["reponseHeaders"] = headers;
     }    
@@ -62,17 +62,17 @@ isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @
     json payload;
     Headers? headers;
     [payload,headers] = jsonPayload;
-    Container coll = {};
-    coll.id = payload.id.toString();
-    coll._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
-    coll._self = payload._self != ()? payload._self.toString() : EMPTY_STRING;
-    coll.allowMaterializedViews = convertToBoolean(payload.allowMaterializedViews);
-    coll.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
-    coll.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
-    if headers is Headers {
-        coll["reponseHeaders"] = headers;
+    Container container = {};
+    container.id = payload.id.toString();
+    container.resourceId = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    container.selfReference = payload._self != ()? payload._self.toString() : EMPTY_STRING;
+    container.allowMaterializedViews = convertToBoolean(payload.allowMaterializedViews);
+    container.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
+    container.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
+    if(headers is Headers) {
+        container[RESPONSE_HEADERS] = headers;
     }
-    return coll;
+    return container;
 }
 
 isolated function mapJsonToContainerListType([json, Headers] jsonPayload) returns @tainted ContainerList {
@@ -93,8 +93,8 @@ isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @t
     Headers? headers;
     [payload,headers] = jsonPayload;
     doc.id = payload.id != () ? payload.id.toString(): EMPTY_STRING;
-    doc._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
-    doc._self = payload._self != () ? payload._self.toString(): EMPTY_STRING;
+    doc.resourceId = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+    doc.selfReference = payload._self != () ? payload._self.toString(): EMPTY_STRING;
     JsonMap|error document = payload.cloneWithType(JsonMap);
     if document is JsonMap {
         doc.documentBody = mapJsonToDocumentBody(document);
@@ -137,13 +137,12 @@ isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted Ind
 }
 
 isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @tainted PartitionKey {
-    PartitionKey pk = {};
-    pk.paths = convertToStringArray(<json[]>jsonPayload.paths);
-    pk.kind = jsonPayload.kind != () ? jsonPayload.kind.toString(): EMPTY_STRING;
-    pk.'version = convertToInt(jsonPayload.'version);
-    return pk;
+    PartitionKey partitionKey = {};
+    partitionKey.paths = convertToStringArray(<json[]>jsonPayload.paths);
+    partitionKey.kind = jsonPayload.kind != () ? jsonPayload.kind.toString(): EMPTY_STRING;
+    partitionKey.keyVersion = convertToInt(jsonPayload.'version);
+    return partitionKey;
 }
-
 isolated function mapJsonToPartitionKeyListType([json, Headers] jsonPayload) returns @tainted PartitionKeyList {
     PartitionKeyList pkl = {};
     PartitionKeyRange pkr = {};
@@ -194,7 +193,7 @@ isolated function mapJsonToStoredProcedureType([json, Headers?] jsonPayload) ret
     json payload;
     Headers? headers;
     [payload,headers] = jsonPayload;
-    sproc._rid = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
+    sproc.resourceId = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
     sproc.id = payload.id != () ? payload.id.toString(): EMPTY_STRING;
     sproc.body = payload.body !=() ? payload.body.toString(): EMPTY_STRING;
     if headers is Headers {
@@ -220,7 +219,7 @@ isolated function mapJsonToUserDefinedFunctionType([json, Headers?] jsonPayload)
     json payload;
     Headers? headers;
     [payload,headers] = jsonPayload;
-    udf._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    udf.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     udf.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     udf.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     if headers is Headers {
@@ -246,7 +245,7 @@ isolated function mapJsonToTriggerType([json, Headers?] jsonPayload) returns @ta
     json payload;
     Headers? headers;
     [payload,headers] = jsonPayload;
-    trigger._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    trigger.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     trigger.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     trigger.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     trigger.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
@@ -274,7 +273,7 @@ isolated function mapJsonToUserType([json, Headers?] jsonPayload) returns @taint
     json payload;
     Headers? headers;
     [payload,headers] = jsonPayload;
-    user._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     if headers is Headers {
         user["reponseHeaders"] = headers;
@@ -300,10 +299,10 @@ isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns 
     Headers? headers;
     [payload,headers] = jsonPayload;
     permission.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    permission._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    permission._token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
+    permission.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    permission.token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
     permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
-    permission.'resource = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
+    permission.resourcePath = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     if headers is Headers {
         permission["reponseHeaders"] = headers;
     }
@@ -327,15 +326,15 @@ isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tain
     json payload;
     Headers? headers;
     [payload,headers] = jsonPayload;
-    offer._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    offer.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     offer.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     offer.offerVersion = payload.offerVersion != () ? payload.offerVersion.toString() : EMPTY_STRING;
     offer.offerType = payload.offerType != () ? payload.offerType.toString() : EMPTY_STRING;
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
-    offer.'resource = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
+    offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     offer.offerResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
-    if headers is Headers {
-        offer["reponseHeaders"] = headers;
+    if(headers is Headers) {
+        offer[RESPONSE_HEADERS] = headers;
     }
     return offer;
 }

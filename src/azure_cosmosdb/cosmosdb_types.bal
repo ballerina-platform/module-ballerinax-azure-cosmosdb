@@ -16,8 +16,9 @@ public type ResourceProperties record {|
 
 public type Database record {|
     string id = "";
-    string? _rid = ();
-    string _self?;
+    *Common;
+    string collections?;
+    string users?;
     Headers?...;
 |};
 
@@ -29,8 +30,12 @@ public type DatabaseList record {
 
 public type Container record {|
     string id = "";
-    string? _rid = ();
-    string? _self = ();
+    *Common;
+    string collections?;
+    string storedProcedures?;
+    string triggers?;
+    string userDefinedFunctions?;
+    string conflicts?;
     boolean allowMaterializedViews?;
     IndexingPolicy indexingPolicy?;
     PartitionKey partitionKey?;
@@ -46,9 +51,9 @@ public type ContainerList record {|
 
 public type Document record {|
     string id = "";
-    string? _rid?;
-    string? _self?;
-    json? documentBody = {};
+    *Common;
+    string attachments?;
+    json? documentBody =     {};
     string? documentId?;
     any[]? partitionKey = [];
     Headers?...;
@@ -86,7 +91,7 @@ public type Index record {|
 public type PartitionKey record {|
     string[] paths = [];
     string kind = "";
-    int? 'version = ();
+    int? keyVersion?;
 |};
 
 public type PartitionKeyList record {|
@@ -107,8 +112,8 @@ public type PartitionKeyRange record {|
 |};
 
 public type StoredProcedure record {|
-    string? _rid?;
     string id = "";
+    *Common;
     string body = "";
     Headers?...;
 |};
@@ -148,6 +153,7 @@ public type TriggerList record {|
 
 public type User record {|
     *Database;
+    string permissions?;
     Headers?...;
 |};
 
@@ -159,12 +165,12 @@ public type UserList record {|
 |};
 
 public type Permission record {|
-    string? _rid?;
     string id = "";
+    *Common;
     string permissionMode = "";
-    string 'resource = "";
-    int ttl?;
-    string? _token = ();
+    string resourcePath = "";
+    int validityPeriod?;
+    string token?;
     Headers?...;
 |};
 
@@ -177,12 +183,12 @@ public type PermissionList record {|
 
 public type Offer record {|
     string id = "";
-    string _rid = "";
+    *Common;
     string offerVersion = "";
-    string? offerType = ();
-    json content =     {};
-    string 'resource = "";
+    string? offerType?; 
+    json content = {};
     string offerResourceId = "";
+    string resourceSelfLink = "";
     Headers?...;
 |};
 
@@ -213,6 +219,13 @@ public type HeaderParameters record {|
     string apiVersion = API_VERSION;
     string resourceType = "";
     string resourceId = "";
+|};
+
+public type Common record {|
+    string resourceId?;
+    string selfReference?;
+    string timeStamp?;
+    string eTag?;
 |};
 
 public type RequestHeaderOptions record {|
