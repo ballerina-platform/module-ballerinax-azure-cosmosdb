@@ -16,7 +16,7 @@ public  client class Client {
         self.keyType = azureConfig.tokenType;
         self.tokenVersion = azureConfig.tokenVersion;
         http:ClientConfiguration httpClientConfig = {secureSocket: azureConfig.secureSocketConfig};
-        self.azureCosmosClient = new (self.baseUrl,httpClientConfig);
+        self.azureCosmosClient = new (self.baseUrl, httpClientConfig);
     }
 
     # To create a database inside a resource
@@ -121,8 +121,8 @@ public  client class Client {
         json jsonPayload = {
             "id": properties.containerId, 
             "partitionKey": {
-                paths: <json>partitionKey.paths.cloneWithType(json),
-                kind : partitionKey.kind,
+                paths: <json>partitionKey.paths.cloneWithType(json), 
+                kind : partitionKey.kind, 
                 Version: partitionKey?.keyVersion
             }
         };
@@ -245,7 +245,7 @@ public  client class Client {
 
     # List one document inside a collection
     # + properties - object of type ResourceProperties
-    # + documentId - id of  Document,
+    # + documentId - id of  Document, 
     # + partitionKey - array containing value of parition key field.
     # + requestOptions - object of type RequestHeaderOptions
     # + return - If successful, returns Document. Else returns error.  
@@ -662,11 +662,11 @@ public  client class Client {
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if(validityPeriod is int) {
-            request = check setExpiryHeader(request,validityPeriod);
+            request = check setExpiryHeader(request, validityPeriod);
         }
         json jsonPayload = {
-            "id" : permission.id,
-            "permissionMode" : permission.permissionMode,
+            "id" : permission.id, 
+            "permissionMode" : permission.permissionMode, 
             "resource": permission.resourcePath
         };
         request.setJsonPayload(jsonPayload);
@@ -692,11 +692,11 @@ public  client class Client {
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if(validityPeriod is int) {
-            request = check setExpiryHeader(request,validityPeriod);
+            request = check setExpiryHeader(request, validityPeriod);
         }
         json jsonPayload = {
-            "id" : permission.id,
-            "permissionMode" : permission.permissionMode,
+            "id" : permission.id, 
+            "permissionMode" : permission.permissionMode, 
             "resource": permission.resourcePath
         };
         request.setJsonPayload(<@untainted>jsonPayload);
@@ -792,11 +792,11 @@ public  client class Client {
         HeaderParameters header = mapOfferHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json jsonPaylod = {
-            "offerVersion": offer.offerVersion,
-            "content": offer.content,
-            "resource": offer.resourceSelfLink,
-            "offerResourceId": offer.offerResourceId,
-            "id": offer.id,
+            "offerVersion": offer.offerVersion, 
+            "content": offer.content, 
+            "resource": offer.resourceSelfLink, 
+            "offerResourceId": offer.offerResourceId, 
+            "id": offer.id, 
             "_rid": offer?.resourceId
         };
         if(offerType is string && offer.offerVersion == "V1") {
