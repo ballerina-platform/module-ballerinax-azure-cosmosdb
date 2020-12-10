@@ -331,23 +331,23 @@ public  client class Client {
 
     # Query documents inside a collection
     # + properties - object of type ResourceProperties
-    # + cqlQuery - json object of type Query containing the CQL query
+    # + sqlQuery - json object of type Query containing the CQL query
     # + requestOptions - object of type RequestOptions
     # + partitionKey - the value provided for the partition key specified in the document
     # + return - If successful, returns a json. Else returns error. 
-    public remote function queryDocuments(@tainted ResourceProperties properties, any[] partitionKey, Query cqlQuery, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted json|error {
+    public remote function queryDocuments(@tainted ResourceProperties properties, any[] partitionKey, Query sqlQuery, 
+    RequestHeaderOptions? requestOptions = ()) returns @tainted stream<json>|error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, partitionKey);
-        request.setPayload(<json>cqlQuery.cloneWithType(json));
+        request.setPayload(<json>sqlQuery.cloneWithType(json));
         request = check setHeadersForQuery(request);
         var response = self.azureCosmosClient->post(requestPath, request);
-        json jsonresponse = check mapResponseToJson(response);
-        return (jsonresponse);
+        stream<json> jsonresponse = check mapResponseToJsonStream(response);
+        return jsonresponse;
     }
 
     # Create a new stored procedure inside a collection
@@ -812,17 +812,17 @@ public  client class Client {
     }
 
     # Perform queries on Offer resources
-    # + cqlQuery - the CQL query to execute
+    # + sqlQuery - the CQL query to execute
     # + return - If successful, returns a json. Else returns error.
-    public remote function queryOffer(Query cqlQuery) returns @tainted json|error {
+    public remote function queryOffer(Query sqlQuery) returns @tainted stream<json>|error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);
+        string requestPath = prepareUrl([RESOURCE_PATH_OFFER]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        request.setJsonPayload(<json>cqlQuery.cloneWithType(json));
+        request.setJsonPayload(<json>sqlQuery.cloneWithType(json));
         request = check setHeadersForQuery(request);
         var response = self.azureCosmosClient->post(requestPath, request);
-        json jsonresponse = check mapResponseToJson(response);
+        stream<json> jsonresponse = check mapResponseToJsonStream(response);
         return (jsonresponse);
     }
 }

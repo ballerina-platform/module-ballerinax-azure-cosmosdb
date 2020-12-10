@@ -76,7 +76,7 @@ function test_createDatabaseUsingInvalidId(){
     dependsOn: ["test_createDatabase"]
 }
 function test_createDatabaseIfNotExist(){
-    log:printInfo("ACTION : createIfNotExist()");
+    log:printInfo("ACTION : createDatabaseIfNotExist()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseId = string `databasee_${uuid.toString()}`;
@@ -661,7 +661,7 @@ function test_GetOneDocument(){
     dependsOn: ["test_createDocument"]
 }
 function test_GetOneDocumentWithRequestOptions(){
-    log:printInfo("ACTION : GetOneDocument()");
+    log:printInfo("ACTION : GetOneDocumentWithRequestOptions()");
 
     @tainted ResourceProperties resourceProperty = {
         databaseId: database.id, 
@@ -717,24 +717,23 @@ function test_deleteDocument(){
 function test_queryDocuments(){
     log:printInfo("ACTION : queryDocuments()");
 
-    // @tainted ResourceProperties resourceProperty = {
-    //     databaseId: database.id, 
-    //     containerId: container.id
-    // };
-    // int[] partitionKey = [1234];
-    // Query sqlQuery = {
-    //     query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
-    //     parameters: []
-    // };
-    // var result = AzureCosmosClient->queryDocuments(resourceProperty, partitionKey, sqlQuery);   
-    // if(result is error){
-    //     test:assertFail(msg = result.message());
-    // } else {
-    //     var output = "";
-    //     //io:println(result);
-    //     var doc = result.next();
-    //     io:println(doc);
-    // }   
+    @tainted ResourceProperties resourceProperty = {
+        databaseId: database.id, 
+        containerId: container.id
+    };
+    int[] partitionKey = [1234];
+    Query sqlQuery = {
+        query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
+        parameters: []
+    };
+    var result = AzureCosmosClient->queryDocuments(resourceProperty, partitionKey, sqlQuery);   
+    if(result is error){
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+        var doc = result.next();
+        io:println(doc);
+    }   
 }
 
 @test:Config{
@@ -742,7 +741,7 @@ function test_queryDocuments(){
     dependsOn: ["test_createContainer"]
 }
 function test_queryDocumentsWithRequestOptions(){
-    log:printInfo("ACTION : queryDocuments()");
+    log:printInfo("ACTION : queryDocumentsWithRequestOptions()");
 
     @tainted ResourceProperties resourceProperty = {
         databaseId: database.id, 
@@ -1429,16 +1428,17 @@ function test_replaceOfferWithOptionalParameter(){
 function test_queryOffer(){
     log:printInfo("ACTION : queryOffer()");
 
-    // Query offerQuery = {
-    // query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`
-    // };
-    // var result = AzureCosmosClient->queryOffer(offerQuery);   
-    // if(result is error){
-    //     test:assertFail(msg = result.message());
-    // } else {
-    //     var output = "";
-    //     var database = result.next();
-    //         io:println(database);    }  
+    Query offerQuery = {
+    query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`
+    };
+    var result = AzureCosmosClient->queryOffer(offerQuery);   
+    if(result is error){
+        test:assertFail(msg = result.message());
+    } else {
+        var output = "";
+        var offer = result.next();
+        io:println(offer);    
+    }  
 }
 
 @test:Config{
