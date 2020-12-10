@@ -199,13 +199,13 @@ public type ThroughputProperties record {
 };
 
 public type Headers record {|
-    string? continuationHeader = ();
-    string? sessionTokenHeader = ();
-    string? requestChargeHeader = ();
-    string? resourceUsageHeader = ();
-    string? itemCountHeader = ();
-    string? etagHeader = ();
-    string? dateHeader = ();
+    string continuationHeader?;
+    string sessionTokenHeader?;
+    string requestChargeHeader?;
+    string resourceUsageHeader?;
+    string itemCountHeader?;
+    string etagHeader?;
+    string dateHeader?;
 |};
 
 public type HeaderParameters record {|
@@ -216,17 +216,17 @@ public type HeaderParameters record {|
 |};
 
 public type RequestHeaderOptions record {|
-    boolean? isUpsertRequest = ();
-    string? indexingDirective = ();
-    int? maxItemCount = ();
-    string? continuationToken = ();
-    string? consistancyLevel = ();
-    string? sessionToken = ();
-    string? changeFeedOption = ();
-    string? ifNoneMatch = ();
-    string? partitionKeyRangeId = ();
-    boolean? enableCrossPartition = ();
-    string? ifMatch = ();
+    boolean isUpsertRequest?;
+    string indexingDirective?;
+    int maxItemCount?;
+    string continuationToken?;
+    string consistancyLevel?;
+    string sessionToken?;
+    string changeFeedOption?;
+    string ifNoneMatch?;
+    string partitionKeyRangeId?;
+    boolean enableCrossPartition?;
+    string ifMatch?;
 |};
 
 public type AzureError distinct error;
