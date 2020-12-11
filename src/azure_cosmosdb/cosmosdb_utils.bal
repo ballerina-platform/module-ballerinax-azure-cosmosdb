@@ -240,6 +240,23 @@ isolated function mapResponseToJson(http:Response|http:ClientError httpResponse)
     }
 }
 
+isolated function mapResponseHeadersToObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error 
+{
+    Headers responseHeaders = {};
+    if(httpResponse is http:Response) {
+        responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
+        responseHeaders.sessionTokenHeader = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
+        responseHeaders.requestChargeHeader = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
+        responseHeaders.resourceUsageHeader = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
+        responseHeaders.itemCountHeader = getHeaderIfExist(httpResponse, ITEM_COUNT_HEADER);
+        responseHeaders.etagHeader = getHeaderIfExist(httpResponse, ETAG_HEADER);
+        responseHeaders.dateHeader = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
+        return responseHeaders;
+    } else {
+        return prepareError(REST_API_INVOKING_ERROR);
+    }
+}
+
 function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) returns @tainted stream<json>|error { 
     if(httpResponse is http:Response) {
         var jsonResponse = httpResponse.getJsonPayload();
@@ -313,10 +330,10 @@ isolated function convertToInt(json|error value) returns int {
     return 0;
 }
 
-isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string {
+isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string? {
     if(httpResponse.hasHeader(headername)){
         return httpResponse.getHeader(headername);
     } else {
-        return "";
+        return ();
     }
 }

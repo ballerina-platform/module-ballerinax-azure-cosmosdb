@@ -1,4 +1,5 @@
-import ballerina/http;
+//import ballerina/http;
+//import ballerina/io;
 
 isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
     HeaderParameters params = {};
@@ -16,23 +17,6 @@ isolated function mapOfferHeaderType(string httpVerb, string url) returns Header
     return params;
 }
 
-isolated function mapResponseHeadersToObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error 
-{
-    Headers responseHeaders = {};
-    if(httpResponse is http:Response) {
-        responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
-        responseHeaders.sessionTokenHeader = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
-        responseHeaders.requestChargeHeader = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
-        responseHeaders.resourceUsageHeader = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
-        responseHeaders.itemCountHeader = getHeaderIfExist(httpResponse, ITEM_COUNT_HEADER);
-        responseHeaders.etagHeader = getHeaderIfExist(httpResponse, ETAG_HEADER);
-        responseHeaders.dateHeader = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
-        return responseHeaders;
-    } else {
-        return prepareError(REST_API_INVOKING_ERROR);
-    }
-}
-
 isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Database {
     json payload;
     Headers? headers;
@@ -47,15 +31,16 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
     return database;
 }
 
-function mapJsonToDatabaseIteratorType([json, Headers] jsonPayload) returns @tainted DatabaseIterator {
-    json payload;
-    Headers headers;
-    [payload,headers] = jsonPayload;
-    stream<Database> databaseStream = convertToDatabaseStream(<json[]>payload.Databases);
-    int count = convertToInt(payload._count);
-    DatabaseIterator iterator = new(databaseStream, count, headers);
-    return iterator;
-}
+// isolated function mapJsonToDatabaseIteratorType([json, Headers] jsonPayload) returns @tainted DatabaseIterator {
+//     json payload;
+//     Headers headers;
+//     [payload,headers] = jsonPayload;
+//     //stream<Database> databaseStream = convertToDatabaseStream(<json[]>payload.Databases);
+//     int count = convertToInt(payload._count);
+//     DatabaseIterator iterator = new(databaseStream, count, headers);
+//     return iterator;
+
+// }
 
 isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @tainted Container {
     json payload;
@@ -351,15 +336,15 @@ isolated function mapJsonToOfferListType([json, Headers?] jsonPayload) returns @
     return offerList;
 }
 
-function convertToDatabaseStream(json[] sourceDatabaseArrayJsonObject) returns @tainted stream<Database> {
-    Database[] databases = [];
-    int i = 0;
+isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) returns @tainted  Database[] {
+    int length = databases.length();
+    int i = length;
     foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
         databases[i] = mapJsonToDatabaseType([jsonDatabase,()]);
         i = i + 1;
     }
-    stream<Database> db = databases.toStream();
-    return db;
+    //stream<Database> db = databases.toStream();
+    return databases;
 }
 
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 

@@ -1,1 +1,1 @@
-{"ballerinax/azure_cosmosdb:0.1.0:Headers":{"continuationHeader":"string","sessionTokenHeader":"string","requestChargeHeader":"string","resourceUsageHeader":"string","itemCountHeader":"string","etagHeader":"string","dateHeader":"string"}}
+{"ballerinax/azure_cosmosdb:0.1.0:Headers":{"continuationHeader":"string?","sessionTokenHeader":"string?","requestChargeHeader":"string?","resourceUsageHeader":"string?","itemCountHeader":"string?","etagHeader":"string?","dateHeader":"string?"}}

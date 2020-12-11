@@ -84,7 +84,7 @@ public  client class Client {
 
     # List all databases inside a resource
     # + return - If successful, returns DatabaseList. else returns error.  
-    public remote function getAllDatabases() returns @tainted DatabaseIterator|error {
+    public remote function getAllDatabases() returns @tainted stream<Database>|error {
         if(self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -92,9 +92,28 @@ public  client class Client {
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        var response = self.azureCosmosClient->get(requestPath, request);
+        stream<Database> databaseStream = check self.retrieveDatabases(requestPath, request);
+        return databaseStream;
+    }
+
+    private function retrieveDatabases(string path, http:Request request, string? continuationHeader = (), Database[]? 
+    databaseArray = ()) returns @tainted stream<Database>|error {
+        if(continuationHeader is string){
+            request.setHeader(CONTINUATION_HEADER, continuationHeader);
+        }
+        var response = self.azureCosmosClient->get(path, request);
+        stream<Database> databaseStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        return mapJsonToDatabaseIteratorType(<@untainted>jsonresponse); 
+        json payload;
+        Headers headers;
+        [payload,headers] = jsonresponse;
+        Database[] databases = databaseArray == ()? []:<Database[]>databaseArray;
+        Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
+        databaseStream = (<@untainted>finalArray).toStream();
+        if(headers?.continuationHeader != ()){            
+            databaseStream = check self.retrieveDatabases(path, request, headers.continuationHeader,finalArray);
+        }
+        return databaseStream;
     }
 
     # Delete a given database inside a resource
