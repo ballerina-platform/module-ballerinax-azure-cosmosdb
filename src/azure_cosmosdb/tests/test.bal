@@ -524,7 +524,6 @@ function test_createDocumentWithRequestOptions(){
         indexingDirective : "Include", 
         //sessionToken: "tag", - error handled in azure
         //no need
-        maxItemCount : 4, 
         consistancyLevel : "Eventual", 
         //changeFeedOption : "Incremental feed", 
         ifNoneMatch: "hhh"
@@ -610,7 +609,6 @@ function test_getDocumentListWithRequestOptions(){
     RequestHeaderOptions options = {
         isUpsertRequest: true, 
         indexingDirective : "Include", 
-        maxItemCount : 4, 
         consistancyLevel : "Eventual", 
        // changeFeedOption : "Incremental feed", 
         sessionToken: "tag", 
@@ -668,7 +666,6 @@ function test_GetOneDocumentWithRequestOptions(){
 //these are not needed
         isUpsertRequest: true, 
         indexingDirective : "Include", 
-        maxItemCount : 4, 
         changeFeedOption : "Incremental feed"
     };
     var result = AzureCosmosClient->getDocument(resourceProperty, document.id, [1234], options);
@@ -747,10 +744,8 @@ function test_queryDocumentsWithRequestOptions(){
         parameters: []
     };
     RequestHeaderOptions options = {
-        maxItemCount : 4, 
         consistancyLevel : "Eventual", 
         sessionToken: "tag", 
-        continuationToken: "token", 
         enableCrossPartition: true, 
 //these are not needed
         ifNoneMatch: "hhh", 
@@ -835,8 +830,8 @@ function test_getAllStoredProcedures(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
-    }  
+        var doc = result.next();
+        io:println(doc);    }  
 }
 
 @test:Config{

@@ -53,13 +53,6 @@ public type Document record {|
     Headers?...;
 |};
 
-public type DocumentList record {|
-    string _rid = "";
-    Document[] documents = [];
-    int _count = 0;
-    Headers reponseHeaders?;
-|};
-
 public type IndexingPolicy record {|
     string indexingMode = "";
     boolean automatic = true;
@@ -109,13 +102,6 @@ public type StoredProcedure record {|
     string id = "";
     *Common;
     string body = "";
-    Headers?...;
-|};
-
-public type StoredProcedureList record {|
-    string _rid = "";
-    StoredProcedure[] storedProcedures = [];
-    int _count = 0;
     Headers?...;
 |};
 
@@ -223,17 +209,15 @@ public type Common record {|
 |};
 
 public type RequestHeaderOptions record {|
-    boolean isUpsertRequest?;
-    string indexingDirective?;
-    int maxItemCount?;
-    string continuationToken?;
-    string consistancyLevel?;
-    string sessionToken?;
-    string changeFeedOption?;
-    string ifNoneMatch?;
-    string partitionKeyRangeId?;
-    boolean enableCrossPartition?;
-    string ifMatch?;
+    boolean? isUpsertRequest = ();
+    string? indexingDirective = ();
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? changeFeedOption = ();
+    string? ifNoneMatch = ();
+    string? partitionKeyRangeId = ();
+    boolean? enableCrossPartition = ();
+    string? ifMatch = ();
 |};
 
 public type AzureError distinct error;

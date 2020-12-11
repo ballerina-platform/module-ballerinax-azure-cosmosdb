@@ -145,12 +145,10 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     if(requestOptions?.isUpsertRequest == true){
         request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
-    if(requestOptions?.maxItemCount is int){
-        request.setHeader(MAX_ITEM_COUNT_HEADER, requestOptions?.maxItemCount.toString()); 
-    }
-    if(requestOptions?.continuationToken is string){
-        request.setHeader(CONTINUATION_HEADER, requestOptions?.continuationToken.toString());
-    }
+
+    // if(requestOptions?.continuationToken is string){
+    //     request.setHeader(CONTINUATION_HEADER, requestOptions?.continuationToken.toString());
+    // }
     if(requestOptions?.consistancyLevel is string){
         if(requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
         CONSISTANCY_LEVEL_BOUNDED || requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION || 

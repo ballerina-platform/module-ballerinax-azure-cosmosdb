@@ -31,17 +31,6 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
     return database;
 }
 
-// isolated function mapJsonToDatabaseIteratorType([json, Headers] jsonPayload) returns @tainted DatabaseIterator {
-//     json payload;
-//     Headers headers;
-//     [payload,headers] = jsonPayload;
-//     //stream<Database> databaseStream = convertToDatabaseStream(<json[]>payload.Databases);
-//     int count = convertToInt(payload._count);
-//     DatabaseIterator iterator = new(databaseStream, count, headers);
-//     return iterator;
-
-// }
-
 isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @tainted Container {
     json payload;
     Headers? headers;
@@ -58,21 +47,6 @@ isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @
     }
     return container;
 }
-
-// isolated function mapJsonToContainerListType([json, Headers] jsonPayload) returns @tainted ContainerList {
-//     ContainerList containerList = {};
-//     json payload;
-//     Headers headers;
-//                    // io:println(finalArray);
-
-//     [payload, headers] = jsonPayload;
-//     containerList._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
-//     containerList._count = convertToInt(payload._count);
-//     io:println(<json[]>payload.DocumentCollections);
-//     containerList.containers = convertToContainerArray(<json[]>payload.DocumentCollections);
-//     containerList.reponseHeaders = headers;
-//     return containerList;
-// }
 
 isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @tainted Document {  
     Document document = {};
@@ -101,18 +75,6 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
     }
     return reponsePayload;
 }
-
-// isolated function mapJsonToDocumentListType([json, Headers] jsonPayload) returns @tainted DocumentList|error {
-//     DocumentList documentlist = {};
-//     json payload;
-//     Headers headers;
-//     [payload, headers] = jsonPayload;
-//     documentlist._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
-//     documentlist._count = convertToInt(payload._count);
-//     documentlist.documents = check convertToDocumentArray(<json[]>payload.Documents);
-//     documentlist.reponseHeaders = headers;
-//     return documentlist;
-// } 
 
 isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
     IndexingPolicy indexingPolicy = {};
@@ -188,18 +150,6 @@ isolated function mapJsonToStoredProcedureType([json, Headers?] jsonPayload) ret
         storedProcedure[RESPONSE_HEADERS] = headers;
     }
     return storedProcedure;
-}
-
-isolated function mapJsonToStoredProcedureListType([json, Headers] jsonPayload) returns @tainted StoredProcedureList {
-    StoredProcedureList storedProcedureList = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
-    storedProcedureList._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
-    storedProcedureList.storedProcedures = convertToStoredProcedureArray(<json[]>payload.StoredProcedures);
-    storedProcedureList._count = convertToInt(payload._count);
-    storedProcedureList[RESPONSE_HEADERS] = headers;
-    return storedProcedureList;
 }
 
 isolated function mapJsonToUserDefinedFunctionType([json, Headers?] jsonPayload) returns @tainted UserDefinedFunction {
@@ -369,6 +319,15 @@ isolated function convertToDocumentArray(@tainted Document[] documents,json[] so
     return documents;
 }
 
+isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, json[] sourceSprocArrayJsonObject) returns @tainted StoredProcedure[] { 
+    int length = storedProcedures.length();
+    int i = length;    foreach json storedProcedure in sourceSprocArrayJsonObject { 
+        storedProcedures[i] = mapJsonToStoredProcedureType([storedProcedure, ()]);
+        i = i + 1;
+    }
+    return storedProcedures;
+}
+
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
     IncludedPath[] includedPaths = [];
     int i = 0;
@@ -400,16 +359,6 @@ isolated function convertToIndexArray(json[] sourcePathArrayJsonObject) returns 
         i = i + 1;
     }
     return indexes;
-}
-
-isolated function convertToStoredProcedureArray(json[] sourceSprocArrayJsonObject) returns @tainted StoredProcedure[] { 
-    StoredProcedure[] storedProcedures = [];
-    int i = 0;
-    foreach json storedProcedure in sourceSprocArrayJsonObject { 
-        storedProcedures[i] = mapJsonToStoredProcedureType([storedProcedure, ()]);
-        i = i + 1;
-    }
-    return storedProcedures;
 }
 
 isolated function userDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunction[] { 

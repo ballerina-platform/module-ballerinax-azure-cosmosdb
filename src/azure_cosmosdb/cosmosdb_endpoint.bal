@@ -344,11 +344,7 @@ public  client class Client {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Document> documentStream = check self.retrieveDocuments(requestPath, request);
-        return documentStream;
-        // var response = self.azureCosmosClient->get(requestPath, request);
-        // [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        // DocumentList list =  check mapJsonToDocumentListType(jsonreponse); 
-        // return list;    
+        return documentStream; 
     }
 
     private function retrieveDocuments(string path, http:Request request, string? continuationHeader = (), Document[]? 
@@ -476,17 +472,42 @@ public  client class Client {
 
     # List all stored procedures inside a collection
     # + properties - object of type ResourceProperties
+    # + maxItemCount -
     # + return - If successful, returns a StoredProcedureList. Else returns error. 
-    public remote function listStoredProcedures(@tainted ResourceProperties properties) returns @tainted 
-    StoredProcedureList|error {
+    public remote function listStoredProcedures(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted 
+    stream<StoredProcedure>|error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        var response = self.azureCosmosClient->get(requestPath, request);
-        [json, Headers] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToStoredProcedureListType(jsonResponse);  
+        if(maxItemCount is int){
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
+        }
+        stream<StoredProcedure> storedProcedureStream = check self.retrieveStoredProcedures(requestPath, request);
+        return storedProcedureStream;         
+    }
+
+    private function retrieveStoredProcedures(string path, http:Request request, string? continuationHeader = (), StoredProcedure[]? 
+    storedProcedureArray = (), int? maxItemCount = ()) returns @tainted stream<StoredProcedure>|error {
+        if(continuationHeader is string){
+            request.setHeader(CONTINUATION_HEADER, continuationHeader);
+        }
+        var response = self.azureCosmosClient->get(path, request);
+        stream<StoredProcedure> storedProcedureStream  = [].toStream();
+        [json, Headers] jsonresponse = check mapResponseToTuple(response);
+        json payload;
+        Headers headers;
+        [payload,headers] = jsonresponse;
+        StoredProcedure[] storedProcedures = storedProcedureArray == ()? []:<StoredProcedure[]>storedProcedureArray;
+        if(payload.StoredProcedures is json){
+            StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
+            storedProcedureStream = (<@untainted>finalArray).toStream();
+            if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
+                storedProcedureStream = check self.retrieveStoredProcedures(path, request, headers.continuationHeader,finalArray);
+            }
+        }
+        return storedProcedureStream;
     }
 
     # Delete a stored procedure inside a collection
