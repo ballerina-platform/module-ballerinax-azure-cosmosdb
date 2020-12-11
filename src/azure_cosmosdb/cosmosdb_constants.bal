@@ -102,3 +102,16 @@ const string NULL_DATE_ERROR = "Date is invalid/null";
 const string NULL_AUTHORIZATION_SIGNATURE_ERROR = "Authorization token is null";
 const string DECODING_ERROR = "Base64 Decoding error";
 const string TIME_STRING_ERROR = "Time string is not correct";
+
+const string JSON_KEY_ID = "id";
+const string JSON_KEY_RESOURCE_ID = "_rid";
+const string JSON_KEY_PERMISSIONMODE = "permissionMode"; 
+const string JSON_KEY_RESOURCE = "resource";
+const string JSON_KEY_OFFER_RESOURCE_ID = "offerResourceId";
+const string JSON_KEY_OFFER_TYPE = "offerType";
+const string JSON_KEY_OFFER_VERSION = "offerVersion";
+const string JSON_KEY_OFFER_VERSION_1 = "V1";
+const string JSON_KEY_CONTENT = "content";
+
+const string STATUS_NOT_FOUND_STRING = "404";
+const string STATUS = "status";

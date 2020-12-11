@@ -55,7 +55,12 @@ public  client class Client {
         }
         var result = self->getDatabase(databaseId);
         if(result is error) {
-            return self->createDatabase(databaseId, throughputProperties);
+            string status = result.detail()["status"].toString();
+            if(status == STATUS_NOT_FOUND_STRING){
+                return self->createDatabase(databaseId, throughputProperties);
+            } else {
+                return prepareError(string `External azure error ${status}`);
+            }
         }
         return ();  
     }
@@ -147,10 +152,14 @@ public  client class Client {
     IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container?|error {
         var result = self->getContainer(properties);
         if result is error {
-            return self->createContainer(properties, partitionKey);
-        } else {
-            return prepareError("The collection with specific id alrady exist");
+            string status = result.detail()["status"].toString();
+            if(status == STATUS_NOT_FOUND_STRING){
+                return self->createContainer(properties, partitionKey);
+            } else {
+                return prepareError(string `External azure error ${status}`);
+            }
         }
+        return ();
     }
 
     // # To create a collection inside a database

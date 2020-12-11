@@ -62,8 +62,6 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted> url;
 }
 
-# To create a custom error instance
-# + return - returns error.
 isolated function prepareError(string message, error? err = ()) returns error { 
     error azureError;
     if(err is error){
@@ -290,7 +288,9 @@ isolated function createResponseFailMessage(http:Response httpResponse, json err
     if(stoppingIndex is int){
         errorMessage += " : " + message.substring(0, stoppingIndex);
     }
-    return prepareError(errorMessage);
+    error details = error(errorMessage, status = httpResponse.statusCode);
+    return details;
+    //return prepareError(errorMessage, details);
 }
 
 isolated function convertToBoolean(json|error value) returns boolean { 
