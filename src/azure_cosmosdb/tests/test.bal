@@ -591,8 +591,8 @@ function test_getDocumentList(){
     if(result is error){
         test:assertFail(msg = result.message());
     } else {
-        var output = "";
-        io:println(result);
+       var database = result.next();
+        io:println(database?.value);
     }
 }
 

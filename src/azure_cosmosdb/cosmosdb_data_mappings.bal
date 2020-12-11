@@ -102,17 +102,17 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
     return reponsePayload;
 }
 
-isolated function mapJsonToDocumentListType([json, Headers] jsonPayload) returns @tainted DocumentList|error {
-    DocumentList documentlist = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
-    documentlist._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
-    documentlist._count = convertToInt(payload._count);
-    documentlist.documents = check convertToDocumentArray(<json[]>payload.Documents);
-    documentlist.reponseHeaders = headers;
-    return documentlist;
-} 
+// isolated function mapJsonToDocumentListType([json, Headers] jsonPayload) returns @tainted DocumentList|error {
+//     DocumentList documentlist = {};
+//     json payload;
+//     Headers headers;
+//     [payload, headers] = jsonPayload;
+//     documentlist._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+//     documentlist._count = convertToInt(payload._count);
+//     documentlist.documents = check convertToDocumentArray(<json[]>payload.Documents);
+//     documentlist.reponseHeaders = headers;
+//     return documentlist;
+// } 
 
 isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
     IndexingPolicy indexingPolicy = {};
@@ -359,6 +359,16 @@ isolated function convertToContainerArray(@tainted Container[] containers, json[
     return containers;
 }
 
+isolated function convertToDocumentArray(@tainted Document[] documents,json[] sourceDocumentArrayJsonObject) returns @tainted Document[] { 
+    int length = documents.length();
+    int i = length;
+    foreach json document in sourceDocumentArrayJsonObject { 
+        documents[i] = mapJsonToDocumentType([document, ()]);
+        i = i + 1;
+    }
+    return documents;
+}
+
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
     IncludedPath[] includedPaths = [];
     int i = 0;
@@ -390,16 +400,6 @@ isolated function convertToIndexArray(json[] sourcePathArrayJsonObject) returns 
         i = i + 1;
     }
     return indexes;
-}
-
-isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns @tainted Document[]|error { 
-    Document[] documents = [];
-    int i = 0;
-    foreach json document in sourceDocumentArrayJsonObject { 
-        documents[i] = mapJsonToDocumentType([document, ()]);
-        i = i + 1;
-    }
-    return documents;
 }
 
 isolated function convertToStoredProcedureArray(json[] sourceSprocArrayJsonObject) returns @tainted StoredProcedure[] { 

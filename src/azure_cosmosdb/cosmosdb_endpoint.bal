@@ -328,9 +328,10 @@ public  client class Client {
     # List all the documents inside a collection
     # + properties - object of type ResourceProperties
     # + requestOptions - object of type RequestHeaderOptions
+    # + maxItemCount -
     # + return - If successful, returns DocumentList. Else returns error. 
-    public remote function getDocumentList(@tainted ResourceProperties properties, RequestHeaderOptions? requestOptions = ()) 
-    returns @tainted DocumentList|error { 
+    public remote function getDocumentList(@tainted ResourceProperties properties, RequestHeaderOptions? requestOptions = (), int? maxItemCount = ()) 
+    returns @tainted stream<Document>|error { 
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
@@ -339,10 +340,37 @@ public  client class Client {
         if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
         }
-        var response = self.azureCosmosClient->get(requestPath, request);
-        [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        DocumentList list =  check mapJsonToDocumentListType(jsonreponse); 
-        return list;    
+        if(maxItemCount is int){
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
+        }
+        stream<Document> documentStream = check self.retrieveDocuments(requestPath, request);
+        return documentStream;
+        // var response = self.azureCosmosClient->get(requestPath, request);
+        // [json, Headers] jsonreponse = check mapResponseToTuple(response);
+        // DocumentList list =  check mapJsonToDocumentListType(jsonreponse); 
+        // return list;    
+    }
+
+    private function retrieveDocuments(string path, http:Request request, string? continuationHeader = (), Document[]? 
+    documentArray = (), int? maxItemCount = ()) returns @tainted stream<Document>|error {
+        if(continuationHeader is string){
+            request.setHeader(CONTINUATION_HEADER, continuationHeader);
+        }
+        var response = self.azureCosmosClient->get(path, request);
+        stream<Document> documentStream  = [].toStream();
+        [json, Headers] jsonresponse = check mapResponseToTuple(response);
+        json payload;
+        Headers headers;
+        [payload,headers] = jsonresponse;
+        Document[] documents = documentArray is Document[]?<Document[]>documentArray:[];
+        if(payload.Documents is json){
+            Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
+            documentStream = (<@untainted>finalArray).toStream();
+            if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
+                documentStream = check self.retrieveDocuments(path, request, headers.continuationHeader,finalArray);
+            }
+        }
+        return documentStream;
     }
 
     # Replace a document inside a collection
