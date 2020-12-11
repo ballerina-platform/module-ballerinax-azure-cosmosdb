@@ -26,9 +26,7 @@ Database database = {};
 Database manual = {};
 Database auto = {};
 Database ifexist = {};
-//DatabaseList databaseList = {};
 Container container = {};
-ContainerList containerList = {};
 Document document = {};
 StoredProcedure storedPrcedure = {};
 UserDefinedFunction udf = {};
@@ -194,7 +192,7 @@ function test_createDatabaseWithBothHeaders(){
 function test_listAllDatabases(){
     log:printInfo("ACTION : listAllDatabases()");
 
-    var result = AzureCosmosClient->getAllDatabases();
+    var result = AzureCosmosClient->getDatabases(6);
     if(result is stream<Database>){
         var database = result.next();
         io:println(database?.value);
@@ -245,8 +243,6 @@ function test_listOneDatabase(){
         "test_deleteContainer", 
         "test_createPermissionWithTTL", 
         "test_getOffer", 
-        "test_replaceOffer", 
-        "test_replaceOfferWithOptionalParameter", 
         "test_getCollection_Resource_Token"
     ]
 }
@@ -387,9 +383,9 @@ function test_getAllContainers(){
     log:printInfo("ACTION : getAllContainers()");
 
     var result = AzureCosmosClient->getAllContainers(database.id);
-    if(result is ContainerList){
-        containerList = <@untainted>result;
-        io:println(result);
+    if(result is stream<Container>){
+        var database = result.next();
+        io:println(database?.value);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -412,7 +408,8 @@ function test_getAllContainers(){
         "test_GetOneDocumentWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentListWithRequestOptions", 
-        "test_getCollection_Resource_Token"
+        "test_getCollection_Resource_Token",
+        "test_getAllContainers"
     ]
 }
 function test_deleteContainer(){
@@ -725,6 +722,7 @@ function test_queryDocuments(){
     } else {
         var output = "";
         var doc = result.next();
+        io:println(doc);
         error? e = result.forEach(function (json document){
             io:println(document);
         });
@@ -765,7 +763,8 @@ function test_queryDocumentsWithRequestOptions(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
+        var doc = result.next();
+        io:println(doc);
     }   
 }
 
@@ -1367,7 +1366,8 @@ function test_getOffer(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOffer(){
     log:printInfo("ACTION : replaceOffer()");
@@ -1393,7 +1393,8 @@ function test_replaceOffer(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOfferWithOptionalParameter(){
     log:printInfo("ACTION : replaceOfferWithOptionalParameter()");

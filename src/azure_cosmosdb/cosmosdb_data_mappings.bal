@@ -59,17 +59,20 @@ isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @
     return container;
 }
 
-isolated function mapJsonToContainerListType([json, Headers] jsonPayload) returns @tainted ContainerList {
-    ContainerList containerList = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
-    containerList._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
-    containerList._count = convertToInt(payload._count);
-    containerList.containers = convertToContainerArray(<json[]>payload.DocumentCollections);
-    containerList.reponseHeaders = headers;
-    return containerList;
-}
+// isolated function mapJsonToContainerListType([json, Headers] jsonPayload) returns @tainted ContainerList {
+//     ContainerList containerList = {};
+//     json payload;
+//     Headers headers;
+//                    // io:println(finalArray);
+
+//     [payload, headers] = jsonPayload;
+//     containerList._rid = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
+//     containerList._count = convertToInt(payload._count);
+//     io:println(<json[]>payload.DocumentCollections);
+//     containerList.containers = convertToContainerArray(<json[]>payload.DocumentCollections);
+//     containerList.reponseHeaders = headers;
+//     return containerList;
+// }
 
 isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @tainted Document {  
     Document document = {};
@@ -336,15 +339,24 @@ isolated function mapJsonToOfferListType([json, Headers?] jsonPayload) returns @
     return offerList;
 }
 
-isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) returns @tainted  Database[] {
+isolated function convertToDatabaseArray(@tainted Database[] databases, json[] sourceDatabaseArrayJsonObject) returns @tainted  Database[] {
     int length = databases.length();
     int i = length;
     foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
         databases[i] = mapJsonToDatabaseType([jsonDatabase,()]);
         i = i + 1;
     }
-    //stream<Database> db = databases.toStream();
     return databases;
+}
+
+isolated function convertToContainerArray(@tainted Container[] containers, json[] sourceCollectionArrayJsonObject) returns @tainted Container[] {
+    int length = containers.length();
+    int i = length;   
+    foreach json jsonCollection in sourceCollectionArrayJsonObject {
+        containers[i] = mapJsonToContainerType([jsonCollection, ()]);
+        i = i + 1;
+    }
+    return containers;
 }
 
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
@@ -378,16 +390,6 @@ isolated function convertToIndexArray(json[] sourcePathArrayJsonObject) returns 
         i = i + 1;
     }
     return indexes;
-}
-
-isolated function convertToContainerArray(json[] sourceCollectionArrayJsonObject) returns @tainted Container[] {
-    Container[] collections = [];
-    int i = 0;
-    foreach json jsonCollection in sourceCollectionArrayJsonObject {
-        collections[i] = mapJsonToContainerType([jsonCollection, ()]);
-        i = i + 1;
-    }
-    return collections;
 }
 
 isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns @tainted Document[]|error { 

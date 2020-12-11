@@ -1,4 +1,5 @@
 import ballerina/http;
+//import ballerina/io;
 
 # Azure Cosmos DB Client object.
 public  client class Client {
@@ -83,8 +84,9 @@ public  client class Client {
 
 
     # List all databases inside a resource
-    # + return - If successful, returns DatabaseList. else returns error.  
-    public remote function getAllDatabases() returns @tainted stream<Database>|error {
+    # + return - If successful, returns DatabaseList. else returns error. 
+    # + maxItemCount - 
+    public remote function getDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
         if(self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -92,12 +94,15 @@ public  client class Client {
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        if(maxItemCount is int){
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
+        }
         stream<Database> databaseStream = check self.retrieveDatabases(requestPath, request);
         return databaseStream;
     }
 
     private function retrieveDatabases(string path, http:Request request, string? continuationHeader = (), Database[]? 
-    databaseArray = ()) returns @tainted stream<Database>|error {
+    databaseArray = (), int? maxItemCount = ()) returns @tainted stream<Database>|error {
         if(continuationHeader is string){
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -108,10 +113,12 @@ public  client class Client {
         Headers headers;
         [payload,headers] = jsonresponse;
         Database[] databases = databaseArray == ()? []:<Database[]>databaseArray;
-        Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
-        databaseStream = (<@untainted>finalArray).toStream();
-        if(headers?.continuationHeader != ()){            
-            databaseStream = check self.retrieveDatabases(path, request, headers.continuationHeader,finalArray);
+        if(payload.Databases is json){
+            Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
+            databaseStream = (<@untainted>finalArray).toStream();
+            if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
+                databaseStream = check self.retrieveDatabases(path, request, headers.continuationHeader,finalArray);
+            }
         }
         return databaseStream;
     }
@@ -192,15 +199,40 @@ public  client class Client {
 
     # List all collections inside a database
     # + databaseId -  id/name of the database where the collections are in.
+    # + maxItemCount - 
     # + return - If successful, returns ContainerList. Else returns error.  
-    public remote function getAllContainers(string databaseId) returns @tainted ContainerList|error {
+    public remote function getAllContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        var response = self.azureCosmosClient->get(requestPath, request);
-        [json, Headers] jsonreponse = check mapResponseToTuple(response);
-        return mapJsonToContainerListType(jsonreponse);
+        if(maxItemCount is int){
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
+        }
+        stream<Container> containerStream = check self.retrieveContainers(requestPath, request);
+        return containerStream;
+    }
+
+    private function retrieveContainers(string path, http:Request request, string? continuationHeader = (), Container[]? 
+    containerArray = (), int? maxItemCount = ()) returns @tainted stream<Container>|error {
+        if(continuationHeader is string){
+            request.setHeader(CONTINUATION_HEADER, continuationHeader);
+        }
+        var response = self.azureCosmosClient->get(path, request);
+        stream<Container> containerStream  = [].toStream();
+        [json, Headers] jsonresponse = check mapResponseToTuple(response);
+        json payload;
+        Headers headers;
+        [payload,headers] = jsonresponse;
+        Container[] containers = containerArray == ()? []:<Container[]>containerArray;
+        if(payload.DocumentCollections is json){
+            Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
+            containerStream = (<@untainted>finalArray).toStream();
+            if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
+                containerStream = check self.retrieveContainers(path, request, headers.continuationHeader,finalArray);
+            }
+        }
+        return containerStream;
     }
 
     # Retrive one collection inside a database
