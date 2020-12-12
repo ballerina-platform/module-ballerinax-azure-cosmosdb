@@ -36,13 +36,6 @@ public type Container record {|
     Headers?...;
 |};
 
-public type ContainerList record {|
-    string _rid = "";
-    Container[] containers = [];
-    Headers reponseHeaders?;
-    int _count = 0;
-|};
-
 public type Document record {|
     string id = "";
     *Common;
@@ -133,13 +126,6 @@ public type Permission record {|
     Headers?...;
 |};
 
-public type PermissionList record {|
-    string _rid = "";
-    Permission[] permissions = [];
-    int _count = 0;
-    Headers? reponseHeaders = ();
-|};
-
 public type Offer record {|
     string id = "";
     *Common;
@@ -148,13 +134,6 @@ public type Offer record {|
     json content = {};
     string offerResourceId = "";
     string resourceSelfLink = "";
-    Headers?...;
-|};
-
-public type OfferList record {|
-    string _rid = "";
-    Offer[] offers = [];
-    int _count = 0;
     Headers?...;
 |};
 
