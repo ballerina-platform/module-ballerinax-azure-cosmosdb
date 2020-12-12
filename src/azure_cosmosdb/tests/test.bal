@@ -33,7 +33,7 @@ UserDefinedFunction udf = {};
 Trigger trigger = {};
 User test_user = {};
 Permission permission = {};
-OfferList offerList = {};
+//stream<Offer> offerList = [].toStream();
 
 @test:Config{
     groups: ["database"]
@@ -242,8 +242,10 @@ function test_listOneDatabase(){
         "test_createContainerIfNotExist", 
         "test_deleteContainer", 
         "test_createPermissionWithTTL", 
-        "test_getOffer", 
-        "test_getCollection_Resource_Token"
+        "test_getCollection_Resource_Token",
+        "test_getOffer",
+        "test_replaceOffer",
+        "test_replaceOfferWithOptionalParameter"
     ]
 }
 function test_deleteDatabase(){
@@ -819,7 +821,7 @@ function test_replaceStoredProcedure(){
     dependsOn: ["test_createContainer"]
 }
 function test_getAllStoredProcedures(){
-    log:printInfo("ACTION : replaceStoredProcedure()");
+    log:printInfo("ACTION : getAllStoredProcedures()");
 
     @tainted ResourceProperties resourceProperty = {
         databaseId: database.id, 
@@ -831,7 +833,8 @@ function test_getAllStoredProcedures(){
     } else {
         var output = "";
         var doc = result.next();
-        io:println(doc);    }  
+        io:println(doc);    
+    }  
 }
 
 @test:Config{
@@ -858,7 +861,7 @@ function test_executeOneStoredProcedure(){
 
 @test:Config{
     groups: ["storedProcedure"], 
-    dependsOn: ["test_createStoredProcedure", "test_executeOneStoredProcedure"]
+    dependsOn: ["test_createStoredProcedure", "test_executeOneStoredProcedure", "test_getAllStoredProcedures"]
 }
 function test_deleteOneStoredProcedure(){
     log:printInfo("ACTION : deleteOneStoredProcedure()");
@@ -945,7 +948,8 @@ function test_listAllUDF(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
+        var doc = result.next();
+        io:println(doc);    
     }  
 }
 
@@ -1046,7 +1050,8 @@ function test_listTriggers(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
+        var doc = result.next();
+        io:println(doc);
     } 
 }
 
@@ -1150,7 +1155,8 @@ function test_listUsers(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
+        var doc = result.next();
+        io:println(doc);    
     } 
 }
 
@@ -1283,7 +1289,8 @@ function test_listPermissions(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
+        var doc = result.next();
+        io:println(doc);     
     } 
 }
 
@@ -1336,9 +1343,9 @@ function test_listOffers(){
     log:printInfo("ACTION : listOffers()");
 
     var result = AzureCosmosClient->listOffers();  
-    if(result is OfferList){
-        offerList = <@untainted>result;
-        io:println(result);
+    if(result is stream<Offer>){
+        var doc = result.next();
+        io:println(doc);    
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -1351,66 +1358,79 @@ function test_listOffers(){
 function test_getOffer(){
     log:printInfo("ACTION : getOffer()");
 
-    var result = AzureCosmosClient->getOffer(offerList.offers[0].id);  
-    if(result is error){
-        test:assertFail(msg = result.message());
-    } else {
-        var output = "";
-        io:println(result);
+    //these fuctions can be depending on the list Offers
+    var result = AzureCosmosClient->listOffers();  
+    if(result is stream<Offer>){
+        var doc = result.next();
+        var result2 = AzureCosmosClient->getOffer(<string>doc["value"]["id"]);  
+        if(result2 is error){
+            test:assertFail(msg = result2.message());
+        } else {
+            var output = "";
+            io:println(result2);
+        }  
     }  
+
 }
 
 @test:Config{
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 }
 function test_replaceOffer(){
     log:printInfo("ACTION : replaceOffer()");
 
-    Offer replaceOfferBody = {
-        offerVersion: "V2", 
-        offerType: "Invalid",    
-        content: {  
-            "offerThroughput": 600
-        },  
-        resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,  
-        offerResourceId: string `${container?.resourceId.toString()}`, 
-        id: offerList.offers[0].id, 
-        resourceId: <string>offerList.offers[0]?.resourceId
-    };
-    var result = AzureCosmosClient->replaceOffer(replaceOfferBody);  
-    if(result is error){
-        test:assertFail(msg = result.message());
-    } else {
-        var output = "";
-        io:println(result);
-    } 
+    //these fuctions can be depending on the list Offers
+    var result = AzureCosmosClient->listOffers();  
+    if(result is stream<Offer>){
+        var doc = result.next();
+        Offer replaceOfferBody = {
+            offerVersion: "V2", 
+            offerType: "Invalid",    
+            content: {  
+                "offerThroughput": 600
+            },  
+            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,  
+            offerResourceId: string `${container?.resourceId.toString()}`, 
+            id: <string>doc["value"]["id"], 
+            resourceId: <string>doc["value"]["resourceId"]
+        };
+        var result2 = AzureCosmosClient->replaceOffer(<@untainted>replaceOfferBody);  
+        if(result2 is error){
+            test:assertFail(msg = result2.message());
+        } else {
+            var output = "";
+            io:println(result2);
+        }  
+    }  
 }
 
 @test:Config{
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 }
 function test_replaceOfferWithOptionalParameter(){
     log:printInfo("ACTION : replaceOfferWithOptionalParameter()");
 
-    Offer replaceOfferBody = {
-        offerVersion: "V2", 
-        content: {  
-            "offerThroughput": 600
-        },  
-        resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,  
-        offerResourceId: string `${container?.resourceId.toString()}`, 
-        id: offerList.offers[0].id, 
-        resourceId: <string>offerList.offers[0]?.resourceId 
-    };
-    var result = AzureCosmosClient->replaceOffer(replaceOfferBody);  
-    if(result is error){
-        test:assertFail(msg = result.message());
-    } else {
-        var output = "";
-        io:println(result);
-    } 
+    var result = AzureCosmosClient->listOffers();  
+    if(result is stream<Offer>){
+        var doc = result.next();
+        Offer replaceOfferBody = {
+            offerVersion: "V2", 
+            content: {  
+                "offerThroughput": 600
+            },  
+            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,  
+            offerResourceId: string `${container?.resourceId.toString()}`, 
+            id: <string>doc["value"]["id"], 
+            resourceId: <string>doc["value"]["resourceId"]
+        };
+        var result2 = AzureCosmosClient->replaceOffer(<@untainted>replaceOfferBody);  
+        if(result2 is error){
+            test:assertFail(msg = result2.message());
+        } else {
+            var output = "";
+            io:println(result2);
+        }  
+    }  
 }
 
 @test:Config{

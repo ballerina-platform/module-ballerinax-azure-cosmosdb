@@ -166,17 +166,17 @@ isolated function mapJsonToUserDefinedFunctionType([json, Headers?] jsonPayload)
     return userDefinedFunction;
 }
 
-isolated function mapJsonToUserDefinedFunctionListType([json, Headers] jsonPayload) returns @tainted UserDefinedFunctionList|error {
-    UserDefinedFunctionList userDefinedFunctionList = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
-    userDefinedFunctionList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    userDefinedFunctionList.UserDefinedFunctions = userDefinedFunctionArray(<json[]>payload.UserDefinedFunctions);
-    userDefinedFunctionList._count = convertToInt(payload._count);
-    userDefinedFunctionList[RESPONSE_HEADERS] = headers;
-    return userDefinedFunctionList;
-}
+// isolated function mapJsonToUserDefinedFunctionListType([json, Headers] jsonPayload) returns @tainted UserDefinedFunctionList|error {
+//     UserDefinedFunctionList userDefinedFunctionList = {};
+//     json payload;
+//     Headers headers;
+//     [payload, headers] = jsonPayload;
+//     userDefinedFunctionList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+//     userDefinedFunctionList.UserDefinedFunctions = userDefinedFunctionArray(<json[]>payload.UserDefinedFunctions);
+//     userDefinedFunctionList._count = convertToInt(payload._count);
+//     userDefinedFunctionList[RESPONSE_HEADERS] = headers;
+//     return userDefinedFunctionList;
+// }
 
 isolated function mapJsonToTriggerType([json, Headers?] jsonPayload) returns @tainted Trigger {
     Trigger trigger = {};
@@ -194,17 +194,17 @@ isolated function mapJsonToTriggerType([json, Headers?] jsonPayload) returns @ta
     return trigger;
 }
 
-isolated function mapJsonToTriggerListType([json, Headers] jsonPayload) returns @tainted TriggerList|error {
-    TriggerList triggerList = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
-    triggerList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    triggerList.triggers = ConvertToTriggerArray(<json[]>payload.Triggers);
-    triggerList._count = convertToInt(payload._count);
-    triggerList[RESPONSE_HEADERS] = headers;
-    return triggerList;
-}
+// isolated function mapJsonToTriggerListType([json, Headers] jsonPayload) returns @tainted TriggerList|error {
+//     TriggerList triggerList = {};
+//     json payload;
+//     Headers headers;
+//     [payload, headers] = jsonPayload;
+//     triggerList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+//     triggerList.triggers = ConvertToTriggerArray(<json[]>payload.Triggers);
+//     triggerList._count = convertToInt(payload._count);
+//     triggerList[RESPONSE_HEADERS] = headers;
+//     return triggerList;
+// }
 
 isolated function mapJsonToUserType([json, Headers?] jsonPayload) returns @tainted User {
     User user = {};
@@ -219,17 +219,17 @@ isolated function mapJsonToUserType([json, Headers?] jsonPayload) returns @taint
     return user;
 }
 
-isolated function mapJsonToUserListType([json, Headers?] jsonPayload) returns @tainted UserList {
-    UserList userList = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
-    userList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    userList.users = ConvertToUserArray(<json[]>payload.Users);
-    userList._count = convertToInt(payload._count);
-    userList[RESPONSE_HEADERS] = headers;
-    return userList;
-}
+// isolated function mapJsonToUserListType([json, Headers?] jsonPayload) returns @tainted UserList {
+//     UserList userList = {};
+//     json payload;
+//     Headers? headers;
+//     [payload, headers] = jsonPayload;
+//     userList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+//     userList.users = ConvertToUserArray(<json[]>payload.Users);
+//     userList._count = convertToInt(payload._count);
+//     userList[RESPONSE_HEADERS] = headers;
+//     return userList;
+// }
 
 isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns @tainted Permission {
     Permission permission = {};
@@ -247,17 +247,17 @@ isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns 
     return permission;
 }
 
-isolated function mapJsonToPermissionListType([json, Headers?] jsonPayload) returns @tainted PermissionList {
-    PermissionList permissionList = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
-    permissionList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    permissionList.permissions = ConvertToPermissionArray(<json[]>payload.Permissions);
-    permissionList._count = convertToInt(payload._count);
-    permissionList[RESPONSE_HEADERS] = headers;
-    return permissionList;
-}
+// isolated function mapJsonToPermissionListType([json, Headers?] jsonPayload) returns @tainted PermissionList {
+//     PermissionList permissionList = {};
+//     json payload;
+//     Headers? headers;
+//     [payload, headers] = jsonPayload;
+//     permissionList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+//     permissionList.permissions = ConvertToPermissionArray(<json[]>payload.Permissions);
+//     permissionList._count = convertToInt(payload._count);
+//     permissionList[RESPONSE_HEADERS] = headers;
+//     return permissionList;
+// }
 
 isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tainted Offer {
     Offer offer = {};
@@ -277,17 +277,17 @@ isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tain
     return offer;
 }
 
-isolated function mapJsonToOfferListType([json, Headers?] jsonPayload) returns @tainted OfferList {
-    OfferList offerList = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
-    offerList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    offerList.offers = ConvertToOfferArray(<json[]>payload.Offers);
-    offerList._count = convertToInt(payload._count);
-    offerList[RESPONSE_HEADERS] = headers;
-    return offerList;
-}
+// isolated function mapJsonToOfferListType([json, Headers?] jsonPayload) returns @tainted OfferList {
+//     OfferList offerList = {};
+//     json payload;
+//     Headers? headers;
+//     [payload, headers] = jsonPayload;
+//     offerList._rid = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+//     offerList.offers = ConvertToOfferArray(<json[]>payload.Offers);
+//     offerList._count = convertToInt(payload._count);
+//     offerList[RESPONSE_HEADERS] = headers;
+//     return offerList;
+// }
 
 isolated function convertToDatabaseArray(@tainted Database[] databases, json[] sourceDatabaseArrayJsonObject) returns @tainted  Database[] {
     int length = databases.length();
@@ -321,11 +321,62 @@ isolated function convertToDocumentArray(@tainted Document[] documents,json[] so
 
 isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, json[] sourceSprocArrayJsonObject) returns @tainted StoredProcedure[] { 
     int length = storedProcedures.length();
-    int i = length;    foreach json storedProcedure in sourceSprocArrayJsonObject { 
+    int i = length;    
+    foreach json storedProcedure in sourceSprocArrayJsonObject { 
         storedProcedures[i] = mapJsonToStoredProcedureType([storedProcedure, ()]);
         i = i + 1;
     }
     return storedProcedures;
+}
+
+isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunction[] userDefinedFunctions, json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunction[] { 
+    int length = userDefinedFunctions.length();
+    int i = length;
+    foreach json userDefinedFunction in sourceUdfArrayJsonObject { 
+        userDefinedFunctions[i] = mapJsonToUserDefinedFunctionType([userDefinedFunction, ()]);
+        i = i + 1;
+    }
+    return userDefinedFunctions;
+}
+
+isolated function convertToTriggerArray(@tainted Trigger[] triggers, json[] sourceTriggerArrayJsonObject) returns @tainted Trigger[] { 
+    int length = triggers.length();
+    int i = length; 
+    foreach json trigger in sourceTriggerArrayJsonObject { 
+        triggers[i] = mapJsonToTriggerType([trigger, ()]);
+        i = i + 1;
+    }
+    return triggers;
+} 
+
+isolated function convertToUserArray(@tainted User[] users, json[] sourceTriggerArrayJsonObject) returns @tainted User[] { 
+    int length = users.length();
+    int i = length;
+    foreach json user in sourceTriggerArrayJsonObject { 
+        users[i] = mapJsonToUserType([user, ()]);
+        i = i + 1;
+    }
+    return users;
+}
+
+isolated function convertToPermissionArray(@tainted Permission[] permissions, json[] sourcePermissionArrayJsonObject) returns @tainted Permission[] { 
+    int length = permissions.length();
+    int i = length;
+    foreach json permission in sourcePermissionArrayJsonObject { 
+        permissions[i] = mapJsonToPermissionType([permission, ()]);
+        i = i + 1;
+    }
+    return permissions;
+}
+
+isolated function ConvertToOfferArray(@tainted Offer[] offers, json[] sourceOfferArrayJsonObject) returns @tainted Offer[] { 
+    int length = offers.length();
+    int i = length;
+    foreach json offer in sourceOfferArrayJsonObject { 
+        offers[i] = mapJsonToOfferType([offer, ()]);
+        i = i + 1;
+    }
+    return offers;
 }
 
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
@@ -361,15 +412,7 @@ isolated function convertToIndexArray(json[] sourcePathArrayJsonObject) returns 
     return indexes;
 }
 
-isolated function userDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunction[] { 
-    UserDefinedFunction[] userDefinedFunctions = [];
-    int i = 0;
-    foreach json userDefinedFunction in sourceUdfArrayJsonObject { 
-        userDefinedFunctions[i] = mapJsonToUserDefinedFunctionType([userDefinedFunction, ()]);
-        i = i + 1;
-    }
-    return userDefinedFunctions;
-}
+
 
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {
     string[] strings = [];
@@ -381,42 +424,4 @@ isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @ta
     return strings;
 }
 
-isolated function ConvertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns @tainted Trigger[] { 
-    Trigger[] triggers = [];
-    int i = 0;
-    foreach json trigger in sourceTriggerArrayJsonObject { 
-        triggers[i] = mapJsonToTriggerType([trigger, ()]);
-        i = i + 1;
-    }
-    return triggers;
-}
 
-isolated function ConvertToUserArray(json[] sourceTriggerArrayJsonObject) returns @tainted User[] { 
-    User[] users = [];
-    int i = 0;
-    foreach json user in sourceTriggerArrayJsonObject { 
-        users[i] = mapJsonToUserType([user, ()]);
-        i = i + 1;
-    }
-    return users;
-}
-
-isolated function ConvertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns @tainted Permission[] { 
-    Permission[] permissions = [];
-    int i = 0;
-    foreach json permission in sourcePermissionArrayJsonObject { 
-        permissions[i] = mapJsonToPermissionType([permission, ()]);
-        i = i + 1;
-    }
-    return permissions;
-}
-
-isolated function ConvertToOfferArray(json[] sourceOfferArrayJsonObject) returns @tainted Offer[] { 
-    Offer[] offers = [];
-    int i = 0;
-    foreach json offer in sourceOfferArrayJsonObject { 
-        offers[i] = mapJsonToOfferType([offer, ()]);
-        i = i + 1;
-    }
-    return offers;
-}

@@ -110,13 +110,6 @@ public type UserDefinedFunction record {|
     Headers?...;
 |};
 
-public type UserDefinedFunctionList record {|
-    string _rid = "";
-    UserDefinedFunction[] UserDefinedFunctions = [];
-    int _count = 0;
-    Headers?...;
-|};
-
 public type Trigger record {|
     *StoredProcedure;
     string triggerOperation = "";
@@ -124,24 +117,10 @@ public type Trigger record {|
     Headers?...;
 |};
 
-public type TriggerList record {|
-    string _rid = "";
-    Trigger[] triggers = [];
-    int _count = 0;
-    Headers?...;
-|};
-
 public type User record {|
     *Database;
     string permissions?;
     Headers?...;
-|};
-
-public type UserList record {|
-    string _rid = "";
-    User[] users = [];
-    int _count = 0;
-    Headers? reponseHeaders = ();
 |};
 
 public type Permission record {|
