@@ -91,7 +91,7 @@ isolated function mapJsonToPartitionKeyListType([json, Headers] jsonPayload) ret
     //partitionKeyList.resourceId = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
     //partitionKeyList.partitionKeyRanges = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
     partitionKeyList.reponseHeaders = headers;
-    partitionKeyList._count = convertToInt(payload._count);
+    partitionKeyList.count = convertToInt(payload._count);
     return partitionKeyList;
 }
 

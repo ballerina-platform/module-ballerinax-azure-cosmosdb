@@ -14,6 +14,14 @@ public type ResourceProperties record {|
     string containerId = "";
 |};
 
+
+public type Common record {|
+    string resourceId?;
+    string selfReference?;
+    string timeStamp?;
+    string eTag?;
+|};
+
 public type Database record {|
     string id = "";
     *Common;
@@ -36,13 +44,22 @@ public type Container record {|
     Headers?...;
 |};
 
+public type Headers record {|
+    string? continuationHeader = ();
+    string? sessionTokenHeader = ();
+    string? requestChargeHeader = ();
+    string? resourceUsageHeader = ();
+    string? itemCountHeader = ();
+    string? etagHeader = ();
+    string? dateHeader = ();
+|};
+
 public type Document record {|
     string id = "";
     *Common;
-    string attachments?;
     json? documentBody =     {};
-    string? documentId?;
-    any[]? partitionKey = [];
+    any[]? partitionKey = ();
+    string attachments?;
     Headers?...;
 |};
 
@@ -75,10 +92,10 @@ public type PartitionKey record {|
 |};
 
 public type PartitionKeyList record {|
-    string _rid = "";
+    string resourceId = "";
     PartitionKeyRange[] PartitionKeyRanges = [];
     Headers reponseHeaders?;
-    int _count = 0;
+    int count = 0;
 |};
 
 public type PartitionKeyRange record {|
@@ -111,7 +128,8 @@ public type Trigger record {|
 |};
 
 public type User record {|
-    *Database;
+    string id = "";
+    *Common;
     string permissions?;
     Headers?...;
 |};
@@ -142,28 +160,11 @@ public type ThroughputProperties record {
     json? maxThroughput = ();
 };
 
-public type Headers record {|
-    string? continuationHeader = ();
-    string? sessionTokenHeader = ();
-    string? requestChargeHeader = ();
-    string? resourceUsageHeader = ();
-    string? itemCountHeader = ();
-    string? etagHeader = ();
-    string? dateHeader = ();
-|};
-
 public type HeaderParameters record {|
     string verb = "";
     string apiVersion = API_VERSION;
     string resourceType = "";
     string resourceId = "";
-|};
-
-public type Common record {|
-    string resourceId?;
-    string selfReference?;
-    string timeStamp?;
-    string eTag?;
 |};
 
 public type RequestHeaderOptions record {|
