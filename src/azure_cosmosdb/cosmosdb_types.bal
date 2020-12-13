@@ -14,12 +14,33 @@ public type ResourceProperties record {|
     string containerId = "";
 |};
 
-
 public type Common record {|
     string resourceId?;
     string selfReference?;
     string timeStamp?;
     string eTag?;
+|};
+
+public type RequestHeaderOptions record {|
+    boolean? isUpsertRequest = ();
+    string? indexingDirective = ();
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? changeFeedOption = ();
+    string? ifNoneMatch = ();
+    string? partitionKeyRangeId = ();
+    boolean? enableCrossPartition = ();
+    string? ifMatch = ();
+|};
+
+public type Headers record {|
+    string? continuationHeader = ();
+    string? sessionTokenHeader = ();
+    string? requestChargeHeader = ();
+    string? resourceUsageHeader = ();
+    string? itemCountHeader = ();
+    string? etagHeader = ();
+    string? dateHeader = ();
 |};
 
 public type Database record {|
@@ -42,16 +63,6 @@ public type Container record {|
     IndexingPolicy indexingPolicy?;
     PartitionKey partitionKey?;
     Headers?...;
-|};
-
-public type Headers record {|
-    string? continuationHeader = ();
-    string? sessionTokenHeader = ();
-    string? requestChargeHeader = ();
-    string? resourceUsageHeader = ();
-    string? itemCountHeader = ();
-    string? etagHeader = ();
-    string? dateHeader = ();
 |};
 
 public type Document record {|
@@ -165,18 +176,6 @@ public type HeaderParameters record {|
     string apiVersion = API_VERSION;
     string resourceType = "";
     string resourceId = "";
-|};
-
-public type RequestHeaderOptions record {|
-    boolean? isUpsertRequest = ();
-    string? indexingDirective = ();
-    string? consistancyLevel = ();
-    string? sessionToken = ();
-    string? changeFeedOption = ();
-    string? ifNoneMatch = ();
-    string? partitionKeyRangeId = ();
-    boolean? enableCrossPartition = ();
-    string? ifMatch = ();
 |};
 
 public type AzureError distinct error;

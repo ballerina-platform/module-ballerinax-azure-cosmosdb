@@ -206,7 +206,8 @@ isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tain
     return offer;
 }
 
-isolated function convertToDatabaseArray(@tainted Database[] databases, json[] sourceDatabaseArrayJsonObject) returns @tainted  Database[] {
+isolated function convertToDatabaseArray(@tainted Database[] databases, json[] sourceDatabaseArrayJsonObject) 
+returns @tainted  Database[] {
     int length = databases.length();
     int i = length;
     foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
@@ -216,7 +217,8 @@ isolated function convertToDatabaseArray(@tainted Database[] databases, json[] s
     return databases;
 }
 
-isolated function convertToContainerArray(@tainted Container[] containers, json[] sourceCollectionArrayJsonObject) returns @tainted Container[] {
+isolated function convertToContainerArray(@tainted Container[] containers, json[] sourceCollectionArrayJsonObject) 
+returns @tainted Container[] {
     int length = containers.length();
     int i = length;   
     foreach json jsonCollection in sourceCollectionArrayJsonObject {
@@ -226,7 +228,8 @@ isolated function convertToContainerArray(@tainted Container[] containers, json[
     return containers;
 }
 
-isolated function convertToDocumentArray(@tainted Document[] documents,json[] sourceDocumentArrayJsonObject) returns @tainted Document[] { 
+isolated function convertToDocumentArray(@tainted Document[] documents,json[] sourceDocumentArrayJsonObject) returns 
+@tainted Document[] { 
     int length = documents.length();
     int i = length;
     foreach json document in sourceDocumentArrayJsonObject { 
@@ -236,7 +239,8 @@ isolated function convertToDocumentArray(@tainted Document[] documents,json[] so
     return documents;
 }
 
-isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, json[] sourceSprocArrayJsonObject) returns @tainted StoredProcedure[] { 
+isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, json[] sourceSprocArrayJsonObject) 
+returns @tainted StoredProcedure[] { 
     int length = storedProcedures.length();
     int i = length;    
     foreach json storedProcedure in sourceSprocArrayJsonObject { 
@@ -246,7 +250,8 @@ isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] store
     return storedProcedures;
 }
 
-isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunction[] userDefinedFunctions, json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunction[] { 
+isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunction[] userDefinedFunctions, json[] sourceUdfArrayJsonObject) 
+returns @tainted UserDefinedFunction[] { 
     int length = userDefinedFunctions.length();
     int i = length;
     foreach json userDefinedFunction in sourceUdfArrayJsonObject { 
@@ -276,7 +281,8 @@ isolated function convertToUserArray(@tainted User[] users, json[] sourceTrigger
     return users;
 }
 
-isolated function convertToPermissionArray(@tainted Permission[] permissions, json[] sourcePermissionArrayJsonObject) returns @tainted Permission[] { 
+isolated function convertToPermissionArray(@tainted Permission[] permissions, json[] sourcePermissionArrayJsonObject) 
+returns @tainted Permission[] { 
     int length = permissions.length();
     int i = length;
     foreach json permission in sourcePermissionArrayJsonObject { 

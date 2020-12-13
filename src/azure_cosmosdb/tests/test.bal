@@ -33,7 +33,6 @@ UserDefinedFunction udf = {};
 Trigger trigger = {};
 User test_user = {};
 Permission permission = {};
-//stream<Offer> offerList = [].toStream();
 
 @test:Config{
     groups: ["database"]
