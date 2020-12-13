@@ -56,7 +56,7 @@ public  client class Client {
         }
         var result = self->getDatabase(databaseId);
         if(result is error) {
-            string status = result.detail()["status"].toString();
+            string status = result.detail()[STATUS].toString();
             if(status == STATUS_NOT_FOUND_STRING){
                 return self->createDatabase(databaseId, throughputProperties);
             } else {
@@ -176,7 +176,7 @@ public  client class Client {
     IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container?|error {
         var result = self->getContainer(properties);
         if result is error {
-            string status = result.detail()["status"].toString();
+            string status = result.detail()[STATUS].toString();
             if(status == STATUS_NOT_FOUND_STRING){
                 return self->createContainer(properties, partitionKey);
             } else {

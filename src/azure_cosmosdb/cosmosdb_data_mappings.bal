@@ -1,6 +1,3 @@
-//import ballerina/http;
-//import ballerina/io;
-
 isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
     HeaderParameters params = {};
     params.verb = httpVerb;
@@ -18,10 +15,8 @@ isolated function mapOfferHeaderType(string httpVerb, string url) returns Header
 }
 
 isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Database {
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
     Database database = {};
+    var [payload, headers] = jsonPayload;
     database.id = payload.id != ()? payload.id.toString() : EMPTY_STRING;
     database.resourceId = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
     database.selfReference = payload._self != ()? payload._self.toString() : EMPTY_STRING;
@@ -32,10 +27,8 @@ isolated function mapJsonToDatabaseType([json, Headers?] jsonPayload) returns Da
 }
 
 isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @tainted Container {
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
     Container container = {};
+    var [payload, headers] = jsonPayload;
     container.id = payload.id.toString();
     container.resourceId = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
     container.selfReference = payload._self != ()? payload._self.toString() : EMPTY_STRING;
@@ -50,9 +43,7 @@ isolated function mapJsonToContainerType([json, Headers?] jsonPayload) returns @
 
 isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @tainted Document {  
     Document document = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     document.id = payload.id != () ? payload.id.toString(): EMPTY_STRING;
     document.resourceId = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
     document.selfReference = payload._self != () ? payload._self.toString(): EMPTY_STRING;
@@ -96,9 +87,7 @@ isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @taint
 isolated function mapJsonToPartitionKeyListType([json, Headers] jsonPayload) returns @tainted PartitionKeyList {
     PartitionKeyList partitionKeyList = {};
     PartitionKeyRange pkr = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     //partitionKeyList.resourceId = payload._rid != () ? payload._rid.toString(): EMPTY_STRING;
     //partitionKeyList.partitionKeyRanges = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
     partitionKeyList.reponseHeaders = headers;
@@ -140,9 +129,7 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 
 isolated function mapJsonToStoredProcedureType([json, Headers?] jsonPayload) returns @tainted StoredProcedure {
     StoredProcedure storedProcedure = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     storedProcedure.resourceId = payload._rid != ()? payload._rid.toString() : EMPTY_STRING;
     storedProcedure.id = payload.id != () ? payload.id.toString(): EMPTY_STRING;
     storedProcedure.body = payload.body !=() ? payload.body.toString(): EMPTY_STRING;
@@ -154,9 +141,7 @@ isolated function mapJsonToStoredProcedureType([json, Headers?] jsonPayload) ret
 
 isolated function mapJsonToUserDefinedFunctionType([json, Headers?] jsonPayload) returns @tainted UserDefinedFunction {
     UserDefinedFunction userDefinedFunction = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     userDefinedFunction.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     userDefinedFunction.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     userDefinedFunction.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
@@ -168,9 +153,7 @@ isolated function mapJsonToUserDefinedFunctionType([json, Headers?] jsonPayload)
 
 isolated function mapJsonToTriggerType([json, Headers?] jsonPayload) returns @tainted Trigger {
     Trigger trigger = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     trigger.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     trigger.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     trigger.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
@@ -184,9 +167,7 @@ isolated function mapJsonToTriggerType([json, Headers?] jsonPayload) returns @ta
 
 isolated function mapJsonToUserType([json, Headers?] jsonPayload) returns @tainted User {
     User user = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     if(headers is Headers) {
@@ -197,9 +178,7 @@ isolated function mapJsonToUserType([json, Headers?] jsonPayload) returns @taint
 
 isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns @tainted Permission {
     Permission permission = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     permission.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     permission.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     permission.token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
@@ -213,9 +192,7 @@ isolated function mapJsonToPermissionType([json, Headers?] jsonPayload) returns 
 
 isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tainted Offer {
     Offer offer = {};
-    json payload;
-    Headers? headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     offer.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     offer.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     offer.offerVersion = payload.offerVersion != () ? payload.offerVersion.toString() : EMPTY_STRING;
@@ -352,8 +329,6 @@ isolated function convertToIndexArray(json[] sourcePathArrayJsonObject) returns 
     return indexes;
 }
 
-
-
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {
     string[] strings = [];
     int i = 0;
@@ -363,5 +338,3 @@ isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @ta
     }
     return strings;
 }
-
-
