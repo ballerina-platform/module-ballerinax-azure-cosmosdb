@@ -109,9 +109,7 @@ public  client class Client {
         var response = self.azureCosmosClient->get(path, request);
         stream<Database> databaseStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload,headers] = jsonresponse;
+        var [payload,headers] = jsonresponse;
         Database[] databases = databaseArray == ()? []:<Database[]>databaseArray;
         if(payload.Databases is json){
             Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
@@ -221,9 +219,7 @@ public  client class Client {
         var response = self.azureCosmosClient->get(path, request);
         stream<Container> containerStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload,headers] = jsonresponse;
+        var [payload,headers] = jsonresponse;
         Container[] containers = containerArray == ()? []:<Container[]>containerArray;
         if(payload.DocumentCollections is json){
             Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
@@ -355,9 +351,7 @@ public  client class Client {
         var response = self.azureCosmosClient->get(path, request);
         stream<Document> documentStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload,headers] = jsonresponse;
+        var [payload,headers] = jsonresponse;
         Document[] documents = documentArray is Document[]?<Document[]>documentArray:[];
         if(payload.Documents is json){
             Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
@@ -496,9 +490,7 @@ public  client class Client {
         var response = self.azureCosmosClient->get(path, request);
         stream<StoredProcedure> storedProcedureStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload,headers] = jsonresponse;
+        var [payload,headers] = jsonresponse;
         StoredProcedure[] storedProcedures = storedProcedureArray == ()? []:<StoredProcedure[]>storedProcedureArray;
         if(payload.StoredProcedures is json){
             StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
@@ -593,30 +585,28 @@ public  client class Client {
         if(maxItemCount is int){
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
-        stream<UserDefinedFunction> storedProcedureStream = check self.retrieveUserDefinedFunctions(requestPath, request);
-        return storedProcedureStream;   
+        stream<UserDefinedFunction> userDefinedFunctionStream = check self.retrieveUserDefinedFunctions(requestPath, request);
+        return userDefinedFunctionStream;   
     }
 
     private function retrieveUserDefinedFunctions(string path, http:Request request, string? continuationHeader = (), UserDefinedFunction[]? 
-    storedProcedureArray = (), int? maxItemCount = ()) returns @tainted stream<UserDefinedFunction>|error {
+    userDefinedFunctionArray = (), int? maxItemCount = ()) returns @tainted stream<UserDefinedFunction>|error {
         if(continuationHeader is string){
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
-        stream<StoredProcedure> storedProcedureStream  = [].toStream();
+        stream<UserDefinedFunction> userDefinedFunctionStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload,headers] = jsonresponse;
-        UserDefinedFunction[] storedProcedures = storedProcedureArray == ()? []:<UserDefinedFunction[]>storedProcedureArray;
+        var [payload,headers] = jsonresponse;
+        UserDefinedFunction[] storedProcedures = userDefinedFunctionArray == ()? []:<UserDefinedFunction[]>userDefinedFunctionArray;
         if(payload.UserDefinedFunctions is json){
             UserDefinedFunction[] finalArray = convertsToUserDefinedFunctionArray(storedProcedures, <json[]>payload.UserDefinedFunctions);
-            storedProcedureStream = (<@untainted>finalArray).toStream();
+            userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
-                storedProcedureStream = check self.retrieveUserDefinedFunctions(path, request, headers.continuationHeader,finalArray);
+                userDefinedFunctionStream = check self.retrieveUserDefinedFunctions(path, request, headers.continuationHeader,finalArray);
             }
         }
-        return storedProcedureStream;
+        return userDefinedFunctionStream;
     }
 
     # Delete an existing user defined function inside a collection
@@ -683,31 +673,31 @@ public  client class Client {
         if(maxItemCount is int){
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
-        stream<Trigger> storedProcedureStream = check self.retrieveTriggers(requestPath, request);
-        return storedProcedureStream;       
+        stream<Trigger> triggerStream = check self.retrieveTriggers(requestPath, request);
+        return triggerStream;       
     }
 
 
     private function retrieveTriggers(string path, http:Request request, string? continuationHeader = (), Trigger[]? 
-    storedProcedureArray = (), int? maxItemCount = ()) returns @tainted stream<Trigger>|error {
+    listArray = (), int? maxItemCount = ()) returns @tainted stream<Trigger>|error {
         if(continuationHeader is string){
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
-        stream<Trigger> storedProcedureStream  = [].toStream();
+        stream<Trigger> triggerStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         json payload;
         Headers headers;
         [payload,headers] = jsonresponse;
-        Trigger[] storedProcedures = storedProcedureArray == ()? []:<Trigger[]>storedProcedureArray;
+        Trigger[] storedProcedures = listArray == ()? []:<Trigger[]>listArray;
         if(payload.Triggers is json){
             Trigger[] finalArray = convertToTriggerArray(storedProcedures, <json[]>payload.Triggers);
-            storedProcedureStream = (<@untainted>finalArray).toStream();
+            triggerStream = (<@untainted>finalArray).toStream();
             if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
-                storedProcedureStream = check self.retrieveTriggers(path, request, headers.continuationHeader,finalArray);
+                triggerStream = check self.retrieveTriggers(path, request, headers.continuationHeader,finalArray);
             }
         }
-        return storedProcedureStream;
+        return triggerStream;
     }
 
     # Delete an existing trigger inside a collection
@@ -790,30 +780,30 @@ public  client class Client {
         if(maxItemCount is int){
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
-        stream<User> storedProcedureStream = check self.retrieveUsers(requestPath, request);
-        return storedProcedureStream;       
+        stream<User> userStream = check self.retrieveUsers(requestPath, request);
+        return userStream;       
     }
 
     private function retrieveUsers(string path, http:Request request, string? continuationHeader = (), User[]? 
-    storedProcedureArray = (), int? maxItemCount = ()) returns @tainted stream<User>|error {
+    userArray = (), int? maxItemCount = ()) returns @tainted stream<User>|error {
         if(continuationHeader is string){
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
-        stream<User> storedProcedureStream  = [].toStream();
+        stream<User> userStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         json payload;
         Headers headers;
         [payload,headers] = jsonresponse;
-        User[] storedProcedures = storedProcedureArray == ()? []:<User[]>storedProcedureArray;
+        User[] storedProcedures = userArray == ()? []:<User[]>userArray;
         if(payload.Users is json){
             User[] finalArray = convertToUserArray(storedProcedures, <json[]>payload.Users);
-            storedProcedureStream = (<@untainted>finalArray).toStream();
+            userStream = (<@untainted>finalArray).toStream();
             if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
-                storedProcedureStream = check self.retrieveUsers(path, request, headers.continuationHeader,finalArray);
+                userStream = check self.retrieveUsers(path, request, headers.continuationHeader,finalArray);
             }
         }// handle else
-        return storedProcedureStream;
+        return userStream;
     }
 
     # Delete a user from a database account
@@ -905,30 +895,30 @@ public  client class Client {
         if(maxItemCount is int){
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
-        stream<Permission> storedProcedureStream = check self.retrievePermissions(requestPath, request);
-        return storedProcedureStream;
+        stream<Permission> permissionStream = check self.retrievePermissions(requestPath, request);
+        return permissionStream;
     }
 
     private function retrievePermissions(string path, http:Request request, string? continuationHeader = (), Permission[]? 
-    storedProcedureArray = (), int? maxItemCount = ()) returns @tainted stream<Permission>|error {
+    permissionArray = (), int? maxItemCount = ()) returns @tainted stream<Permission>|error {
         if(continuationHeader is string){
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
-        stream<Permission> storedProcedureStream  = [].toStream();
+        stream<Permission> permissionStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         json payload;
         Headers headers;
         [payload,headers] = jsonresponse;
-        Permission[] storedProcedures = storedProcedureArray == ()? []:<Permission[]>storedProcedureArray;
+        Permission[] storedProcedures = permissionArray == ()? []:<Permission[]>permissionArray;
         if(payload.Permissions is json){
             Permission[] finalArray = convertToPermissionArray(storedProcedures, <json[]>payload.Permissions);
-            storedProcedureStream = (<@untainted>finalArray).toStream();
+            permissionStream = (<@untainted>finalArray).toStream();
             if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
-                storedProcedureStream = check self.retrievePermissions(path, request, headers.continuationHeader,finalArray);
+                permissionStream = check self.retrievePermissions(path, request, headers.continuationHeader,finalArray);
             }
         }// handle else
-        return storedProcedureStream;
+        return permissionStream;
     }
 
     # To get information of a permission belongs to a user
@@ -978,30 +968,30 @@ public  client class Client {
         if(maxItemCount is int){
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
-        stream<Offer> storedProcedureStream = check self.retriveOffers(requestPath, request);
-        return storedProcedureStream;
+        stream<Offer> offerStream = check self.retriveOffers(requestPath, request);
+        return offerStream;
     }
 
     private function retriveOffers(string path, http:Request request, string? continuationHeader = (), Offer[]? 
-    storedProcedureArray = (), int? maxItemCount = ()) returns @tainted stream<Offer>|error {
+    offerArray = (), int? maxItemCount = ()) returns @tainted stream<Offer>|error {
         if(continuationHeader is string){
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
-        stream<Offer> storedProcedureStream  = [].toStream();
+        stream<Offer> offerStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         json payload;
         Headers headers;
         [payload,headers] = jsonresponse;
-        Offer[] storedProcedures = storedProcedureArray == ()? []:<Offer[]>storedProcedureArray;
+        Offer[] storedProcedures = offerArray == ()? []:<Offer[]>offerArray;
         if(payload.Offers is json){
             Offer[] finalArray = ConvertToOfferArray(storedProcedures, <json[]>payload.Offers);
-            storedProcedureStream = (<@untainted>finalArray).toStream();
+            offerStream = (<@untainted>finalArray).toStream();
             if(headers?.continuationHeader != () && finalArray.length() == maxItemCount){            
-                storedProcedureStream = check self.retriveOffers(path, request, headers.continuationHeader,finalArray);
+                offerStream = check self.retriveOffers(path, request, headers.continuationHeader,finalArray);
             }
         }// handle else
-        return storedProcedureStream;
+        return offerStream;
     }
 
     # Get information of an offer
