@@ -112,6 +112,8 @@ const string JSON_KEY_OFFER_TYPE = "offerType";
 const string JSON_KEY_OFFER_VERSION = "offerVersion";
 const string JSON_KEY_OFFER_VERSION_1 = "V1";
 const string JSON_KEY_CONTENT = "content";
+const string JSON_KEY_DOCUMENTS = "Documents";
+const string JSON_KEY_OFFERS = "Offers";
 
 const string STATUS_NOT_FOUND_STRING = "404";
 const string STATUS = "status";

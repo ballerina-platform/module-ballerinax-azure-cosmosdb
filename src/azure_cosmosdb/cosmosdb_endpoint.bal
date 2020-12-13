@@ -147,15 +147,15 @@ public  client class Client {
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         json jsonPayload = {
-            "id": properties.containerId, 
-            "partitionKey": {
+            id: properties.containerId, 
+            partitionKey: {
                 paths: <json>partitionKey.paths.cloneWithType(json), 
                 kind : partitionKey.kind, 
                 Version: partitionKey?.keyVersion
             }
         };
         if(indexingPolicy != ()) {
-            jsonPayload = check jsonPayload.mergeJson({"indexingPolicy": <json>indexingPolicy.cloneWithType(json)});
+            jsonPayload = check jsonPayload.mergeJson({indexingPolicy: <json>indexingPolicy.cloneWithType(json)});
         }
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setThroughputOrAutopilotHeader(request, throughputProperties);
@@ -676,9 +676,7 @@ public  client class Client {
         var response = self.azureCosmosClient->get(path, request);
         stream<Trigger> triggerStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload, headers] = jsonresponse;
+        var [payload, headers] = jsonresponse;
         Trigger[] storedProcedures = triggerArray == ()? []:<Trigger[]>triggerArray;
         if(payload.Triggers is json){
             Trigger[] finalArray = convertToTriggerArray(storedProcedures, <json[]>payload.Triggers);
@@ -782,9 +780,7 @@ public  client class Client {
         var response = self.azureCosmosClient->get(path, request);
         stream<User> userStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
-        json payload;
-        Headers headers;
-        [payload, headers] = jsonresponse;
+        var [payload, headers] = jsonresponse;
         User[] storedProcedures = userArray == ()? []:<User[]>userArray;
         if(payload.Users is json){
             User[] finalArray = convertToUserArray(storedProcedures, <json[]>payload.Users);
@@ -829,9 +825,9 @@ public  client class Client {
             request = check setExpiryHeader(request, validityPeriod);
         }
         json jsonPayload = {
-            "id" : permission.id, 
-            "permissionMode" : permission.permissionMode, 
-            "resource": permission.resourcePath
+            id : permission.id, 
+            permissionMode : permission.permissionMode, 
+            'resource: permission.resourcePath
         };
         request.setJsonPayload(jsonPayload);
         var response = self.azureCosmosClient->post(requestPath, request);
@@ -859,9 +855,9 @@ public  client class Client {
             request = check setExpiryHeader(request, validityPeriod);
         }
         json jsonPayload = {
-            "id" : permission.id, 
-            "permissionMode" : permission.permissionMode, 
-            "resource": permission.resourcePath
+            id : permission.id, 
+            permissionMode : permission.permissionMode, 
+            'resource: permission.resourcePath
         };
         request.setJsonPayload(<@untainted>jsonPayload);
         var response = self.azureCosmosClient->put(requestPath, request);
@@ -1006,16 +1002,16 @@ public  client class Client {
         HeaderParameters header = mapOfferHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json jsonPaylod = {
-            "offerVersion": offer.offerVersion, 
-            "content": offer.content, 
-            "resource": offer.resourceSelfLink, 
-            "offerResourceId": offer.offerResourceId, 
-            "id": offer.id, 
-            "_rid": offer?.resourceId
+            offerVersion: offer.offerVersion, 
+            content: offer.content, 
+            'resource: offer.resourceSelfLink, 
+            offerResourceId: offer.offerResourceId, 
+            id: offer.id, 
+            _rid: offer?.resourceId
         };
-        if(offerType is string && offer.offerVersion == "V1") {
+        if(offerType is string && offer.offerVersion == JSON_KEY_OFFER_VERSION_1) {
             json selectedType = {
-                "offerType": offerType
+                offerType: offerType
             };
             jsonPaylod = check jsonPaylod.mergeJson(selectedType);
         }

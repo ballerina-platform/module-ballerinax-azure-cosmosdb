@@ -146,9 +146,6 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
         request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
 
-    // if(requestOptions?.continuationToken is string){
-    //     request.setHeader(CONTINUATION_HEADER, requestOptions?.continuationToken.toString());
-    // }
     if(requestOptions?.consistancyLevel is string){
         if(requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
         CONSISTANCY_LEVEL_BOUNDED || requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION || 
@@ -262,14 +259,14 @@ function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) re
             if(httpResponse.statusCode != http:STATUS_OK && httpResponse.statusCode != http:STATUS_CREATED) {
                 return createResponseFailMessage(httpResponse, jsonResponse);
             }
-            boolean jsonDocumentMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey("Documents");//////////
-            boolean jsonOfferMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey("Offers");//////////
+            boolean jsonDocumentMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey(JSON_KEY_DOCUMENTS);
+            boolean jsonOfferMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey(JSON_KEY_OFFERS);
             if(jsonDocumentMap == true) {
                 return (<@untainted><json[]>jsonResponse.Documents).toStream();
             } else if (jsonOfferMap == true) {
                 return (<@untainted><json[]>jsonResponse.Offers).toStream();
             } else {
-                return prepareError(JSON_PAYLOAD_ACCESS_ERROR);/////
+                return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
             }
         } else {
             return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
@@ -305,7 +302,6 @@ isolated function createResponseFailMessage(http:Response httpResponse, json err
     }
     error details = error(errorMessage, status = httpResponse.statusCode);
     return details;
-    //return prepareError(errorMessage, details);
 }
 
 isolated function convertToBoolean(json|error value) returns boolean { 

@@ -59,9 +59,9 @@ isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @t
 
 isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
     var deleteKeys = ["id", "_rid", "_self", "_etag", "_ts", "_attachments"];
-    foreach var 'key in deleteKeys {
-        if(reponsePayload.hasKey('key)) {
-            var removedValue = reponsePayload.remove('key);
+    foreach var keyValue in deleteKeys {
+        if(reponsePayload.hasKey(keyValue)) {
+            var removedValue = reponsePayload.remove(keyValue);
         }
     }
     return reponsePayload;
