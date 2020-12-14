@@ -16,7 +16,7 @@
 
 import ballerina/http;
 
-# Azure Cosmos DB Client object.
+# Azure Cosmos DB Client Object.
 # 
 # + azureCosmosClient - the HTTP Client
 public  client class Client {
@@ -37,10 +37,11 @@ public  client class Client {
         self.azureCosmosClient = new (self.baseUrl, httpClientConfig);
     }
 
-    # To create a database inside a resource
-    # + databaseId -  id/name for the database
+    # Create a database inside a resource.
+    # 
+    # + databaseId - Id for the database
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
-    # 'x-ms-cosmos-offer-autopilot-settings' headers 
+    # 'x-ms-cosmos-offer-autopilot-settings' headers.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database|error {
@@ -61,10 +62,11 @@ public  client class Client {
         return mapJsonToDatabaseType(jsonreponse);   
     }
 
-    # To create a database inside a resource
-    # + databaseId -  id/name for the database
+    # Create a database inside a resource.
+    # 
+    # + databaseId - Id for the database.
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
-    # 'x-ms-cosmos-offer-autopilot-settings' headers
+    # 'x-ms-cosmos-offer-autopilot-settings' headers.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabaseIfNotExist(string databaseId, ThroughputProperties? throughputProperties = ()) 
     returns @tainted Database?|error {
@@ -83,8 +85,9 @@ public  client class Client {
         return ();  
     }
 
-    # To retrive a given database inside a resource
-    # + databaseId -  id/name of the database 
+    # Retrive a given database inside a resource.
+    # 
+    # + databaseId - Id of the database. 
     # + return - If successful, returns Database. Else returns error.  
     public remote function getDatabase(string databaseId) returns @tainted Database|error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
@@ -99,9 +102,10 @@ public  client class Client {
         return mapJsonToDatabaseType(jsonreponse);  
     }
 
-    # List all databases inside a resource
-    # + return - If successful, returns DatabaseList. else returns error. 
-    # + maxItemCount - maximum number of elements to retrieve
+    # List all databases inside a resource.
+    # 
+    # + maxItemCount - The maximum number of elements to retrieve.
+    # + return - If successful, returns stream<Database>. else returns error. 
     public remote function getDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
@@ -139,8 +143,9 @@ public  client class Client {
         return databaseStream;
     }
 
-    # Delete a given database inside a resource
-    # + databaseId -  id/name of the database to retrieve
+    # Delete a given database inside a resource.
+    # 
+    # + databaseId - Id of the database to retrieve.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDatabase(string databaseId) returns @tainted boolean|error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
@@ -154,11 +159,12 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Create a collection inside a database
-    # + properties - object of type ResourceProperties
-    # + partitionKey - required object of type PartitionKey
-    # + indexingPolicy - optional object of type IndexingPolicy
-    # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header 
+    # Create a collection inside a database.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + partitionKey - Required Object of type PartitionKey.
+    # + indexingPolicy - Optional Object of type IndexingPolicy.
+    # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header. 
     # + return - If successful, returns Container. Else returns error.  
     public remote function createContainer(@tainted ResourceProperties properties, PartitionKey partitionKey, 
     IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container|error {
@@ -184,11 +190,12 @@ public  client class Client {
         return mapJsonToContainerType(jsonreponse);
     }
 
-    # Create a database inside a resource
-    # + properties -  object of type ResourceProperties
-    # + partitionKey - 
-    # + indexingPolicy -
-    # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header 
+    # Create a database inside a resource.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + partitionKey - Object of type PartitionKey.
+    # + indexingPolicy - Optional Object of type IndexingPolicy.
+    # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header. 
     # + return - If successful, returns Database. Else returns error.  
     public remote function createContainerIfNotExist(@tainted ResourceProperties properties, PartitionKey partitionKey, 
     IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container?|error {
@@ -205,9 +212,10 @@ public  client class Client {
     }
 
     # List all collections inside a database
-    # + databaseId -  id/name of the database where the collections are in.
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns ContainerList. Else returns error.  
+    # 
+    # + databaseId - Id of the database where the collections are in.
+    # + maxItemCount - The maximum number of elements to retrieve.
+    # + return - If successful, returns stream<Container>. Else returns error.  
     public remote function getAllContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
@@ -242,8 +250,9 @@ public  client class Client {
         return containerStream;
     }
 
-    # Retrive one collection inside a database
-    # + properties - object of type ResourceProperties
+    # Retrive one collection inside a database.
+    # 
+    # + properties - Object of type ResourceProperties.
     # + return - If successful, returns Container. Else returns error.  
     public remote function getContainer(@tainted ResourceProperties properties) returns @tainted Container|error {
         http:Request request = new;
@@ -256,8 +265,9 @@ public  client class Client {
         return mapJsonToContainerType(jsonreponse);
     }
 
-    # Delete one collection inside a database
-    # + properties - object of type ResourceProperties
+    # Delete one collection inside a database.
+    # 
+    # + properties - Object of type ResourceProperties.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteContainer(@tainted ResourceProperties properties) returns @tainted json|error {
         http:Request request = new;
@@ -269,8 +279,9 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Retrieve a list of partition key ranges for the collection
-    # + properties -  id/name of the database which collection is in.
+    # Retrieve a list of partition key ranges for the collection.
+    # 
+    # + properties - Id of the database which collection is in.
     # + return - If successful, returns PartitionKeyList. Else returns error.  
     public remote function getPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted 
     PartitionKeyList|error {
@@ -284,10 +295,11 @@ public  client class Client {
         return mapJsonToPartitionKeyListType(jsonreponse);
     }
 
-    # Create a Document inside a collection
-    # + properties - object of type ResourceProperties
-    # + document - object of type Document 
-    # + requestOptions - object of type RequestHeaderOptions
+    # Create a Document inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + document - Object of type Document. 
+    # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns Document. Else returns error.  
     public remote function createDocument(@tainted ResourceProperties properties, Document document, 
     RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
@@ -310,11 +322,12 @@ public  client class Client {
         return mapJsonToDocumentType(jsonreponse);
     }
 
-    # List one document inside a collection
-    # + properties - object of type ResourceProperties
-    # + documentId - id of  Document, 
-    # + partitionKey - array containing value of parition key field.
-    # + requestOptions - object of type RequestHeaderOptions
+    # List one document inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + documentId - Id of the document. 
+    # + partitionKey - Array containing value of parition key field.
+    # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns Document. Else returns error.  
     public remote function getDocument(@tainted ResourceProperties properties, string documentId, any[] partitionKey, 
     RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
@@ -332,11 +345,12 @@ public  client class Client {
         return mapJsonToDocumentType(jsonreponse);
     }
 
-    # List all the documents inside a collection
-    # + properties - object of type ResourceProperties
-    # + requestOptions - object of type RequestHeaderOptions
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns DocumentList. Else returns error. 
+    # List all the documents inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + requestOptions - Object of type RequestHeaderOptions.
+    # + maxItemCount - Maximum number of elements to retrieve.
+    # + return - If successful, returns stream<Document> Else, returns error. 
     public remote function getDocumentList(@tainted ResourceProperties properties, RequestHeaderOptions? requestOptions = (), 
     int? maxItemCount = ()) returns @tainted stream<Document>|error { 
         http:Request request = new;
@@ -376,11 +390,11 @@ public  client class Client {
         return documentStream;
     }
 
-    # Replace a document inside a collection
-    # + properties - object of type ResourceProperties
-    # + document - object of type Document 
-    # + requestOptions - object of type RequestHeaderOptions
-    # set x-ms-documentdb-partitionkey header
+    # Replace a document inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + document - Object of type Document. 
+    # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns a Document. Else returns error. 
     public remote function replaceDocument(@tainted ResourceProperties properties, @tainted Document document, 
     RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {         
@@ -403,10 +417,11 @@ public  client class Client {
         return mapJsonToDocumentType(jsonreponse);
     }
 
-    # Delete a document inside a collection
-    # + properties - object of type ResourceProperties
-    # + documentId - id of the Document 
-    # + partitionKey - array containing value of parition key field.
+    # Delete a document inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + documentId - Id of the document. 
+    # + partitionKey - Array containing value of parition key field.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDocument(@tainted ResourceProperties properties, string documentId, any[] partitionKey) 
     returns @tainted boolean|error {  
@@ -420,12 +435,13 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Query documents inside a collection
-    # + properties - object of type ResourceProperties
-    # + sqlQuery - json object of type Query containing the CQL query
-    # + requestOptions - object of type RequestOptions
-    # + partitionKey - the value provided for the partition key specified in the document
-    # + return - If successful, returns a json. Else returns error. 
+    # Query documents inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + sqlQuery - Json Object of type Query containing the SQL query.
+    # + requestOptions - Object of type RequestOptions.
+    # + partitionKey - The value provided for the partition key specified in the document.
+    # + return - If successful, returns a stream<json>. Else returns error. 
     public remote function queryDocuments(@tainted ResourceProperties properties, any[] partitionKey, Query sqlQuery, 
     RequestHeaderOptions? requestOptions = ()) returns @tainted stream<json>|error {
         http:Request request = new;
@@ -441,11 +457,12 @@ public  client class Client {
         return jsonresponse;
     }
 
-    # Create a new stored procedure inside a collection
+    # Create a new stored procedure inside a collection.
+    # 
     # A stored procedure is a piece of application logic written in JavaScript that 
     # is registered and executed against a collection as a single transaction.
-    # + properties - object of type ResourceProperties
-    # + storedProcedure - object of type StoredProcedure
+    # + properties - Object of type ResourceProperties.
+    # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
     public remote function createStoredProcedure(@tainted ResourceProperties properties, StoredProcedure storedProcedure) 
     returns @tainted StoredProcedure|error {
@@ -460,9 +477,10 @@ public  client class Client {
         return mapJsonToStoredProcedureType(jsonResponse);    
     }
 
-    # Replace a stored procedure with new one inside a collection
-    # + properties - object of type ResourceProperties
-    # + storedProcedure - object of type StoredProcedure
+    # Replace a stored procedure with new one inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
     public remote function replaceStoredProcedure(@tainted ResourceProperties properties, @tainted StoredProcedure 
     storedProcedure) returns @tainted StoredProcedure|error {
@@ -477,10 +495,11 @@ public  client class Client {
         return mapJsonToStoredProcedureType(jsonResponse);  
     }
 
-    # List all stored procedures inside a collection
-    # + properties - object of type ResourceProperties
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns a StoredProcedureList. Else returns error. 
+    # List all stored procedures inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + maxItemCount - Maximum number of elements to retrieve.
+    # + return - If successful, returns a stream<StoredProcedure>. Else returns error. 
     public remote function listStoredProcedures(@tainted ResourceProperties properties, int? maxItemCount = ()) returns 
     @tainted stream<StoredProcedure>|error {
         http:Request request = new;
@@ -517,9 +536,10 @@ public  client class Client {
         return storedProcedureStream;
     }
 
-    # Delete a stored procedure inside a collection
-    # + properties - object of type ResourceProperties
-    # + storedProcedureId - id of the stored procedure to delete
+    # Delete a stored procedure inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + storedProcedureId - Id of the stored procedure to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId) returns 
     @tainted boolean|error {
@@ -532,9 +552,10 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Execute a stored procedure inside a collection
-    # + properties - object of type ResourceProperties
-    # + storedProcedureId - id of the stored procedure to execute
+    # Execute a stored procedure inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + storedProcedureId - Id of the stored procedure to execute.
     # + parameters - The list of function paramaters to pass to javascript function as an array.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
     public remote function executeStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId, 
@@ -550,10 +571,11 @@ public  client class Client {
         return jsonreponse;   
     }
 
-    # Create a new user defined function inside a collection
+    # Create a new user defined function inside a collection.
+    # 
     # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
-    # + properties - object of type ResourceProperties
-    # + userDefinedFunction - object of type UserDefinedFunction
+    # + properties - Object of type ResourceProperties.
+    # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     public remote function createUserDefinedFunction(@tainted ResourceProperties properties, 
     UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction|error {
@@ -568,9 +590,10 @@ public  client class Client {
         return mapJsonToUserDefinedFunctionType(jsonResponse);      
     }
 
-    # Replace an existing user defined function inside a collection
-    # + properties - object of type ResourceProperties
-    # + userDefinedFunction - object of type UserDefinedFunction
+    # Replace an existing user defined function inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     public remote function replaceUserDefinedFunction(@tainted ResourceProperties properties, 
     @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction|error {
@@ -585,10 +608,11 @@ public  client class Client {
         return mapJsonToUserDefinedFunctionType(jsonResponse);      
     }
 
-    # Get a list of existing user defined functions inside a collection
-    # + properties - object of type ResourceProperties
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns a UserDefinedFunctionList. Else returns error. 
+    # Get a list of existing user defined functions inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + maxItemCount - Maximum number of elements to retrieve.
+    # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
     public remote function listUserDefinedFunctions(@tainted ResourceProperties properties, int? maxItemCount = ()) returns 
     @tainted stream<UserDefinedFunction>|error {
         http:Request request = new;
@@ -625,9 +649,10 @@ public  client class Client {
         return userDefinedFunctionStream;
     }
 
-    # Delete an existing user defined function inside a collection
-    # + properties - object of type ResourceProperties
-    # + userDefinedFunctionid - id of UDF to delete
+    # Delete an existing user defined function inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userDefinedFunctionid - Id of UDF to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteUserDefinedFunction(@tainted ResourceProperties properties, string userDefinedFunctionid) 
     returns @tainted boolean|error {
@@ -640,11 +665,12 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Create a trigger inside a collection
+    # Create a trigger inside a collection.
+    # 
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript. 
-    # + properties - object of type ResourceProperties
-    # + trigger - object of type Trigger
+    # + properties - Object of type ResourceProperties.
+    # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     public remote function createTrigger(@tainted ResourceProperties properties, Trigger trigger) returns @tainted 
     Trigger|error {
@@ -659,9 +685,10 @@ public  client class Client {
         return mapJsonToTriggerType(jsonResponse);      
     }
     
-    # Replace an existing trigger inside a collection
-    # + properties - object of type ResourceProperties
-    # + trigger - object of type Trigger
+    # Replace an existing trigger inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     public remote function replaceTrigger(@tainted ResourceProperties properties, @tainted Trigger trigger) returns 
     @tainted Trigger|error {
@@ -676,10 +703,11 @@ public  client class Client {
         return mapJsonToTriggerType(jsonResponse); 
     }
 
-    # List existing triggers inside a collection
-    # + properties - object of type ResourceProperties
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns a TriggerList. Else returns error. 
+    # List existing triggers inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + maxItemCount - Maximum number of elements to retrieve.
+    # + return - If successful, returns a stream<Trigger>. Else returns error. 
     public remote function listTriggers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted 
     stream<Trigger>|error {
         http:Request request = new;
@@ -716,9 +744,10 @@ public  client class Client {
         return triggerStream;
     }
 
-    # Delete an existing trigger inside a collection
-    # + properties - object of type ResourceProperties
-    # + triggerId - id of the trigger to be deleted
+    # Delete an existing trigger inside a collection.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + triggerId - Id of the trigger to be deleted.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteTrigger(@tainted ResourceProperties properties, string triggerId) returns @tainted 
     boolean|error {
@@ -731,9 +760,10 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Create a user in a database
-    # + properties - object of type ResourceProperties
-    # + userId - the id which should be given to the new user
+    # Create a user in a database.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id which should be given to the new user.
     # + return - If successful, returns a User. Else returns error.
     public remote function createUser(@tainted ResourceProperties properties, string userId) returns @tainted User|error {
         http:Request request = new;
@@ -749,10 +779,11 @@ public  client class Client {
         return mapJsonToUserType(jsonResponse);     
     }
     
-    # Replace the id of an existing user for a database
-    # + properties - object of type ResourceProperties
-    # + userId - the id which should be given to the new user
-    # + newUserId - the new id for the user
+    # Replace the id of an existing user for a database.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id which should be given to the new user.
+    # + newUserId - The new id for the user.
     # + return - If successful, returns a User. Else returns error.
     public remote function replaceUserId(@tainted ResourceProperties properties, string userId, string newUserId) returns 
     @tainted User|error {
@@ -769,9 +800,10 @@ public  client class Client {
         return mapJsonToUserType(jsonResponse); 
     }
 
-    # To get information of a user from a database
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to get information
+    # To get information of a user from a database.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to get information.
     # + return - If successful, returns a User. Else returns error.
     public remote function getUser(@tainted ResourceProperties properties, string userId) returns @tainted User|error {
         http:Request request = new;
@@ -783,10 +815,11 @@ public  client class Client {
         return mapJsonToUserType(jsonResponse);      
     }
 
-    # Lists users in a database account
-    # + properties - object of type ResourceProperties
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns a UserList. Else returns error.
+    # Lists users in a database account.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + maxItemCount - The maximum number of elements to retrieve.
+    # + return - If successful, returns a stream<User>. Else returns error.
     public remote function listUsers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted stream<User>|error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);
@@ -821,9 +854,10 @@ public  client class Client {
         return userStream;
     }
 
-    # Delete a user from a database account
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to delete
+    # Delete a user from a database account.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteUser(@tainted ResourceProperties properties, string userId) returns @tainted boolean|error {
         http:Request request = new;
@@ -834,11 +868,12 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Create a permission for a user 
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to which the permission belongs
-    # + permission - object of type Permission
-    # + validityPeriod - optional validity period parameter which specify  ttl
+    # Create a permission for a user. 
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to which the permission belongs.
+    # + permission - Object of type Permission.
+    # + validityPeriod - Optional validity period parameter which specify  time to live.
     # + return - If successful, returns a Permission. Else returns error.
     public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission, 
     int? validityPeriod = ()) returns @tainted Permission|error {
@@ -864,11 +899,12 @@ public  client class Client {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Replace an existing permission
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to which the permission belongs
-    # + permission - object of type Permission
-    # + validityPeriod - optional validity period parameter which specify  ttl
+    # Replace an existing permission.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to which the permission belongs.
+    # + permission - Object of type Permission.
+    # + validityPeriod - Optional validity period parameter which specify  time to live.
     # + return - If successful, returns a Permission. Else returns error.
     public remote function replacePermission(@tainted ResourceProperties properties, string userId, @tainted 
     Permission permission, int? validityPeriod = ()) returns @tainted Permission|error {
@@ -894,11 +930,12 @@ public  client class Client {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Lists permissions belong to a user
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to the permissions belong
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns a PermissionList. Else returns error.
+    # Lists permissions belong to a user.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to the permissions belong.
+    # + maxItemCount - The maximum number of elements to retrieve.
+    # + return - If successful, returns a stream<Permission>. Else returns error.
     public remote function listPermissions(@tainted ResourceProperties properties, string userId, int? maxItemCount = ()) 
     returns @tainted stream<Permission>|error {
         http:Request request = new;
@@ -937,10 +974,11 @@ public  client class Client {
         return permissionStream;
     }
 
-    # To get information of a permission belongs to a user
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to the permission belongs
-    # + permissionId - object of type Permission
+    # To get information of a permission belongs to a user.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to the permission belongs.
+    # + permissionId - Object of type Permission.
     # + return - If successful, returns a Permission. Else returns error.
     public remote function getPermission(@tainted ResourceProperties properties, string userId, string permissionId)
     returns @tainted Permission|error {
@@ -954,10 +992,11 @@ public  client class Client {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Deletes a permission belongs to a user
-    # + properties - object of type ResourceProperties
-    # + userId - the id of user to the permission belongs
-    # + permissionId - id of the permission to delete
+    # Deletes a permission belongs to a user.
+    # 
+    # + properties - Object of type ResourceProperties.
+    # + userId - The id of user to the permission belongs.
+    # + permissionId - Id of the permission to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deletePermission(@tainted ResourceProperties properties, string userId, string permissionId) 
     returns @tainted boolean|error {
@@ -970,12 +1009,13 @@ public  client class Client {
         return check getDeleteResponse(response);
     }
 
-    # Gets information of offers inside database account
+    # Gets information of offers inside database account.
+    # 
     # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 
-    # + maxItemCount - maximum number of elements to retrieve
-    # + return - If successful, returns a OfferList. Else returns error.
+    # + maxItemCount - The maximum number of elements to retrieve.
+    # + return - If successful, returns a stream<Offer>|. Else returns error.
     public remote function listOffers(int? maxItemCount = ()) returns @tainted stream<Offer>|error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);       
@@ -1012,8 +1052,9 @@ public  client class Client {
         return offerStream;
     }
 
-    # Get information of an offer
-    # + offerId - the id of offer
+    # Get information of an offer.
+    # 
+    # + offerId - The id of the offer.
     # + return - If successful, returns a Offer. Else returns error.
     public remote function getOffer(string offerId) returns @tainted Offer|error {
         http:Request request = new;
@@ -1025,9 +1066,10 @@ public  client class Client {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # Replace an existing offer
-    # + offer - an object of type Offer
-    # + offerType - 
+    # Replace an existing offer.
+    # 
+    # + offer - Object of type Offer.
+    # + offerType - Type of the offer.
     # + return - If successful, returns a Offer. Else returns error.
     public remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
         http:Request request = new;
@@ -1054,9 +1096,10 @@ public  client class Client {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # Perform queries on Offer resources
-    # + sqlQuery - the CQL query to execute
-    # + return - If successful, returns a json. Else returns error.
+    # Perform queries on Offer resources.
+    # 
+    # + sqlQuery - the SQL query to execute
+    # + return - If successful, returns a stream<json>. Else returns error.
     public remote function queryOffer(Query sqlQuery) returns @tainted stream<json>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_OFFER]);

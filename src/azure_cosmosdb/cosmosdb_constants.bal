@@ -140,3 +140,4 @@ const string JSON_KEY_OFFERS = "Offers";
 
 const string STATUS_NOT_FOUND_STRING = "404";
 const string STATUS = "status";
+const string TIME_ZONE_FORMAT= "EEE, dd MMM yyyy HH:mm:ss z";

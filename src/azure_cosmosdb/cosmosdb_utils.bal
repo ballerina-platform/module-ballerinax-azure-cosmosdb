@@ -22,6 +22,10 @@ import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array; 
 
+# Extract the resource type related to cosmos db from a given url
+#
+# + url - the URL from which we want to extract resource type
+# + return - string representing the resource type
 isolated function getResourceType(string url) returns string {
     string resourceType = EMPTY_STRING;
     string[] urlParts = stringutils:split(url, FORWARD_SLASH);
@@ -37,6 +41,10 @@ isolated function getResourceType(string url) returns string {
     return resourceType;
 }
 
+# Extract the resource id for offer operations related to cosmos db from a given url
+# 
+# + url - the URL from which we want to extract resource id
+# + return - string representing the resource id
 isolated function getResourceIdForOffer(string url) returns string {
     string resourceId = EMPTY_STRING;
     string[] urlParts = stringutils:split(url, FORWARD_SLASH);
@@ -48,6 +56,10 @@ isolated function getResourceIdForOffer(string url) returns string {
     return resourceId.toLowerAscii();
 }
 
+# Extract the resource type related to cosmos db from a given url
+#
+# + url - the URL from which we want to extract resource type
+# + return - string representing the resource id
 isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
     string[] urlParts = stringutils:split(url, FORWARD_SLASH);
@@ -65,6 +77,10 @@ isolated function getResourceId(string url) returns string {
     return resourceId;
 }
 
+# Prepare the url out of a given string array 
+#
+# + paths - array of strings with path of the url
+# + return - string representing the complete url
 isolated function prepareUrl(string[] paths) returns string {
     string url = EMPTY_STRING;
     if (paths.length() > 0) {
@@ -88,6 +104,15 @@ isolated function prepareError(string message, error? err = ()) returns error {
     return azureError;
 }
 
+# Attach mandatory basic headers to call a REST endpoint.
+# 
+# + request - http:Request to add headers to
+# + host - the host to which the request is sent
+# + keyToken - master or resource token
+# + tokenType - denotes the type of token: master or resource.
+# + tokenVersion - denotes the version of the token, currently 1.0.
+# + params - an object of type HeaderParamaters
+# + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
 HeaderParameters params) returns http:Request|error {
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
@@ -117,6 +142,11 @@ HeaderParameters params) returns http:Request|error {
     return request;
 }
 
+# Set the optional header related to throughput options.
+# 
+# + request - http:Request to set the header
+# + throughputProperties - record of type ThroughputProperties
+# + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setThroughputOrAutopilotHeader(http:Request request, ThroughputProperties? throughputProperties) returns 
 http:Request|error {
   if (throughputProperties is ThroughputProperties) {
@@ -136,6 +166,11 @@ http:Request|error {
     return request;
 }
 
+# Set the optional header related to partitionkey value.
+# 
+# + request - http:Request to set the header
+# + partitionKey - the array containing the value of the partition key
+# + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) returns http:Request|error {
     if (partitionKey is ()) {
         return prepareError(NULL_PARTITIONKEY_VALUE_ERROR);
@@ -144,14 +179,23 @@ isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKe
     return request;
 }
 
+# Set the required headers related to query operations.
+# 
+# + request - http:Request to set the header
+# + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setHeadersForQuery(http:Request request) returns http:Request|error {
     var header = request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, true.toString());
     return request;
 }
 
+# Set the optional headers to the HTTP request.
+# 
+# + request - http:Request to set the header
+# + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
+# + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request|error {
-    if (requestOptions?.indexingDirective is string) {
+    if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
         } else {
@@ -161,8 +205,7 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     if (requestOptions?.isUpsertRequest == true) {
         request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
-
-    if (requestOptions?.consistancyLevel is string) {
+    if (requestOptions?.consistancyLevel != ()) {
         if (requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
         CONSISTANCY_LEVEL_BOUNDED || requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION || 
         requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
@@ -171,19 +214,19 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
             return prepareError(CONSISTANCY_LEVEL_ERROR);
         }
     }
-    if (requestOptions?.sessionToken is string) {
+    if (requestOptions?.sessionToken != ()) {
         request.setHeader(SESSION_TOKEN_HEADER, requestOptions?.sessionToken.toString());
     }
-    if (requestOptions?.changeFeedOption is string) {
+    if (requestOptions?.changeFeedOption != ()) {
         request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString()); 
     }
-    if (requestOptions?.ifNoneMatch is string) {
+    if (requestOptions?.ifNoneMatch != ()) {
         request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatch.toString());
     }
-    if (requestOptions?.partitionKeyRangeId is string) {
+    if (requestOptions?.partitionKeyRangeId != ()) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
     }
-    if (requestOptions?.ifMatch is string) {
+    if (requestOptions?.ifMatch != ()) {
         request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatch.toString());
     }
     if (requestOptions?.enableCrossPartition == true) {
@@ -192,19 +235,28 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     return request;
 }
 
+# Set the optional header specifying time to live.
+# 
+# + request - http:Request to set the header
+# + validationPeriod - the integer specifying the time to live value for a permission token
+# + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setExpiryHeader(http:Request request, int validationPeriod) returns http:Request|error {
     if (validationPeriod >= MIN_TIME_TO_LIVE && validationPeriod <= MAX_TIME_TO_LIVE) {
         request.setHeader(EXPIRY_HEADER, validationPeriod.toString());
         return request;
-    }else {
+    } else {
         return prepareError(VALIDITY_PERIOD_ERROR);
     }
 }
 
+# Get the current time in the specific format.
+# 
+# + return - If successful, returns string representing UTC date and time 
+#               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
 isolated function getTime() returns string?|error {
     time:Time time1 = time:currentTime();
     var timeWithZone = check time:toTimeZone(time1, GMT_ZONE);
-    string|error timeString = time:format(timeWithZone, "EEE, dd MMM yyyy HH:mm:ss z");
+    string|error timeString = time:format(timeWithZone, TIME_ZONE_FORMAT);
     if (timeString is string) {
         return timeString;
     } else {
@@ -212,8 +264,18 @@ isolated function getTime() returns string?|error {
     }
 }
 
-isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, string tokenType, 
-string tokenVersion, string date) returns string?|error {    
+# To construct the hashed token signature for a token to set  'Authorization' header.
+# 
+# + verb - HTTP verb, such as GET, POST, or PUT
+# + resourceType - identifies the type of resource that the request is for, Eg. "dbs", "colls", "docs"
+# + resourceId -dentity property of the resource that the request is directed at
+# + keyToken - master or resource token
+# + tokenType - denotes the type of token: master or resource.
+# + tokenVersion - denotes the version of the token, currently 1.0.
+# + date - current GMT date and time
+# + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
+isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
+string tokenType, string tokenVersion, string date) returns string?|error {    
     string authorization;
     string payload = verb.toLowerAscii()+ "\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
     + date.toLowerAscii() + "\n" + "" + "\n";
@@ -229,12 +291,20 @@ string tokenVersion, string date) returns string?|error {
     }
 }
 
+# Map the json payload and necessary header values returend from a response to a tuple.
+# 
+# + httpResponse - the http:Response or http:ClientError returned form the HTTP request
+# + return - returns a tuple of type [json, Headers] if sucessful else, returns error
 isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns @tainted [json, Headers]|error {
     var responseBody = check mapResponseToJson(httpResponse);
-    var responseHeaders = check mapResponseHeadersToObject(httpResponse);
+    var responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
     return [responseBody, responseHeaders];
 }
 
+# Handle sucess or error reponses to requests and extract the json payload.
+# 
+# + httpResponse - http:Response or http:ClientError returned from an http:Request
+# + return - If successful, returns json. Else returns error. 
 isolated function mapResponseToJson(http:Response|http:ClientError httpResponse) returns @tainted json|error { 
     if (httpResponse is http:Response) {
         var jsonResponse = httpResponse.getJsonPayload();
@@ -251,7 +321,11 @@ isolated function mapResponseToJson(http:Response|http:ClientError httpResponse)
     }
 }
 
-isolated function mapResponseHeadersToObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error {
+# Get the http:Response and extract the headers to the record type Headers
+# 
+# + httpResponse - http:Response or http:ClientError returned from an http:Request
+# + return - If successful, returns record type Headers. Else returns error. 
+isolated function mapResponseHeadersToHeadersObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error {
     Headers responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
@@ -267,6 +341,10 @@ isolated function mapResponseHeadersToObject(http:Response|http:ClientError http
     }
 }
 
+# Handle sucess or error reponses to requests and extract the json payload to a stream
+# 
+# + httpResponse - http:Response or http:ClientError returned from an http:Request
+# + return - If successful, returns stream<json>. Else returns error.  
 function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) returns @tainted stream<json>|error { 
     if (httpResponse is http:Response) {
         var jsonResponse = httpResponse.getJsonPayload();
@@ -277,9 +355,9 @@ function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) re
             boolean jsonDocumentMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey(JSON_KEY_DOCUMENTS);
             boolean jsonOfferMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey(JSON_KEY_OFFERS);
             if (jsonDocumentMap == true) {
-                return (<@untainted><json[]>jsonResponse.Documents).toStream();
+                return (<@untainted><json[]>jsonResponse.Documents).toStream();///
             } else if (jsonOfferMap == true) {
-                return (<@untainted><json[]>jsonResponse.Offers).toStream();
+                return (<@untainted><json[]>jsonResponse.Offers).toStream();///
             } else {
                 return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
             }
@@ -290,7 +368,11 @@ function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) re
         return prepareError(REST_API_INVOKING_ERROR);
     }
 }
-  
+
+# Handle the responses from delete operations which return without a json payload.
+# 
+# + httpResponse - http:Response or http:ClientError returned from an http:Request
+# + return - If successful, returns true if successful. Else returns error.
 isolated function getDeleteResponse(http:Response|http:ClientError httpResponse) returns @tainted boolean|error {
     if (httpResponse is http:Response) {
         if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
@@ -308,6 +390,11 @@ isolated function getDeleteResponse(http:Response|http:ClientError httpResponse)
     }
 }
 
+# Handle the error reponses from a request and returns an error object
+# 
+# + httpResponse - http:Response returned from an http:Request
+# + errorResponse - json payload of the error response
+# + return - returns error.
 isolated function createResponseFailMessage(http:Response httpResponse, json errorResponse) returns error {
     string message = errorResponse.message.toString();
     string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase; 
@@ -319,6 +406,10 @@ isolated function createResponseFailMessage(http:Response httpResponse, json err
     return details;
 }
 
+# Convert json string values to boolean.
+# 
+# + value - json value which has reprsents boolean value
+# + return - boolean value of specified json
 isolated function convertToBoolean(json|error value) returns boolean { 
     if (value is json) {
         boolean|error result = 'boolean:fromString(value.toString());
@@ -329,6 +420,10 @@ isolated function convertToBoolean(json|error value) returns boolean {
     return false;
 }
 
+# Convert json string values to int
+# 
+# + value - json value which has reprsents int value
+# + return - int value of specified json
 isolated function convertToInt(json|error value) returns int {
     if (value is json) {
         int|error result = 'int:fromString(value.toString());
@@ -339,9 +434,14 @@ isolated function convertToInt(json|error value) returns int {
     return 0;
 }
 
-isolated function getHeaderIfExist(http:Response httpResponse, string headername) returns @tainted string? {
-    if (httpResponse.hasHeader(headername)) {
-        return httpResponse.getHeader(headername);
+# Convert json string values to int
+# 
+# + httpResponse - http:Response returned from an http:RequestheaderName
+# + headerName - name of the header
+# + return - int value of specified json
+isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string? {
+    if (httpResponse.hasHeader(headerName)) {
+        return httpResponse.getHeader(headerName);
     } else {
         return ();
     }

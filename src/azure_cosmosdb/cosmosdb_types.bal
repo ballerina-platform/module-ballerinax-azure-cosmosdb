@@ -84,7 +84,7 @@ public type Container record {|
 public type Document record {|
     string id = "";
     *Common;
-    json? documentBody =     {};
+    json? documentBody = {};
     any[]? partitionKey = ();
     string attachments?;
     Headers?...;
