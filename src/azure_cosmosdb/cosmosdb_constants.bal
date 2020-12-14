@@ -103,6 +103,8 @@ const int MIN_REQUEST_UNITS = 400;
 const int MIN_TIME_TO_LIVE = 3600;
 const int MAX_TIME_TO_LIVE = 18000;
 const string UTF8_URL_ENCODING = "UTF-8";
+const string SPACE_STRING = " ";
+const string COLON_WITH_SPACE = " : ";
 
 const string MINIMUM_MANUAL_THROUGHPUT_ERROR = "The minimum manual throughput is 400 RU/s";
 const string SETTING_BOTH_VALUES_ERROR = "Cannot set both throughput and maxThroughput headers at once";

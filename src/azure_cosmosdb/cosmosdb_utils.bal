@@ -310,10 +310,10 @@ isolated function getDeleteResponse(http:Response|http:ClientError httpResponse)
 
 isolated function createResponseFailMessage(http:Response httpResponse, json errorResponse) returns error {
     string message = errorResponse.message.toString();
-    string errorMessage = httpResponse.statusCode.toString() + " " + httpResponse.reasonPhrase; 
+    string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase; 
     var stoppingIndex = message.indexOf(ACTIVITY_ID);
     if (stoppingIndex is int) {
-        errorMessage += " : " + message.substring(0, stoppingIndex);
+        errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
     }
     error details = error(errorMessage, status = httpResponse.statusCode);
     return details;
