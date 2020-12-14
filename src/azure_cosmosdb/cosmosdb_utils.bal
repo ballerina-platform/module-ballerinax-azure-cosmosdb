@@ -76,8 +76,8 @@ isolated function setHeaders(http:Request request, string host, string keyToken,
 HeaderParameters params) returns http:Request|error {
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
-    request.setHeader(ACCEPT_HEADER, "*/*");
-    request.setHeader(CONNECTION_HEADER, CONNECTION_VALUE);
+    request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
+    request.setHeader(CONNECTION_HEADER, CONNECTION_KEEP_ALIVE);
     string?|error date = getTime();
     if(date is string) {
         string? signature = ();
@@ -130,7 +130,7 @@ isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKe
 
 isolated function setHeadersForQuery(http:Request request) returns http:Request|error {
     var header = request.setContentType(CONTENT_TYPE_QUERY);
-    request.setHeader(ISQUERY_HEADER, "True");
+    request.setHeader(ISQUERY_HEADER, true.toString());
     return request;
 }
 
@@ -199,8 +199,8 @@ isolated function getTime() returns string?|error {
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, string tokenType, 
 string tokenVersion, string date) returns string?|error {    
     string authorization;
-    string payload = verb.toLowerAscii()+"\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
-    + date.toLowerAscii() +"\n" + "" + "\n";
+    string payload = verb.toLowerAscii()+ "\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
+    + date.toLowerAscii() + "\n" + "" + "\n";
     var decoded = array:fromBase64(keyToken);
     if(decoded is byte[]) {
         byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
