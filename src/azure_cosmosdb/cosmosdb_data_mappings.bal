@@ -140,14 +140,16 @@ isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @taint
 #
 # + jsonPayload - A tuple which contains headers and json object returned from request.
 # + return - An instance of record type PartitionKeyList.
-isolated function mapJsonToPartitionKeyListType([json, Headers] jsonPayload) returns @tainted PartitionKeyList {
+isolated function mapJsonToPartitionKeyListType([json, Headers?] jsonPayload) returns @tainted PartitionKeyList {
     PartitionKeyList partitionKeyList = {};
     PartitionKeyRange pkr = {};
     var [payload, headers] = jsonPayload;
     //partitionKeyList.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     //partitionKeyList.partitionKeyRanges = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-    partitionKeyList.reponseHeaders = headers;
     partitionKeyList.count = convertToInt(payload._count);
+    if (headers is Headers) {
+        partitionKeyList[RESPONSE_HEADERS] = headers;
+    }
     return partitionKeyList;
 }
 
@@ -155,16 +157,16 @@ isolated function mapJsonToPartitionKeyListType([json, Headers] jsonPayload) ret
 #
 # + jsonPayload - A tuple which contains headers and json object returned from request.
 # + return - An instance of record type PartitionKeyRange.
-isolated function mapJsonToPartitionKeyRange([json, Headers] jsonPayload) returns @tainted PartitionKeyRange {
+isolated function mapJsonToPartitionKeyRange([json, Headers?] jsonPayload) returns @tainted PartitionKeyRange {
     PartitionKeyRange partitionKeyRange = {};
-    json payload;
-    Headers headers;
-    [payload, headers] = jsonPayload;
+    var [payload, headers] = jsonPayload;
     partitionKeyRange.id = payload.id.toString();
     partitionKeyRange.minInclusive = payload.minInclusive.toString();
     partitionKeyRange.maxExclusive = payload.maxExclusive.toString();
     partitionKeyRange.status = payload.status.toString();
-    partitionKeyRange.reponseHeaders = headers;
+    if (headers is Headers) {
+        partitionKeyRange[RESPONSE_HEADERS] = headers;
+    }
     return partitionKeyRange;
 }
 
@@ -443,7 +445,7 @@ isolated function ConvertToOfferArray(@tainted Offer[] offers, json[] sourceOffe
 #
 # + sourcePathArrayJsonObject - Json object which contain the array of included path information.
 # + return - An array of type IncludedPath.
-isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] | IncludedPath[] { 
+isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
     IncludedPath[] includedPaths = [];
     int i = 0;
     foreach json jsonPath in sourcePathArrayJsonObject {
