@@ -42,7 +42,7 @@ public  client class Client {
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
@@ -66,13 +66,13 @@ public  client class Client {
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabaseIfNotExist(string databaseId, ThroughputProperties? throughputProperties = ()) 
     returns @tainted Database?|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         var result = self->getDatabase(databaseId);
-        if(result is error) {
+        if (result is error) {
             string status = result.detail()[STATUS].toString();
-            if(status == STATUS_NOT_FOUND_STRING) {
+            if (status == STATUS_NOT_FOUND_STRING) {
                 return self->createDatabase(databaseId, throughputProperties);
             } else {
                 return prepareError(string `External azure error ${status}`);
@@ -85,7 +85,7 @@ public  client class Client {
     # + databaseId -  id/name of the database 
     # + return - If successful, returns Database. Else returns error.  
     public remote function getDatabase(string databaseId) returns @tainted Database|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
@@ -101,14 +101,14 @@ public  client class Client {
     # + return - If successful, returns DatabaseList. else returns error. 
     # + maxItemCount - maximum number of elements to retrieve
     public remote function getDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Database> databaseStream = check self.retrieveDatabases(requestPath, request, maxItemCount);
@@ -117,18 +117,18 @@ public  client class Client {
 
     private function retrieveDatabases(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     Database[]? databaseArray = ()) returns @tainted stream<Database>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<Database> databaseStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        Database[] databases = databaseArray == ()? []:<Database[]>databaseArray;
-        if(payload.Databases is json) {
+        Database[] databases = databaseArray == () ? [] : <Database[]>databaseArray;
+        if (payload.Databases is json) {
             Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
             databaseStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 databaseStream = check self.retrieveDatabases(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -141,7 +141,7 @@ public  client class Client {
     # + databaseId -  id/name of the database to retrieve
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDatabase(string databaseId) returns @tainted boolean|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
@@ -171,7 +171,7 @@ public  client class Client {
                 Version: partitionKey?.keyVersion
             }
         };
-        if(indexingPolicy != ()) {
+        if (indexingPolicy != ()) {
             jsonPayload = check jsonPayload.mergeJson({indexingPolicy: <json>indexingPolicy.cloneWithType(json)});
         }
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
@@ -193,7 +193,7 @@ public  client class Client {
         var result = self->getContainer(properties);
         if result is error {
             string status = result.detail()[STATUS].toString();
-            if(status == STATUS_NOT_FOUND_STRING) {
+            if (status == STATUS_NOT_FOUND_STRING) {
                 return self->createContainer(properties, partitionKey);
             } else {
                 return prepareError(string `External azure error ${status}`);
@@ -211,7 +211,7 @@ public  client class Client {
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Container> containerStream = check self.retrieveContainers(requestPath, request, maxItemCount);
@@ -220,18 +220,18 @@ public  client class Client {
 
     private function retrieveContainers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     Container[]? containerArray = ()) returns @tainted stream<Container>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<Container> containerStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        Container[] containers = containerArray == ()? []:<Container[]>containerArray;
-        if(payload.DocumentCollections is json) {
+        Container[] containers = containerArray == () ? [] : <Container[]>containerArray;
+        if (payload.DocumentCollections is json) {
             Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
             containerStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 containerStream = check self.retrieveContainers(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -295,7 +295,7 @@ public  client class Client {
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if(requestOptions is RequestHeaderOptions) {
+        if (requestOptions is RequestHeaderOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
         json jsonPayload = {
@@ -345,7 +345,7 @@ public  client class Client {
         if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
         }
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Document> documentStream = check self.retrieveDocuments(requestPath, request, maxItemCount);
@@ -354,18 +354,18 @@ public  client class Client {
 
     private function retrieveDocuments(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     Document[]? documentArray = ()) returns @tainted stream<Document>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<Document> documentStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        Document[] documents = documentArray is Document[]?<Document[]>documentArray:[];
-        if(payload.Documents is json) {
+        Document[] documents = documentArray is Document[] ? <Document[]>documentArray : [];
+        if (payload.Documents is json) {
             Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
             documentStream = (<@untainted>finalArray).toStream(); 
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 documentStream = check self.retrieveDocuments(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -388,7 +388,7 @@ public  client class Client {
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if(requestOptions is RequestHeaderOptions) {
+        if (requestOptions is RequestHeaderOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
         json jsonPayload = {
@@ -486,7 +486,7 @@ public  client class Client {
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<StoredProcedure> storedProcedureStream = check self.retrieveStoredProcedures(requestPath, request, maxItemCount);
@@ -495,18 +495,18 @@ public  client class Client {
 
     private function retrieveStoredProcedures(string path, http:Request request,  int? maxItemCount = (), string? continuationHeader = (), 
     StoredProcedure[]? storedProcedureArray = ()) returns @tainted stream<StoredProcedure>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<StoredProcedure> storedProcedureStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        StoredProcedure[] storedProcedures = storedProcedureArray == ()? []:<StoredProcedure[]>storedProcedureArray;
-        if(payload.StoredProcedures is json) {
+        StoredProcedure[] storedProcedures = storedProcedureArray == () ? [] : <StoredProcedure[]>storedProcedureArray;
+        if (payload.StoredProcedures is json) {
             StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
             storedProcedureStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 storedProcedureStream = check self.retrieveStoredProcedures(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -594,7 +594,7 @@ public  client class Client {
         properties.containerId, RESOURCE_PATH_UDF]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<UserDefinedFunction> userDefinedFunctionStream = check self.retrieveUserDefinedFunctions(requestPath, request, maxItemCount);
@@ -603,18 +603,18 @@ public  client class Client {
 
     private function retrieveUserDefinedFunctions(string path, http:Request request,  int? maxItemCount = (), string? continuationHeader = (), 
     UserDefinedFunction[]? userDefinedFunctionArray = ()) returns @tainted stream<UserDefinedFunction>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<UserDefinedFunction> userDefinedFunctionStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        UserDefinedFunction[] storedProcedures = userDefinedFunctionArray == ()? []:<UserDefinedFunction[]>userDefinedFunctionArray;
-        if(payload.UserDefinedFunctions is json) {
+        UserDefinedFunction[] storedProcedures = userDefinedFunctionArray == () ? [] : <UserDefinedFunction[]>userDefinedFunctionArray;
+        if (payload.UserDefinedFunctions is json) {
             UserDefinedFunction[] finalArray = convertsToUserDefinedFunctionArray(storedProcedures, <json[]>payload.UserDefinedFunctions);
             userDefinedFunctionStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 userDefinedFunctionStream = check self.retrieveUserDefinedFunctions(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -685,7 +685,7 @@ public  client class Client {
         properties.containerId, RESOURCE_PATH_TRIGGER]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Trigger> triggerStream = check self.retrieveTriggers(requestPath, request, maxItemCount);
@@ -694,18 +694,18 @@ public  client class Client {
 
     private function retrieveTriggers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     Trigger[]? triggerArray = ()) returns @tainted stream<Trigger>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<Trigger> triggerStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        Trigger[] storedProcedures = triggerArray == ()? []:<Trigger[]>triggerArray;
-        if(payload.Triggers is json) {
+        Trigger[] storedProcedures = triggerArray == () ? [] : <Trigger[]>triggerArray;
+        if (payload.Triggers is json) {
             Trigger[] finalArray = convertToTriggerArray(storedProcedures, <json[]>payload.Triggers);
             triggerStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 triggerStream = check self.retrieveTriggers(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -790,7 +790,7 @@ public  client class Client {
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<User> userStream = check self.retrieveUsers(requestPath, request, maxItemCount);
@@ -799,18 +799,18 @@ public  client class Client {
 
     private function retrieveUsers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     User[]? userArray = ()) returns @tainted stream<User>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
         stream<User> userStream  = [].toStream();
         [json, Headers] jsonresponse = check mapResponseToTuple(response);
         var [payload, headers] = jsonresponse;
-        User[] storedProcedures = userArray == ()? []:<User[]>userArray;
-        if(payload.Users is json) {
+        User[] storedProcedures = userArray == () ? [] : <User[]>userArray;
+        if (payload.Users is json) {
             User[] finalArray = convertToUserArray(storedProcedures, <json[]>payload.Users);
             userStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 userStream = check self.retrieveUsers(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -840,7 +840,7 @@ public  client class Client {
     # + return - If successful, returns a Permission. Else returns error.
     public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission, 
     int? validityPeriod = ()) returns @tainted Permission|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
@@ -848,7 +848,7 @@ public  client class Client {
         RESOURCE_PATH_PERMISSION]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(validityPeriod is int) {
+        if (validityPeriod is int) {
             request = check setExpiryHeader(request, validityPeriod);
         }
         json jsonPayload = {
@@ -870,7 +870,7 @@ public  client class Client {
     # + return - If successful, returns a Permission. Else returns error.
     public remote function replacePermission(@tainted ResourceProperties properties, string userId, @tainted 
     Permission permission, int? validityPeriod = ()) returns @tainted Permission|error {
-        if(self.keyType == TOKEN_TYPE_RESOURCE) {
+        if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
@@ -878,7 +878,7 @@ public  client class Client {
         RESOURCE_PATH_PERMISSION, permission.id]);       
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(validityPeriod is int) {
+        if (validityPeriod is int) {
             request = check setExpiryHeader(request, validityPeriod);
         }
         json jsonPayload = {
@@ -904,7 +904,7 @@ public  client class Client {
         RESOURCE_PATH_PERMISSION]);       
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Permission> permissionStream = check self.retrievePermissions(requestPath, request, maxItemCount);
@@ -913,7 +913,7 @@ public  client class Client {
 
     private function retrievePermissions(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     Permission[]? permissionArray = ()) returns @tainted stream<Permission>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
@@ -922,11 +922,11 @@ public  client class Client {
         json payload;
         Headers headers;
         [payload, headers] = jsonresponse;
-        Permission[] storedProcedures = permissionArray == ()? []:<Permission[]>permissionArray;
-        if(payload.Permissions is json) {
+        Permission[] storedProcedures = permissionArray == () ? [] : <Permission[]>permissionArray;
+        if (payload.Permissions is json) {
             Permission[] finalArray = convertToPermissionArray(storedProcedures, <json[]>payload.Permissions);
             permissionStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 permissionStream = check self.retrievePermissions(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -979,7 +979,7 @@ public  client class Client {
         string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);       
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        if(maxItemCount is int) {
+        if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
         stream<Offer> offerStream = check self.retriveOffers(requestPath, request, maxItemCount);
@@ -988,7 +988,7 @@ public  client class Client {
 
     private function retriveOffers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
     Offer[]? offerArray = ()) returns @tainted stream<Offer>|error {
-        if(continuationHeader is string) {
+        if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
         var response = self.azureCosmosClient->get(path, request);
@@ -997,11 +997,11 @@ public  client class Client {
         json payload;
         Headers headers;
         [payload, headers] = jsonresponse;
-        Offer[] storedProcedures = offerArray == ()? []:<Offer[]>offerArray;
-        if(payload.Offers is json) {
+        Offer[] storedProcedures = offerArray == () ? [] : <Offer[]>offerArray;
+        if (payload.Offers is json) {
             Offer[] finalArray = ConvertToOfferArray(storedProcedures, <json[]>payload.Offers);
             offerStream = (<@untainted>finalArray).toStream();
-            if(headers?.continuationHeader != () && maxItemCount is ()) {            
+            if (headers?.continuationHeader != () && maxItemCount is ()) {            
                 offerStream = check self.retriveOffers(path, request, (), headers.continuationHeader, finalArray);
             }
         } else {
@@ -1040,7 +1040,7 @@ public  client class Client {
             id: offer.id, 
             _rid: offer?.resourceId
         };
-        if(offerType is string && offer.offerVersion == JSON_KEY_OFFER_VERSION_1) {
+        if (offerType is string && offer.offerVersion == JSON_KEY_OFFER_VERSION_1) {
             json selectedType = {
                 offerType: offerType
             };
