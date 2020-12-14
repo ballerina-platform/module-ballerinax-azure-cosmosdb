@@ -114,12 +114,12 @@ isolated function prepareError(string message, error? err = ()) returns error {
 # + params - an object of type HeaderParamaters
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
-HeaderParameters params) returns http:Request|error {
+HeaderParameters params) returns http:Request | error {
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
     request.setHeader(CONNECTION_HEADER, CONNECTION_KEEP_ALIVE);
-    string?|error date = getTime();
+    string? | error date = getTime();
     if (date is string) {
         string? signature = ();
         if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
@@ -148,7 +148,7 @@ HeaderParameters params) returns http:Request|error {
 # + throughputProperties - record of type ThroughputProperties
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setThroughputOrAutopilotHeader(http:Request request, ThroughputProperties? throughputProperties) returns 
-http:Request|error {
+http:Request | error {
   if (throughputProperties is ThroughputProperties) {
         if (throughputProperties.throughput is int &&  throughputProperties.maxThroughput is ()) {
             if (<int>throughputProperties.throughput >= MIN_REQUEST_UNITS) {
@@ -171,7 +171,7 @@ http:Request|error {
 # + request - http:Request to set the header
 # + partitionKey - the array containing the value of the partition key
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) returns http:Request|error {
+isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) returns http:Request | error {
     if (partitionKey is ()) {
         return prepareError(NULL_PARTITIONKEY_VALUE_ERROR);
     }
@@ -183,7 +183,7 @@ isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKe
 # 
 # + request - http:Request to set the header
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setHeadersForQuery(http:Request request) returns http:Request|error {
+isolated function setHeadersForQuery(http:Request request) returns http:Request | error {
     var header = request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, true.toString());
     return request;
@@ -194,7 +194,7 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
 # + request - http:Request to set the header
 # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request|error {
+isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request | error {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
@@ -207,7 +207,7 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     }
     if (requestOptions?.consistancyLevel != ()) {
         if (requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
-        CONSISTANCY_LEVEL_BOUNDED || requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION || 
+        CONSISTANCY_LEVEL_BOUNDED ||  requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION ||  
         requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
             request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
         } else {
@@ -240,7 +240,7 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
 # + request - http:Request to set the header
 # + validationPeriod - the integer specifying the time to live value for a permission token
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setExpiryHeader(http:Request request, int validationPeriod) returns http:Request|error {
+isolated function setExpiryHeader(http:Request request, int validationPeriod) returns http:Request | error {
     if (validationPeriod >= MIN_TIME_TO_LIVE && validationPeriod <= MAX_TIME_TO_LIVE) {
         request.setHeader(EXPIRY_HEADER, validationPeriod.toString());
         return request;
@@ -253,10 +253,10 @@ isolated function setExpiryHeader(http:Request request, int validationPeriod) re
 # 
 # + return - If successful, returns string representing UTC date and time 
 #               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
-isolated function getTime() returns string?|error {
+isolated function getTime() returns string? | error {
     time:Time time1 = time:currentTime();
     var timeWithZone = check time:toTimeZone(time1, GMT_ZONE);
-    string|error timeString = time:format(timeWithZone, TIME_ZONE_FORMAT);
+    string | error timeString = time:format(timeWithZone, TIME_ZONE_FORMAT);
     if (timeString is string) {
         return timeString;
     } else {
@@ -275,7 +275,7 @@ isolated function getTime() returns string?|error {
 # + date - current GMT date and time
 # + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-string tokenType, string tokenVersion, string date) returns string?|error {    
+string tokenType, string tokenVersion, string date) returns string? | error {    
     string authorization;
     string payload = verb.toLowerAscii()+ "\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
     + date.toLowerAscii() + "\n" + "" + "\n";
@@ -295,7 +295,7 @@ string tokenType, string tokenVersion, string date) returns string?|error {
 # 
 # + httpResponse - the http:Response or http:ClientError returned form the HTTP request
 # + return - returns a tuple of type [json, Headers] if sucessful else, returns error
-isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse) returns @tainted [json, Headers]|error {
+isolated function mapResponseToTuple(http:Response | http:ClientError httpResponse) returns @tainted [json, Headers] | error {
     var responseBody = check mapResponseToJson(httpResponse);
     var responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
     return [responseBody, responseHeaders];
@@ -305,7 +305,7 @@ isolated function mapResponseToTuple(http:Response|http:ClientError httpResponse
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns json. Else returns error. 
-isolated function mapResponseToJson(http:Response|http:ClientError httpResponse) returns @tainted json|error { 
+isolated function mapResponseToJson(http:Response | http:ClientError httpResponse) returns @tainted json | error { 
     if (httpResponse is http:Response) {
         var jsonResponse = httpResponse.getJsonPayload();
         if (jsonResponse is json) {
@@ -325,7 +325,7 @@ isolated function mapResponseToJson(http:Response|http:ClientError httpResponse)
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns record type Headers. Else returns error. 
-isolated function mapResponseHeadersToHeadersObject(http:Response|http:ClientError httpResponse) returns @tainted Headers|error {
+isolated function mapResponseHeadersToHeadersObject(http:Response | http:ClientError httpResponse) returns @tainted Headers | error {
     Headers responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
@@ -345,7 +345,7 @@ isolated function mapResponseHeadersToHeadersObject(http:Response|http:ClientErr
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns stream<json>. Else returns error.  
-function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) returns @tainted stream<json>|error { 
+function mapResponseToJsonStream(http:Response | http:ClientError httpResponse) returns @tainted stream<json> | error { 
     if (httpResponse is http:Response) {
         var jsonResponse = httpResponse.getJsonPayload();
         if (jsonResponse is json) {
@@ -373,7 +373,7 @@ function mapResponseToJsonStream(http:Response|http:ClientError httpResponse) re
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns true if successful. Else returns error.
-isolated function getDeleteResponse(http:Response|http:ClientError httpResponse) returns @tainted boolean|error {
+isolated function getDeleteResponse(http:Response | http:ClientError httpResponse) returns @tainted boolean | error {
     if (httpResponse is http:Response) {
         if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
             return true;
@@ -410,9 +410,9 @@ isolated function createResponseFailMessage(http:Response httpResponse, json err
 # 
 # + value - json value which has reprsents boolean value
 # + return - boolean value of specified json
-isolated function convertToBoolean(json|error value) returns boolean { 
+isolated function convertToBoolean(json | error value) returns boolean { 
     if (value is json) {
-        boolean|error result = 'boolean:fromString(value.toString());
+        boolean | error result = 'boolean:fromString(value.toString());
         if (result is boolean) {
             return result;
         }
@@ -424,9 +424,9 @@ isolated function convertToBoolean(json|error value) returns boolean {
 # 
 # + value - json value which has reprsents int value
 # + return - int value of specified json
-isolated function convertToInt(json|error value) returns int {
+isolated function convertToInt(json | error value) returns int {
     if (value is json) {
-        int|error result = 'int:fromString(value.toString());
+        int | error result = 'int:fromString(value.toString());
         if (result is int) {
             return result;
         }

@@ -86,7 +86,7 @@ isolated function mapJsonToDocumentType([json, Headers?] jsonPayload) returns @t
     document.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
-    JsonMap|error documentBodyJson = payload.cloneWithType(JsonMap);
+    JsonMap | error documentBodyJson = payload.cloneWithType(JsonMap);
     if (documentBodyJson is JsonMap) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
     }
@@ -443,7 +443,7 @@ isolated function ConvertToOfferArray(@tainted Offer[] offers, json[] sourceOffe
 #
 # + sourcePathArrayJsonObject - Json object which contain the array of included path information.
 # + return - An array of type IncludedPath.
-isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] { 
+isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] | IncludedPath[] { 
     IncludedPath[] includedPaths = [];
     int i = 0;
     foreach json jsonPath in sourcePathArrayJsonObject {

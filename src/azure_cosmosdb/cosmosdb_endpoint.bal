@@ -44,7 +44,7 @@ public  client class Client {
     # 'x-ms-cosmos-offer-autopilot-settings' headers.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
-    @tainted Database|error {
+    @tainted Database | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -69,7 +69,7 @@ public  client class Client {
     # 'x-ms-cosmos-offer-autopilot-settings' headers.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabaseIfNotExist(string databaseId, ThroughputProperties? throughputProperties = ()) 
-    returns @tainted Database?|error {
+    returns @tainted Database? | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -89,7 +89,7 @@ public  client class Client {
     # 
     # + databaseId - Id of the database. 
     # + return - If successful, returns Database. Else returns error.  
-    public remote function getDatabase(string databaseId) returns @tainted Database|error {
+    public remote function getDatabase(string databaseId) returns @tainted Database | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -106,7 +106,7 @@ public  client class Client {
     # 
     # + maxItemCount - The maximum number of elements to retrieve.
     # + return - If successful, returns stream<Database>. else returns error. 
-    public remote function getDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
+    public remote function getDatabases(int? maxItemCount = ()) returns @tainted stream<Database> | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -122,7 +122,7 @@ public  client class Client {
     }
 
     private function retrieveDatabases(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    Database[]? databaseArray = ()) returns @tainted stream<Database>|error {
+    Database[]? databaseArray = ()) returns @tainted stream<Database> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -147,7 +147,7 @@ public  client class Client {
     # 
     # + databaseId - Id of the database to retrieve.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteDatabase(string databaseId) returns @tainted boolean|error {
+    public remote function deleteDatabase(string databaseId) returns @tainted boolean | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -167,7 +167,7 @@ public  client class Client {
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header. 
     # + return - If successful, returns Container. Else returns error.  
     public remote function createContainer(@tainted ResourceProperties properties, PartitionKey partitionKey, 
-    IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container|error {
+    IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
@@ -198,7 +198,7 @@ public  client class Client {
     # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' header. 
     # + return - If successful, returns Database. Else returns error.  
     public remote function createContainerIfNotExist(@tainted ResourceProperties properties, PartitionKey partitionKey, 
-    IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container?|error {
+    IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container? | error {
         var result = self->getContainer(properties);
         if result is error {
             string status = result.detail()[STATUS].toString();
@@ -216,7 +216,7 @@ public  client class Client {
     # + databaseId - Id of the database where the collections are in.
     # + maxItemCount - The maximum number of elements to retrieve.
     # + return - If successful, returns stream<Container>. Else returns error.  
-    public remote function getAllContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
+    public remote function getAllContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
@@ -229,7 +229,7 @@ public  client class Client {
     }
 
     private function retrieveContainers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    Container[]? containerArray = ()) returns @tainted stream<Container>|error {
+    Container[]? containerArray = ()) returns @tainted stream<Container> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -254,7 +254,7 @@ public  client class Client {
     # 
     # + properties - Object of type ResourceProperties.
     # + return - If successful, returns Container. Else returns error.  
-    public remote function getContainer(@tainted ResourceProperties properties) returns @tainted Container|error {
+    public remote function getContainer(@tainted ResourceProperties properties) returns @tainted Container | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId]);
@@ -269,7 +269,7 @@ public  client class Client {
     # 
     # + properties - Object of type ResourceProperties.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteContainer(@tainted ResourceProperties properties) returns @tainted json|error {
+    public remote function deleteContainer(@tainted ResourceProperties properties) returns @tainted json | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId]);
@@ -284,7 +284,7 @@ public  client class Client {
     # + properties - Id of the database which collection is in.
     # + return - If successful, returns PartitionKeyList. Else returns error.  
     public remote function getPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted 
-    PartitionKeyList|error {
+    PartitionKeyList | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_PK_RANGES]);
@@ -302,7 +302,7 @@ public  client class Client {
     # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns Document. Else returns error.  
     public remote function createDocument(@tainted ResourceProperties properties, Document document, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
+    RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
@@ -330,7 +330,7 @@ public  client class Client {
     # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns Document. Else returns error.  
     public remote function getDocument(@tainted ResourceProperties properties, string documentId, any[] partitionKey, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {
+    RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
@@ -352,7 +352,7 @@ public  client class Client {
     # + maxItemCount - Maximum number of elements to retrieve.
     # + return - If successful, returns stream<Document> Else, returns error. 
     public remote function getDocumentList(@tainted ResourceProperties properties, RequestHeaderOptions? requestOptions = (), 
-    int? maxItemCount = ()) returns @tainted stream<Document>|error { 
+    int? maxItemCount = ()) returns @tainted stream<Document> | error { 
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
@@ -369,7 +369,7 @@ public  client class Client {
     }
 
     private function retrieveDocuments(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    Document[]? documentArray = ()) returns @tainted stream<Document>|error {
+    Document[]? documentArray = ()) returns @tainted stream<Document> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -397,7 +397,7 @@ public  client class Client {
     # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns a Document. Else returns error. 
     public remote function replaceDocument(@tainted ResourceProperties properties, @tainted Document document, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted Document|error {         
+    RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {         
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
@@ -424,7 +424,7 @@ public  client class Client {
     # + partitionKey - Array containing value of parition key field.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDocument(@tainted ResourceProperties properties, string documentId, any[] partitionKey) 
-    returns @tainted boolean|error {  
+    returns @tainted boolean | error {  
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
@@ -443,7 +443,7 @@ public  client class Client {
     # + partitionKey - The value provided for the partition key specified in the document.
     # + return - If successful, returns a stream<json>. Else returns error. 
     public remote function queryDocuments(@tainted ResourceProperties properties, any[] partitionKey, Query sqlQuery, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted stream<json>|error {
+    RequestHeaderOptions? requestOptions = ()) returns @tainted stream<json> | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_DOCUMENTS]);
@@ -465,7 +465,7 @@ public  client class Client {
     # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
     public remote function createStoredProcedure(@tainted ResourceProperties properties, StoredProcedure storedProcedure) 
-    returns @tainted StoredProcedure|error {
+    returns @tainted StoredProcedure | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
@@ -483,7 +483,7 @@ public  client class Client {
     # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
     public remote function replaceStoredProcedure(@tainted ResourceProperties properties, @tainted StoredProcedure 
-    storedProcedure) returns @tainted StoredProcedure|error {
+    storedProcedure) returns @tainted StoredProcedure | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedure.id]);
@@ -501,7 +501,7 @@ public  client class Client {
     # + maxItemCount - Maximum number of elements to retrieve.
     # + return - If successful, returns a stream<StoredProcedure>. Else returns error. 
     public remote function listStoredProcedures(@tainted ResourceProperties properties, int? maxItemCount = ()) returns 
-    @tainted stream<StoredProcedure>|error {
+    @tainted stream<StoredProcedure> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
@@ -515,7 +515,7 @@ public  client class Client {
     }
 
     private function retrieveStoredProcedures(string path, http:Request request,  int? maxItemCount = (), string? continuationHeader = (), 
-    StoredProcedure[]? storedProcedureArray = ()) returns @tainted stream<StoredProcedure>|error {
+    StoredProcedure[]? storedProcedureArray = ()) returns @tainted stream<StoredProcedure> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -542,7 +542,7 @@ public  client class Client {
     # + storedProcedureId - Id of the stored procedure to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId) returns 
-    @tainted boolean|error {
+    @tainted boolean | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);        
@@ -559,7 +559,7 @@ public  client class Client {
     # + parameters - The list of function paramaters to pass to javascript function as an array.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
     public remote function executeStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId, 
-    any[]? parameters) returns @tainted json|error {
+    any[]? parameters) returns @tainted json | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);       
@@ -578,7 +578,7 @@ public  client class Client {
     # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     public remote function createUserDefinedFunction(@tainted ResourceProperties properties, 
-    UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction|error {
+    UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_UDF]);       
@@ -596,7 +596,7 @@ public  client class Client {
     # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     public remote function replaceUserDefinedFunction(@tainted ResourceProperties properties, 
-    @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction|error {
+    @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_UDF, userDefinedFunction.id]);      
@@ -614,7 +614,7 @@ public  client class Client {
     # + maxItemCount - Maximum number of elements to retrieve.
     # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
     public remote function listUserDefinedFunctions(@tainted ResourceProperties properties, int? maxItemCount = ()) returns 
-    @tainted stream<UserDefinedFunction>|error {
+    @tainted stream<UserDefinedFunction> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_UDF]);
@@ -628,7 +628,7 @@ public  client class Client {
     }
 
     private function retrieveUserDefinedFunctions(string path, http:Request request,  int? maxItemCount = (), string? continuationHeader = (), 
-    UserDefinedFunction[]? userDefinedFunctionArray = ()) returns @tainted stream<UserDefinedFunction>|error {
+    UserDefinedFunction[]? userDefinedFunctionArray = ()) returns @tainted stream<UserDefinedFunction> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -655,7 +655,7 @@ public  client class Client {
     # + userDefinedFunctionid - Id of UDF to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteUserDefinedFunction(@tainted ResourceProperties properties, string userDefinedFunctionid) 
-    returns @tainted boolean|error {
+    returns @tainted boolean | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_UDF, userDefinedFunctionid]);        
@@ -673,7 +673,7 @@ public  client class Client {
     # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     public remote function createTrigger(@tainted ResourceProperties properties, Trigger trigger) returns @tainted 
-    Trigger|error {
+    Trigger | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_TRIGGER]);       
@@ -691,7 +691,7 @@ public  client class Client {
     # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     public remote function replaceTrigger(@tainted ResourceProperties properties, @tainted Trigger trigger) returns 
-    @tainted Trigger|error {
+    @tainted Trigger | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_TRIGGER, trigger.id]);       
@@ -709,7 +709,7 @@ public  client class Client {
     # + maxItemCount - Maximum number of elements to retrieve.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
     public remote function listTriggers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted 
-    stream<Trigger>|error {
+    stream<Trigger> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_TRIGGER]);
@@ -723,7 +723,7 @@ public  client class Client {
     }
 
     private function retrieveTriggers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    Trigger[]? triggerArray = ()) returns @tainted stream<Trigger>|error {
+    Trigger[]? triggerArray = ()) returns @tainted stream<Trigger> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -750,7 +750,7 @@ public  client class Client {
     # + triggerId - Id of the trigger to be deleted.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteTrigger(@tainted ResourceProperties properties, string triggerId) returns @tainted 
-    boolean|error {
+    boolean | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_TRIGGER, triggerId]);       
@@ -765,7 +765,7 @@ public  client class Client {
     # + properties - Object of type ResourceProperties.
     # + userId - The id which should be given to the new user.
     # + return - If successful, returns a User. Else returns error.
-    public remote function createUser(@tainted ResourceProperties properties, string userId) returns @tainted User|error {
+    public remote function createUser(@tainted ResourceProperties properties, string userId) returns @tainted User | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
@@ -786,7 +786,7 @@ public  client class Client {
     # + newUserId - The new id for the user.
     # + return - If successful, returns a User. Else returns error.
     public remote function replaceUserId(@tainted ResourceProperties properties, string userId, string newUserId) returns 
-    @tainted User|error {
+    @tainted User | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);       
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
@@ -805,7 +805,7 @@ public  client class Client {
     # + properties - Object of type ResourceProperties.
     # + userId - The id of user to get information.
     # + return - If successful, returns a User. Else returns error.
-    public remote function getUser(@tainted ResourceProperties properties, string userId) returns @tainted User|error {
+    public remote function getUser(@tainted ResourceProperties properties, string userId) returns @tainted User | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
@@ -820,7 +820,7 @@ public  client class Client {
     # + properties - Object of type ResourceProperties.
     # + maxItemCount - The maximum number of elements to retrieve.
     # + return - If successful, returns a stream<User>. Else returns error.
-    public remote function listUsers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted stream<User>|error {
+    public remote function listUsers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted stream<User> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
@@ -833,7 +833,7 @@ public  client class Client {
     }
 
     private function retrieveUsers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    User[]? userArray = ()) returns @tainted stream<User>|error {
+    User[]? userArray = ()) returns @tainted stream<User> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -859,7 +859,7 @@ public  client class Client {
     # + properties - Object of type ResourceProperties.
     # + userId - The id of user to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteUser(@tainted ResourceProperties properties, string userId) returns @tainted boolean|error {
+    public remote function deleteUser(@tainted ResourceProperties properties, string userId) returns @tainted boolean | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);       
         HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
@@ -876,7 +876,7 @@ public  client class Client {
     # + validityPeriod - Optional validity period parameter which specify  time to live.
     # + return - If successful, returns a Permission. Else returns error.
     public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission, 
-    int? validityPeriod = ()) returns @tainted Permission|error {
+    int? validityPeriod = ()) returns @tainted Permission | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -907,7 +907,7 @@ public  client class Client {
     # + validityPeriod - Optional validity period parameter which specify  time to live.
     # + return - If successful, returns a Permission. Else returns error.
     public remote function replacePermission(@tainted ResourceProperties properties, string userId, @tainted 
-    Permission permission, int? validityPeriod = ()) returns @tainted Permission|error {
+    Permission permission, int? validityPeriod = ()) returns @tainted Permission | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -937,7 +937,7 @@ public  client class Client {
     # + maxItemCount - The maximum number of elements to retrieve.
     # + return - If successful, returns a stream<Permission>. Else returns error.
     public remote function listPermissions(@tainted ResourceProperties properties, string userId, int? maxItemCount = ()) 
-    returns @tainted stream<Permission>|error {
+    returns @tainted stream<Permission> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
@@ -951,7 +951,7 @@ public  client class Client {
     }
 
     private function retrievePermissions(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    Permission[]? permissionArray = ()) returns @tainted stream<Permission>|error {
+    Permission[]? permissionArray = ()) returns @tainted stream<Permission> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -981,7 +981,7 @@ public  client class Client {
     # + permissionId - Object of type Permission.
     # + return - If successful, returns a Permission. Else returns error.
     public remote function getPermission(@tainted ResourceProperties properties, string userId, string permissionId)
-    returns @tainted Permission|error {
+    returns @tainted Permission | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permissionId]);       
@@ -999,7 +999,7 @@ public  client class Client {
     # + permissionId - Id of the permission to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deletePermission(@tainted ResourceProperties properties, string userId, string permissionId) 
-    returns @tainted boolean|error {
+    returns @tainted boolean | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permissionId]);       
@@ -1015,8 +1015,8 @@ public  client class Client {
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 
     # + maxItemCount - The maximum number of elements to retrieve.
-    # + return - If successful, returns a stream<Offer>|. Else returns error.
-    public remote function listOffers(int? maxItemCount = ()) returns @tainted stream<Offer>|error {
+    # + return - If successful, returns a stream<Offer> | . Else returns error.
+    public remote function listOffers(int? maxItemCount = ()) returns @tainted stream<Offer> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);       
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
@@ -1029,7 +1029,7 @@ public  client class Client {
     }
 
     private function retriveOffers(string path, http:Request request, int? maxItemCount = (), string? continuationHeader = (), 
-    Offer[]? offerArray = ()) returns @tainted stream<Offer>|error {
+    Offer[]? offerArray = ()) returns @tainted stream<Offer> | error {
         if (continuationHeader is string) {
             request.setHeader(CONTINUATION_HEADER, continuationHeader);
         }
@@ -1056,7 +1056,7 @@ public  client class Client {
     # 
     # + offerId - The id of the offer.
     # + return - If successful, returns a Offer. Else returns error.
-    public remote function getOffer(string offerId) returns @tainted Offer|error {
+    public remote function getOffer(string offerId) returns @tainted Offer | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_OFFER, offerId]);       
         HeaderParameters header = mapOfferHeaderType(GET, requestPath);
@@ -1071,7 +1071,7 @@ public  client class Client {
     # + offer - Object of type Offer.
     # + offerType - Type of the offer.
     # + return - If successful, returns a Offer. Else returns error.
-    public remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
+    public remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_OFFER, offer.id]);       
         HeaderParameters header = mapOfferHeaderType(PUT, requestPath);
@@ -1100,7 +1100,7 @@ public  client class Client {
     # 
     # + sqlQuery - the SQL query to execute
     # + return - If successful, returns a stream<json>. Else returns error.
-    public remote function queryOffer(Query sqlQuery) returns @tainted stream<json>|error {
+    public remote function queryOffer(Query sqlQuery) returns @tainted stream<json> | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_OFFER]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
