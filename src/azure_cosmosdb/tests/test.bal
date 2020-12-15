@@ -257,10 +257,8 @@ function test_listOneDatabase(){
         "test_createContainerIfNotExist", 
         "test_deleteContainer", 
         "test_createPermissionWithTTL", 
-        "test_getCollection_Resource_Token",
-        "test_getOffer",
-        "test_replaceOffer",
-        "test_replaceOfferWithOptionalParameter"
+        "test_getCollection_Resource_Token"
+        
     ]
 }
 function test_deleteDatabase(){
@@ -1352,12 +1350,13 @@ function test_deletePermission(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_listOffers(){
     log:printInfo("ACTION : listOffers()");
 
-    var result = AzureCosmosClient->listOffers();  
+    var result = AzureCosmosClient->listOffers(6);  
     if (result is stream<Offer>){
         var doc = result.next();
         io:println(doc);    
@@ -1368,7 +1367,9 @@ function test_listOffers(){
 
 @test:Config{
     groups: ["offer"], 
-    dependsOn: ["test_listOffers"]
+    dependsOn: ["test_listOffers"],
+        enable: false
+
 }
 function test_getOffer(){
     log:printInfo("ACTION : getOffer()");
@@ -1389,7 +1390,9 @@ function test_getOffer(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+            enable: false
+
 }
 function test_replaceOffer(){
     log:printInfo("ACTION : replaceOffer()");
@@ -1420,7 +1423,9 @@ function test_replaceOffer(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+            enable: false
+
 }
 function test_replaceOfferWithOptionalParameter(){
     log:printInfo("ACTION : replaceOfferWithOptionalParameter()");
@@ -1450,7 +1455,9 @@ function test_replaceOfferWithOptionalParameter(){
 
 @test:Config{
     groups: ["offer"], 
-    dependsOn: ["test_createDatabase",  "test_createContainer"]
+    dependsOn: ["test_createDatabase",  "test_createContainer"],
+        enable: false
+
 }
 function test_queryOffer(){
     log:printInfo("ACTION : queryOffer()");

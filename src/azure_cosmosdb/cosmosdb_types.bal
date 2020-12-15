@@ -124,14 +124,14 @@ public type Database record {|
 public type Container record {|
     string id = "";
     *Common;
+    IndexingPolicy indexingPolicy?;
+    PartitionKey partitionKey = {};
     string collections?;
     string storedProcedures?;
     string triggers?;
     string userDefinedFunctions?;
     string conflicts?;
     boolean allowMaterializedViews?;
-    IndexingPolicy indexingPolicy?;
-    PartitionKey partitionKey?;
     Headers?...;
 |};
 
@@ -158,7 +158,7 @@ public type Document record {|
 # + excludedPaths - Array of type included paths representing excluded paths.
 public type IndexingPolicy record {|
     string indexingMode = "";
-    boolean automatic = true;
+    boolean automatic?;
     IncludedPath[] includedPaths?;
     IncludedPath[] excludedPaths?;
 |};
@@ -202,7 +202,7 @@ public type Index record {|
 public type PartitionKey record {|
     string[] paths = [];
     string kind = "";
-    int? keyVersion?;
+    int keyVersion?;
 |};
 
 # Reprsnets the record type with necessary paramaters to create partition key list.
@@ -244,7 +244,9 @@ public type StoredProcedure record {|
 |};
 
 public type UserDefinedFunction record {|
-    *StoredProcedure;
+    string id = "";
+    *Common;
+    string body = "";    
     Headers?...;
 |};
 
@@ -275,7 +277,7 @@ public type User record {|
 # + id - The user generated unique name for the permission.
 # + permissionMode - The access mode for the resource, "All" or "Read".
 # + resourcePath - The full addressable path of the resource associated with the permission.
-# + validityPeriod - 
+# + validityPeriod - The validity period of the resource token.
 # + token - A system generated resource token for the particular resource and user.
 public type Permission record {|
     string id = "";
@@ -334,14 +336,14 @@ type JsonMap map<json>;
 
 # Represents the record type which contain necessary elements for a query.
 # 
-# + query - The SQL query.
+# + query - The SQL query represented as string.
 # + parameters - Parameters of the query if exists.
 public type Query record {|
     string query = "";
     QueryParameter[]? parameters = [];
 |};
 
-# Represnent the query paramaters
+# Represnent the paramaters related to query.
 # 
 # + name - Name of the paramater.
 # + value - Value of the paramater.

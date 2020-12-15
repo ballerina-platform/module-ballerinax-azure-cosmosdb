@@ -44,6 +44,7 @@ public const string CONSISTANCY_LEVEL_SESSION = "Session";
 # Eventual consistancy level
 public const string CONSISTANCY_LEVEL_EVENTUAL = "Eventual";
 
+//Request headers
 const string CONTENT_TYPE_HEADER = "Content-Type";
 const string API_VERSION_HEADER = "x-ms-version";
 const string HOST_HEADER = "Host";
@@ -65,7 +66,11 @@ const string ISQUERY_HEADER = "x-ms-documentdb-isquery";
 const string PARTITION_KEY_HEADER = "x-ms-documentdb-partitionkey";
 const string EXPIRY_HEADER = "x-ms-documentdb-expiry-seconds";
 const string IS_ENABLE_CROSS_PARTITION_HEADER = "x-ms-documentdb-query-enablecrosspartition";
+const string CONTENT_TYPE_QUERY = "application/query+json";
+const string ACCEPT_ALL = "*/*";
+const string CONNECTION_KEEP_ALIVE = "keep-alive";
 
+// Response headers
 const string CONTINUATION_HEADER = "x-ms-continuation";
 const string SESSION_TOKEN_HEADER = "x-ms-session-token";
 const string REQUEST_CHARGE_HEADER = "x-ms-request-charge";
@@ -74,14 +79,18 @@ const string ITEM_COUNT_HEADER = "x-ms-item-count";
 const string RESPONSE_DATE_HEADER = "Date";
 const string ETAG_HEADER = "etag";
 
+// Time Zone
 const string GMT_ZONE = "Europe/London";
+const string TIME_ZONE_FORMAT= "EEE, dd MMM yyyy HH:mm:ss z";
 
+// HTTP methods
 const string GET = "GET";
 const string PUT = "PUT";
 const string POST = "POST";
 const string PATCH = "PATCH";
 const string DELETE = "DELETE";
 
+// Resources
 const string RESOURCE_PATH_DATABASES = "dbs";
 const string RESOURCE_PATH_COLLECTIONS = "colls";
 const string RESOURCE_PATH_DOCUMENTS = "docs";
@@ -93,19 +102,13 @@ const string RESOURCE_PATH_USER = "users";
 const string RESOURCE_PATH_PERMISSION = "permissions";
 const string RESOURCE_PATH_OFFER = "offers";
 
+// Cosmos DB SQL API version
 const string API_VERSION = "2018-12-31";
-const string RESPONSE_HEADERS = "reponseHeaders";
-const string CONTENT_TYPE_QUERY = "application/query+json";
-const string ACCEPT_ALL = "*/*";
-const string CONNECTION_KEEP_ALIVE = "keep-alive";
-const string ACTIVITY_ID = "ActivityId";
-const int MIN_REQUEST_UNITS = 400;
-const int MIN_TIME_TO_LIVE = 3600;
-const int MAX_TIME_TO_LIVE = 18000;
-const string UTF8_URL_ENCODING = "UTF-8";
-const string SPACE_STRING = " ";
-const string COLON_WITH_SPACE = " : ";
 
+//Encoding types
+const string UTF8_URL_ENCODING = "UTF-8";
+
+// Error messages
 const string MINIMUM_MANUAL_THROUGHPUT_ERROR = "The minimum manual throughput is 400 RU/s";
 const string SETTING_BOTH_VALUES_ERROR = "Cannot set both throughput and maxThroughput headers at once";
 const string NULL_PARTITIONKEY_VALUE_ERROR = "Partition key values are null";
@@ -113,7 +116,6 @@ const string INDEXING_DIRECTIVE_ERROR = "Indexing directive should be either Exc
 const string CONSISTANCY_LEVEL_ERROR = "Consistacy level should be one of Strong, Bounded, Session, or Eventual"; 
 const string VALIDITY_PERIOD_ERROR = "Resource token validity period must be between 3600 and 18000";
 const string MASTER_KEY_ERROR = "Enter a valid master key and token type should be master key";
-
 const string JSON_PAYLOAD_ACCESS_ERROR = "Error occurred while accessing the JSON payload of the response";
 const string REST_API_INVOKING_ERROR = "Error occurred while invoking the REST API";
 const string NULL_RESOURCE_TYPE_ERROR = "ResourceType is incorrect/null";
@@ -121,7 +123,11 @@ const string NULL_DATE_ERROR = "Date is invalid/null";
 const string NULL_AUTHORIZATION_SIGNATURE_ERROR = "Authorization token is null";
 const string DECODING_ERROR = "Base64 Decoding error";
 const string TIME_STRING_ERROR = "Time string is not correct";
+const string INVALID_RESPONSE_PAYLOAD_ERROR = "Invalid response payload";
+const string STREAM_IS_NOT_TYPE_ERROR = "The stream is not type";
+const string INVALID_STREAM_TYPE = "Invalid stream type";
 
+// json keys
 const string JSON_KEY_ID = "id";
 const string JSON_KEY_RESOURCE_ID = "_rid";
 const string JSON_KEY_SELF_REFERENCE = "_self";
@@ -133,11 +139,17 @@ const string JSON_KEY_RESOURCE = "resource";
 const string JSON_KEY_OFFER_RESOURCE_ID = "offerResourceId";
 const string JSON_KEY_OFFER_TYPE = "offerType";
 const string JSON_KEY_OFFER_VERSION = "offerVersion";
-const string JSON_KEY_OFFER_VERSION_1 = "V1";
 const string JSON_KEY_CONTENT = "content";
 const string JSON_KEY_DOCUMENTS = "Documents";
 const string JSON_KEY_OFFERS = "Offers";
 
-const string STATUS_NOT_FOUND_STRING = "404";
+const string RESPONSE_HEADERS = "reponseHeaders";
+const string ACTIVITY_ID = "ActivityId";
 const string STATUS = "status";
-const string TIME_ZONE_FORMAT= "EEE, dd MMM yyyy HH:mm:ss z";
+const int MIN_REQUEST_UNITS = 400;
+const int MIN_TIME_TO_LIVE = 3600;
+const int MAX_TIME_TO_LIVE = 18000;
+const string STATUS_NOT_FOUND_STRING = "404";
+const string SPACE_STRING = " ";
+const string COLON_WITH_SPACE = " : ";
+const string JSON_KEY_OFFER_VERSION_1 = "V1";
