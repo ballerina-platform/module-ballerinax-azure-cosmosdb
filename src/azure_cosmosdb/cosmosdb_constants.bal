@@ -14,12 +14,6 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Represents Forward slash
-public const FORWARD_SLASH = "/";
- 
-# Represents Empty string
-public const string EMPTY_STRING = "";
-
 # Represents Token type for a master token
 public const string TOKEN_TYPE_MASTER = "master";
 
@@ -44,7 +38,7 @@ public const string CONSISTANCY_LEVEL_SESSION = "Session";
 # Eventual consistancy level
 public const string CONSISTANCY_LEVEL_EVENTUAL = "Eventual";
 
-//Request headers
+// Request headers
 const string CONTENT_TYPE_HEADER = "Content-Type";
 const string API_VERSION_HEADER = "x-ms-version";
 const string HOST_HEADER = "Host";
@@ -66,6 +60,8 @@ const string ISQUERY_HEADER = "x-ms-documentdb-isquery";
 const string PARTITION_KEY_HEADER = "x-ms-documentdb-partitionkey";
 const string EXPIRY_HEADER = "x-ms-documentdb-expiry-seconds";
 const string IS_ENABLE_CROSS_PARTITION_HEADER = "x-ms-documentdb-query-enablecrosspartition";
+
+// Values for request headers
 const string CONTENT_TYPE_QUERY = "application/query+json";
 const string ACCEPT_ALL = "*/*";
 const string CONNECTION_KEEP_ALIVE = "keep-alive";
@@ -126,30 +122,43 @@ const string TIME_STRING_ERROR = "Time string is not correct";
 const string INVALID_RESPONSE_PAYLOAD_ERROR = "Invalid response payload";
 const string STREAM_IS_NOT_TYPE_ERROR = "The stream is not type";
 const string INVALID_STREAM_TYPE = "Invalid stream type";
+const string AZURE_ERROR = "Error occured";
 
-// json keys
+// json keys in response
 const string JSON_KEY_ID = "id";
 const string JSON_KEY_RESOURCE_ID = "_rid";
 const string JSON_KEY_SELF_REFERENCE = "_self";
 const string JSON_KEY_ETAG = "_etag";
 const string JSON_KEY_TIMESTAMP = "_ts";
 const string JSON_KEY_ATTACHMENTS = "_attachments";
+const string JSON_KEY_DOCUMENTS = "Documents";
+const string JSON_KEY_OFFERS = "Offers";
+
+// Fields in record types
 const string JSON_KEY_PERMISSIONMODE = "permissionMode"; 
 const string JSON_KEY_RESOURCE = "resource";
 const string JSON_KEY_OFFER_RESOURCE_ID = "offerResourceId";
 const string JSON_KEY_OFFER_TYPE = "offerType";
 const string JSON_KEY_OFFER_VERSION = "offerVersion";
 const string JSON_KEY_CONTENT = "content";
-const string JSON_KEY_DOCUMENTS = "Documents";
-const string JSON_KEY_OFFERS = "Offers";
 
+// Property in record type representing headers
 const string RESPONSE_HEADERS = "reponseHeaders";
+
+// Elements in an error response
 const string ACTIVITY_ID = "ActivityId";
 const string STATUS = "status";
+const string STATUS_NOT_FOUND_STRING = "404";
+
+// Numeric constants
 const int MIN_REQUEST_UNITS = 400;
 const int MIN_TIME_TO_LIVE = 3600;
 const int MAX_TIME_TO_LIVE = 18000;
-const string STATUS_NOT_FOUND_STRING = "404";
+
+// String constants
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";
-const string JSON_KEY_OFFER_VERSION_1 = "V1";
+const string OFFER_VERSION_1 = "V1";
+const FORWARD_SLASH = "/";
+const string EMPTY_STRING = "";
+const string NEW_LINE = "\n";

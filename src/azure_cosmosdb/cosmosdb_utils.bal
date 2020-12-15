@@ -277,8 +277,8 @@ isolated function getTime() returns string? | error {
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
 string tokenType, string tokenVersion, string date) returns string? | error {    
     string authorization;
-    string payload = verb.toLowerAscii()+ "\n" + resourceType.toLowerAscii() + "\n" + resourceId + "\n"
-    + date.toLowerAscii() + "\n" + "" + "\n";
+    string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE
+    + date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
     var decoded = array:fromBase64(keyToken);
     if (decoded is byte[]) {
         byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
@@ -457,7 +457,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
     }
     var response = azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);        
-    var x = typeof array;
+    var x = typeof array; 
     if (x is typedesc<Offer[]>) {
         Offer[] offers = <Offer[]>array;
         if (payload.Offers is json) {
@@ -616,3 +616,5 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         return prepareError(INVALID_STREAM_TYPE); 
     }
 }
+
+

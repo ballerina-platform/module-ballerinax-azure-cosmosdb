@@ -207,7 +207,7 @@ function test_createDatabaseWithBothHeaders(){
 function test_listAllDatabases(){
     log:printInfo("ACTION : listAllDatabases()");
 
-    var result = AzureCosmosClient->getDatabases(6);
+    var result = AzureCosmosClient->listDatabases(6);
     if (result is stream<Database>){
         var database = result.next();
         io:println(database?.value);
@@ -397,7 +397,7 @@ function test_getOneContainer(){
 function test_getAllContainers(){
     log:printInfo("ACTION : getAllContainers()");
 
-    var result = AzureCosmosClient->getAllContainers(database.id);
+    var result = AzureCosmosClient->listContainers(database.id);
     if (result is stream<Container>){
         var database = result.next();
         io:println(database?.value);
