@@ -625,5 +625,3 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         return prepareError(INVALID_STREAM_TYPE); 
     }
 }
-
-

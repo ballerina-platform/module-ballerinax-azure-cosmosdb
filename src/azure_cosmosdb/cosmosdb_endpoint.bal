@@ -45,10 +45,10 @@ public  client class Client {
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database | error {
+        http:Request request = new;
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         json jsonPayload = {
