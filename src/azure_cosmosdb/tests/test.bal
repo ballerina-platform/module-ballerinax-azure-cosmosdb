@@ -25,7 +25,6 @@ import ballerina/stringutils;
 AzureCosmosConfiguration config = {
     baseUrl : getConfigValue("BASE_URL"), 
     keyOrResourceToken : getConfigValue("KEY_OR_RESOURCE_TOKEN"), 
-    host : getConfigValue("HOST"), 
     tokenType : getConfigValue("TOKEN_TYPE"), 
     tokenVersion : getConfigValue("TOKEN_VERSION"), 
     secureSocketConfig :{
@@ -1495,7 +1494,6 @@ function test_getCollection_Resource_Token(){
             AzureCosmosConfiguration configdb = {
                 baseUrl : getConfigValue("BASE_URL"), 
                 keyOrResourceToken : result?.token.toString(), 
-                host : getConfigValue("HOST"), 
                 tokenType : "resource", 
                 tokenVersion : getConfigValue("TOKEN_VERSION"), 
                 secureSocketConfig :{

@@ -77,6 +77,15 @@ isolated function getResourceId(string url) returns string {
     return resourceId;
 }
 
+isolated function getHost(string url) returns string {
+    string replaced = stringutils:replaceFirst(url,"^(https)://","");  
+    int? i = str:lastIndexOf(replaced, FORWARD_SLASH);
+    if (i is int) {
+        replaced = replaced.substring(0,i);    
+    }
+    return replaced;
+}
+
 # Prepare the url out of a given string array 
 #
 # + paths - array of strings with path of the url

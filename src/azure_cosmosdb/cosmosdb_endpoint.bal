@@ -30,7 +30,7 @@ public  client class Client {
     function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = azureConfig.baseUrl;
         self.keyOrResourceToken = azureConfig.keyOrResourceToken;
-        self.host = azureConfig.host;
+        self.host = getHost(azureConfig.baseUrl);
         self.keyType = azureConfig.tokenType;
         self.tokenVersion = azureConfig.tokenVersion;
         http:ClientConfiguration httpClientConfig = {secureSocket: azureConfig.secureSocketConfig};
@@ -892,5 +892,4 @@ public  client class Client {
         var response = self.azureCosmosClient->delete(requestPath, request);
         return check getDeleteResponse(response);
     }
-
 }
