@@ -218,18 +218,6 @@ public type PartitionKeyRange record {|
     Headers?...;
 |};
 
-// # Reprsnets the record type with necessary paramaters to create partition key list.
-// # 
-// # + resourceId - 
-// # + PartitionKeyRanges -
-// # + count - 
-// public type PartitionKeyList record {|
-//     string resourceId = "";
-//     PartitionKeyRange[] PartitionKeyRanges = [];
-//     int count?;
-//     Headers?...;
-// |};
-
 # Represent the record type with elements represent a stored procedure.
 # 
 # + id - The user generated unique name for the stored procedure. 
