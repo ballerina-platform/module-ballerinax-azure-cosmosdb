@@ -78,13 +78,13 @@ public type RequestHeaderOptions record {|
 
 # Represents the response headers which is returned.
 # 
-# + continuationHeader - A string token returned for queries and read-feed operations if there are more results to be read.
-# + sessionTokenHeader - The session token of the request.
+# + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read.
+# + sessionTokenHeader - Session token of the request.
 # + requestChargeHeader - This is the number of normalized requests a.k.a. request units (RU) for the operation.
-# + resourceUsageHeader - Shows the current usage count of a resource in an account.  
-# + itemCountHeader - The number of items returned for a query or read-feed request.
-# + etagHeader - Shows the resource etag for the resource retrieved same as eTag in the response. 
-# + dateHeader - The date time of the response operation.
+# + resourceUsageHeader - Current usage count of a resource in an account.  
+# + itemCountHeader - Number of items returned for a query or read-feed request.
+# + etagHeader - Resource etag for the resource retrieved same as eTag in the response. 
+# + dateHeader - Date time of the response operation.
 public type Headers record {|
     string? continuationHeader = ();
     string? sessionTokenHeader = ();
@@ -97,9 +97,9 @@ public type Headers record {|
 
 # Represents the elements representing information about a database.
 # 
-# + id - The user generated unique name for the database. 
-# + collections - Specifies the addressable path of the collections resource.
-# + users - Specifies the addressable path of the users resource.
+# + id - User generated unique ID for the database. 
+# + collections - Addressable path of the collections resource.
+# + users - Addressable path of the users resource.
 public type Database record {|
     string id = "";
     *Common;
@@ -110,15 +110,15 @@ public type Database record {|
 
 # Represents the elements representing information about a collection.
 # 
-# + id - The user generated unique name for the container. 
-# + collections - Specifies the addressable path of the collections resource.
-# + storedProcedures - Specifies the addressable path of the stored procedures resource.
-# + triggers - Specifies the addressable path of the triggers resource.
-# + userDefinedFunctions - specifies the addressable path of the user-defined functions resource.
-# + conflicts - Specifies the addressable path of the conflicts resource. 
-# + allowMaterializedViews - Boolean representing whether to allow materialized views.
-# + indexingPolicy - Object of type IndexingPolicy.
+# + id - User generated unique ID for the container.
+# + indexingPolicy - Object of type IndexingPolicy. 
 # + partitionKey - Object of type PartitionKey.
+# + collections - Addressable path of the collections resource.
+# + storedProcedures - Addressable path of the stored procedures resource.
+# + triggers - Addressable path of the triggers resource.
+# + userDefinedFunctions - Addressable path of the user-defined functions resource.
+# + conflicts - Addressable path of the conflicts resource. 
+# + allowMaterializedViews - Representing whether to allow materialized views.
 public type Container record {|
     string id = "";
     *Common;
@@ -135,10 +135,10 @@ public type Container record {|
 
 # Represents the elements representing information about a document.
 # 
-# + id - The user generated unique name for the document. 
-# + documentBody - The bson document.
+# + id - User generated unique ID for the document. 
+# + documentBody - BSON document.
 # + partitionKey - Array containing the value for the selected partition key.
-# + attachments - Specifies the addressable path for the attachments resource.
+# + attachments - Addressable path for the attachments resource.
 public type Document record {|
     string id = "";
     *Common;
@@ -150,10 +150,10 @@ public type Document record {|
 
 # Represents the elements representing information about a document.
 # 
-# + indexingMode - The mode of indexing.
-# + automatic - A boolean specifying whether indexing is automatic.
-# + includedPaths - Array of type included paths representing included paths.
-# + excludedPaths - Array of type included paths representing excluded paths.
+# + indexingMode - Mode of indexing.
+# + automatic - Whether indexing is automatic.
+# + includedPaths - Array of type IncludedPath representing included paths.
+# + excludedPaths - Array of type IncludedPath representing excluded paths.
 public type IndexingPolicy record {|
     string indexingMode = "";
     boolean automatic?;
@@ -163,8 +163,8 @@ public type IndexingPolicy record {|
 
 # Represent the structure of included path type.
 # 
-# + path - A string specifying the path for which the indexing behavior applies to.
-# + indexes - An array of index values.
+# + path - Path for which the indexing behavior applies to.
+# + indexes - Array of type Index representing index values.
 public type IncludedPath record {|
     string path = "";
     Index[] indexes?;
@@ -179,10 +179,10 @@ public type ExcludedPath record {|
 
 # Represent the record type with elements represent an index. 
 # 
-# + kind - The type of index. Can be "Hash", "Range" or "Spatial"
-# + dataType - The datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
+# + kind - Type of index. Can be "Hash", "Range" or "Spatial"
+# + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
 #   or "LineString"
-# + precision - The precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
+# + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
 #   and 1-100 for String. Not applicable for Point, Polygon, and LineString data types.
 public type Index record {|
     string kind = "";
@@ -192,11 +192,10 @@ public type Index record {|
 
 # Represent the record type with elements represent a partition key.
 # 
-# + paths - An array of paths using which data within the collection can be partitioned. The array must contain only a 
+# + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
 #   single value.
-# + kind - The algorithm used for partitioning. Only Hash is supported.
-# + keyVersion - An optional field, if not specified the default value is 1. To use the large partition key, set the 
-#   version to 2.
+# + kind - Algorithm used for partitioning. Only Hash is supported.
+# + keyVersion - Version of partition key.
 public type PartitionKey record {|
     string[] paths = [];
     string kind = "Hash";
@@ -205,9 +204,9 @@ public type PartitionKey record {|
 
 # Reprsnets the record type with necessary paramaters to create partition key range.
 # 
-# + id - The ID for the partition key range.
-# + minInclusive - The maximum partition key hash value for the partition key range. 
-# + maxExclusive - The minimum partition key hash value for the partition key range. 
+# + id - ID for the partition key range.
+# + minInclusive - Maximum partition key hash value for the partition key range. 
+# + maxExclusive - Minimum partition key hash value for the partition key range. 
 # + status - 
 public type PartitionKeyRange record {|
     string id = "";
@@ -220,8 +219,8 @@ public type PartitionKeyRange record {|
 
 # Represent the record type with elements represent a stored procedure.
 # 
-# + id - The user generated unique name for the stored procedure. 
-# + body - The body of the stored procedure.
+# + id - User generated unique ID for the stored procedure. 
+# + body - Body of the stored procedure.
 public type StoredProcedure record {|
     string id = "";
     *Common;
@@ -238,8 +237,8 @@ public type UserDefinedFunction record {|
 
 # Represent the record type with elements represent a trigger.
 # 
-# + triggerOperation - The type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
-# + triggerType - Specifies when the trigger is fired, "Pre" or "Post".
+# + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
+# + triggerType - When the trigger is fired, "Pre" or "Post".
 public type Trigger record {|
     *StoredProcedure;
     string triggerOperation = "";
@@ -249,8 +248,8 @@ public type Trigger record {|
 
 # Represent the record type with elements represent a user.
 # 
-# + id - The user generated unique name for the user. 
-# + permissions - The addressable path of the permissions resource.
+# + id - User generated unique ID for the user. 
+# + permissions - Addressable path of the permissions resource.
 public type User record {|
     string id = "";
     *Common;
@@ -260,11 +259,11 @@ public type User record {|
 
 # Represent the record type with elements represent a permission.
 # 
-# + id - The user generated unique name for the permission.
-# + permissionMode - The access mode for the resource, "All" or "Read".
-# + resourcePath - The full addressable path of the resource associated with the permission.
-# + validityPeriod - The validity period of the resource token.
-# + token - A system generated resource token for the particular resource and user.
+# + id - User generated unique ID for the permission.
+# + permissionMode - Access mode for the resource, "All" or "Read".
+# + resourcePath - Full addressable path of the resource associated with the permission.
+# + validityPeriod - Validity period of the resource token.
+# + token - System generated resource token for the particular resource and user.
 public type Permission record {|
     string id = "";
     *Common;
@@ -277,12 +276,12 @@ public type Permission record {|
 
 # Represent the record type with elements represent an offer.
 # 
-# + id - The user generated unique name for the offer.
+# + id - User generated unique ID for the offer.
 # + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined throughput levels.
-# + offerType - Indicates the performance level for V1 offer version, allows S1,S2 and S3.
-# + content - Contains information about the offer.
+# + offerType - Performance level for V1 offer version, allows S1,S2 and S3.
+# + content - Information about the offer.
 # + offerResourceId - A property which is automatically done, associated to the resource ID(_rid).
-# + resourceSelfLink - When creating a new collection, this property is set to the self-link of the collection.
+# + resourceSelfLink - The self-link of the collection.
 public type Offer record {|
     string id = "";
     *Common;
@@ -296,8 +295,8 @@ public type Offer record {|
 
 # Represent the record type with options represent for throughput.
 # 
-# + throughput - The manual throughput value which must be more than 400RU/s.
-# + maxThroughput - The autoscaling throughout which is represented as a json object.
+# + throughput - Manual throughput value which must be more than 400RU/s.
+# + maxThroughput - Autoscaling throughout which is represented as a json object.
 public type ThroughputProperties record {
     int? throughput = ();
     json? maxThroughput = ();
@@ -307,8 +306,8 @@ public type ThroughputProperties record {
 # 
 # + verb - HTTP verb of the request call.
 # + apiVersion - Version of the API as given by the user.
-# + resourceType - The resource type, the relevent request targetted to.
-# + resourceId - The resource ID, the relevent request targetted to.
+# + resourceType - Resource type, the relevent request targetted to.
+# + resourceId - Resource ID, the relevent request targetted to.
 public type HeaderParameters record {|
     string verb = "";
     string apiVersion = API_VERSION;

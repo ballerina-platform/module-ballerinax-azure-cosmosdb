@@ -146,7 +146,7 @@ isolated function mapJsonToPartitionKeyRange([json, Headers?] jsonPayload) retur
     partitionKeyRange.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     partitionKeyRange.minInclusive = payload.minInclusive != () ? payload.minInclusive.toString() : EMPTY_STRING;
     partitionKeyRange.maxExclusive = payload.maxExclusive != () ? payload.maxExclusive.toString() : EMPTY_STRING;
-    partitionKeyRange.status = payload.status.toString();
+    partitionKeyRange.status = payload.status != () ? payload.status.toString() : EMPTY_STRING;
     if (headers is Headers) {
         partitionKeyRange[RESPONSE_HEADERS] = headers;
     }
@@ -290,8 +290,7 @@ isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tain
 # + return - An array of type Database.
 isolated function convertToDatabaseArray(@tainted Database[] databases, json[] sourceDatabaseArrayJsonObject) 
 returns @tainted  Database[] {
-    int length = databases.length();
-    int i = length;
+    int i = databases.length();
     foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
         databases[i] = mapJsonToDatabaseType([jsonDatabase,()]);
         i = i + 1;
@@ -306,8 +305,7 @@ returns @tainted  Database[] {
 # + return - An array of type Container.
 isolated function convertToContainerArray(@tainted Container[] containers, json[] sourceContainerArrayJsonObject) 
 returns @tainted Container[] {
-    int length = containers.length();
-    int i = length;   
+    int i = containers.length();  
     foreach json jsonCollection in sourceContainerArrayJsonObject {
         containers[i] = mapJsonToContainerType([jsonCollection, ()]);
         i = i + 1;
@@ -322,8 +320,7 @@ returns @tainted Container[] {
 # + return - An array of type Document.
 isolated function convertToDocumentArray(@tainted Document[] documents,json[] sourceDocumentArrayJsonObject) returns 
 @tainted Document[] { 
-    int length = documents.length();
-    int i = length;
+    int i = documents.length();
     foreach json document in sourceDocumentArrayJsonObject { 
         documents[i] = mapJsonToDocumentType([document, ()]);
         i = i + 1;
@@ -338,8 +335,7 @@ isolated function convertToDocumentArray(@tainted Document[] documents,json[] so
 # + return - An array of type StoredProcedure.
 isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, json[] sourceStoredProcedureArrayJsonObject) 
 returns @tainted StoredProcedure[] { 
-    int length = storedProcedures.length();
-    int i = length;    
+    int i = storedProcedures.length();    
     foreach json storedProcedure in sourceStoredProcedureArrayJsonObject { 
         storedProcedures[i] = mapJsonToStoredProcedureType([storedProcedure, ()]);
         i = i + 1;
@@ -354,8 +350,7 @@ returns @tainted StoredProcedure[] {
 # + return - An array of type UserDefinedFunction.
 isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunction[] userDefinedFunctions, json[] sourceUdfArrayJsonObject) 
 returns @tainted UserDefinedFunction[] { 
-    int length = userDefinedFunctions.length();
-    int i = length;
+    int i = userDefinedFunctions.length();
     foreach json userDefinedFunction in sourceUdfArrayJsonObject { 
         userDefinedFunctions[i] = mapJsonToUserDefinedFunctionType([userDefinedFunction, ()]);
         i = i + 1;
@@ -369,8 +364,7 @@ returns @tainted UserDefinedFunction[] {
 # + sourceTriggerArrayJsonObject - Json object which contain the array of trigger information.
 # + return - An array of type Trigger.
 isolated function convertToTriggerArray(@tainted Trigger[] triggers, json[] sourceTriggerArrayJsonObject) returns @tainted Trigger[] { 
-    int length = triggers.length();
-    int i = length; 
+    int i = triggers.length(); 
     foreach json trigger in sourceTriggerArrayJsonObject { 
         triggers[i] = mapJsonToTriggerType([trigger, ()]);
         i = i + 1;
@@ -384,8 +378,7 @@ isolated function convertToTriggerArray(@tainted Trigger[] triggers, json[] sour
 # + sourceUserArrayJsonObject - Json object which contain the array of user information.
 # + return - An array of type User.
 isolated function convertToUserArray(@tainted User[] users, json[] sourceUserArrayJsonObject) returns @tainted User[] { 
-    int length = users.length();
-    int i = length;
+    int i = users.length();
     foreach json user in sourceUserArrayJsonObject { 
         users[i] = mapJsonToUserType([user, ()]);
         i = i + 1;
@@ -400,8 +393,7 @@ isolated function convertToUserArray(@tainted User[] users, json[] sourceUserArr
 # + return - An array of type Permission.
 isolated function convertToPermissionArray(@tainted Permission[] permissions, json[] sourcePermissionArrayJsonObject) 
 returns @tainted Permission[] { 
-    int length = permissions.length();
-    int i = length;
+    int i = permissions.length();
     foreach json permission in sourcePermissionArrayJsonObject { 
         permissions[i] = mapJsonToPermissionType([permission, ()]);
         i = i + 1;
@@ -415,8 +407,7 @@ returns @tainted Permission[] {
 # + sourceOfferArrayJsonObject - Json object which contain the array of offer information.
 # + return - An array of type Offer.
 isolated function ConvertToOfferArray(@tainted Offer[] offers, json[] sourceOfferArrayJsonObject) returns @tainted Offer[] { 
-    int length = offers.length();
-    int i = length;
+    int i = offers.length();
     foreach json offer in sourceOfferArrayJsonObject { 
         offers[i] = mapJsonToOfferType([offer, ()]);
         i = i + 1;
