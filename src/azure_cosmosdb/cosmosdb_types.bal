@@ -199,20 +199,8 @@ public type Index record {|
 #   version to 2.
 public type PartitionKey record {|
     string[] paths = [];
-    string kind = "";
-    int keyVersion?;
-|};
-
-# Reprsnets the record type with necessary paramaters to create partition key list.
-# 
-# + resourceId - 
-# + PartitionKeyRanges -
-# + count - 
-public type PartitionKeyList record {|
-    string resourceId = "";
-    PartitionKeyRange[] PartitionKeyRanges = [];
-    int count?;
-    Headers?...;
+    string kind = "Hash";
+    int keyVersion = 1;
 |};
 
 # Reprsnets the record type with necessary paramaters to create partition key range.
@@ -229,6 +217,18 @@ public type PartitionKeyRange record {|
     string status = "";
     Headers?...;
 |};
+
+// # Reprsnets the record type with necessary paramaters to create partition key list.
+// # 
+// # + resourceId - 
+// # + PartitionKeyRanges -
+// # + count - 
+// public type PartitionKeyList record {|
+//     string resourceId = "";
+//     PartitionKeyRange[] PartitionKeyRanges = [];
+//     int count?;
+//     Headers?...;
+// |};
 
 # Represent the record type with elements represent a stored procedure.
 # 

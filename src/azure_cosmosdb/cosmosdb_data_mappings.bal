@@ -136,23 +136,6 @@ isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @taint
     return partitionKey;
 }
 
-# Maps the json response returned from the request into record type of PartitionKeyList.
-#
-# + jsonPayload - A tuple which contains headers and json object returned from request.
-# + return - An instance of record type PartitionKeyList.
-isolated function mapJsonToPartitionKeyListType([json, Headers?] jsonPayload) returns @tainted PartitionKeyList {
-    PartitionKeyList partitionKeyList = {};
-    PartitionKeyRange pkr = {};
-    var [payload, headers] = jsonPayload;
-    //partitionKeyList.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    //partitionKeyList.partitionKeyRanges = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-    partitionKeyList.count = convertToInt(payload._count);
-    if (headers is Headers) {
-        partitionKeyList[RESPONSE_HEADERS] = headers;
-    }
-    return partitionKeyList;
-}
-
 # Maps the json response returned from the request into record type of PartitionKeyRange.
 #
 # + jsonPayload - A tuple which contains headers and json object returned from request.
@@ -160,9 +143,9 @@ isolated function mapJsonToPartitionKeyListType([json, Headers?] jsonPayload) re
 isolated function mapJsonToPartitionKeyRange([json, Headers?] jsonPayload) returns @tainted PartitionKeyRange {
     PartitionKeyRange partitionKeyRange = {};
     var [payload, headers] = jsonPayload;
-    partitionKeyRange.id = payload.id.toString();
-    partitionKeyRange.minInclusive = payload.minInclusive.toString();
-    partitionKeyRange.maxExclusive = payload.maxExclusive.toString();
+    partitionKeyRange.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    partitionKeyRange.minInclusive = payload.minInclusive != () ? payload.minInclusive.toString() : EMPTY_STRING;
+    partitionKeyRange.maxExclusive = payload.maxExclusive != () ? payload.maxExclusive.toString() : EMPTY_STRING;
     partitionKeyRange.status = payload.status.toString();
     if (headers is Headers) {
         partitionKeyRange[RESPONSE_HEADERS] = headers;

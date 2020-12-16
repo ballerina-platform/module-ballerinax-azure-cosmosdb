@@ -289,7 +289,6 @@ function test_createContainer(){
     };
     PartitionKey pk = {
         paths: ["/AccountNumber"], 
-        kind :"Hash", 
         keyVersion: 2
     };
     var result = AzureCosmosClient->createContainer(propertiesNewCollection, pk);
@@ -453,13 +452,13 @@ function test_GetPartitionKeyRanges(){
             databaseId: database.id, 
             containerId: container.id
     };
-    var result = AzureCosmosClient->getPartitionKeyRanges(resourceProperties);
-    if (result is error){
-        test:assertFail(msg = result.message());
+    var result = AzureCosmosClient->listPartitionKeyRanges(resourceProperties);
+    if (result is stream<PartitionKeyRange>){
+        var database = result.next();
+        io:println(database?.value);
     } else {
-        var output = "";
-        io:println(result);
-    }   
+        test:assertFail(msg = result.message());
+    }  
 }
 
 @test:Config{

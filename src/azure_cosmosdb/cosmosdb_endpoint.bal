@@ -227,12 +227,17 @@ public  client class Client {
     # 
     # + properties - Id of the database which collection is in.
     # + return - If successful, returns PartitionKeyList. Else returns error.  
-    public remote function getPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted 
-    PartitionKeyList | error {
+    public remote function listPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted stream<PartitionKeyRange> | error {
+        http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
         properties.containerId, RESOURCE_PATH_PK_RANGES]);
+        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         [json, Headers] jsonResponse = check self.getRecord(requestPath);
-        return mapJsonToPartitionKeyListType(jsonResponse);
+        PartitionKeyRange[] newArray = [];
+        stream<PartitionKeyRange> | error partitionKeyStream = <stream<PartitionKeyRange> | error>
+            retriveStream(self.azureCosmosClient, requestPath, request, newArray);
+        return partitionKeyStream;
     }
 
     # Create a Document inside a collection.

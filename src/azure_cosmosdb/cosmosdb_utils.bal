@@ -432,10 +432,10 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 }
 
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[] | Document[] | 
-    Database[] | Container[] | StoredProcedure[] | UserDefinedFunction[] | Trigger[] | User[] | Permission[] array, 
+    Database[] | Container[] | StoredProcedure[] | UserDefinedFunction[] | Trigger[] | User[] | Permission[] | PartitionKeyRange[] array, 
     int? maxItemCount = (), string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer> | 
     stream<Document> | stream<Database> | stream<Container> | stream<StoredProcedure> | stream<UserDefinedFunction> | 
-    stream<Trigger> | stream<User> | stream<Permission> | error {
+    stream<Trigger> | stream<User> | stream<Permission> | stream<PartitionKeyRange>| error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
@@ -461,7 +461,6 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
                 }
             }
             return offerStream;
-
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
@@ -513,7 +512,6 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
                 }
             }
             return containerStream;
-
         } else {
             return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
         }
@@ -544,7 +542,6 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
                 }
             }
             return userDefinedFunctionStream;
-
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
@@ -562,7 +559,6 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
                 }
             }
             return triggerStream;
-
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
@@ -597,6 +593,14 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
                 }
             }
             return permissionStream;
+        } else {
+            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (x is typedesc<PartitionKeyRange[]>) {
+        if (payload.PartitionKeyRanges is json) {
+            PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
+            stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
+            return partitionKeyrangesStream;
 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
