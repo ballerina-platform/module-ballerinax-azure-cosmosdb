@@ -77,8 +77,12 @@ isolated function getResourceId(string url) returns string {
     return resourceId;
 }
 
+# Extract the host of the cosmos db from the base url.
+#
+# + url - the Base URL given by the user from which we want to extract host.
+# + return - string representing the resource id.
 isolated function getHost(string url) returns string {
-    string replaced = stringutils:replaceFirst(url,"^(https)://","");  
+    string replaced = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);  
     int? i = str:lastIndexOf(replaced, FORWARD_SLASH);
     if (i is int) {
         replaced = replaced.substring(0,i);    
@@ -130,6 +134,7 @@ HeaderParameters params) returns http:Request | error {
     request.setHeader(CONNECTION_HEADER, CONNECTION_KEEP_ALIVE);
     string? | error date = getTime();
     if (date is string) {
+        request.setHeader(DATE_HEADER, date);
         string? signature = ();
         if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
             signature = check generateMasterTokenSignature(params.verb, params.resourceType, params.resourceId, keyToken, 
@@ -139,7 +144,6 @@ HeaderParameters params) returns http:Request | error {
         } else {
             return prepareError(NULL_RESOURCE_TYPE_ERROR);
         }
-        request.setHeader(DATE_HEADER, date);
         if (signature is string) {
             request.setHeader(AUTHORIZATION_HEADER, signature);
         } else {
@@ -159,7 +163,7 @@ HeaderParameters params) returns http:Request | error {
 isolated function setThroughputOrAutopilotHeader(http:Request request, ThroughputProperties? throughputProperties) returns 
 http:Request | error {
   if (throughputProperties is ThroughputProperties) {
-        if (throughputProperties.throughput is int &&  throughputProperties.maxThroughput is ()) {
+        if (throughputProperties.throughput != ()  &&  throughputProperties.maxThroughput is ()) {
             if (<int>throughputProperties.throughput >= MIN_REQUEST_UNITS) {
                 request.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
             } else {
@@ -167,9 +171,8 @@ http:Request | error {
             }
         } else if (throughputProperties.throughput is () &&  throughputProperties.maxThroughput != ()) {
             request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-        } else if (throughputProperties.throughput is int &&  throughputProperties.maxThroughput != ()) {
-            return 
-            prepareError(SETTING_BOTH_VALUES_ERROR);
+        } else if (throughputProperties.throughput != () &&  throughputProperties.maxThroughput != ()) {
+            return prepareError(SETTING_BOTH_VALUES_ERROR);
         }
     }
     return request;
@@ -350,34 +353,6 @@ isolated function mapResponseHeadersToHeadersObject(http:Response | http:ClientE
     }
 }
 
-# Handle sucess or error reponses to requests and extract the json payload to a stream
-# 
-# + httpResponse - http:Response or http:ClientError returned from an http:Request
-# + return - If successful, returns stream<json>. Else returns error.  
-function mapResponseToJsonStream(http:Response | http:ClientError httpResponse) returns @tainted stream<json> | error { 
-    if (httpResponse is http:Response) {
-        var jsonResponse = httpResponse.getJsonPayload();
-        if (jsonResponse is json) {
-            if (httpResponse.statusCode != http:STATUS_OK && httpResponse.statusCode != http:STATUS_CREATED) {
-                return createResponseFailMessage(httpResponse, jsonResponse);
-            }
-            boolean jsonDocumentMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey(JSON_KEY_DOCUMENTS);
-            boolean jsonOfferMap = (check jsonResponse.cloneWithType(JsonMap)).hasKey(JSON_KEY_OFFERS);
-            if (jsonDocumentMap == true) {
-                return (<@untainted><json[]>jsonResponse.Documents).toStream();///
-            } else if (jsonOfferMap == true) {
-                return (<@untainted><json[]>jsonResponse.Offers).toStream();///
-            } else {
-                return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
-            }
-        } else {
-            return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
-        }
-    } else {
-        return prepareError(REST_API_INVOKING_ERROR);
-    }
-}
-
 # Handle the responses from delete operations which return without a json payload.
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
@@ -458,13 +433,18 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[] | Document[] | 
     Database[] | Container[] | StoredProcedure[] | UserDefinedFunction[] | Trigger[] | User[] | Permission[] array, 
-    int? maxItemCount = (), string? continuationHeader = ()) returns @tainted stream<Offer> | stream<Document> | 
-    stream<Database> | stream<Container> | stream<StoredProcedure> | stream<UserDefinedFunction> | stream<Trigger> | 
-    stream<User> | stream<Permission> | error {
+    int? maxItemCount = (), string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer> | 
+    stream<Document> | stream<Database> | stream<Container> | stream<StoredProcedure> | stream<UserDefinedFunction> | 
+    stream<Trigger> | stream<User> | stream<Permission> | error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    var response = azureCosmosClient->get(path, request);
+    http:Response | http:ClientError response;
+    if (isQuery ==  true) {
+        response = azureCosmosClient->post(path, request);
+    } else  {
+        response = azureCosmosClient->get(path, request);
+    }
     var [payload, headers] = check mapResponseToTuple(response);        
     var x = typeof array; 
     if (x is typedesc<Offer[]>) {

@@ -693,7 +693,13 @@ function test_GetOneDocumentWithRequestOptions(){
 
 @test:Config{
     groups: ["document"], 
-    dependsOn: ["test_createContainer", "test_createDocument", "test_GetOneDocument", "test_GetOneDocumentWithRequestOptions"]
+    dependsOn: [
+        "test_createContainer", 
+        "test_createDocument", 
+        "test_GetOneDocument", 
+        "test_GetOneDocumentWithRequestOptions", 
+        "test_queryDocuments"
+    ]
 }
 function test_deleteDocument(){
     log:printInfo("ACTION : deleteDocument()");
@@ -728,16 +734,11 @@ function test_queryDocuments(){
         parameters: []
     };
     var result = AzureCosmosClient->queryDocuments(resourceProperty, partitionKey, sqlQuery);   
-    if (result is error){
-        test:assertFail(msg = result.message());
-    } else {
-        var output = "";
+    if (result is stream<Document>){
         var doc = result.next();
-        io:println(doc);
-        error? e = result.forEach(function (json document){
-            io:println(document);
-        });
-
+        io:println(doc);    
+    } else {
+        test:assertFail(msg = result.message());
     }   
 }
 
@@ -1465,13 +1466,12 @@ function test_queryOffer(){
     query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`
     };
     var result = AzureCosmosClient->queryOffer(offerQuery);   
-    if (result is error){
-        test:assertFail(msg = result.message());
+    if (result is stream<Offer>){
+        var doc = result.next();
+        io:println(doc);    
     } else {
-        var output = "";
-        var offer = result.next();
-        io:println(offer);    
-    }  
+        test:assertFail(msg = result.message());
+    }     
 }
 
 @test:Config{

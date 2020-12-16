@@ -123,6 +123,7 @@ const string INVALID_RESPONSE_PAYLOAD_ERROR = "Invalid response payload";
 const string STREAM_IS_NOT_TYPE_ERROR = "The stream is not type";
 const string INVALID_STREAM_TYPE = "Invalid stream type";
 const string AZURE_ERROR = "Error occured";
+const string PAYLOAD_IS_NOT_JSON_ERROR = "Request payload is not json";
 
 // json keys in response
 const string JSON_KEY_ID = "id";
@@ -162,3 +163,4 @@ const string OFFER_VERSION_1 = "V1";
 const FORWARD_SLASH = "/";
 const string EMPTY_STRING = "";
 const string NEW_LINE = "\n";
+const string HTTPS_REGEX = "^(https)://";
