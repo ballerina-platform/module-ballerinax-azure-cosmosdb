@@ -1,1 +1,0 @@
-{"ballerinax/azure_cosmosdb:0.1.0:PartitionKeyRange":{"id":"string","minInclusive":"string","maxExclusive":"string","ridPrefix":"int","throughputFraction":"int","status":"string","reponseHeaders":"ballerinax/azure_cosmosdb:0.1.0:Headers"}}

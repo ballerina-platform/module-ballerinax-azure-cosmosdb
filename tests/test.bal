@@ -1520,7 +1520,7 @@ function test_getCollection_Resource_Token(){
     }
 }
 
-function getConfigValue(string key) returns string {
+isolated function getConfigValue(string key) returns string {
     return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);
 }
 

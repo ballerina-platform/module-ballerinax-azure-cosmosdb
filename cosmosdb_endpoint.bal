@@ -485,7 +485,7 @@ public  client class Client {
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request.setTextPayload(parameters.toString());
         var response = self.azureCosmosClient->post(requestPath, request);
-        json jsonResponse = check mapResponseToJson(response);
+        json jsonResponse = check handleResponse(response);
         return jsonResponse;   
     }
 
@@ -934,6 +934,11 @@ public  client class Client {
         HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         var response = self.azureCosmosClient->delete(requestPath, request);
-        return check getDeleteResponse(response);
+        json | boolean  booleanResponse = check handleResponse(response);
+        if (booleanResponse is boolean) {
+            return booleanResponse;
+        } else  {
+            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }    
     }
 }

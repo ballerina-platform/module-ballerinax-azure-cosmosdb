@@ -1,1 +1,0 @@
-{"ballerinax/azure_cosmosdb:0.1.0:Container":{"id":"string","collections":"string","storedProcedures":"string","triggers":"string","userDefinedFunctions":"string","conflicts":"string","allowMaterializedViews":"boolean","indexingPolicy":"ballerinax/azure_cosmosdb:0.1.0:IndexingPolicy","partitionKey":"ballerinax/azure_cosmosdb:0.1.0:PartitionKey"}}

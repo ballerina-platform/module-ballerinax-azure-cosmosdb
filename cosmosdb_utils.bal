@@ -307,9 +307,9 @@ string tokenType, string tokenVersion, string date) returns string? | error {
 # 
 # + httpResponse - the http:Response or http:ClientError returned form the HTTP request
 # + return - returns a tuple of type [json, Headers] if sucessful else, returns error
-isolated function mapResponseToTuple(http:Response | http:ClientError httpResponse) returns @tainted [json, Headers] | error {
-    var responseBody = check mapResponseToJson(httpResponse);
-    var responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
+isolated function mapResponseToTuple(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted [json, Headers] | error {
+    json responseBody = check handleResponse(httpResponse);
+    Headers responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
     return [responseBody, responseHeaders];
 }
 
@@ -317,16 +317,31 @@ isolated function mapResponseToTuple(http:Response | http:ClientError httpRespon
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns json. Else returns error. 
-isolated function mapResponseToJson(http:Response | http:ClientError httpResponse) returns @tainted json | error { 
-    if (httpResponse is http:Response) {
-        var jsonResponse = httpResponse.getJsonPayload();
-        if (jsonResponse is json) {
-            if (httpResponse.statusCode != http:STATUS_OK && httpResponse.statusCode != http:STATUS_CREATED) {
-                return createResponseFailMessage(httpResponse, jsonResponse);
+isolated function handleResponse(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted json | boolean | error { 
+    if (httpResponse is http:Response) {   
+        if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+            json|error jsonResponse = httpResponse.getJsonPayload();
+            if (jsonResponse is json) {
+                return jsonResponse;
+            } else {
+                return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
             }
-            return jsonResponse;
+        } else if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
+            return true;
         } else {
-            return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
+            json|error jsonResponse = httpResponse.getJsonPayload();
+            if (jsonResponse is json) {
+                string message = jsonResponse.message.toString();
+                string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase; 
+                var stoppingIndex = message.indexOf(ACTIVITY_ID);
+                if (stoppingIndex is int) {
+                    errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
+                }
+                error details = error(errorMessage, status = httpResponse.statusCode);
+                return details;
+            } else {
+                return prepareError(REST_API_INVOKING_ERROR); ///error
+            }
         }
     } else {
         return prepareError(REST_API_INVOKING_ERROR);
@@ -337,7 +352,7 @@ isolated function mapResponseToJson(http:Response | http:ClientError httpRespons
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns record type Headers. Else returns error. 
-isolated function mapResponseHeadersToHeadersObject(http:Response | http:ClientError httpResponse) returns @tainted Headers | error {
+isolated function mapResponseHeadersToHeadersObject(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted Headers | error {
     Headers responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
@@ -351,43 +366,6 @@ isolated function mapResponseHeadersToHeadersObject(http:Response | http:ClientE
     } else {
         return prepareError(REST_API_INVOKING_ERROR);
     }
-}
-
-# Handle the responses from delete operations which return without a json payload.
-# 
-# + httpResponse - http:Response or http:ClientError returned from an http:Request
-# + return - If successful, returns true if successful. Else returns error.
-isolated function getDeleteResponse(http:Response | http:ClientError httpResponse) returns @tainted boolean | error {
-    if (httpResponse is http:Response) {
-        if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
-            return true;
-        } else {
-            var jsonResponse = httpResponse.getJsonPayload();
-            if (jsonResponse is json) {
-                return createResponseFailMessage(httpResponse, jsonResponse);
-            } else {
-                return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
-            }
-        }
-    } else {
-        return prepareError(REST_API_INVOKING_ERROR);
-    }
-}
-
-# Handle the error reponses from a request and returns an error object
-# 
-# + httpResponse - http:Response returned from an http:Request
-# + errorResponse - json payload of the error response
-# + return - returns error.
-isolated function createResponseFailMessage(http:Response httpResponse, json errorResponse) returns error {
-    string message = errorResponse.message.toString();
-    string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase; 
-    var stoppingIndex = message.indexOf(ACTIVITY_ID);
-    if (stoppingIndex is int) {
-        errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
-    }
-    error details = error(errorMessage, status = httpResponse.statusCode);
-    return details;
 }
 
 # Convert json string values to boolean.
@@ -439,7 +417,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    http:Response | http:ClientError response;
+    http:Response | http:Payload | http:ClientError response;
     if (isQuery ==  true) {
         response = azureCosmosClient->post(path, request);
     } else  {
