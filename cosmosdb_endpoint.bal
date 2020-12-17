@@ -39,9 +39,8 @@ public  client class Client {
 
     # Create a database inside a resource.
     # 
-    # + databaseId - Id for the database
-    # + throughputProperties - Optional throughput parameter which will set 'x-ms-offer-throughput' or 
-    # 'x-ms-cosmos-offer-autopilot-settings' headers.
+    # + databaseId - ID for the database.
+    # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
     @tainted Database | error {
@@ -64,11 +63,11 @@ public  client class Client {
 
     # Create a database inside a resource.
     # 
-    # + databaseId - ID of the database.
+    # + databaseId - ID for the database.
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabaseIfNotExist(string databaseId, ThroughputProperties? throughputProperties = ()) 
-    returns @tainted Database? | error {
+                            returns @tainted Database? | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
@@ -120,7 +119,7 @@ public  client class Client {
 
     # Delete a given database inside a resource.
     # 
-    # + databaseId - ID of the database to retrieve.
+    # + databaseId - ID of the database to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     public remote function deleteDatabase(string databaseId) returns @tainted boolean | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
@@ -132,18 +131,20 @@ public  client class Client {
 
     # Create a collection inside a database.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container.
     # + partitionKey - Object of type PartitionKey.
     # + indexingPolicy - Optional. Object of type IndexingPolicy.
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
     # + return - If successful, returns Container. Else returns error.  
-    public remote function createContainer(@tainted ResourceProperties properties, PartitionKey partitionKey, 
-    IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container | error {
+    public remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
+                            IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) 
+                            returns @tainted Container | error {
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         json jsonPayload = {
-            id: properties.containerId, 
+            id: containerId, 
             partitionKey: {
                 paths: <json>partitionKey.paths.cloneWithType(json), 
                 kind : partitionKey.kind, 
@@ -163,18 +164,20 @@ public  client class Client {
 
     # Create a database inside a resource.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container.    
     # + partitionKey - Object of type PartitionKey.
     # + indexingPolicy - Optional. Object of type IndexingPolicy.
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createContainerIfNotExist(@tainted ResourceProperties properties, PartitionKey partitionKey, 
-    IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) returns @tainted Container? | error {
-        var result = self->getContainer(properties);
+    public remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
+                            IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) 
+                            returns @tainted Container? | error {
+        var result = self->getContainer(databaseId, containerId);
         if result is error {
             string status = result.detail()[STATUS].toString();
             if (status == STATUS_NOT_FOUND_STRING) {
-                return self->createContainer(properties, partitionKey);
+                return self->createContainer(databaseId, containerId, partitionKey);
             } else {
                 return prepareError(AZURE_ERROR + string `${result.message()}`);
             }
@@ -184,11 +187,12 @@ public  client class Client {
 
     # Retrive one collection inside a database.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container.    
     # + return - If successful, returns Container. Else returns error.  
-    public remote function getContainer(@tainted ResourceProperties properties) returns @tainted Container | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId]);
+    public remote function getContainer(string databaseId, string containerId) returns @tainted Container | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId]);
         [json, Headers] jsonResponse = check self.getRecord(requestPath);
         return mapJsonToContainerType(jsonResponse);
     }
@@ -214,22 +218,24 @@ public  client class Client {
 
     # Delete one collection inside a database.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteContainer(@tainted ResourceProperties properties) returns @tainted json | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId]);
+    public remote function deleteContainer(string databaseId, string containerId) returns @tainted json | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId]);
         return self.deleteRecord(requestPath);
     }
 
     # Retrieve a list of partition key ranges for the collection.
     # 
-    # + properties - ID of the database which collection is in.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container.    
     # + return - If successful, returns PartitionKeyList. Else returns error.  
-    public remote function listPartitionKeyRanges(@tainted ResourceProperties properties) returns @tainted stream<PartitionKeyRange> | error {
+    public remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted stream<PartitionKeyRange> | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_PK_RANGES]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_PK_RANGES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         [json, Headers] jsonResponse = check self.getRecord(requestPath);
@@ -241,15 +247,16 @@ public  client class Client {
 
     # Create a Document inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which document is created.
     # + document - Object of type Document. 
     # + requestOptions - Object of type RequestHeaderOptions.
     # + return - If successful, returns Document. Else returns error.  
-    public remote function createDocument(@tainted ResourceProperties properties, Document document, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
+    public remote function createDocument(string databaseId, string containerId, Document document, 
+                            RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_DOCUMENTS]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_DOCUMENTS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
@@ -268,15 +275,16 @@ public  client class Client {
 
     # Replace a document inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which document is created.
     # + document - Object of type Document. 
     # + requestOptions - Optional. Object of type RequestHeaderOptions.
     # + return - If successful, returns a Document. Else returns error. 
-    public remote function replaceDocument(@tainted ResourceProperties properties, @tainted Document document, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {         
+    public remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
+                            RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {         
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, document.partitionKey);
@@ -295,16 +303,17 @@ public  client class Client {
 
     # List one document inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which document is created.
     # + documentId - Id of the document. 
     # + partitionKey - Array containing value of parition key field.
     # + requestOptions - Optional. Object of type RequestHeaderOptions.
     # + return - If successful, returns Document. Else returns error.  
-    public remote function getDocument(@tainted ResourceProperties properties, string documentId, any[] partitionKey, 
-    RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
+    public remote function getDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
+                            RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, partitionKey);
@@ -318,15 +327,16 @@ public  client class Client {
 
     # List all the documents inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which documents are created.
     # + requestOptions - Object of type RequestHeaderOptions.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns stream<Document> Else, returns error. 
-    public remote function getDocumentList(@tainted ResourceProperties properties, RequestHeaderOptions? requestOptions = (), 
-    int? maxItemCount = ()) returns @tainted stream<Document> | error { 
+    public remote function getDocumentList(string databaseId, string containerId, RequestHeaderOptions? requestOptions = (), 
+                            int? maxItemCount = ()) returns @tainted stream<Document> | error { 
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_DOCUMENTS]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_DOCUMENTS]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if requestOptions is RequestHeaderOptions {
@@ -343,15 +353,16 @@ public  client class Client {
 
     # Delete a document inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
-    # + documentId - ID of the document. 
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which document is created.    
+    # + documentId - ID of the document to delete. 
     # + partitionKey - Array containing value of parition key field.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteDocument(@tainted ResourceProperties properties, string documentId, any[] partitionKey) 
-    returns @tainted boolean | error {  
+    public remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey) 
+                            returns @tainted boolean | error {  
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
         HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, partitionKey);
@@ -366,17 +377,19 @@ public  client class Client {
 
     # Query documents inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container to query.     
     # + sqlQuery - Object of type Query containing the SQL query.
     # + requestOptions - Object of type RequestOptions.
     # + partitionKey - Value of the partition key specified for the document.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<Document>. Else returns error. 
-    public remote function queryDocuments(@tainted ResourceProperties properties, any[] partitionKey, Query sqlQuery, 
-    RequestHeaderOptions? requestOptions = (), int? maxItemCount = ()) returns @tainted stream<Document> | error {
+    public remote function queryDocuments(string databaseId, string containerId, any[] partitionKey, Query sqlQuery, 
+                            RequestHeaderOptions? requestOptions = (), int? maxItemCount = ()) 
+                            returns @tainted stream<Document> | error {
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_DOCUMENTS]);
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_DOCUMENTS]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request = check setPartitionKeyHeader(request, partitionKey);
@@ -397,14 +410,15 @@ public  client class Client {
     # 
     # A stored procedure is a piece of application logic written in JavaScript that 
     # is registered and executed against a collection as a single transaction.
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which stored procedure is created.     
     # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
-    public remote function createStoredProcedure(@tainted ResourceProperties properties, StoredProcedure storedProcedure) 
-    returns @tainted StoredProcedure | error {
+    public remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) 
+                            returns @tainted StoredProcedure | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_STORED_POCEDURES]);
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json | error payload = storedProcedure.cloneWithType(json);
@@ -420,14 +434,15 @@ public  client class Client {
 
     # Replace a stored procedure with new one inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which stored procedure is created. 
     # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
-    public remote function replaceStoredProcedure(@tainted ResourceProperties properties, @tainted StoredProcedure 
-    storedProcedure) returns @tainted StoredProcedure | error {
+    public remote function replaceStoredProcedure(string databaseId, string containerId, 
+                            @tainted StoredProcedure storedProcedure) returns @tainted StoredProcedure | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedure.id]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedure.id]);
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json | error payload = storedProcedure.cloneWithType(json);
@@ -443,14 +458,15 @@ public  client class Client {
 
     # List all stored procedures inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which contain the stored procedures.    
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<StoredProcedure>. Else returns error. 
-    public remote function listStoredProcedures(@tainted ResourceProperties properties, int? maxItemCount = ()) returns 
-    @tainted stream<StoredProcedure> | error {
+    public remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = ()) returns 
+                            @tainted stream<StoredProcedure> | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_STORED_POCEDURES]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_STORED_POCEDURES]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if (maxItemCount is int) {
@@ -464,27 +480,29 @@ public  client class Client {
 
     # Delete a stored procedure inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which stored procedure is created.     
     # + storedProcedureId - ID of the stored procedure to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId) returns 
-    @tainted boolean | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);        
+    public remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId) returns 
+                            @tainted boolean | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);        
         return self.deleteRecord(requestPath);
     }
 
     # Execute a stored procedure inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which stored procedure is created.     
     # + storedProcedureId - ID of the stored procedure to execute.
     # + parameters - Optional. Array of function paramaters to pass to javascript function as an array.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
-    public remote function executeStoredProcedure(@tainted ResourceProperties properties, string storedProcedureId, 
-    any[]? parameters) returns @tainted json | error {
+    public remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
+                            any[]? parameters) returns @tainted json | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);       
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         request.setTextPayload(parameters.toString());
@@ -496,14 +514,15 @@ public  client class Client {
     # Create a new user defined function inside a collection.
     # 
     # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which user defined function is created.     
     # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
-    public remote function createUserDefinedFunction(@tainted ResourceProperties properties, 
-    UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
+    public remote function createUserDefinedFunction(string databaseId, string containerId, 
+                            UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_UDF]);       
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_UDF]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json | error payload = userDefinedFunction.cloneWithType(json);
@@ -519,14 +538,15 @@ public  client class Client {
 
     # Replace an existing user defined function inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which user defined function is created.    
     # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
-    public remote function replaceUserDefinedFunction(@tainted ResourceProperties properties, 
-    @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
+    public remote function replaceUserDefinedFunction(string databaseId, string containerId, 
+                            @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_UDF, userDefinedFunction.id]);      
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_UDF, userDefinedFunction.id]);      
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json | error payload = userDefinedFunction.cloneWithType(json);
@@ -542,14 +562,15 @@ public  client class Client {
 
     # Get a list of existing user defined functions inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which user defined functions are created.    
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
-    public remote function listUserDefinedFunctions(@tainted ResourceProperties properties, int? maxItemCount = ()) returns 
-    @tainted stream<UserDefinedFunction> | error {
+    public remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = ()) returns 
+                            @tainted stream<UserDefinedFunction> | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_UDF]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_UDF]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if (maxItemCount is int) {
@@ -563,13 +584,14 @@ public  client class Client {
 
     # Delete an existing user defined function inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which user defined function is created.    
     # + userDefinedFunctionid - Id of UDF to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteUserDefinedFunction(@tainted ResourceProperties properties, string userDefinedFunctionid) 
-    returns @tainted boolean | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_UDF, userDefinedFunctionid]);        
+    public remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid) 
+                            returns @tainted boolean | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_UDF, userDefinedFunctionid]);        
         return self.deleteRecord(requestPath);
     }
 
@@ -577,14 +599,15 @@ public  client class Client {
     # 
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript. 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which trigger is created.    
     # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
-    public remote function createTrigger(@tainted ResourceProperties properties, Trigger trigger) returns @tainted 
-    Trigger | error {
+    public remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted 
+                            Trigger | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_TRIGGER]);       
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_TRIGGER]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json | error payload = trigger.cloneWithType(json);
@@ -600,14 +623,15 @@ public  client class Client {
     
     # Replace an existing trigger inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which trigger is created.     
     # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
-    public remote function replaceTrigger(@tainted ResourceProperties properties, @tainted Trigger trigger) returns 
-    @tainted Trigger | error {
+    public remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns 
+                            @tainted Trigger | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_TRIGGER, trigger.id]);       
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_TRIGGER, trigger.id]);       
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json | error payload = trigger.cloneWithType(json);
@@ -623,14 +647,15 @@ public  client class Client {
 
     # List existing triggers inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which triggers are created.     
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
-    public remote function listTriggers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted 
-    stream<Trigger> | error {
+    public remote function listTriggers(string databaseId, string containerId, int? maxItemCount = ()) returns @tainted 
+                            stream<Trigger> | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_TRIGGER]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_TRIGGER]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if (maxItemCount is int) {
@@ -644,24 +669,25 @@ public  client class Client {
 
     # Delete an existing trigger inside a collection.
     # 
-    # + properties - Object of type ResourceProperties.
-    # + triggerId - Id of the trigger to be deleted.
+    # + databaseId - ID of the database which container is created.
+    # + containerId - ID of the container which trigger is created. 
+    # + triggerId - ID of the trigger to be deleted.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteTrigger(@tainted ResourceProperties properties, string triggerId) returns @tainted 
-    boolean | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_COLLECTIONS, 
-        properties.containerId, RESOURCE_PATH_TRIGGER, triggerId]);       
+    public remote function deleteTrigger(string databaseId, string containerId, string triggerId) returns @tainted 
+                            boolean | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
+        containerId, RESOURCE_PATH_TRIGGER, triggerId]);       
         return self.deleteRecord(requestPath);
     }
 
     # Create a user in a database.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID which should be given to the new user.
     # + return - If successful, returns a User. Else returns error.
-    public remote function createUser(@tainted ResourceProperties properties, string userId) returns @tainted User | error {
+    public remote function createUser(string databaseId, string userId) returns @tainted User | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);       
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json reqBody = {
@@ -675,14 +701,14 @@ public  client class Client {
     
     # Replace the id of an existing user for a database.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of the user.
     # + newUserId - New ID for the user.
     # + return - If successful, returns a User. Else returns error.
-    public remote function replaceUserId(@tainted ResourceProperties properties, string userId, string newUserId) returns 
-    @tainted User | error {
+    public remote function replaceUserId(string databaseId, string userId, string newUserId) returns 
+                            @tainted User | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);       
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId]);       
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         json reqBody = {
@@ -696,23 +722,23 @@ public  client class Client {
 
     # To get information of a user from a database.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to get.
     # + return - If successful, returns a User. Else returns error.
-    public remote function getUser(@tainted ResourceProperties properties, string userId) returns @tainted User | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);
+    public remote function getUser(string databaseId, string userId) returns @tainted User | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId]);
         [json, Headers] jsonResponse = check self.getRecord(requestPath);
         return mapJsonToUserType(jsonResponse);      
     }
 
     # Lists users in a database account.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which users belongs.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<User>. Else returns error.
-    public remote function listUsers(@tainted ResourceProperties properties, int? maxItemCount = ()) returns @tainted stream<User> | error {
+    public remote function listUsers(string databaseId, int? maxItemCount = ()) returns @tainted stream<User> | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER]);
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER]);
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
         if (maxItemCount is int) {
@@ -726,28 +752,28 @@ public  client class Client {
 
     # Delete a user from a database account.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteUser(@tainted ResourceProperties properties, string userId) returns @tainted boolean | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId]);       
+    public remote function deleteUser(string databaseId, string userId) returns @tainted boolean | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId]);       
         return self.deleteRecord(requestPath);
     }
 
     # Create a permission for a user. 
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to which the permission belongs.
     # + permission - Object of type Permission.
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function createPermission(@tainted ResourceProperties properties, string userId, Permission permission, 
-    int? validityPeriod = ()) returns @tainted Permission | error {
+    public remote function createPermission(string databaseId, string userId, Permission permission, 
+                            int? validityPeriod = ()) returns @tainted Permission | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
         HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
@@ -767,18 +793,18 @@ public  client class Client {
 
     # Replace an existing permission.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to which the permission belongs.
     # + permission - Object of type Permission.
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function replacePermission(@tainted ResourceProperties properties, string userId, @tainted 
-    Permission permission, int? validityPeriod = ()) returns @tainted Permission | error {
+    public remote function replacePermission(string databaseId, string userId, @tainted 
+                            Permission permission, int? validityPeriod = ()) returns @tainted Permission | error {
         http:Request request = new;
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
         }
-        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permission.id]);       
         HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
@@ -798,13 +824,13 @@ public  client class Client {
 
     # To get information of a permission belongs to a user.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to which the permission belongs.
     # + permissionId - ID of the permission to get.
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function getPermission(@tainted ResourceProperties properties, string userId, string permissionId)
-    returns @tainted Permission | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+    public remote function getPermission(string databaseId, string userId, string permissionId)
+                            returns @tainted Permission | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permissionId]);       
         [json, Headers] jsonResponse = check self.getRecord(requestPath);
         return mapJsonToPermissionType(jsonResponse);
@@ -812,14 +838,14 @@ public  client class Client {
 
     # Lists permissions belong to a user.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to which the permissions belongs.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<Permission>. Else returns error.
-    public remote function listPermissions(@tainted ResourceProperties properties, string userId, int? maxItemCount = ()) 
-    returns @tainted stream<Permission> | error {
+    public remote function listPermissions(string databaseId, string userId, int? maxItemCount = ()) 
+                            returns @tainted stream<Permission> | error {
         http:Request request = new;
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
         HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
@@ -834,13 +860,13 @@ public  client class Client {
 
     # Deletes a permission belongs to a user.
     # 
-    # + properties - Object of type ResourceProperties.
+    # + databaseId - ID of the database to which user belongs.
     # + userId - ID of user to the permission belongs.
     # + permissionId - ID of the permission to delete.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deletePermission(@tainted ResourceProperties properties, string userId, string permissionId) 
-    returns @tainted boolean | error {
-        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, properties.databaseId, RESOURCE_PATH_USER, userId, 
+    public remote function deletePermission(string databaseId, string userId, string permissionId) 
+                            returns @tainted boolean | error {
+        string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permissionId]);       
         return self.deleteRecord(requestPath);
     }
@@ -859,7 +885,7 @@ public  client class Client {
             offerVersion: offer.offerVersion, 
             content: offer.content, 
             'resource: offer.resourceSelfLink, 
-            offerResourceId: offer.offerResourceId, 
+            offerResourceId: offer.resourceResourceId, 
             id: offer.id, 
             _rid: offer?.resourceId
         };

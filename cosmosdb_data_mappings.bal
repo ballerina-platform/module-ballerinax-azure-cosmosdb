@@ -276,7 +276,7 @@ isolated function mapJsonToOfferType([json, Headers?] jsonPayload) returns @tain
     offer.offerType = payload.offerType != () ? payload.offerType.toString() : EMPTY_STRING;
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
-    offer.offerResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
+    offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
     if (headers is Headers) {
         offer[RESPONSE_HEADERS] = headers;
     }

@@ -31,14 +31,14 @@ public type AzureCosmosConfiguration record {|
     http:ClientSecureSocket? secureSocketConfig;
 |};
 
-# Represents resource properties which are needed to make the request call.
-# 
-# + databaseId - Id of the database which the request is made.
-# + containerId - Id of the container which the request is made.
-public type ResourceProperties record {|
-    string databaseId = "";
-    string containerId = "";
-|};
+// # Represents resource properties which are needed to make the request call.
+// # 
+// # + databaseId - Id of the database which the request is made.
+// # + containerId - Id of the container which the request is made.
+// public type ResourceProperties record {|
+//     string databaseId = "";
+//     string containerId = "";
+// |};
 
 # Represents the common elements which are returned inside json reponse body.
 # 
@@ -262,7 +262,7 @@ public type User record {|
 # + id - User generated unique ID for the permission.
 # + permissionMode - Access mode for the resource, "All" or "Read".
 # + resourcePath - Full addressable path of the resource associated with the permission.
-# + validityPeriod - Validity period of the resource token.
+# + validityPeriod - Optional. Validity period of the resource token.
 # + token - System generated resource token for the particular resource and user.
 public type Permission record {|
     string id = "";
@@ -278,9 +278,9 @@ public type Permission record {|
 # 
 # + id - User generated unique ID for the offer.
 # + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined throughput levels.
-# + offerType - Performance level for V1 offer version, allows S1,S2 and S3.
+# + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
 # + content - Information about the offer.
-# + offerResourceId - A property which is automatically done, associated to the resource ID(_rid).
+# + resourceResourceId - The resource id(_rid) of the collection.
 # + resourceSelfLink - The self-link of the collection.
 public type Offer record {|
     string id = "";
@@ -288,7 +288,7 @@ public type Offer record {|
     string offerVersion = "";
     string? offerType?; 
     json content = {};
-    string offerResourceId = "";
+    string resourceResourceId = "";
     string resourceSelfLink = "";
     Headers?...;
 |};
