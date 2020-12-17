@@ -95,6 +95,15 @@ public type Headers record {|
     string? dateHeader = ();
 |};
 
+# Represent the record type with options represent for throughput.
+# 
+# + throughput - Manual throughput value which must be more than 400RU/s.
+# + maxThroughput - Autoscaling throughout which is represented as a json object.
+public type ThroughputProperties record {
+    int? throughput = ();
+    json? maxThroughput = ();
+};
+
 # Represents the elements representing information about a database.
 # 
 # + id - User generated unique ID for the database. 
@@ -292,15 +301,6 @@ public type Offer record {|
     string resourceSelfLink = "";
     Headers?...;
 |};
-
-# Represent the record type with options represent for throughput.
-# 
-# + throughput - Manual throughput value which must be more than 400RU/s.
-# + maxThroughput - Autoscaling throughout which is represented as a json object.
-public type ThroughputProperties record {
-    int? throughput = ();
-    json? maxThroughput = ();
-};
 
 # Represent the record type with the necessary paramateres for creation of authorization signature.
 # 
