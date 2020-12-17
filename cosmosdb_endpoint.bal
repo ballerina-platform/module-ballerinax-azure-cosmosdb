@@ -40,7 +40,7 @@ public  client class Client {
     # Create a database inside a resource.
     # 
     # + databaseId - ID for the database.
-    # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties.
+    # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns 
                             @tainted Database | error {
@@ -65,7 +65,7 @@ public  client class Client {
     # Create a database inside a resource.
     # 
     # + databaseId - ID for the database.
-    # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
+    # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) 
                             returns @tainted Database? | error {

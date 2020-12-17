@@ -238,7 +238,6 @@ function test_listOneDatabase(){
         "test_createDatabase", 
         "test_createDatabaseIfNotExist", 
         "test_createDBWithAutoscalingThroughput", 
-        "test_createDatabaseWithBothHeaders", 
         "test_listOneDatabase", 
         "test_createDatabase", 
         "test_getAllContainers", 
@@ -259,8 +258,7 @@ function test_listOneDatabase(){
         "test_createPermissionWithTTL", 
         "test_getCollection_Resource_Token"
         
-    ],
-    enable : false
+    ]
 }
 function test_deleteDatabase(){
     log:printInfo("ACTION : deleteDatabase()");

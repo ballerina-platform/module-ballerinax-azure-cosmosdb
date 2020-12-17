@@ -31,15 +31,6 @@ public type AzureCosmosConfiguration record {|
     http:ClientSecureSocket? secureSocketConfig;
 |};
 
-// # Represents resource properties which are needed to make the request call.
-// # 
-// # + databaseId - Id of the database which the request is made.
-// # + containerId - Id of the container which the request is made.
-// public type ResourceProperties record {|
-//     string databaseId = "";
-//     string containerId = "";
-// |};
-
 # Represents the common elements which are returned inside json reponse body.
 # 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
@@ -305,10 +296,10 @@ public type Offer record {|
 # Represent the record type with the necessary paramateres for creation of authorization signature.
 # 
 # + verb - HTTP verb of the request call.
-# + apiVersion - Version of the API as given by the user.
+# + apiVersion - Version of the API.
 # + resourceType - Resource type, the relevent request targetted to.
 # + resourceId - Resource ID, the relevent request targetted to.
-public type HeaderParameters record {|
+type HeaderParameters record {|
     string verb = "";
     string apiVersion = API_VERSION;
     string resourceType = "";
@@ -330,8 +321,8 @@ public type Query record {|
 
 # Represnent the paramaters related to query.
 # 
-# + name - Name of the paramater.
-# + value - Value of the paramater.
+# + name - Name of the parameter.
+# + value - Value of the parameter.
 public type QueryParameter record {|
     string name = "";
     string value = "";

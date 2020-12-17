@@ -137,7 +137,8 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 # + keyToken - master or resource token
 # + tokenType - denotes the type of token: master or resource.
 # + tokenVersion - denotes the version of the token, currently 1.0.
-# + params - an object of type HeaderParamaters
+# + httpVerb - The HTTP verb of the request the headers are set to.
+# + requestPath - Request path of the request.
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
 string httpVerb, string requestPath) returns http:Request | error {
@@ -176,20 +177,6 @@ string httpVerb, string requestPath) returns http:Request | error {
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) returns 
                     http:Request | error {
-//   if (throughputProperties is ThroughputProperties) {
-//         if (throughputProperties.throughput != ()  &&  throughputProperties.maxThroughput is ()) {
-//             if (<int>throughputProperties.throughput >= MIN_REQUEST_UNITS) {
-//                 request.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-//             } else {
-//                 return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
-//             }
-//         } else if (throughputProperties.throughput is () &&  throughputProperties.maxThroughput != ()) {
-//             request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-//         } else if (throughputProperties.throughput != () &&  throughputProperties.maxThroughput != ()) {
-//             return prepareError(SETTING_BOTH_VALUES_ERROR);
-//         }
-//     }
-
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
