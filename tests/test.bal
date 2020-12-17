@@ -130,11 +130,9 @@ function test_createDatabaseWithManualThroughput(){
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
-    ThroughputProperties manualThroughput = {
-        throughput: 400
-    };
+    int throughput = 400;
 
-    var result = AzureCosmosClient->createDatabase(createDatabaseManualId,  manualThroughput);
+    var result = AzureCosmosClient->createDatabase(createDatabaseManualId,  throughput);
     if (result is error){
         test:assertFail(msg = result.message());
     } else {
@@ -151,11 +149,9 @@ function test_createDatabaseWithInvalidManualThroughput(){
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
-    ThroughputProperties manualThroughput = {
-        throughput: 40
-    };
+    int throughput = 40;
 
-    var result = AzureCosmosClient->createDatabase(createDatabaseManualId,  manualThroughput);
+    var result = AzureCosmosClient->createDatabase(createDatabaseManualId,  throughput);
     if (result is Database){
         test:assertFail(msg = "Database created without validating user input");
     } else {
@@ -172,11 +168,9 @@ function test_createDBWithAutoscalingThroughput(){
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseAutoId = string `databasea_${uuid.toString()}`;
-    ThroughputProperties tp = {
-        maxThroughput: {"maxThroughput": 4000}
-    };
+    json maxThroughput = {"maxThroughput": 4000};
 
-    var result = AzureCosmosClient->createDatabase(createDatabaseAutoId,  tp);
+    var result = AzureCosmosClient->createDatabase(createDatabaseAutoId,  maxThroughput);
     if (result is error){
         test:assertFail(msg = result.message());
     } else {
@@ -185,27 +179,27 @@ function test_createDBWithAutoscalingThroughput(){
     }
 }
 
-@test:Config{
-    groups: ["database"]
-}
-function test_createDatabaseWithBothHeaders(){
-    log:printInfo("ACTION : createDatabaseWithBothHeaders()");
+// @test:Config{
+//     groups: ["database"]
+// }
+// function test_createDatabaseWithBothHeaders(){
+//     log:printInfo("ACTION : createDatabaseWithBothHeaders()");
 
-    var uuid = createRandomUUIDBallerina();
-    string createDatabaseBothId = string `database_${uuid.toString()}`;
-    ThroughputProperties tp = {
-        maxThroughput: {"maxThroughput" : 4000}, 
-        throughput: 600
-    };
+//     var uuid = createRandomUUIDBallerina();
+//     string createDatabaseBothId = string `database_${uuid.toString()}`;
+//     ThroughputProperties tp = {
+//         maxThroughput: {"maxThroughput" : 4000}, 
+//         throughput: 600
+//     };
 
-    var result = AzureCosmosClient->createDatabase(createDatabaseBothId,  tp);
-    if (result is Database){
-        test:assertFail(msg = "Created database with both throughput values!!");
-    } else {
-        var output = "";
-        io:println(result);
-    }
-}
+//     var result = AzureCosmosClient->createDatabase(createDatabaseBothId,  tp);
+//     if (result is Database){
+//         test:assertFail(msg = "Created database with both throughput values!!");
+//     } else {
+//         var output = "";
+//         io:println(result);
+//     }
+// }
 
 @test:Config{
     groups: ["database"]
@@ -265,7 +259,8 @@ function test_listOneDatabase(){
         "test_createPermissionWithTTL", 
         "test_getCollection_Resource_Token"
         
-    ]
+    ],
+    enable : false
 }
 function test_deleteDatabase(){
     log:printInfo("ACTION : deleteDatabase()");
@@ -327,17 +322,14 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy(){
             }]
         }]
     };
-
-    ThroughputProperties tp = {
-        throughput: 600
-    };
+    int throughput = 600;
     PartitionKey pk = {
         paths: ["/AccountNumber"], 
         kind : "Hash", 
         keyVersion : 2
     };
     
-    var result = AzureCosmosClient->createContainer(databaseId, containerId, pk, ip, tp);
+    var result = AzureCosmosClient->createContainer(databaseId, containerId, pk, ip, throughput);
     if (result is Container){
         var output = "";
         io:println(result);

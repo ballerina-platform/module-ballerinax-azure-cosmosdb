@@ -42,7 +42,7 @@ public  client class Client {
     # + databaseId - ID for the database.
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties.
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createDatabase(string databaseId, ThroughputProperties? throughputProperties = ()) returns 
+    public remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns 
                             @tainted Database | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
@@ -50,7 +50,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
-        request = check setThroughputOrAutopilotHeader(request, throughputProperties);
+        request = check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
             id:databaseId
@@ -67,7 +67,7 @@ public  client class Client {
     # + databaseId - ID for the database.
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createDatabaseIfNotExist(string databaseId, ThroughputProperties? throughputProperties = ()) 
+    public remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) 
                             returns @tainted Database? | error {
         if (self.keyType == TOKEN_TYPE_RESOURCE) {
             return prepareError(MASTER_KEY_ERROR);
@@ -76,7 +76,7 @@ public  client class Client {
         if (result is error) {
             string status = result.detail()[STATUS].toString();
             if (status == STATUS_NOT_FOUND_STRING) {
-                return self->createDatabase(databaseId, throughputProperties);
+                return self->createDatabase(databaseId, throughputOption);
             } else {
                 return prepareError(AZURE_ERROR + string `${result.message()}`);
             }
@@ -140,12 +140,12 @@ public  client class Client {
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
     # + return - If successful, returns Container. Else returns error.  
     public remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
-                            IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) 
+                            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
                             returns @tainted Container | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
-        request = check setThroughputOrAutopilotHeader(request, throughputProperties);
+        request = check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
             id: containerId, 
@@ -173,13 +173,13 @@ public  client class Client {
     # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
     # + return - If successful, returns Database. Else returns error.  
     public remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
-                            IndexingPolicy? indexingPolicy = (), ThroughputProperties? throughputProperties = ()) 
+                            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
                             returns @tainted Container? | error {
         var result = self->getContainer(databaseId, containerId);
         if result is error {
             string status = result.detail()[STATUS].toString();
             if (status == STATUS_NOT_FOUND_STRING) {
-                return self->createContainer(databaseId, containerId, partitionKey);
+                return self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
             } else {
                 return prepareError(AZURE_ERROR + string `${result.message()}`);
             }
@@ -288,7 +288,6 @@ public  client class Client {
         containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        
         if (requestOptions is RequestHeaderOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
@@ -318,7 +317,6 @@ public  client class Client {
         containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
-        
         if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
         }
@@ -341,7 +339,6 @@ public  client class Client {
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS]);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
-        
         if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
         }
@@ -747,7 +744,6 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER]);
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
-        
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
@@ -785,7 +781,6 @@ public  client class Client {
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
-        
         if (validityPeriod is int) {
             request = check setExpiryHeader(request, validityPeriod);
         }
@@ -817,7 +812,6 @@ public  client class Client {
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permission.id]);       
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
-
         if (validityPeriod is int) {
             request = check setExpiryHeader(request, validityPeriod);
         }
@@ -934,7 +928,6 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);       
         request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
-        
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }

@@ -174,20 +174,30 @@ string httpVerb, string requestPath) returns http:Request | error {
 # + request - http:Request to set the header
 # + throughputProperties - record of type ThroughputProperties
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setThroughputOrAutopilotHeader(http:Request request, ThroughputProperties? throughputProperties) returns 
-http:Request | error {
-  if (throughputProperties is ThroughputProperties) {
-        if (throughputProperties.throughput != ()  &&  throughputProperties.maxThroughput is ()) {
-            if (<int>throughputProperties.throughput >= MIN_REQUEST_UNITS) {
-                request.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-            } else {
-                return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
-            }
-        } else if (throughputProperties.throughput is () &&  throughputProperties.maxThroughput != ()) {
-            request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
-        } else if (throughputProperties.throughput != () &&  throughputProperties.maxThroughput != ()) {
-            return prepareError(SETTING_BOTH_VALUES_ERROR);
+isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) returns 
+                    http:Request | error {
+//   if (throughputProperties is ThroughputProperties) {
+//         if (throughputProperties.throughput != ()  &&  throughputProperties.maxThroughput is ()) {
+//             if (<int>throughputProperties.throughput >= MIN_REQUEST_UNITS) {
+//                 request.setHeader(THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+//             } else {
+//                 return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+//             }
+//         } else if (throughputProperties.throughput is () &&  throughputProperties.maxThroughput != ()) {
+//             request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputProperties.maxThroughput.toString());
+//         } else if (throughputProperties.throughput != () &&  throughputProperties.maxThroughput != ()) {
+//             return prepareError(SETTING_BOTH_VALUES_ERROR);
+//         }
+//     }
+
+    if (throughputOption is int) {
+        if (throughputOption >= MIN_REQUEST_UNITS) {
+            request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
+        } else {
+            return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
+    } else if (throughputOption != ()) {
+        request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
     }
     return request;
 }
