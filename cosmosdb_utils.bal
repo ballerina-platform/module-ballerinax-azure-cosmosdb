@@ -117,6 +117,19 @@ isolated function prepareError(string message, error? err = ()) returns error {
     return azureError;
 }
 
+# Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type.
+#
+# + httpVerb - HTTP verb of the relevent request.
+# + url - The endpoint to which the request call is made.
+# + return - An instance of record type HeaderParameters.
+isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
+    HeaderParameters params = {};
+    params.verb = httpVerb;
+    params.resourceType = getResourceType(url);
+    params.resourceId = getResourceId(url);
+    return params;
+}
+
 # Attach mandatory basic headers to call a REST endpoint.
 # 
 # + request - http:Request to add headers to
@@ -127,7 +140,8 @@ isolated function prepareError(string message, error? err = ()) returns error {
 # + params - an object of type HeaderParamaters
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
-HeaderParameters params) returns http:Request | error {
+string httpVerb, string requestPath) returns http:Request | error {
+    HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);

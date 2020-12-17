@@ -49,9 +49,7 @@ public  client class Client {
         }
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         request = check setThroughputOrAutopilotHeader(request, throughputProperties);
 
         json jsonPayload = {
@@ -110,8 +108,7 @@ public  client class Client {
 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
@@ -147,9 +144,7 @@ public  client class Client {
                             returns @tainted Container | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
-        
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         request = check setThroughputOrAutopilotHeader(request, throughputProperties);
 
         json jsonPayload = {
@@ -212,8 +207,7 @@ public  client class Client {
     public remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
         }
@@ -244,8 +238,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_PK_RANGES]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange> | error partitionKeyStream = <stream<PartitionKeyRange> | error>
@@ -265,10 +258,8 @@ public  client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS]);
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        
         if (requestOptions is RequestHeaderOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
@@ -295,8 +286,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS, document.id]);
-        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
         request = check setPartitionKeyHeader(request, document.partitionKey);
         
         if (requestOptions is RequestHeaderOptions) {
@@ -326,8 +316,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
         
         if requestOptions is RequestHeaderOptions {
@@ -351,8 +340,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if requestOptions is RequestHeaderOptions {
             request = check setRequestOptions(request, requestOptions);
@@ -379,8 +367,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS, documentId]);
-        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, DELETE, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
 
         var response = self.azureCosmosClient->delete(requestPath, request);
@@ -407,8 +394,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_DOCUMENTS]);
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
 
         json | error payload = sqlQuery.cloneWithType(json);
@@ -437,8 +423,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_STORED_POCEDURES]);
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
 
         json | error payload = storedProcedure.cloneWithType(json);
         if (payload is json) {
@@ -462,8 +447,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedure.id]);
-        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
 
         json | error payload = storedProcedure.cloneWithType(json);
         if (payload is json) {
@@ -487,8 +471,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_STORED_POCEDURES]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
@@ -525,8 +508,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_STORED_POCEDURES, storedProcedureId]);       
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
 
         request.setTextPayload(parameters.toString());
         var response = self.azureCosmosClient->post(requestPath, request);
@@ -546,8 +528,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_UDF]);       
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
 
         json | error payload = userDefinedFunction.cloneWithType(json);
         if (payload is json) {
@@ -571,8 +552,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_UDF, userDefinedFunction.id]);      
-        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
 
         json | error payload = userDefinedFunction.cloneWithType(json);
         if (payload is json) {
@@ -596,8 +576,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_UDF]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
@@ -635,8 +614,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_TRIGGER]);       
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
 
         json | error payload = trigger.cloneWithType(json);
         if (payload is json) {
@@ -660,8 +638,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_TRIGGER, trigger.id]);       
-        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
 
         json | error payload = trigger.cloneWithType(json);
         if (payload is json) {
@@ -685,8 +662,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_COLLECTIONS, 
         containerId, RESOURCE_PATH_TRIGGER]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
@@ -719,8 +695,7 @@ public  client class Client {
     public remote function createUser(string databaseId, string userId) returns @tainted User | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER]);       
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
 
         json reqBody = {
             id:userId 
@@ -741,8 +716,7 @@ public  client class Client {
                             @tainted User | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId]);       
-        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
 
         json reqBody = {
             id:newUserId
@@ -772,8 +746,7 @@ public  client class Client {
     public remote function listUsers(string databaseId, int? maxItemCount = ()) returns @tainted stream<User> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER]);
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
@@ -811,8 +784,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         
         if (validityPeriod is int) {
             request = check setExpiryHeader(request, validityPeriod);
@@ -844,8 +816,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION, permission.id]);       
-        HeaderParameters header = mapParametersToHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
 
         if (validityPeriod is int) {
             request = check setExpiryHeader(request, validityPeriod);
@@ -887,8 +858,7 @@ public  client class Client {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_DATABASES, databaseId, RESOURCE_PATH_USER, userId, 
         RESOURCE_PATH_PERMISSION]);       
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
@@ -921,8 +891,7 @@ public  client class Client {
     public remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_OFFER, offer.id]);       
-        HeaderParameters header = mapOfferHeaderType(PUT, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion, 
@@ -964,8 +933,7 @@ public  client class Client {
     public remote function listOffers(int? maxItemCount = ()) returns @tainted stream<Offer> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_PATH_OFFER]);       
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString()); 
@@ -985,8 +953,7 @@ public  client class Client {
     public remote function queryOffer(Query sqlQuery, int? maxItemCount = ()) returns @tainted stream<Offer> | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_PATH_OFFER]);
-        HeaderParameters header = mapParametersToHeaderType(POST, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
 
         request.setJsonPayload(<json>sqlQuery.cloneWithType(json));
         request = check setHeadersForQuery(request);
@@ -998,8 +965,7 @@ public  client class Client {
 
     function getRecord(string requestPath) returns @tainted [json, Headers] | error {
         http:Request request = new;
-        HeaderParameters header = mapParametersToHeaderType(GET, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
 
         var response = self.azureCosmosClient->get(requestPath, request);
         [json, Headers] jsonResponse = check mapResponseToTuple(response);
@@ -1008,8 +974,7 @@ public  client class Client {
 
     function deleteRecord(string requestPath) returns @tainted boolean | error {
         http:Request request = new;
-        HeaderParameters header = mapParametersToHeaderType(DELETE, requestPath);
-        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, header);
+        request = check setHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, DELETE, requestPath);
 
         var response = self.azureCosmosClient->delete(requestPath, request);
         json | boolean  booleanResponse = check handleResponse(response);

@@ -14,19 +14,6 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type.
-#
-# + httpVerb - HTTP verb of the relevent request.
-# + url - The endpoint to which the request call is made.
-# + return - An instance of record type HeaderParameters.
-isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
-    HeaderParameters params = {};
-    params.verb = httpVerb;
-    params.resourceType = getResourceType(url);
-    params.resourceId = getResourceId(url);
-    return params;
-}
-
 # Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type for 
 #operations related to offers.
 # 
