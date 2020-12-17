@@ -173,7 +173,7 @@ string httpVerb, string requestPath) returns http:Request | error {
 # Set the optional header related to throughput options.
 # 
 # + request - http:Request to set the header
-# + throughputProperties - record of type ThroughputProperties
+# + throughputOption - Optional. Throughput parameter of type int or json.
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) returns 
                     http:Request | error {

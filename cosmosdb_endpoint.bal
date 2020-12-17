@@ -137,7 +137,7 @@ public  client class Client {
     # + containerId - ID of the container.
     # + partitionKey - Object of type PartitionKey.
     # + indexingPolicy - Optional. Object of type IndexingPolicy.
-    # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
+    # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Container. Else returns error.  
     public remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
                             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
@@ -170,7 +170,7 @@ public  client class Client {
     # + containerId - ID of the container.    
     # + partitionKey - Object of type PartitionKey.
     # + indexingPolicy - Optional. Object of type IndexingPolicy.
-    # + throughputProperties - Optional. Throughput parameter of type ThroughputProperties. 
+    # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
     public remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
                             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
