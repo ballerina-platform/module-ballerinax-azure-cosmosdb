@@ -41,21 +41,6 @@ isolated function getResourceType(string url) returns string {
     return resourceType;
 }
 
-# Extract the resource id for offer operations related to cosmos db from a given url
-# 
-# + url - the URL from which we want to extract resource id
-# + return - string representing the resource id
-isolated function getResourceIdForOffer(string url) returns string {
-    string resourceId = EMPTY_STRING;
-    string[] urlParts = stringutils:split(url, FORWARD_SLASH);
-    int count = urlParts.length()-1;
-    int? i = str:lastIndexOf(url, FORWARD_SLASH);
-    if (i is int) {
-        resourceId = str:substring(url, i+1);
-    }  
-    return resourceId.toLowerAscii();
-}
-
 # Extract the resource type related to cosmos db from a given url
 #
 # + url - the URL from which we want to extract resource type
@@ -64,17 +49,30 @@ isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
     string[] urlParts = stringutils:split(url, FORWARD_SLASH);
     int count = urlParts.length()-1;
-    if (count % 2 != 0) {
-        if (count > 1) {
+    string resourceType = getResourceType(url);
+    if (resourceType == RESOURCE_TYPE_OFFERS) {
+        if (count % 2 != 0) {
+            resourceId = EMPTY_STRING;
+        } else {
             int? i = str:lastIndexOf(url, FORWARD_SLASH);
             if (i is int) {
-                resourceId = str:substring(url, 1, i);
-            }
+                resourceId = str:substring(url, i+1);
+            }  
         }
+        return resourceId.toLowerAscii();
     } else {
-        resourceId = str:substring(url, 1);
-    }
-    return resourceId;
+        if (count % 2 != 0) {
+            if (count > 1) {
+                int? j = str:lastIndexOf(url, FORWARD_SLASH);
+                if (j is int) {
+                    resourceId = str:substring(url, 1, j);
+                }
+            }
+        } else {
+            resourceId = str:substring(url, 1);
+        }
+        return resourceId;
+    }   
 }
 
 # Extract the host of the cosmos db from the base url.
@@ -140,7 +138,7 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 # + httpVerb - The HTTP verb of the request the headers are set to.
 # + requestPath - Request path of the request.
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
+isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
 string httpVerb, string requestPath) returns http:Request | error {
     HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
