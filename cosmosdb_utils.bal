@@ -33,7 +33,7 @@ isolated function getResourceType(string url) returns string {
     if (count % 2 != 0) {
         resourceType = urlParts[count];
         if (count > 1) {
-            int? i = str:lastIndexOf(url, FORWARD_SLASH);
+            int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
         }
     } else {
         resourceType = urlParts[count-1];
@@ -54,18 +54,18 @@ isolated function getResourceId(string url) returns string {
         if (count % 2 != 0) {
             resourceId = EMPTY_STRING;
         } else {
-            int? i = str:lastIndexOf(url, FORWARD_SLASH);
-            if (i is int) {
-                resourceId = str:substring(url, i+1);
+            int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+            if (lastIndex is int) {
+                resourceId = str:substring(url, lastIndex+1);
             }  
         }
         return resourceId.toLowerAscii();
     } else {
         if (count % 2 != 0) {
             if (count > 1) {
-                int? j = str:lastIndexOf(url, FORWARD_SLASH);
-                if (j is int) {
-                    resourceId = str:substring(url, 1, j);
+                int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+                if (lastIndex is int) {
+                    resourceId = str:substring(url, 1, lastIndex);
                 }
             }
         } else {
@@ -81,9 +81,9 @@ isolated function getResourceId(string url) returns string {
 # + return - string representing the resource id.
 isolated function getHost(string url) returns string {
     string replaced = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);  
-    int? i = str:lastIndexOf(replaced, FORWARD_SLASH);
-    if (i is int) {
-        replaced = replaced.substring(0,i);    
+    int? lastIndex = str:lastIndexOf(replaced, FORWARD_SLASH);
+    if (lastIndex is int) {
+        replaced = replaced.substring(0,lastIndex);    
     }
     return replaced;
 }
@@ -215,7 +215,7 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request 
 # + request - http:Request to set the header
 # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request | error {
+isolated function setRequestOptions(http:Request request, RequestHeaderOptions|DocumentOptions|GetDocumentOptions|ListDocumentOptions|QueryDocumentOptions|DeleteOptions requestOptions) returns http:Request | error {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
@@ -241,14 +241,14 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     if (requestOptions?.changeFeedOption != ()) {
         request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString()); 
     }
-    if (requestOptions?.ifNoneMatch != ()) {
-        request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatch.toString());
+    if (requestOptions?.ifNoneMatchEtag != ()) {
+        request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatchEtag.toString());
     }
     if (requestOptions?.partitionKeyRangeId != ()) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
     }
-    if (requestOptions?.ifMatch != ()) {
-        request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatch.toString());
+    if (requestOptions?.ifMatchEtag != ()) {
+        request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatchEtag.toString());
     }
     if (requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
@@ -418,6 +418,18 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
     }
 }
 
+// function resendRequest(anydata array, http:Client azureCosmosClient, string path, http:Request request, int? maxItemCount = (), string? continuationHeader = ()) {
+//     stream<Offer> offerStream = (<@untainted>array).toStream();
+//     if (continuationHeader != () && maxItemCount is ()) {            
+//         var streams = check retriveStream(azureCosmosClient, path, request, array, (), continuationHeader);
+//         if (typeof streams is typedesc<stream<anydata>>) {
+//             offerStream = <stream<anydata>>streams;
+//         } else  {
+//             return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`); 
+//         }
+//     }
+// }
+
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[] | Document[] | 
     Database[] | Container[] | StoredProcedure[] | UserDefinedFunction[] | Trigger[] | User[] | Permission[] | PartitionKeyRange[] array, 
     int? maxItemCount = (), string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer> | 
@@ -433,8 +445,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         response = azureCosmosClient->get(path, request);
     }
     var [payload, headers] = check mapResponseToTuple(response);        
-    var x = typeof array; 
-    if (x is typedesc<Offer[]>) {
+    var arrayType = typeof array; 
+    if (arrayType is typedesc<Offer[]>) {
         Offer[] offers = <Offer[]>array;
         if (payload.Offers is json) {
             Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
@@ -451,7 +463,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Document[]>) {
+    } else if (arrayType is typedesc<Document[]>) {
         Document[] documents = <Document[]>array;
         if (payload.Documents is json) {
             Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
@@ -468,7 +480,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (x is typedesc<Database[]>) {
+    } else if (arrayType is typedesc<Database[]>) {
         Database[] databases = <Database[]>array;
         if (payload.Databases is json) {
             Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
@@ -485,7 +497,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Container[]>) {
+    } else if (arrayType is typedesc<Container[]>) {
         Container[] containers = <Container[]>array;
         if (payload.DocumentCollections is json) {
             Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
@@ -502,7 +514,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (x is typedesc<StoredProcedure[]> || x is typedesc<UserDefinedFunction[]>) {
+    } else if (arrayType is typedesc<StoredProcedure[]> || arrayType is typedesc<UserDefinedFunction[]>) {
         StoredProcedure[] storedProcedures = <StoredProcedure[]>array;
         UserDefinedFunction[] userDefinedFunctions = <UserDefinedFunction[]>array;
         if (payload.StoredProcedures is json) {
@@ -532,7 +544,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Trigger[]>) {
+    } else if (arrayType is typedesc<Trigger[]>) {
         Trigger[] triggers = <Trigger[]>array;
         if (payload.Triggers is json) {
             Trigger[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
@@ -549,7 +561,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<User[]>) {
+    } else if (arrayType is typedesc<User[]>) {
         User[] users = <User[]>array;
         if (payload.Users is json) {
             User[] finalArray = convertToUserArray(users, <json[]>payload.Users);
@@ -566,7 +578,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Permission[]>) {
+    } else if (arrayType is typedesc<Permission[]>) {
         Permission[] permissions = <Permission[]>array;
         if (payload.Permissions is json) {
             Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
@@ -583,7 +595,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<PartitionKeyRange[]>) {
+    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
         if (payload.PartitionKeyRanges is json) {
             PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
             stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();

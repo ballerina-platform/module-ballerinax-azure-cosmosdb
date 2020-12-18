@@ -256,8 +256,9 @@ function test_listOneDatabase(){
         "test_createContainerIfNotExist", 
         "test_deleteContainer", 
         "test_createPermissionWithTTL", 
-        "test_getCollection_Resource_Token"
-        
+        "test_getCollection_Resource_Token",
+        "test_replaceOfferWithOptionalParameter",
+        "test_replaceOffer"
     ]
 }
 function test_deleteDatabase(){
@@ -518,15 +519,10 @@ function test_createDocumentWithRequestOptions(){
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
     string containerId = container.id;
-    RequestHeaderOptions options = {
-        isUpsertRequest: true, 
+    DocumentOptions options = {
+        isUpsertRequest : true, 
         indexingDirective : "Include", 
-        //sessionToken: "tag", - error handled in azure
-        //no need
-        consistancyLevel : "Eventual", 
-        //changeFeedOption : "Incremental feed", 
-        ifNoneMatch: "hhh"
-        //partitionKeyRangeId:"0"- error handled in azure
+        ifMatchEtag : "hhh"
     };
     Document createDoc = {
         id: string `document_${uuid.toString()}`, 
@@ -603,13 +599,11 @@ function test_getDocumentListWithRequestOptions(){
     string databaseId = database.id;
     string containerId = container.id;
 
-    RequestHeaderOptions options = {
-        isUpsertRequest: true, 
-        indexingDirective : "Include", 
+    ListDocumentOptions options = {
         consistancyLevel : "Eventual", 
        // changeFeedOption : "Incremental feed", 
         sessionToken: "tag", 
-        ifNoneMatch: "hhh", 
+        ifNoneMatchEtag: "hhh", 
         partitionKeyRangeId:"0"
     };
     var result = AzureCosmosClient->getDocumentList(databaseId, containerId, options);
@@ -653,14 +647,10 @@ function test_GetOneDocumentWithRequestOptions(){
         id: document.id, 
         partitionKey : [1234]  
     };
-    RequestHeaderOptions options = {
+    GetDocumentOptions options = {
         consistancyLevel : "Eventual", 
         sessionToken: "tag", 
-        ifNoneMatch: "hhh", 
-//these are not needed
-        isUpsertRequest: true, 
-        indexingDirective : "Include", 
-        changeFeedOption : "Incremental feed"
+        ifNoneMatchEtag: "hhh"
     };
 
     var result = AzureCosmosClient->getDocument(databaseId, containerId, document.id, [1234], options);
@@ -735,15 +725,10 @@ function test_queryDocumentsWithRequestOptions(){
         query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
         parameters: []
     };
-    RequestHeaderOptions options = {
+    QueryDocumentOptions options = {
         consistancyLevel : "Eventual", 
         sessionToken: "tag", 
-        enableCrossPartition: true, 
-//these are not needed
-        ifNoneMatch: "hhh", 
-        isUpsertRequest: true, 
-        indexingDirective : "Include", 
-        changeFeedOption : "Incremental feed"
+        enableCrossPartition: true
     };
 
     var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery, options);   

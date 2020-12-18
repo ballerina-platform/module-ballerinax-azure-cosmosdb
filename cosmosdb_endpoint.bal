@@ -251,16 +251,16 @@ public  client class Client {
     # + databaseId - ID of the database which container is created.
     # + containerId - ID of the container which document is created.
     # + document - Object of type Document. 
-    # + requestOptions - Object of type RequestHeaderOptions.
+    # + requestOptions - Object of type DocumentOptions.
     # + return - If successful, returns Document. Else returns error.  
     public remote function createDocument(string databaseId, string containerId, Document document, 
-                            RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
+                            DocumentOptions? requestOptions = ()) returns @tainted Document | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, 
         containerId, RESOURCE_TYPE_DOCUMENTS]);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if (requestOptions is RequestHeaderOptions) {
+        if (requestOptions is DocumentOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
 
@@ -279,16 +279,16 @@ public  client class Client {
     # + databaseId - ID of the database which container is created.
     # + containerId - ID of the container which document is created.
     # + document - Object of type Document. 
-    # + requestOptions - Optional. Object of type RequestHeaderOptions.
+    # + requestOptions - Optional. Object of type DocumentOptions.
     # + return - If successful, returns a Document. Else returns error. 
     public remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
-                            RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {         
+                            DocumentOptions? requestOptions = ()) returns @tainted Document | error {         
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, 
         containerId, RESOURCE_TYPE_DOCUMENTS, document.id]);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
         request = check setPartitionKeyHeader(request, document.partitionKey);
-        if (requestOptions is RequestHeaderOptions) {
+        if (requestOptions is DocumentOptions) {
             request = check setRequestOptions(request, requestOptions);
         }
 
@@ -308,16 +308,16 @@ public  client class Client {
     # + containerId - ID of the container which document is created.
     # + documentId - Id of the document. 
     # + partitionKey - Array containing value of parition key field.
-    # + requestOptions - Optional. Object of type RequestHeaderOptions.
+    # + requestOptions - Optional. Object of type GetDocumentOptions.
     # + return - If successful, returns Document. Else returns error.  
     public remote function getDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
-                            RequestHeaderOptions? requestOptions = ()) returns @tainted Document | error {
+                            GetDocumentOptions? requestOptions = ()) returns @tainted Document | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, 
         containerId, RESOURCE_TYPE_DOCUMENTS, documentId]);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
-        if requestOptions is RequestHeaderOptions {
+        if requestOptions is GetDocumentOptions {
             request = check setRequestOptions(request, requestOptions);
         }
 
@@ -333,13 +333,13 @@ public  client class Client {
     # + requestOptions - Object of type RequestHeaderOptions.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns stream<Document> Else, returns error. 
-    public remote function getDocumentList(string databaseId, string containerId, RequestHeaderOptions? requestOptions = (), 
+    public remote function getDocumentList(string databaseId, string containerId, ListDocumentOptions? requestOptions = (), 
                             int? maxItemCount = ()) returns @tainted stream<Document> | error { 
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, 
         containerId, RESOURCE_TYPE_DOCUMENTS]);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
-        if requestOptions is RequestHeaderOptions {
+        if requestOptions is ListDocumentOptions {
             request = check setRequestOptions(request, requestOptions);
         }
         if (maxItemCount is int) {
@@ -358,15 +358,18 @@ public  client class Client {
     # + containerId - ID of the container which document is created.    
     # + documentId - ID of the document to delete. 
     # + partitionKey - Array containing value of parition key field.
+    # + requestOptions - Optional. Object of type DeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey) 
-                            returns @tainted boolean | error {  
+    public remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
+                            DeleteOptions? requestOptions = ()) returns @tainted boolean | error {  
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, 
         containerId, RESOURCE_TYPE_DOCUMENTS, documentId]);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, DELETE, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
-
+        if (requestOptions is DeleteOptions) {
+            request = check setRequestOptions(request, requestOptions);
+        }
         var response = self.azureCosmosClient->delete(requestPath, request);
         json | boolean  booleanResponse = check handleResponse(response);
         if (booleanResponse is boolean) {
@@ -386,14 +389,16 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns a stream<Document>. Else returns error. 
     public remote function queryDocuments(string databaseId, string containerId, any[] partitionKey, Query sqlQuery, 
-                            RequestHeaderOptions? requestOptions = (), int? maxItemCount = ()) 
+                            QueryDocumentOptions? requestOptions = (), int? maxItemCount = ()) 
                             returns @tainted stream<Document> | error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, 
         containerId, RESOURCE_TYPE_DOCUMENTS]);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
         request = check setPartitionKeyHeader(request, partitionKey);
-
+        if requestOptions is QueryDocumentOptions {
+            request = check setRequestOptions(request, requestOptions);
+        }
         json | error payload = sqlQuery.cloneWithType(json);
         if (payload is json) {
             request.setJsonPayload(<@untainted>payload);

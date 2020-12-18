@@ -44,29 +44,6 @@ public type Common record {|
     string eTag?;
 |};
 
-# Represents the optional request headers which can be set in a request.
-# 
-# + isUpsertRequest - A boolean value which specify if the request is an upsert request.
-# + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
-# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
-# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
-# + changeFeedOption - Must be set to "Incremental feed" or omitted otherwise.
-# + ifNoneMatch - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
-# + partitionKeyRangeId - The partition key range ID for reading data.
-# + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
-# + ifMatch - Used to make operation conditional for optimistic concurrency. 
-public type RequestHeaderOptions record {|
-    boolean? isUpsertRequest = ();
-    string? indexingDirective = ();
-    string? consistancyLevel = ();
-    string? sessionToken = ();
-    string? changeFeedOption = ();
-    string? ifNoneMatch = ();
-    string? partitionKeyRangeId = ();
-    boolean? enableCrossPartition = ();
-    string? ifMatch = ();
-|};
-
 # Represents the response headers which is returned.
 # 
 # + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read.
@@ -326,4 +303,89 @@ public type Query record {|
 public type QueryParameter record {|
     string name = "";
     string value = "";
+|};
+
+
+# Represents the optional request headers which can be set in a request.
+# 
+# + isUpsertRequest - A boolean value which specify if the request is an upsert request.
+# + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
+# + changeFeedOption - Must be set to "Incremental feed" or omitted otherwise.
+# + ifNoneMatch - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
+# + partitionKeyRangeId - The partition key range ID for reading data.
+# + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
+# + ifMatch - Used to make operation conditional for optimistic concurrency. 
+public type RequestHeaderOptions record {|
+    boolean? isUpsertRequest = ();
+    string? indexingDirective = ();
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? changeFeedOption = ();
+    string? ifNoneMatch = ();
+    string? partitionKeyRangeId = ();
+    boolean? enableCrossPartition = ();
+    string? ifMatch = ();
+|};
+
+# Represnent the paramaters related to query.
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
+# + isUpsertRequest - A boolean value which specify if the request is an upsert request.
+# + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
+# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. 
+public type DocumentOptions record {|
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    boolean? isUpsertRequest = ();
+    string? indexingDirective = ();
+    string? ifMatchEtag = ();
+|};
+
+# Represnent the paramaters related to query.
+# 
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
+# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
+public type GetDocumentOptions record {|
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? ifNoneMatchEtag = ();
+|};
+
+# Represnent the paramaters related to query.
+# 
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
+# + changeFeedOption - Must be set to "Incremental feed" or omitted otherwise.
+# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
+# + partitionKeyRangeId - The partition key range ID for reading data.
+public type ListDocumentOptions record {|
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? changeFeedOption = ();
+    string? ifNoneMatchEtag = ();
+    string? partitionKeyRangeId = ();
+|};
+
+# Represnent the paramaters related to query.
+# 
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
+# + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
+public type QueryDocumentOptions record {|
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    boolean? enableCrossPartition = ();
+|};
+
+# Represnent the paramaters related to query.
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
+# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. 
+public type DeleteOptions record {|
+    string? consistancyLevel = ();
+    string? sessionToken = ();
+    string? ifMatchEtag = ();
 |};
