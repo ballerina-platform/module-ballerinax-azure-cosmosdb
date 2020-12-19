@@ -179,28 +179,6 @@ function test_createDBWithAutoscalingThroughput(){
     }
 }
 
-// @test:Config{
-//     groups: ["database"]
-// }
-// function test_createDatabaseWithBothHeaders(){
-//     log:printInfo("ACTION : createDatabaseWithBothHeaders()");
-
-//     var uuid = createRandomUUIDBallerina();
-//     string createDatabaseBothId = string `database_${uuid.toString()}`;
-//     ThroughputProperties tp = {
-//         maxThroughput: {"maxThroughput" : 4000}, 
-//         throughput: 600
-//     };
-
-//     var result = AzureCosmosClient->createDatabase(createDatabaseBothId,  tp);
-//     if (result is Database){
-//         test:assertFail(msg = "Created database with both throughput values!!");
-//     } else {
-//         var output = "";
-//         io:println(result);
-//     }
-// }
-
 @test:Config{
     groups: ["database"]
 }
@@ -256,9 +234,7 @@ function test_listOneDatabase(){
         "test_createContainerIfNotExist", 
         "test_deleteContainer", 
         "test_createPermissionWithTTL", 
-        "test_getCollection_Resource_Token",
-        "test_replaceOfferWithOptionalParameter",
-        "test_replaceOffer"
+        "test_getCollection_Resource_Token"
     ]
 }
 function test_deleteDatabase(){
@@ -415,7 +391,9 @@ function test_getAllContainers(){
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentListWithRequestOptions", 
         "test_getCollection_Resource_Token",
-        "test_getAllContainers"
+        "test_getAllContainers",
+        "test_replaceOfferWithOptionalParameter",
+        "test_replaceOffer"
     ]
 }
 function test_deleteContainer(){

@@ -305,30 +305,6 @@ public type QueryParameter record {|
     string value = "";
 |};
 
-
-// # Represents the optional request headers which can be set in a request.
-// # 
-// # + isUpsertRequest - A boolean value which specify if the request is an upsert request.
-// # + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
-// # + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
-// # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
-// # + changeFeedOption - Must be set to "Incremental feed" or omitted otherwise.
-// # + ifNoneMatch - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
-// # + partitionKeyRangeId - The partition key range ID for reading data.
-// # + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
-// # + ifMatch - Used to make operation conditional for optimistic concurrency. 
-// public type RequestHeaderOptions record {|
-//     boolean? isUpsertRequest = ();
-//     string? indexingDirective = ();
-//     string? consistancyLevel = ();
-//     string? sessionToken = ();
-//     string? changeFeedOption = ();
-//     string? ifNoneMatch = ();
-//     string? partitionKeyRangeId = ();
-//     boolean? enableCrossPartition = ();
-//     string? ifMatch = ();
-// |};
-
 # Represnent the paramaters related to query.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
