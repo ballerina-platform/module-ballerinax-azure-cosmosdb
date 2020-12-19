@@ -519,7 +519,7 @@ function test_createDocumentWithRequestOptions(){
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
     string containerId = container.id;
-    DocumentOptions options = {
+    DocumentCreateOptions options = {
         isUpsertRequest : true, 
         indexingDirective : "Include", 
         ifMatchEtag : "hhh"
@@ -599,14 +599,14 @@ function test_getDocumentListWithRequestOptions(){
     string databaseId = database.id;
     string containerId = container.id;
 
-    ListDocumentOptions options = {
+    DocumentListOptions options = {
         consistancyLevel : "Eventual", 
        // changeFeedOption : "Incremental feed", 
         sessionToken: "tag", 
         ifNoneMatchEtag: "hhh", 
         partitionKeyRangeId:"0"
     };
-    var result = AzureCosmosClient->getDocumentList(databaseId, containerId, options);
+    var result = AzureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
     if (result is error){
         test:assertFail(msg = result.message());
     } else {
@@ -647,7 +647,7 @@ function test_GetOneDocumentWithRequestOptions(){
         id: document.id, 
         partitionKey : [1234]  
     };
-    GetDocumentOptions options = {
+    DocumentGetOptions options = {
         consistancyLevel : "Eventual", 
         sessionToken: "tag", 
         ifNoneMatchEtag: "hhh"
@@ -725,13 +725,12 @@ function test_queryDocumentsWithRequestOptions(){
         query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
         parameters: []
     };
-    QueryDocumentOptions options = {
-        consistancyLevel : "Eventual", 
-        sessionToken: "tag", 
+    ResourceQueryOptions options = {
+        //sessionToken: "tag", 
         enableCrossPartition: true
     };
 
-    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery, options);   
+    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery, 10, options);   
     if (result is error){
         test:assertFail(msg = result.message());
     } else {
