@@ -179,28 +179,6 @@ function test_createDBWithAutoscalingThroughput(){
     }
 }
 
-// @test:Config{
-//     groups: ["database"]
-// }
-// function test_createDatabaseWithBothHeaders(){
-//     log:printInfo("ACTION : createDatabaseWithBothHeaders()");
-
-//     var uuid = createRandomUUIDBallerina();
-//     string createDatabaseBothId = string `database_${uuid.toString()}`;
-//     ThroughputProperties tp = {
-//         maxThroughput: {"maxThroughput" : 4000}, 
-//         throughput: 600
-//     };
-
-//     var result = AzureCosmosClient->createDatabase(createDatabaseBothId,  tp);
-//     if (result is Database){
-//         test:assertFail(msg = "Created database with both throughput values!!");
-//     } else {
-//         var output = "";
-//         io:println(result);
-//     }
-// }
-
 @test:Config{
     groups: ["database"]
 }
@@ -257,7 +235,6 @@ function test_listOneDatabase(){
         "test_deleteContainer", 
         "test_createPermissionWithTTL", 
         "test_getCollection_Resource_Token"
-        
     ]
 }
 function test_deleteDatabase(){
@@ -414,7 +391,9 @@ function test_getAllContainers(){
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentListWithRequestOptions", 
         "test_getCollection_Resource_Token",
-        "test_getAllContainers"
+        "test_getAllContainers",
+        "test_replaceOfferWithOptionalParameter",
+        "test_replaceOffer"
     ]
 }
 function test_deleteContainer(){
@@ -518,15 +497,10 @@ function test_createDocumentWithRequestOptions(){
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
     string containerId = container.id;
-    RequestHeaderOptions options = {
-        isUpsertRequest: true, 
+    DocumentCreateOptions options = {
+        isUpsertRequest : true, 
         indexingDirective : "Include", 
-        //sessionToken: "tag", - error handled in azure
-        //no need
-        consistancyLevel : "Eventual", 
-        //changeFeedOption : "Incremental feed", 
-        ifNoneMatch: "hhh"
-        //partitionKeyRangeId:"0"- error handled in azure
+        ifMatchEtag : "hhh"
     };
     Document createDoc = {
         id: string `document_${uuid.toString()}`, 
@@ -603,16 +577,14 @@ function test_getDocumentListWithRequestOptions(){
     string databaseId = database.id;
     string containerId = container.id;
 
-    RequestHeaderOptions options = {
-        isUpsertRequest: true, 
-        indexingDirective : "Include", 
+    DocumentListOptions options = {
         consistancyLevel : "Eventual", 
        // changeFeedOption : "Incremental feed", 
         sessionToken: "tag", 
-        ifNoneMatch: "hhh", 
+        ifNoneMatchEtag: "hhh", 
         partitionKeyRangeId:"0"
     };
-    var result = AzureCosmosClient->getDocumentList(databaseId, containerId, options);
+    var result = AzureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
     if (result is error){
         test:assertFail(msg = result.message());
     } else {
@@ -653,14 +625,10 @@ function test_GetOneDocumentWithRequestOptions(){
         id: document.id, 
         partitionKey : [1234]  
     };
-    RequestHeaderOptions options = {
+    DocumentGetOptions options = {
         consistancyLevel : "Eventual", 
         sessionToken: "tag", 
-        ifNoneMatch: "hhh", 
-//these are not needed
-        isUpsertRequest: true, 
-        indexingDirective : "Include", 
-        changeFeedOption : "Incremental feed"
+        ifNoneMatchEtag: "hhh"
     };
 
     var result = AzureCosmosClient->getDocument(databaseId, containerId, document.id, [1234], options);
@@ -735,18 +703,12 @@ function test_queryDocumentsWithRequestOptions(){
         query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
         parameters: []
     };
-    RequestHeaderOptions options = {
-        consistancyLevel : "Eventual", 
-        sessionToken: "tag", 
-        enableCrossPartition: true, 
-//these are not needed
-        ifNoneMatch: "hhh", 
-        isUpsertRequest: true, 
-        indexingDirective : "Include", 
-        changeFeedOption : "Incremental feed"
+    ResourceQueryOptions options = {
+        //sessionToken: "tag", 
+        enableCrossPartition: true
     };
 
-    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery, options);   
+    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery, 10, options);   
     if (result is error){
         test:assertFail(msg = result.message());
     } else {

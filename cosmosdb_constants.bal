@@ -147,7 +147,7 @@ const string JSON_KEY_OFFER_VERSION = "offerVersion";
 const string JSON_KEY_CONTENT = "content";
 
 // Property in record type representing headers
-const string RESPONSE_HEADERS = "reponseHeaders";
+const string RESPONSE_HEADERS = "reponseMetadata";
 
 // Elements in an error response
 const string ACTIVITY_ID = "ActivityId";
@@ -163,7 +163,7 @@ const int MAX_TIME_TO_LIVE = 18000;
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";
 const string OFFER_VERSION_1 = "V1";
-const FORWARD_SLASH = "/";
+const string FORWARD_SLASH = "/";
 const string EMPTY_STRING = "";
 const string NEW_LINE = "\n";
 const string HTTPS_REGEX = "^(https)://";

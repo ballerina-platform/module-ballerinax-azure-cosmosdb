@@ -33,7 +33,7 @@ isolated function getResourceType(string url) returns string {
     if (count % 2 != 0) {
         resourceType = urlParts[count];
         if (count > 1) {
-            int? i = str:lastIndexOf(url, FORWARD_SLASH);
+            int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
         }
     } else {
         resourceType = urlParts[count-1];
@@ -54,18 +54,18 @@ isolated function getResourceId(string url) returns string {
         if (count % 2 != 0) {
             resourceId = EMPTY_STRING;
         } else {
-            int? i = str:lastIndexOf(url, FORWARD_SLASH);
-            if (i is int) {
-                resourceId = str:substring(url, i+1);
+            int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+            if (lastIndex is int) {
+                resourceId = str:substring(url, lastIndex+1);
             }  
         }
         return resourceId.toLowerAscii();
     } else {
         if (count % 2 != 0) {
             if (count > 1) {
-                int? j = str:lastIndexOf(url, FORWARD_SLASH);
-                if (j is int) {
-                    resourceId = str:substring(url, 1, j);
+                int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+                if (lastIndex is int) {
+                    resourceId = str:substring(url, 1, lastIndex);
                 }
             }
         } else {
@@ -81,9 +81,9 @@ isolated function getResourceId(string url) returns string {
 # + return - string representing the resource id.
 isolated function getHost(string url) returns string {
     string replaced = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);  
-    int? i = str:lastIndexOf(replaced, FORWARD_SLASH);
-    if (i is int) {
-        replaced = replaced.substring(0,i);    
+    int? lastIndex = str:lastIndexOf(replaced, FORWARD_SLASH);
+    if (lastIndex is int) {
+        replaced = replaced.substring(0,lastIndex);    
     }
     return replaced;
 }
@@ -139,7 +139,7 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 # + requestPath - Request path of the request.
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, string tokenVersion, 
-string httpVerb, string requestPath) returns http:Request | error {
+                    string httpVerb, string requestPath) returns http:Request | error {
     HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
@@ -164,6 +164,15 @@ string httpVerb, string requestPath) returns http:Request | error {
         }
     } else {
         return prepareError(NULL_DATE_ERROR);
+    }
+    return request;
+}
+
+isolated function createRequest((DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|
+                        ResourceDeleteOptions)? requestOptions) returns http:Request|error {
+    http:Request request = new;
+    if (requestOptions != ()) {
+        request = check setRequestOptions(request, requestOptions);
     }
     return request;
 }
@@ -215,7 +224,8 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request 
 # + request - http:Request to set the header
 # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setRequestOptions(http:Request request, RequestHeaderOptions requestOptions) returns http:Request | error {
+isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|
+                    ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request | error {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
@@ -241,14 +251,14 @@ isolated function setRequestOptions(http:Request request, RequestHeaderOptions r
     if (requestOptions?.changeFeedOption != ()) {
         request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString()); 
     }
-    if (requestOptions?.ifNoneMatch != ()) {
-        request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatch.toString());
+    if (requestOptions?.ifNoneMatchEtag != ()) {
+        request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatchEtag.toString());
     }
     if (requestOptions?.partitionKeyRangeId != ()) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
     }
-    if (requestOptions?.ifMatch != ()) {
-        request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatch.toString());
+    if (requestOptions?.ifMatchEtag != ()) {
+        request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatchEtag.toString());
     }
     if (requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
@@ -296,10 +306,10 @@ isolated function getTime() returns string? | error {
 # + date - current GMT date and time
 # + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-string tokenType, string tokenVersion, string date) returns string? | error {    
+                    string tokenType, string tokenVersion, string date) returns string? | error {    
     string authorization;
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE
-    + date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
+                        + date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
     var decoded = array:fromBase64(keyToken);
     if (decoded is byte[]) {
         byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
@@ -315,10 +325,10 @@ string tokenType, string tokenVersion, string date) returns string? | error {
 # Map the json payload and necessary header values returend from a response to a tuple.
 # 
 # + httpResponse - the http:Response or http:ClientError returned form the HTTP request
-# + return - returns a tuple of type [json, Headers] if sucessful else, returns error
-isolated function mapResponseToTuple(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted [json, Headers] | error {
+# + return - returns a tuple of type [json, ResponseMetadata] if sucessful else, returns error
+isolated function mapResponseToTuple(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted [json, ResponseMetadata] | error {
     json responseBody = check handleResponse(httpResponse);
-    Headers responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
+    ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
     return [responseBody, responseHeaders];
 }
 
@@ -349,7 +359,7 @@ isolated function handleResponse(http:Response|http:Payload|http:ClientError htt
                 error details = error(errorMessage, status = httpResponse.statusCode);
                 return details;
             } else {
-                return prepareError(REST_API_INVOKING_ERROR); ///error
+                return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR); 
             }
         }
     } else {
@@ -357,20 +367,20 @@ isolated function handleResponse(http:Response|http:Payload|http:ClientError htt
     }
 }
 
-# Get the http:Response and extract the headers to the record type Headers
+# Get the http:Response and extract the headers to the record type ResponseMetadata
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
-# + return - If successful, returns record type Headers. Else returns error. 
-isolated function mapResponseHeadersToHeadersObject(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted Headers | error {
-    Headers responseHeaders = {};
+# + return - If successful, returns record type ResponseMetadata. Else returns error. 
+isolated function mapResponseHeadersToHeadersObject(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted ResponseMetadata | error {
+    ResponseMetadata responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
-        responseHeaders.sessionTokenHeader = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
-        responseHeaders.requestChargeHeader = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
-        responseHeaders.resourceUsageHeader = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
-        responseHeaders.itemCountHeader = getHeaderIfExist(httpResponse, ITEM_COUNT_HEADER);
-        responseHeaders.etagHeader = getHeaderIfExist(httpResponse, ETAG_HEADER);
-        responseHeaders.dateHeader = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
+        responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
+        responseHeaders.requestCharge = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
+        responseHeaders.resourceUsage = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
+        //responseHeaders.itemCountHeader = getHeaderIfExist(httpResponse, ITEM_COUNT_HEADER);
+        responseHeaders.etag = getHeaderIfExist(httpResponse, ETAG_HEADER);
+        responseHeaders.date = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
         return responseHeaders;
     } else {
         return prepareError(REST_API_INVOKING_ERROR);
@@ -418,11 +428,23 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
     }
 }
 
+// function resendRequest(anydata array, http:Client azureCosmosClient, string path, http:Request request, int? maxItemCount = (), string? continuationHeader = ()) {
+//     stream<Offer> offerStream = (<@untainted>array).toStream();
+//     if (continuationHeader != () && maxItemCount is ()) {            
+//         var streams = check retriveStream(azureCosmosClient, path, request, array, (), continuationHeader);
+//         if (typeof streams is typedesc<stream<anydata>>) {
+//             offerStream = <stream<anydata>>streams;
+//         } else  {
+//             return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`); 
+//         }
+//     }
+// }
+
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[] | Document[] | 
-    Database[] | Container[] | StoredProcedure[] | UserDefinedFunction[] | Trigger[] | User[] | Permission[] | PartitionKeyRange[] array, 
-    int? maxItemCount = (), string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer> | 
-    stream<Document> | stream<Database> | stream<Container> | stream<StoredProcedure> | stream<UserDefinedFunction> | 
-    stream<Trigger> | stream<User> | stream<Permission> | stream<PartitionKeyRange>| error {
+        Database[] | Container[] | StoredProcedure[] | UserDefinedFunction[] | Trigger[] | User[] | Permission[] | 
+        PartitionKeyRange[] array, int? maxItemCount = (), string? continuationHeader = (), boolean? isQuery = ()) 
+        returns @tainted stream<Offer> | stream<Document> | stream<Database> | stream<Container> | stream<StoredProcedure> | 
+        stream<UserDefinedFunction> | stream<Trigger> | stream<User> | stream<Permission> | stream<PartitionKeyRange>| error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
@@ -433,14 +455,14 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         response = azureCosmosClient->get(path, request);
     }
     var [payload, headers] = check mapResponseToTuple(response);        
-    var x = typeof array; 
-    if (x is typedesc<Offer[]>) {
+    var arrayType = typeof array; 
+    if (arrayType is typedesc<Offer[]>) {
         Offer[] offers = <Offer[]>array;
         if (payload.Offers is json) {
             Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
             stream<Offer> offerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Offer>>) {
                     offerStream = <stream<Offer>>streams;
                 } else  {
@@ -451,13 +473,13 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Document[]>) {
+    } else if (arrayType is typedesc<Document[]>) {
         Document[] documents = <Document[]>array;
         if (payload.Documents is json) {
             Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
             stream<Document> documentStream = (<@untainted>finalArray).toStream(); 
             if (headers?.continuationHeader != () && maxItemCount is ()) {  
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Document>>) {
                     documentStream = <stream<Document>>streams;
                 } else  {
@@ -468,13 +490,13 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (x is typedesc<Database[]>) {
+    } else if (arrayType is typedesc<Database[]>) {
         Database[] databases = <Database[]>array;
         if (payload.Databases is json) {
             Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
             stream<Database> databaseStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Database>>) {
                     databaseStream = <stream<Database>>streams;
                 } else  {
@@ -485,13 +507,13 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Container[]>) {
+    } else if (arrayType is typedesc<Container[]>) {
         Container[] containers = <Container[]>array;
         if (payload.DocumentCollections is json) {
             Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
             stream<Container> containerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Container>>) {
                     containerStream = <stream<Container>>streams;
                 } else  {
@@ -502,14 +524,14 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (x is typedesc<StoredProcedure[]> || x is typedesc<UserDefinedFunction[]>) {
+    } else if (arrayType is typedesc<StoredProcedure[]> || arrayType is typedesc<UserDefinedFunction[]>) {
         StoredProcedure[] storedProcedures = <StoredProcedure[]>array;
         UserDefinedFunction[] userDefinedFunctions = <UserDefinedFunction[]>array;
         if (payload.StoredProcedures is json) {
             StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
             stream<StoredProcedure> storedProcedureStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<StoredProcedure>>) {
                     storedProcedureStream = <stream<StoredProcedure>>streams;
                 } else  {
@@ -521,7 +543,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             UserDefinedFunction[] finalArray = convertsToUserDefinedFunctionArray(userDefinedFunctions, <json[]>payload.UserDefinedFunctions);
             stream<UserDefinedFunction> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<UserDefinedFunction>>) {
                     userDefinedFunctionStream = <stream<UserDefinedFunction>>streams;
                 } else  {
@@ -532,13 +554,13 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Trigger[]>) {
+    } else if (arrayType is typedesc<Trigger[]>) {
         Trigger[] triggers = <Trigger[]>array;
         if (payload.Triggers is json) {
             Trigger[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
             stream<Trigger> triggerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Trigger>>) {
                     triggerStream = <stream<Trigger>>streams;
                 } else  {
@@ -549,13 +571,13 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<User[]>) {
+    } else if (arrayType is typedesc<User[]>) {
         User[] users = <User[]>array;
         if (payload.Users is json) {
             User[] finalArray = convertToUserArray(users, <json[]>payload.Users);
             stream<User> userStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<User>>) {
                     userStream = <stream<User>>streams;
                 } else  {
@@ -566,13 +588,13 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<Permission[]>) {
+    } else if (arrayType is typedesc<Permission[]>) {
         Permission[] permissions = <Permission[]>array;
         if (payload.Permissions is json) {
             Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
             stream<Permission> permissionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {            
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Permission>>) {
                     permissionStream = <stream<Permission>>streams;
                 } else  {
@@ -583,7 +605,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (x is typedesc<PartitionKeyRange[]>) {
+    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
         if (payload.PartitionKeyRanges is json) {
             PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
             stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
