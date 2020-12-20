@@ -53,7 +53,7 @@ Permission permission = {};
     groups: ["database"]
 }
 function test_createDatabase(){
-    log:printInfo("ACTION : createDatabase()");
+    log:print("ACTION : createDatabase()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseId = string `database_${uuid.toString()}`;
@@ -71,7 +71,7 @@ function test_createDatabase(){
     groups: ["database"]
 }
 function test_createDatabaseUsingInvalidId(){
-    log:printInfo("ACTION : createDatabaseUsingInvalidId()");
+    log:print("ACTION : createDatabaseUsingInvalidId()");
 
     string createDatabaseId = "";
 
@@ -89,7 +89,7 @@ function test_createDatabaseUsingInvalidId(){
     dependsOn: ["test_createDatabase"]
 }
 function test_createDatabaseIfNotExist(){
-    log:printInfo("ACTION : createDatabaseIfNotExist()");
+    log:print("ACTION : createDatabaseIfNotExist()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseId = string `databasee_${uuid.toString()}`;
@@ -108,7 +108,7 @@ function test_createDatabaseIfNotExist(){
     dependsOn: ["test_createDatabase"]
 }
 function test_createDatabaseIfExist(){
-    log:printInfo("ACTION : createDatabaseIfExist()");
+    log:print("ACTION : createDatabaseIfExist()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseId = database.id;
@@ -126,7 +126,7 @@ function test_createDatabaseIfExist(){
     groups: ["database"]
 }
 function test_createDatabaseWithManualThroughput(){
-    log:printInfo("ACTION : createDatabaseWithManualThroughput()");
+    log:print("ACTION : createDatabaseWithManualThroughput()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
@@ -145,7 +145,7 @@ function test_createDatabaseWithManualThroughput(){
     groups: ["database"]
 }
 function test_createDatabaseWithInvalidManualThroughput(){
-    log:printInfo("ACTION : createDatabaseWithInvalidManualThroughput()");
+    log:print("ACTION : createDatabaseWithInvalidManualThroughput()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
@@ -164,7 +164,7 @@ function test_createDatabaseWithInvalidManualThroughput(){
     groups: ["database"]
 }
 function test_createDBWithAutoscalingThroughput(){
-    log:printInfo("ACTION : createDBWithAutoscalingThroughput()");
+    log:print("ACTION : createDBWithAutoscalingThroughput()");
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseAutoId = string `databasea_${uuid.toString()}`;
@@ -183,7 +183,7 @@ function test_createDBWithAutoscalingThroughput(){
     groups: ["database"]
 }
 function test_listAllDatabases(){
-    log:printInfo("ACTION : listAllDatabases()");
+    log:print("ACTION : listAllDatabases()");
 
     var result = AzureCosmosClient->listDatabases(6);
     if (result is stream<Database>){
@@ -199,7 +199,7 @@ function test_listAllDatabases(){
     dependsOn: ["test_createDatabase"]
 }
 function test_listOneDatabase(){
-    log:printInfo("ACTION : listOneDatabase()");
+    log:print("ACTION : listOneDatabase()");
 
     var result = AzureCosmosClient->getDatabase(database.id);
     if (result is error){
@@ -238,7 +238,7 @@ function test_listOneDatabase(){
     ]
 }
 function test_deleteDatabase(){
-    log:printInfo("ACTION : deleteDatabase()");
+    log:print("ACTION : deleteDatabase()");
 
     var result1 = AzureCosmosClient->deleteDatabase(database.id);
     var result2 = AzureCosmosClient->deleteDatabase(manual.id);
@@ -257,7 +257,7 @@ function test_deleteDatabase(){
     dependsOn: ["test_createDatabase"]
 }
 function test_createContainer(){
-    log:printInfo("ACTION : createContainer()");
+    log:print("ACTION : createContainer()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -280,7 +280,7 @@ function test_createContainer(){
     dependsOn: ["test_createContainer"]
 }
 function test_createCollectionWithManualThroughputAndIndexingPolicy(){
-    log:printInfo("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
+    log:print("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
     
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -318,7 +318,7 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy(){
     dependsOn: ["test_createDatabase",  "test_getOneContainer"]
 }
 function test_createContainerIfNotExist(){
-    log:printInfo("ACTION : createContainerIfNotExist()");
+    log:print("ACTION : createContainerIfNotExist()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -343,7 +343,7 @@ function test_createContainerIfNotExist(){
     dependsOn: ["test_createContainer"]
 }
 function test_getOneContainer(){
-    log:printInfo("ACTION : getOneContainer()");
+    log:print("ACTION : getOneContainer()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -362,7 +362,7 @@ function test_getOneContainer(){
     dependsOn: ["test_createDatabase"]
 }
 function test_getAllContainers(){
-    log:printInfo("ACTION : getAllContainers()");
+    log:print("ACTION : getAllContainers()");
 
     var result = AzureCosmosClient->listContainers(database.id);
     if (result is stream<Container>){
@@ -397,7 +397,7 @@ function test_getAllContainers(){
     ]
 }
 function test_deleteContainer(){
-    log:printInfo("ACTION : deleteContainer()");
+    log:print("ACTION : deleteContainer()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -416,7 +416,7 @@ function test_deleteContainer(){
     dependsOn: ["test_createContainer"]
 }
 function test_GetPartitionKeyRanges(){
-    log:printInfo("ACTION : GetPartitionKeyRanges()");
+    log:print("ACTION : GetPartitionKeyRanges()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -435,7 +435,7 @@ function test_GetPartitionKeyRanges(){
     dependsOn: ["test_createContainer"]
 }
 function test_createDocument(){
-    log:printInfo("ACTION : createDocument()");
+    log:print("ACTION : createDocument()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -492,7 +492,7 @@ function test_createDocument(){
     dependsOn: ["test_createContainer"]
 }
 function test_createDocumentWithRequestOptions(){
-    log:printInfo("ACTION : createDocumentWithRequestOptions()");
+    log:print("ACTION : createDocumentWithRequestOptions()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -553,7 +553,7 @@ function test_createDocumentWithRequestOptions(){
     dependsOn: ["test_createDocument"]
 }
 function test_getDocumentList(){
-    log:printInfo("ACTION : getDocumentList()");
+    log:print("ACTION : getDocumentList()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -572,7 +572,7 @@ function test_getDocumentList(){
     dependsOn: ["test_createDocument"]
 }
 function test_getDocumentListWithRequestOptions(){
-    log:printInfo("ACTION : getDocumentListWithRequestOptions()");
+    log:print("ACTION : getDocumentListWithRequestOptions()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -598,7 +598,7 @@ function test_getDocumentListWithRequestOptions(){
     dependsOn: ["test_createDocument"]
 }
 function test_GetOneDocument(){
-    log:printInfo("ACTION : GetOneDocument()");
+    log:print("ACTION : GetOneDocument()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -617,7 +617,7 @@ function test_GetOneDocument(){
     dependsOn: ["test_createDocument"]
 }
 function test_GetOneDocumentWithRequestOptions(){
-    log:printInfo("ACTION : GetOneDocumentWithRequestOptions()");
+    log:print("ACTION : GetOneDocumentWithRequestOptions()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -651,7 +651,7 @@ function test_GetOneDocumentWithRequestOptions(){
     ]
 }
 function test_deleteDocument(){
-    log:printInfo("ACTION : deleteDocument()");
+    log:print("ACTION : deleteDocument()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -670,7 +670,7 @@ function test_deleteDocument(){
     dependsOn: ["test_createContainer"]
 }
 function test_queryDocuments(){
-    log:printInfo("ACTION : queryDocuments()");
+    log:print("ACTION : queryDocuments()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -694,7 +694,7 @@ function test_queryDocuments(){
     dependsOn: ["test_createContainer"]
 }
 function test_queryDocumentsWithRequestOptions(){
-    log:printInfo("ACTION : queryDocumentsWithRequestOptions()");
+    log:print("ACTION : queryDocumentsWithRequestOptions()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -723,7 +723,7 @@ function test_queryDocumentsWithRequestOptions(){
     dependsOn: ["test_createContainer"]
 }
 function test_createStoredProcedure(){
-    log:printInfo("ACTION : createStoredProcedure()");
+    log:print("ACTION : createStoredProcedure()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -748,7 +748,7 @@ function test_createStoredProcedure(){
     dependsOn: ["test_createStoredProcedure"]
 }
 function test_replaceStoredProcedure(){
-    log:printInfo("ACTION : replaceStoredProcedure()");
+    log:print("ACTION : replaceStoredProcedure()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -772,7 +772,7 @@ function test_replaceStoredProcedure(){
     dependsOn: ["test_createContainer"]
 }
 function test_getAllStoredProcedures(){
-    log:printInfo("ACTION : getAllStoredProcedures()");
+    log:print("ACTION : getAllStoredProcedures()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -792,7 +792,7 @@ function test_getAllStoredProcedures(){
     dependsOn: ["test_replaceStoredProcedure"]
 }
 function test_executeOneStoredProcedure(){
-    log:printInfo("ACTION : executeOneStoredProcedure()");
+    log:print("ACTION : executeOneStoredProcedure()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -813,7 +813,7 @@ function test_executeOneStoredProcedure(){
     dependsOn: ["test_createStoredProcedure", "test_executeOneStoredProcedure", "test_getAllStoredProcedures"]
 }
 function test_deleteOneStoredProcedure(){
-    log:printInfo("ACTION : deleteOneStoredProcedure()");
+    log:print("ACTION : deleteOneStoredProcedure()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -833,7 +833,7 @@ function test_deleteOneStoredProcedure(){
     dependsOn: ["test_createContainer"]
 }
 function test_createUDF(){
-    log:printInfo("ACTION : createUDF()");
+    log:print("ACTION : createUDF()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -859,7 +859,7 @@ function test_createUDF(){
     dependsOn: ["test_createContainer", "test_createUDF"]
 }
 function test_replaceUDF(){
-    log:printInfo("ACTION : replaceUDF()");
+    log:print("ACTION : replaceUDF()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -883,7 +883,7 @@ function test_replaceUDF(){
     dependsOn: ["test_createContainer",  "test_createUDF"]
 }
 function test_listAllUDF(){
-    log:printInfo("ACTION : listAllUDF()");
+    log:print("ACTION : listAllUDF()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -903,7 +903,7 @@ function test_listAllUDF(){
     dependsOn: ["test_replaceUDF", "test_listAllUDF"]
 }
 function test_deleteUDF(){
-    log:printInfo("ACTION : deleteUDF()");
+    log:print("ACTION : deleteUDF()");
 
     string deleteUDFId = udf.id;
     string databaseId = database.id;
@@ -923,7 +923,7 @@ function test_deleteUDF(){
     dependsOn: ["test_createContainer"]
 }
 function test_createTrigger(){
-    log:printInfo("ACTION : createTrigger()");
+    log:print("ACTION : createTrigger()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -953,7 +953,7 @@ function test_createTrigger(){
     dependsOn: ["test_createTrigger"]
 }
 function test_replaceTrigger(){
-    log:printInfo("ACTION : replaceTrigger()");
+    log:print("ACTION : replaceTrigger()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -981,7 +981,7 @@ function test_replaceTrigger(){
     dependsOn: ["test_createTrigger"]
 }
 function test_listTriggers(){
-    log:printInfo("ACTION : listTriggers()");
+    log:print("ACTION : listTriggers()");
 
     string databaseId = database.id;
     string containerId = container.id;
@@ -1001,7 +1001,7 @@ function test_listTriggers(){
     dependsOn: ["test_replaceTrigger", "test_listTriggers"]
 }
 function test_deleteTrigger(){
-    log:printInfo("ACTION : deleteTrigger()");
+    log:print("ACTION : deleteTrigger()");
 
     string deleteTriggerId = trigger.id;
     string databaseId = database.id;
@@ -1021,7 +1021,7 @@ function test_deleteTrigger(){
     dependsOn: ["test_createDatabase"]
 }
 function test_createUser(){
-    log:printInfo("ACTION : createUser()");
+    log:print("ACTION : createUser()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -1041,7 +1041,7 @@ function test_createUser(){
     dependsOn: ["test_createUser", "test_getUser"]
 }
 function test_replaceUserId(){
-    log:printInfo("ACTION : replaceUserId()");
+    log:print("ACTION : replaceUserId()");
 
     var uuid = createRandomUUIDBallerina();
     string newReplaceId = string `user_${uuid.toString()}`;
@@ -1062,7 +1062,7 @@ function test_replaceUserId(){
     dependsOn: ["test_createUser"]
 }
 function test_getUser(){
-    log:printInfo("ACTION : getUser()");
+    log:print("ACTION : getUser()");
 
     Client AzureCosmosClient = new(config);
     string databaseId = database.id;
@@ -1082,7 +1082,7 @@ function test_getUser(){
     dependsOn: ["test_createUser"]
 }
 function test_listUsers(){
-    log:printInfo("ACTION : listUsers()");
+    log:print("ACTION : listUsers()");
 
     string databaseId = database.id;
 
@@ -1106,7 +1106,7 @@ function test_listUsers(){
     ]
 }
 function test_deleteUser(){
-    log:printInfo("ACTION : deleteUser()");
+    log:print("ACTION : deleteUser()");
 
     string deleteUserId = test_user.id;
     string databaseId = database.id;
@@ -1125,7 +1125,7 @@ function test_deleteUser(){
     dependsOn: ["test_createDatabase", "test_createUser"]
 }
 function test_createPermission(){
-    log:printInfo("ACTION : createPermission()");
+    log:print("ACTION : createPermission()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -1153,7 +1153,7 @@ function test_createPermission(){
     dependsOn: ["test_createDatabase", "test_createUser"]
 }
 function test_createPermissionWithTTL(){
-    log:printInfo("ACTION : createPermission()");
+    log:print("ACTION : createPermission()");
 
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
@@ -1182,7 +1182,7 @@ function test_createPermissionWithTTL(){
     dependsOn: ["test_createPermission"]
 }
 function test_replacePermission(){
-    log:printInfo("ACTION : replacePermission()");
+    log:print("ACTION : replacePermission()");
 
     string databaseId = database.id;
     string permissionUserId = test_user.id;
@@ -1209,7 +1209,7 @@ function test_replacePermission(){
     dependsOn: ["test_createPermission"]
 }
 function test_listPermissions(){
-    log:printInfo("ACTION : listPermissions()");
+    log:print("ACTION : listPermissions()");
 
     string databaseId = database.id;
     string permissionUserId = test_user.id;
@@ -1229,7 +1229,7 @@ function test_listPermissions(){
     dependsOn: ["test_createPermission"]
 }
 function test_getPermission(){
-    log:printInfo("ACTION : getPermission()");
+    log:print("ACTION : getPermission()");
 
     string databaseId = database.id;
     string permissionUserId = test_user.id;
@@ -1249,7 +1249,7 @@ function test_getPermission(){
     dependsOn: [ "test_getPermission", "test_listPermissions", "test_replacePermission"]
 }
 function test_deletePermission(){
-    log:printInfo("ACTION : deletePermission()");
+    log:print("ACTION : deletePermission()");
 
     string databaseId = database.id;
     string permissionUserId = test_user.id;
@@ -1268,7 +1268,7 @@ function test_deletePermission(){
     groups: ["offer"]
 }
 function test_listOffers(){
-    log:printInfo("ACTION : listOffers()");
+    log:print("ACTION : listOffers()");
 
     var result = AzureCosmosClient->listOffers(6);  
     if (result is stream<Offer>){
@@ -1284,7 +1284,7 @@ function test_listOffers(){
     dependsOn: ["test_listOffers"]
 }
 function test_getOffer(){
-    log:printInfo("ACTION : getOffer()");
+    log:print("ACTION : getOffer()");
 
     //these fuctions can be depending on the list Offers
     var result = AzureCosmosClient->listOffers();  
@@ -1305,7 +1305,7 @@ function test_getOffer(){
     groups: ["offer"]
 }
 function test_replaceOffer(){
-    log:printInfo("ACTION : replaceOffer()");
+    log:print("ACTION : replaceOffer()");
 
     //these fuctions can be depending on the list Offers
     var result = AzureCosmosClient->listOffers();  
@@ -1336,7 +1336,7 @@ function test_replaceOffer(){
     groups: ["offer"]
 }
 function test_replaceOfferWithOptionalParameter(){
-    log:printInfo("ACTION : replaceOfferWithOptionalParameter()");
+    log:print("ACTION : replaceOfferWithOptionalParameter()");
 
     var result = AzureCosmosClient->listOffers();  
     if (result is stream<Offer>){
@@ -1366,7 +1366,7 @@ function test_replaceOfferWithOptionalParameter(){
     dependsOn: ["test_createDatabase",  "test_createContainer"]
 }
 function test_queryOffer(){
-    log:printInfo("ACTION : queryOffer()");
+    log:print("ACTION : queryOffer()");
 
     Query offerQuery = {
     query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`
@@ -1385,7 +1385,7 @@ function test_queryOffer(){
     dependsOn: ["test_createPermission"]
 }
 function test_getCollection_Resource_Token(){
-    log:printInfo("ACTION : createCollection_Resource_Token()");
+    log:print("ACTION : createCollection_Resource_Token()");
 
     string databaseId = database.id;
     string permissionUserId = test_user.id;

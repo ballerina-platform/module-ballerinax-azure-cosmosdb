@@ -326,7 +326,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 # 
 # + httpResponse - the http:Response or http:ClientError returned form the HTTP request
 # + return - returns a tuple of type [json, ResponseMetadata] if sucessful else, returns error
-isolated function mapResponseToTuple(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted [json, ResponseMetadata] | error {
+isolated function mapResponseToTuple(http:Response|http:PayloadType|http:ClientError httpResponse) returns @tainted [json, ResponseMetadata] | error {
     json responseBody = check handleResponse(httpResponse);
     ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
     return [responseBody, responseHeaders];
@@ -336,7 +336,7 @@ isolated function mapResponseToTuple(http:Response|http:Payload|http:ClientError
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns json. Else returns error. 
-isolated function handleResponse(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted json | boolean | error { 
+isolated function handleResponse(http:Response|http:PayloadType|http:ClientError httpResponse) returns @tainted json | boolean | error { 
     if (httpResponse is http:Response) {   
         if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
             json|error jsonResponse = httpResponse.getJsonPayload();
@@ -371,7 +371,7 @@ isolated function handleResponse(http:Response|http:Payload|http:ClientError htt
 # 
 # + httpResponse - http:Response or http:ClientError returned from an http:Request
 # + return - If successful, returns record type ResponseMetadata. Else returns error. 
-isolated function mapResponseHeadersToHeadersObject(http:Response|http:Payload|http:ClientError httpResponse) returns @tainted ResponseMetadata | error {
+isolated function mapResponseHeadersToHeadersObject(http:Response|http:PayloadType|http:ClientError httpResponse) returns @tainted ResponseMetadata | error {
     ResponseMetadata responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
@@ -448,7 +448,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    http:Response | http:Payload | http:ClientError response;
+    http:Response | http:PayloadType | http:ClientError response;
     if (isQuery ==  true) {
         response = azureCosmosClient->post(path, request);
     } else  {

@@ -42,7 +42,7 @@ public  client class Client {
     # + databaseId - ID for the database.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns 
+    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns 
                             @tainted Database | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         http:Request request = new;
@@ -64,7 +64,7 @@ public  client class Client {
     # + databaseId - ID for the database.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) 
+    remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) 
                             returns @tainted Database? | error {
         var result = self->getDatabase(databaseId);
         if (result is error) {
@@ -83,7 +83,7 @@ public  client class Client {
     # + databaseId - ID of the database. 
     # + requestOptions - Optional. An instance of type ResourceReadOptions.
     # + return - If successful, returns Database. Else returns error.  
-    public remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted Database | error {
+    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted Database | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToDatabaseType(jsonResponse);  
@@ -93,7 +93,7 @@ public  client class Client {
     # 
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns stream<Database>. else returns error. 
-    public remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database> | error {
+    remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database> | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         http:Request request = new;
         if (maxItemCount is int) {
@@ -112,7 +112,7 @@ public  client class Client {
     # + databaseId - ID of the database to delete.
     # + requestOptions - Optional. An instance of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
+    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         return self.deleteRecord(requestPath, requestOptions);
     }
@@ -125,7 +125,7 @@ public  client class Client {
     # + indexingPolicy - Optional. Object of type IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Container. Else returns error.  
-    public remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
+    remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
                             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
                             returns @tainted Container | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
@@ -158,7 +158,7 @@ public  client class Client {
     # + indexingPolicy - Optional. Object of type IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
-    public remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
+    remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
                             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
                             returns @tainted Container? | error {
         var result = self->getContainer(databaseId, containerId);
@@ -179,7 +179,7 @@ public  client class Client {
     # + containerId - ID of the container.  
     # + requestOptions - Optional. An instance of type ResourceReadOptions.  
     # + return - If successful, returns Container. Else returns error.  
-    public remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) returns @tainted Container | error {
+    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) returns @tainted Container | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToContainerType(jsonResponse);
@@ -190,7 +190,7 @@ public  client class Client {
     # + databaseId - ID of the database where the collections are in.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + return - If successful, returns stream<Container>. Else returns error.  
-    public remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container> | error {
+    remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         http:Request request = new;
         if (maxItemCount is int) {
@@ -210,7 +210,7 @@ public  client class Client {
     # + containerId - ID of the container.
     # + requestOptions - Optional. An instance of type ResourceDeleteOptions.  
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) returns @tainted json | error {
+    remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) returns @tainted json | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         return self.deleteRecord(requestPath, requestOptions);
     }
@@ -220,7 +220,7 @@ public  client class Client {
     # + databaseId - ID of the database which container is created.
     # + containerId - ID of the container.    
     # + return - If successful, returns PartitionKeyList. Else returns error.  
-    public remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted stream<PartitionKeyRange> | error {
+    remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted stream<PartitionKeyRange> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_PK_RANGES]);
@@ -239,7 +239,7 @@ public  client class Client {
     # + document - Object of type Document. 
     # + requestOptions - Object of type DocumentCreateOptions.
     # + return - If successful, returns Document. Else returns error.  
-    public remote function createDocument(string databaseId, string containerId, Document document, 
+    remote function createDocument(string databaseId, string containerId, Document document, 
                             DocumentCreateOptions? requestOptions = ()) returns @tainted Document | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_DOCUMENTS]);
@@ -264,7 +264,7 @@ public  client class Client {
     # + document - Object of type Document. 
     # + requestOptions - Optional. Object of type DocumentCreateOptions.
     # + return - If successful, returns a Document. Else returns error. 
-    public remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
+    remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
                             DocumentCreateOptions? requestOptions = ()) returns @tainted Document | error {         
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_DOCUMENTS, document.id]);
@@ -290,7 +290,7 @@ public  client class Client {
     # + partitionKey - Array containing value of parition key field.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
-    public remote function getDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
+    remote function getDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
                             DocumentGetOptions? requestOptions = ()) returns @tainted Document | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -310,7 +310,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type DocumentListOptions.
     # + return - If successful, returns stream<Document> Else, returns error. 
-    public remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (),
+    remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (),
                             DocumentListOptions? requestOptions = ()) returns @tainted stream<Document> | error { 
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_DOCUMENTS]);
@@ -334,7 +334,7 @@ public  client class Client {
     # + partitionKey - Array containing value of parition key field.
     # + requestOptions - Optional. Object of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
+    remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
                             ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {  
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -360,7 +360,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceQueryOptions.
     # + return - If successful, returns a stream<Document>. Else returns error. 
-    public remote function queryDocuments(string databaseId, string containerId, any[] partitionKey, Query sqlQuery, 
+    remote function queryDocuments(string databaseId, string containerId, any[] partitionKey, Query sqlQuery, 
                             int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) returns 
                             @tainted stream<Document> | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -390,7 +390,7 @@ public  client class Client {
     # + containerId - ID of the container which stored procedure is created.     
     # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
-    public remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) 
+    remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) 
                             returns @tainted StoredProcedure | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_STORED_POCEDURES]);
@@ -414,7 +414,7 @@ public  client class Client {
     # + containerId - ID of the container which stored procedure is created. 
     # + storedProcedure - Object of type StoredProcedure.
     # + return - If successful, returns a StoredProcedure. Else returns error. 
-    public remote function replaceStoredProcedure(string databaseId, string containerId, 
+    remote function replaceStoredProcedure(string databaseId, string containerId, 
                             @tainted StoredProcedure storedProcedure) returns @tainted StoredProcedure | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
@@ -439,7 +439,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a stream<StoredProcedure>. Else returns error. 
-    public remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
+    remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
                             ResourceReadOptions? requestOptions = ()) returns @tainted stream<StoredProcedure> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_STORED_POCEDURES]);
@@ -462,7 +462,7 @@ public  client class Client {
     # + storedProcedureId - ID of the stored procedure to delete.
     # + requestOptions - Object of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
+    remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
                             ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);        
@@ -476,7 +476,7 @@ public  client class Client {
     # + storedProcedureId - ID of the stored procedure to execute.
     # + parameters - Optional. Array of function paramaters to pass to javascript function as an array.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
-    public remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
+    remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
                             any[]? parameters) returns @tainted json | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]); 
@@ -496,7 +496,7 @@ public  client class Client {
     # + containerId - ID of the container which user defined function is created.     
     # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
-    public remote function createUserDefinedFunction(string databaseId, string containerId, 
+    remote function createUserDefinedFunction(string databaseId, string containerId, 
                             UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_UDF]);       
@@ -520,7 +520,7 @@ public  client class Client {
     # + containerId - ID of the container which user defined function is created.    
     # + userDefinedFunction - Object of type UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
-    public remote function replaceUserDefinedFunction(string databaseId, string containerId, 
+    remote function replaceUserDefinedFunction(string databaseId, string containerId, 
                             @tainted UserDefinedFunction userDefinedFunction) returns @tainted UserDefinedFunction | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_UDF, userDefinedFunction.id]);  
@@ -547,7 +547,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
-    public remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
+    remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
                             ResourceReadOptions? requestOptions = ()) returns @tainted stream<UserDefinedFunction> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_UDF]);
@@ -570,7 +570,7 @@ public  client class Client {
     # + userDefinedFunctionid - Id of UDF to delete.
     # + requestOptions - Object of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
+    remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
                             ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_UDF, userDefinedFunctionid]);        
@@ -585,7 +585,7 @@ public  client class Client {
     # + containerId - ID of the container which trigger is created.    
     # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
-    public remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted 
+    remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted 
                             Trigger | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_TRIGGER]); 
@@ -609,7 +609,7 @@ public  client class Client {
     # + containerId - ID of the container which trigger is created.     
     # + trigger - Object of type Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
-    public remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns 
+    remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns 
                             @tainted Trigger | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_TRIGGER, trigger.id]);  
@@ -634,7 +634,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
-    public remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
+    remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
                             returns @tainted stream<Trigger> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_TRIGGER]);
@@ -657,7 +657,7 @@ public  client class Client {
     # + triggerId - ID of the trigger to be deleted.
     # + requestOptions - Object of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteTrigger(string databaseId, string containerId, string triggerId, ResourceDeleteOptions? requestOptions = ()) 
+    remote function deleteTrigger(string databaseId, string containerId, string triggerId, ResourceDeleteOptions? requestOptions = ()) 
                             returns @tainted boolean | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_TRIGGER, triggerId]);       
@@ -669,7 +669,7 @@ public  client class Client {
     # + databaseId - ID of the database to which user belongs.
     # + userId - ID which should be given to the new user.
     # + return - If successful, returns a User. Else returns error.
-    public remote function createUser(string databaseId, string userId) returns @tainted User | error {
+    remote function createUser(string databaseId, string userId) returns @tainted User | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]); 
         http:Request request = new;      
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
@@ -689,7 +689,7 @@ public  client class Client {
     # + userId - ID of the user.
     # + newUserId - New ID for the user.
     # + return - If successful, returns a User. Else returns error.
-    public remote function replaceUserId(string databaseId, string userId, string newUserId) returns 
+    remote function replaceUserId(string databaseId, string userId, string newUserId) returns 
                             @tainted User | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         http:Request request = new;       
@@ -710,7 +710,7 @@ public  client class Client {
     # + userId - ID of user to get.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a User. Else returns error.
-    public remote function getUser(string databaseId, string userId, ResourceReadOptions? requestOptions = ()) returns @tainted User | error {
+    remote function getUser(string databaseId, string userId, ResourceReadOptions? requestOptions = ()) returns @tainted User | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToUserType(jsonResponse);      
@@ -722,7 +722,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a stream<User>. Else returns error.
-    public remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
+    remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
                             returns @tainted stream<User> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         http:Request request = check createRequest(requestOptions);
@@ -743,7 +743,7 @@ public  client class Client {
     # + userId - ID of user to delete.
     # + requestOptions - Object of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
+    remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);       
         return self.deleteRecord(requestPath, requestOptions);
     }
@@ -755,7 +755,7 @@ public  client class Client {
     # + permission - Object of type Permission.
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function createPermission(string databaseId, string userId, Permission permission, 
+    remote function createPermission(string databaseId, string userId, Permission permission, 
                             int? validityPeriod = ()) returns @tainted Permission | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                 RESOURCE_TYPE_PERMISSION]);
@@ -783,7 +783,7 @@ public  client class Client {
     # + permission - Object of type Permission.
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function replacePermission(string databaseId, string userId, @tainted 
+    remote function replacePermission(string databaseId, string userId, @tainted 
                             Permission permission, int? validityPeriod = ()) returns @tainted Permission | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                 RESOURCE_TYPE_PERMISSION, permission.id]);       
@@ -811,7 +811,7 @@ public  client class Client {
     # + permissionId - ID of the permission to get.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a Permission. Else returns error.
-    public remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ())
+    remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ())
                             returns @tainted Permission | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                 RESOURCE_TYPE_PERMISSION, permissionId]);       
@@ -826,7 +826,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a stream<Permission>. Else returns error.
-    public remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
+    remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
                             returns @tainted stream<Permission> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                 RESOURCE_TYPE_PERMISSION]);    
@@ -849,7 +849,7 @@ public  client class Client {
     # + permissionId - ID of the permission to delete.
     # + requestOptions - Object of type ResourceDeleteOptions.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    public remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
+    remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
                             returns @tainted boolean | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                 RESOURCE_TYPE_PERMISSION, permissionId]);       
@@ -861,7 +861,7 @@ public  client class Client {
     # + offer - Object of type Offer.
     # + offerType - Optional. Type of the offer.
     # + return - If successful, returns a Offer. Else returns error.
-    public remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer | error {
+    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);  
         http:Request request = new;     
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
@@ -891,7 +891,7 @@ public  client class Client {
     # + offerId - The id of the offer.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a Offer. Else returns error.
-    public remote function getOffer(string offerId, ResourceReadOptions? requestOptions = ()) returns @tainted Offer | error {
+    remote function getOffer(string offerId, ResourceReadOptions? requestOptions = ()) returns @tainted Offer | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);       
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToOfferType(jsonResponse);
@@ -905,7 +905,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceReadOptions.
     # + return - If successful, returns a stream<Offer> Else returns error.
-    public remote function listOffers(int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) returns @tainted stream<Offer> | error {
+    remote function listOffers(int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) returns @tainted stream<Offer> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_OFFERS]);   
         http:Request request = check createRequest(requestOptions);
         if (maxItemCount is int) {
@@ -925,7 +925,7 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceQueryOptions.
     # + return - If successful, returns a stream<Offer>. Else returns error.
-    public remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<Offer> | error {
+    remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<Offer> | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         http:Request request = check createRequest(requestOptions);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);

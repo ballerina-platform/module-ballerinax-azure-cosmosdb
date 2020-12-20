@@ -36,7 +36,6 @@ public type AzureCosmosConfiguration record {|
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + timeStamp - Timestamp (_ts) specifies the last updated timestamp of the resource.
-# + eTag - Representing the resource etag (_etag) required for optimistic concurrency control. 
 public type Common record {|
     string resourceId?;
     string selfReference?;
