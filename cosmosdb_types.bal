@@ -41,26 +41,25 @@ public type Common record {|
     string resourceId?;
     string selfReference?;
     string timeStamp?;
-    string eTag?;
 |};
 
 # Represents the response headers which is returned.
 # 
 # + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read.
-# + sessionTokenHeader - Session token of the request.
-# + requestChargeHeader - This is the number of normalized requests a.k.a. request units (RU) for the operation.
-# + resourceUsageHeader - Current usage count of a resource in an account.  
-# + itemCountHeader - Number of items returned for a query or read-feed request.
-# + etagHeader - Resource etag for the resource retrieved same as eTag in the response. 
-# + dateHeader - Date time of the response operation.
-public type Headers record {|
-    string? continuationHeader = ();
-    string? sessionTokenHeader = ();
-    string? requestChargeHeader = ();
-    string? resourceUsageHeader = ();
-    string? itemCountHeader = ();
-    string? etagHeader = ();
-    string? dateHeader = ();
+# + sessionToken - Session token of the request.
+# + requestCharge - This is the number of normalized requests a.k.a. request units (RU) for the operation.
+# + resourceUsage - Current usage count of a resource in an account.  
+//# + itemCount - Number of items returned for a query or read-feed request.
+# + etag - Resource etag for the resource retrieved same as eTag in the response. 
+# + date - Date time of the response operation.
+public type ResponseMetadata record {|
+    string? continuationHeader?;
+    string? sessionToken = ();
+    string? requestCharge = ();
+    string? resourceUsage = ();
+    //string? itemCountHeader = ();
+    string? etag = ();
+    string? date = ();
 |};
 
 # Represent the record type with options represent for throughput.
@@ -82,7 +81,7 @@ public type Database record {|
     *Common;
     string collections?;
     string users?;
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represents the elements representing information about a collection.
@@ -107,7 +106,7 @@ public type Container record {|
     string userDefinedFunctions?;
     string conflicts?;
     boolean allowMaterializedViews?;
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represents the elements representing information about a document.
@@ -120,9 +119,9 @@ public type Document record {|
     string id = "";
     *Common;
     json documentBody = {};
-    any[]? partitionKey = ();
+    any[]? partitionKey?;
     string attachments?;
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represents the elements representing information about a document.
@@ -158,9 +157,9 @@ public type ExcludedPath record {|
 # 
 # + kind - Type of index. Can be "Hash", "Range" or "Spatial"
 # + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
-#   or "LineString"
+#               or "LineString"
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
-#   and 1-100 for String. Not applicable for Point, Polygon, and LineString data types.
+#                   and 1-100 for String. Not applicable for Point, Polygon, and LineString data types.
 public type Index record {|
     string kind = "";
     string dataType = "";
@@ -170,7 +169,7 @@ public type Index record {|
 # Represent the record type with elements represent a partition key.
 # 
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
-#   single value.
+#               single value.
 # + kind - Algorithm used for partitioning. Only Hash is supported.
 # + keyVersion - Version of partition key.
 public type PartitionKey record {|
@@ -191,7 +190,8 @@ public type PartitionKeyRange record {|
     string minInclusive = "";
     string maxExclusive = "";
     string status = "";
-    Headers?...;
+    //string? continuationHeader = ();
+    ResponseMetadata?...;
 |};
 
 # Represent the record type with elements represent a stored procedure.
@@ -202,14 +202,14 @@ public type StoredProcedure record {|
     string id = "";
     *Common;
     string body = "";
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 public type UserDefinedFunction record {|
     string id = "";
     *Common;
     string body = "";    
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represent the record type with elements represent a trigger.
@@ -220,7 +220,7 @@ public type Trigger record {|
     *StoredProcedure;
     string triggerOperation = "";
     string triggerType = "";
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represent the record type with elements represent a user.
@@ -231,7 +231,7 @@ public type User record {|
     string id = "";
     *Common;
     string permissions?;
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represent the record type with elements represent a permission.
@@ -248,7 +248,7 @@ public type Permission record {|
     string resourcePath = "";
     int validityPeriod?;
     string token?;
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represent the record type with elements represent an offer.
@@ -267,7 +267,7 @@ public type Offer record {|
     json content = {};
     string resourceResourceId = "";
     string resourceSelfLink = "";
-    Headers?...;
+    ResponseMetadata?...;
 |};
 
 # Represent the record type with the necessary paramateres for creation of authorization signature.

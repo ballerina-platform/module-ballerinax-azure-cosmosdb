@@ -147,7 +147,7 @@ const string JSON_KEY_OFFER_VERSION = "offerVersion";
 const string JSON_KEY_CONTENT = "content";
 
 // Property in record type representing headers
-const string RESPONSE_HEADERS = "reponseHeaders";
+const string RESPONSE_HEADERS = "reponseMetadata";
 
 // Elements in an error response
 const string ACTIVITY_ID = "ActivityId";
