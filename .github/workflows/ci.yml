@@ -19,5 +19,4 @@ jobs:
                   KEY_OR_RESOURCE_TOKEN: ${{ secrets.KEY_OR_RESOURCE_TOKEN }}
                   TOKEN_TYPE: ${{ secrets.TOKEN_TYPE }}
                   TOKEN_VERSION: ${{ secrets.TOKEN_VERSION }}
-                  b7a_home: ${{ secrets.B7A_HOME }}
-                  SSL_PASSWORD: ${{ secrets.SSL_PASSWORD }}
+
