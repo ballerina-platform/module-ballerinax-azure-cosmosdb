@@ -26,13 +26,7 @@ AzureCosmosConfiguration config = {
     baseUrl : getConfigValue("BASE_URL"), 
     keyOrResourceToken : getConfigValue("KEY_OR_RESOURCE_TOKEN"), 
     tokenType : getConfigValue("TOKEN_TYPE"), 
-    tokenVersion : getConfigValue("TOKEN_VERSION"), 
-    secureSocketConfig :{
-                            trustStore: {
-                            path: getConfigValue("b7a_home") + "/bre/security/ballerinaTruststore.p12", 
-                            password: getConfigValue("SSL_PASSWORD")
-                            }
-                        }
+    tokenVersion : getConfigValue("TOKEN_VERSION")
 };
 
 Client AzureCosmosClient = new(config);
@@ -1400,13 +1394,7 @@ function test_getCollection_Resource_Token(){
                 baseUrl : getConfigValue("BASE_URL"), 
                 keyOrResourceToken : result?.token.toString(), 
                 tokenType : "resource", 
-                tokenVersion : getConfigValue("TOKEN_VERSION"), 
-                secureSocketConfig :{
-                                        trustStore: {
-                                        path: getConfigValue("b7a_home") + "/bre/security/ballerinaTruststore.p12", 
-                                        password: getConfigValue("SSL_PASSWORD")
-                                        }
-                                    }
+                tokenVersion : getConfigValue("TOKEN_VERSION")
             };
 
             Client AzureCosmosClientDatabase = new(configdb);

@@ -33,8 +33,7 @@ public  client class Client {
         self.host = getHost(azureConfig.baseUrl);
         self.keyType = azureConfig.tokenType;
         self.tokenVersion = azureConfig.tokenVersion;
-        http:ClientConfiguration httpClientConfig = {secureSocket: azureConfig.secureSocketConfig};
-        self.azureCosmosClient = new (self.baseUrl, httpClientConfig);
+        self.azureCosmosClient = new (self.baseUrl);
     }
 
     # Create a database inside a resource.

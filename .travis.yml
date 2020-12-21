@@ -18,3 +18,4 @@ script:
   - sudo apt-get install -f
   - ballerina --version
   - ballerina build -c --skip-tests
+  

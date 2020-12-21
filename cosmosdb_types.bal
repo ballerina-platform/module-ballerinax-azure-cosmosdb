@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-import ballerina/http;
+//import ballerina/http;
 
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
@@ -22,13 +22,11 @@ import ballerina/http;
 # + keyOrResourceToken - The token usesd to make the request call.
 # + tokenType - The type of token usesd to make the request call "master" or "resource". 
 # + tokenVersion - The version of the token.
-# + secureSocketConfig - The secure socket config.
 public type AzureCosmosConfiguration record {|
     string baseUrl;
     string keyOrResourceToken;
     string tokenType;
     string tokenVersion;
-    http:ClientSecureSocket? secureSocketConfig;
 |};
 
 # Represents the common elements which are returned inside json reponse body.
