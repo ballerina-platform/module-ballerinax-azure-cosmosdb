@@ -23,10 +23,10 @@ import ballerina/log;
 import ballerina/stringutils;
 
 AzureCosmosConfiguration config = {
-    baseUrl : getConfigValue("BASE_URL"), 
-    keyOrResourceToken : getConfigValue("KEY_OR_RESOURCE_TOKEN"), 
-    tokenType : getConfigValue("TOKEN_TYPE"), 
-    tokenVersion : getConfigValue("TOKEN_VERSION")
+    baseUrl : config:getAsString("BASE_URL"), 
+    keyOrResourceToken : config:getAsString("KEY_OR_RESOURCE_TOKEN"), 
+    tokenType : config:getAsString("TOKEN_TYPE"), 
+    tokenVersion : config:getAsString("TOKEN_VERSION")
 };
 
 Client AzureCosmosClient = new(config);
