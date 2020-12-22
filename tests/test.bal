@@ -21,6 +21,7 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/stringutils;
+import ballerina/runtime;
 
 AzureCosmosConfiguration config = {
     baseUrl : config:getAsString("BASE_URL"), 
@@ -1264,6 +1265,7 @@ function test_deletePermission(){
 function test_listOffers(){
     log:print("ACTION : listOffers()");
 
+    runtime:sleep(3000);
     var result = AzureCosmosClient->listOffers(10);  
     if (result is stream<Offer>){
         var doc = result.next();
@@ -1362,6 +1364,7 @@ function test_replaceOfferWithOptionalParameter(){
 function test_queryOffer(){
     log:print("ACTION : queryOffer()");
 
+    runtime:sleep(3000);
     Query offerQuery = {
     query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`
     };
