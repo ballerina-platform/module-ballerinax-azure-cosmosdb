@@ -15,17 +15,11 @@ There is only one client provided by Ballerina to interact with CosmosDB.
 
    ```ballerina
    AzureCosmosConfiguration azureConfig = {
-   baseUrl : <BASE_URL>,
+   baseUrl : <"BASE_URL">,
    keyOrResourceToken : <"KEY_OR_RESOURCE_TOKEN">,
    host : <"HOST">,
    tokenType : <"TOKEN_TYPE">,
-   tokenVersion : <"TOKEN_VERSION">,
-   secureSocketConfig :{
-                           trustStore: {
-                           path: <BALLERINA_TRUSTSTORE>,
-                           password: <"SSL_PASSWORD">
-                           }
-                       }
+   tokenVersion : <"TOKEN_VERSION">
    };
    Client azureClient = check new (azureConfig);
    ```
@@ -41,67 +35,53 @@ import ballerinax/azure_cosmosdb;
 public function main() {
 
     AzureCosmosConfiguration config = {
-    baseUrl : "https://cosmosconnector.documents.azure.com:443/",
+    baseUrl : "https://cosmosconnector.documents.azure.com:443",
     keyOrResourceToken : "mytokenABCD==",
     host : "cosmosconnector.documents.azure.com:443",
     tokenType : "master",
-    tokenVersion :1.0,
-    secureSocketConfig :{
-                            trustStore: {
-                            path: getConfigValue("b7a_home") + "/truststore/path/trutstore.p12",
-                            password: "mypwd"
-                            }
-                        }
+    tokenVersion : "1.0"
     };
 
     azure_cosmosdb:Client azureCosmosClient = new(config);
 
     Database database1 = azureCosmosClient->createDatabase("mydatabase");
 
-    @tainted ResourceProperties propertiesNewCollection = {
-            databaseId: database1.id,
-            containerId: "mycontainer"
-    };
-    PartitionKey pk = {
+    PartitionKey partitionKey = {
         paths: ["/AccountNumber"],
         kind :"Hash",
         'version: 2
     };
-    Container container1 = azureCosmosClient->createContainer(propertiesNewCollection,pk);
+    Container container1 = azureCosmosClient->createContainer(database1.id, "mycontainer", partitionKey);
 
-    @tainted ResourceProperties properties = {
-            databaseId: database1.id,
-            containerId: container1.id
-    };
     Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", "AccountNumber": 1234 }, partitionKey : [1234] };
     Document document2 = { id: "documentid2", documentBody :{ "LastName": "West", "AccountNumber": 7805 }, partitionKey : [7805] };
     Document document3 = { id: "documentid3", documentBody :{ "LastName": "Moore", "AccountNumber": 5678 }, partitionKey : [5678] };
     Document document4 = { id: "documentid4", documentBody :{ "LastName": "Hope", "AccountNumber": 2343 }, partitionKey : [2343] };
 
     log:printInfo("------------------ Inserting Documents -------------------");
-    var output1 = azureCosmosClient->createDocument(properties, document1);
-    var output2 = azureCosmosClient->createDocument(properties, document2);
-    var output3 = azureCosmosClient->createDocument(properties, document3);
-    var output4 = azureCosmosClient->createDocument(properties, document4);
+    var output1 = azureCosmosClient->createDocument(database1.id, container1.id, document1);
+    var output2 = azureCosmosClient->createDocument(database1.id, container1.id,, document2);
+    var output3 = azureCosmosClient->createDocument(database1.id, container1.id,, document3);
+    var output4 = azureCosmosClient->createDocument(database1.id, container1.id,, document4);
 
     log:printInfo("------------------ List Documents -------------------");
-    DocumentList documentList = azureCosmosClient->getDocumentList(properties)
+    stream<Document> documentList = azureCosmosClient->getDocumentList(database1.id, container1.id)
 
     log:printInfo("------------------ Get One Document -------------------");
-    Document document = azureCosmosClient->getDocument(properties, document1.id, [1234])
+    Document document = azureCosmosClient->getDocument(database1.id, container1.id, document1.id, [1234])
 
     log:printInfo("------------------ Query Documents -------------------");
     Query sqlQuery = {
         query: string `SELECT * FROM ${container1.id.toString()} f WHERE f.Address.City = 'Seattle'`,
         parameters: []
     };
-    var resultStream = AzureCosmosClient->queryDocuments(properties, [1234], sqlQuery);
+    var resultStream = AzureCosmosClient->queryDocuments(database1.id, container1.id, [1234], sqlQuery);
     error? e = result.forEach(function (json document){
                     log:printInfo(document);
                 });    
 
     log:printInfo("------------------ Delete Document -------------------");
-    var result = AzureCosmosClient->deleteDocument(properties, document.id, [1234]);
+    var result = AzureCosmosClient->deleteDocument(database1.id, container1.id, document.id, [1234]);
 
 }
 ```
