@@ -60,9 +60,9 @@ public function main() {
 
     log:printInfo("------------------ Inserting Documents -------------------");
     var output1 = azureCosmosClient->createDocument(database1.id, container1.id, document1);
-    var output2 = azureCosmosClient->createDocument(database1.id, container1.id,, document2);
-    var output3 = azureCosmosClient->createDocument(database1.id, container1.id,, document3);
-    var output4 = azureCosmosClient->createDocument(database1.id, container1.id,, document4);
+    var output2 = azureCosmosClient->createDocument(database1.id, container1.id, document2);
+    var output3 = azureCosmosClient->createDocument(database1.id, container1.id, document3);
+    var output4 = azureCosmosClient->createDocument(database1.id, container1.id, document4);
 
     log:printInfo("------------------ List Documents -------------------");
     stream<Document> documentList = azureCosmosClient->getDocumentList(database1.id, container1.id)

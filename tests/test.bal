@@ -124,7 +124,7 @@ function test_createDatabaseWithManualThroughput(){
 
     var uuid = createRandomUUIDBallerina();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
-    int throughput = 400;
+    int throughput = 1000;
 
     var result = AzureCosmosClient->createDatabase(createDatabaseManualId,  throughput);
     if (result is error){
@@ -1264,7 +1264,7 @@ function test_deletePermission(){
 function test_listOffers(){
     log:print("ACTION : listOffers()");
 
-    var result = AzureCosmosClient->listOffers(6);  
+    var result = AzureCosmosClient->listOffers(10);  
     if (result is stream<Offer>){
         var doc = result.next();
         io:println(doc);    
@@ -1281,7 +1281,7 @@ function test_getOffer(){
     log:print("ACTION : getOffer()");
 
     //these fuctions can be depending on the list Offers
-    var result = AzureCosmosClient->listOffers();  
+    var result = AzureCosmosClient->listOffers(10);  
     if (result is stream<Offer>){
         var doc = result.next();
         var result2 = AzureCosmosClient->getOffer(<string>doc["value"]["id"]);  
@@ -1365,7 +1365,7 @@ function test_queryOffer(){
     Query offerQuery = {
     query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`
     };
-    var result = AzureCosmosClient->queryOffer(offerQuery);   
+    var result = AzureCosmosClient->queryOffer(offerQuery, 20);   
     if (result is stream<Offer>){
         var doc = result.next();
         io:println(doc);    
