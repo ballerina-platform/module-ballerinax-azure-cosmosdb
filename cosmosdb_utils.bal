@@ -21,6 +21,7 @@ import ballerina/encoding;
 import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array; 
+import ballerina/java;
 
 // # Extract the resource type related to cosmos db from a given url
 // #
@@ -605,3 +606,21 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         return prepareError(INVALID_STREAM_TYPE); 
     }
 }
+
+# Create a random UUID removing the unnessary hyphens which will interrupt querying opearations.
+# 
+# + return - UUID withoout hyphens
+public function createRandomUUIDBallerina() returns string {
+    string? stringUUID = java:toString(createRandomUUID());
+    if (stringUUID is string){
+        stringUUID = stringutils:replace(stringUUID, "-", "");
+        return stringUUID;
+    } else {
+        return "";
+    }
+}
+
+public function createRandomUUID() returns handle = @java:Method {
+    name : "randomUUID", 
+    'class : "java.util.UUID"
+} external;

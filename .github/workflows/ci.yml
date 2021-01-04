@@ -19,4 +19,3 @@ jobs:
                   KEY_OR_RESOURCE_TOKEN: ${{ secrets.KEY_OR_RESOURCE_TOKEN }}
                   TOKEN_TYPE: ${{ secrets.TOKEN_TYPE }}
                   TOKEN_VERSION: ${{ secrets.TOKEN_VERSION }}
-

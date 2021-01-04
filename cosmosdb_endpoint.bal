@@ -27,7 +27,7 @@ public  client class Client {
     private string keyType;
     private string tokenVersion;
 
-    function init(AzureCosmosConfiguration azureConfig) {
+    public function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = azureConfig.baseUrl;
         self.keyOrResourceToken = azureConfig.keyOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
@@ -536,8 +536,6 @@ public  client class Client {
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionType(jsonResponse);      
     }
-
-    //function createNewUserDefinedFunction() returns request
 
     # Get a list of existing user defined functions inside a collection.
     # 

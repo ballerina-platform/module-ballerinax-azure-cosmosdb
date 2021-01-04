@@ -16,11 +16,9 @@
 
 import ballerina/io;
 import ballerina/test;
-import ballerina/java;
 import ballerina/config;
 import ballerina/system;
 import ballerina/log;
-import ballerina/stringutils;
 import ballerina/runtime;
 
 AzureCosmosConfiguration config = {
@@ -1282,7 +1280,7 @@ function test_listOffers(){
 function test_getOffer(){
     log:print("ACTION : getOffer()");
 
-    //these fuctions can be depending on the list Offers
+    //These fuctions can be depending on the list Offers
     var result = AzureCosmosClient->listOffers(10);  
     if (result is stream<Offer>){
         var doc = result.next();
@@ -1418,18 +1416,3 @@ function test_getCollection_Resource_Token(){
 isolated function getConfigValue(string key) returns string {
     return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);
 }
-
-function createRandomUUIDBallerina() returns string {
-    string? stringUUID = java:toString(createRandomUUID());
-    if (stringUUID is string){
-        stringUUID = stringutils:replace(stringUUID, "-", "");
-        return stringUUID;
-    } else {
-        return "";
-    }
-}
-
-function createRandomUUID() returns handle = @java:Method {
-    name : "randomUUID", 
-    'class : "java.util.UUID"
-} external;
