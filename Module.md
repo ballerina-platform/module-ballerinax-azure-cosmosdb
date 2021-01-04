@@ -17,7 +17,6 @@ There is only one client provided by Ballerina to interact with CosmosDB.
    cosmosdb:AzureCosmosConfiguration azureConfig = {
     baseUrl : <"BASE_URL">,
     keyOrResourceToken : <"KEY_OR_RESOURCE_TOKEN">,
-    host : <"HOST">,
     tokenType : <"TOKEN_TYPE">,
     tokenVersion : <"TOKEN_VERSION">
    };
@@ -37,7 +36,6 @@ public function main() {
     cosmosdb:AzureCosmosConfiguration config = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         keyOrResourceToken : "mytokenABCD==",
-        host : "cosmosconnector.documents.azure.com:443",
         tokenType : "master",
         tokenVersion : "1.0"
     };

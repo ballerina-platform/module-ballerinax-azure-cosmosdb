@@ -14,8 +14,6 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-//import ballerina/http;
-
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account.
@@ -187,7 +185,6 @@ public type PartitionKeyRange record {|
     string minInclusive = "";
     string maxExclusive = "";
     string status = "";
-    //string? continuationHeader = ();
     ResponseMetadata?...;
 |};
 
