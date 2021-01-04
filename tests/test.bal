@@ -116,7 +116,8 @@ function test_createDatabaseIfExist(){
 }
 
 @test:Config{
-    groups: ["database"]
+    groups: ["database"],
+    enable: false
 }
 function test_createDatabaseWithManualThroughput(){
     log:print("ACTION : createDatabaseWithManualThroughput()");
@@ -154,7 +155,8 @@ function test_createDatabaseWithInvalidManualThroughput(){
 }
 
 @test:Config{
-    groups: ["database"]
+    groups: ["database"],
+    enable: false
 }
 function test_createDBWithAutoscalingThroughput(){
     log:print("ACTION : createDBWithAutoscalingThroughput()");
@@ -208,7 +210,6 @@ function test_listOneDatabase(){
     dependsOn: [
         "test_createDatabase", 
         "test_createDatabaseIfNotExist", 
-        "test_createDBWithAutoscalingThroughput", 
         "test_listOneDatabase", 
         "test_createDatabase", 
         "test_getAllContainers", 
@@ -1284,7 +1285,8 @@ function test_getOffer(){
     var result = AzureCosmosClient->listOffers(10);  
     if (result is stream<Offer>){
         var doc = result.next();
-        var result2 = AzureCosmosClient->getOffer(<string>doc["value"]["id"]);  
+        string offerId = doc["value"]["id"] is string? <string>doc["value"]["id"] : "";
+        var result2 = AzureCosmosClient->getOffer(offerId);          
         if (result2 is error){
             test:assertFail(msg = result2.message());
         } else {
@@ -1305,6 +1307,9 @@ function test_replaceOffer(){
     var result = AzureCosmosClient->listOffers();  
     if (result is stream<Offer>){
         var doc = result.next();
+        string offerId = doc["value"]["id"] is string? <string>doc["value"]["id"] : "";
+        string resourceId = doc["value"]["resourceId"] is string? <string>doc["value"]["resourceId"] : "";
+
         Offer replaceOfferBody = {
             offerVersion: "V2", 
             offerType: "Invalid",    
@@ -1313,8 +1318,8 @@ function test_replaceOffer(){
             },  
             resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,  
             resourceResourceId: string `${container?.resourceId.toString()}`, 
-            id: <string>doc["value"]["id"], 
-            resourceId: <string>doc["value"]["resourceId"]
+            id: offerId, 
+            resourceId: resourceId
         };
         var result2 = AzureCosmosClient->replaceOffer(<@untainted>replaceOfferBody);  
         if (result2 is error){
@@ -1335,6 +1340,8 @@ function test_replaceOfferWithOptionalParameter(){
     var result = AzureCosmosClient->listOffers();  
     if (result is stream<Offer>){
         var doc = result.next();
+        string offerId = doc["value"]["id"] is string? <string>doc["value"]["id"] : "";
+        string resourceId = doc["value"]["resourceId"] is string? <string>doc["value"]["resourceId"] : "";
         Offer replaceOfferBody = {
             offerVersion: "V2", 
             content: {  
@@ -1342,8 +1349,8 @@ function test_replaceOfferWithOptionalParameter(){
             },  
             resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,  
             resourceResourceId: string `${container?.resourceId.toString()}`, 
-            id: <string>doc["value"]["id"], 
-            resourceId: <string>doc["value"]["resourceId"]
+            id: offerId, 
+            resourceId: resourceId
         };
         var result2 = AzureCosmosClient->replaceOffer(<@untainted>replaceOfferBody);  
         if (result2 is error){
