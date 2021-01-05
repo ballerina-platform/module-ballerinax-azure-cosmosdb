@@ -385,9 +385,9 @@ function test_getAllContainers(){
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentListWithRequestOptions", 
         "test_getCollection_Resource_Token",
-        "test_getAllContainers",
-        "test_replaceOfferWithOptionalParameter",
-        "test_replaceOffer"
+        "test_getAllContainers"
+        //"test_replaceOfferWithOptionalParameter",
+        //"test_replaceOffer"
     ]
 }
 function test_deleteContainer(){
@@ -1298,7 +1298,8 @@ function test_getOffer(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOffer(){
     log:print("ACTION : replaceOffer()");
@@ -1332,7 +1333,8 @@ function test_replaceOffer(){
 }
 
 @test:Config{
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOfferWithOptionalParameter(){
     log:print("ACTION : replaceOfferWithOptionalParameter()");
