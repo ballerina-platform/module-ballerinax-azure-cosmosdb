@@ -73,8 +73,8 @@ public function main() {
         query: string `SELECT * FROM ${container1.id.toString()} f WHERE f.Address.City = 'Seattle'`,
         parameters: []
     };
-    var resultStream = AzureCosmosClient->queryDocuments(database1.id, container1.id, [1234], sqlQuery);
-    error? e = result.forEach(function (json document){
+    var resultStream = azureCosmosClient->queryDocuments(database1.id, container1.id, [1234], sqlQuery);
+    error? e = resultStream.forEach(function (json document){
                     log:printInfo(document);
                 });    
 

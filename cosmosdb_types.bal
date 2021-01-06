@@ -296,7 +296,7 @@ public type Query record {|
 # + value - Value of the parameter.
 public type QueryParameter record {|
     string name = "";
-    string value = "";
+    string|int|boolean value = "";
 |};
 
 # Represnent the paramaters related to query.
@@ -339,6 +339,7 @@ public type DocumentListOptions record {|
 |};
 
 # Represnent the paramaters related to query. for all
+# 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
 # + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
 public type ResourceReadOptions record {|

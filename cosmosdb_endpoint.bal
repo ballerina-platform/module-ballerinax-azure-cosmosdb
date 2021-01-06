@@ -36,11 +36,11 @@ public  client class Client {
         self.azureCosmosClient = new (self.baseUrl);
     }
 
-    # Create a database inside a resource.
+    # Create a database inside an Azure Cosmos DB account.
     # 
-    # + databaseId - ID for the database.
+    # + databaseId - ID of the new database. Must be unique.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Database. Else returns error.  
+    # + return - If successful, returns cosmosdb:Database. Else returns error.  
     remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns 
                             @tainted Database | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
@@ -58,11 +58,11 @@ public  client class Client {
         return mapJsonToDatabaseType(jsonResponse);   
     }
 
-    # Create a database inside a resource.
+    # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist.
     # 
-    # + databaseId - ID for the database.
+    # + databaseId - ID of the new database.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Database. Else returns error.  
+    # + return - If successful, returns cosmosdb:Database. Else returns error.  
     remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) 
                             returns @tainted Database? | error {
         var result = self->getDatabase(databaseId);
@@ -77,21 +77,21 @@ public  client class Client {
         return ();  
     }
 
-    # Retrive a given database inside a resource.
+    # Retrive a given database inside an Azure Cosmos DB account.
     # 
-    # + databaseId - ID of the database. 
-    # + requestOptions - Optional. An instance of type ResourceReadOptions.
-    # + return - If successful, returns Database. Else returns error.  
+    # + databaseId - ID of the database to retrieve. 
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + return - If successful, returns cosmosdb:Database. Else returns error.  
     remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted Database | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToDatabaseType(jsonResponse);  
     }
 
-    # List all databases inside a resource.
+    # List all databases inside an Azure Cosmos DB account.
     # 
-    # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + return - If successful, returns stream<Database>. else returns error. 
+    # + maxItemCount - Optional. Maximum number of Databases in the stream.
+    # + return - If successful, returns stream<cosmosdb:Database>. else returns error. 
     remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database> | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         http:Request request = new;
@@ -106,24 +106,24 @@ public  client class Client {
         return databaseStream;
     }
 
-    # Delete a given database inside a resource.
+    # Delete a given database inside an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to delete.
-    # + requestOptions - Optional. An instance of type ResourceDeleteOptions.
+    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         return self.deleteRecord(requestPath, requestOptions);
     }
 
-    # Create a collection inside a database.
+    # Create a container inside a database.
     # 
-    # + databaseId - ID of the database which container is created.
-    # + containerId - ID of the container.
-    # + partitionKey - Object of type PartitionKey.
-    # + indexingPolicy - Optional. Object of type IndexingPolicy.
+    # + databaseId - ID of the database the container belongs to.
+    # + containerId - ID of the new container container.
+    # + partitionKey - A cosmosdb:PartitionKey.
+    # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Container. Else returns error.  
+    # + return - If successful, returns cosmosdb:Container. Else returns error.  
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
                             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) 
                             returns @tainted Container | error {
@@ -149,12 +149,12 @@ public  client class Client {
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # Create a database inside a resource.
+    # Create a container inside a database only if the specified container ID does not exist.
     # 
-    # + databaseId - ID of the database which container is created.
-    # + containerId - ID of the container.    
-    # + partitionKey - Object of type PartitionKey.
-    # + indexingPolicy - Optional. Object of type IndexingPolicy.
+    # + databaseId - ID of the database the container belongs to.
+    # + containerId - ID of the new container.    
+    # + partitionKey - A cosmosdb:PartitionKey.
+    # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Database. Else returns error.  
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
@@ -172,23 +172,23 @@ public  client class Client {
         return ();
     }
 
-    # Retrive one collection inside a database.
+    # Retrive a container inside a database.
     # 
-    # + databaseId - ID of the database which container is created.
-    # + containerId - ID of the container.  
-    # + requestOptions - Optional. An instance of type ResourceReadOptions.  
-    # + return - If successful, returns Container. Else returns error.  
+    # + databaseId - ID of the database which container belongs to.
+    # + containerId - ID of the container to retrive.  
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + return - If successful, returns cosmosdb:Container. Else returns error.  
     remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) returns @tainted Container | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToContainerType(jsonResponse);
     }
     
-    # List all collections inside a database
+    # List all containers inside a database
     # 
-    # + databaseId - ID of the database where the collections are in.
-    # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + return - If successful, returns stream<Container>. Else returns error.  
+    # + databaseId - ID of the database where the containers belong to.
+    # + maxItemCount - Optional. Maximum number of cosmosdb:Container to obtain.
+    # + return - If successful, returns stream<cosmosdb:Container>. Else returns error.  
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container> | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         http:Request request = new;
@@ -203,22 +203,22 @@ public  client class Client {
         return containerStream;
     }
 
-    # Delete one collection inside a database.
+    # Delete one container inside a database.
     # 
-    # + databaseId - ID of the database which container is created.
-    # + containerId - ID of the container.
-    # + requestOptions - Optional. An instance of type ResourceDeleteOptions.  
+    # + databaseId - ID of the database which container belongs to.
+    # + containerId - ID of the container to delete.
+    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) returns @tainted json | error {
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         return self.deleteRecord(requestPath, requestOptions);
     }
 
-    # Retrieve a list of partition key ranges for the collection.
+    # Retrieve a list of partition key ranges for the container.
     # 
-    # + databaseId - ID of the database which container is created.
+    # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container.    
-    # + return - If successful, returns PartitionKeyList. Else returns error.  
+    # + return - If successful, returns stream<cosmosdb:PartitionKeyRange>. Else returns error.  
     remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted stream<PartitionKeyRange> | error {
         http:Request request = new;
         string requestPath =  prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -231,12 +231,12 @@ public  client class Client {
         return partitionKeyStream;
     }
 
-    # Create a Document inside a collection.
+    # Create a Document inside a container.
     # 
-    # + databaseId - ID of the database which container is created.
-    # + containerId - ID of the container which document is created.
-    # + document - Object of type Document. 
-    # + requestOptions - Object of type DocumentCreateOptions.
+    # + databaseId - ID of the database which container belongs to.
+    # + containerId - ID of the container which document belongs to.
+    # + document - A cosmosdb:Document. 
+    # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
     remote function createDocument(string databaseId, string containerId, Document document, 
                             DocumentCreateOptions? requestOptions = ()) returns @tainted Document | error {
