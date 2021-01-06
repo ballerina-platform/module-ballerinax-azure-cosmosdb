@@ -263,16 +263,16 @@ public  client class Client {
     # + document - Object of type Document. 
     # + requestOptions - Optional. Object of type DocumentCreateOptions.
     # + return - If successful, returns a Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
+    remote function replaceDocument(string databaseId, string containerId, string documentId, @tainted Document document, 
                             DocumentCreateOptions? requestOptions = ()) returns @tainted Document | error {         
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                RESOURCE_TYPE_DOCUMENTS, document.id]);
+                                RESOURCE_TYPE_DOCUMENTS, documentId]);
         http:Request request = check createRequest(requestOptions);
         request = check setPartitionKeyHeader(request, document?.partitionKey);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
   
         json jsonPayload = {
-            id: document.id
+            id: document.id 
         };  
         jsonPayload = check jsonPayload.mergeJson(document.documentBody); 
         request.setJsonPayload(<@untainted>jsonPayload);
@@ -359,9 +359,9 @@ public  client class Client {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Object of type ResourceQueryOptions.
     # + return - If successful, returns a stream<Document>. Else returns error. 
-    remote function queryDocuments(string databaseId, string containerId, any[] partitionKey, Query sqlQuery, 
-                            int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) returns 
-                            @tainted stream<Document> | error {
+    remote function queryDocuments(string databaseId, string containerId, Query sqlQuery, 
+                            int? maxItemCount = (), any[]? partitionKey = (), ResourceQueryOptions? requestOptions = ()) 
+                            returns @tainted stream<Document> | error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                 RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);

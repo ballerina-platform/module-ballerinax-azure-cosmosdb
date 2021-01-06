@@ -673,8 +673,7 @@ function test_queryDocuments(){
         query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`, 
         parameters: []
     };
-    
-    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery);   
+    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, sqlQuery, 10, [1234]);   
     if (result is stream<Document>){
         var doc = result.next();
         io:println(doc);    
@@ -702,7 +701,7 @@ function test_queryDocumentsWithRequestOptions(){
         enableCrossPartition: true
     };
 
-    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, partitionKey, sqlQuery, 10, options);   
+    var result = AzureCosmosClient->queryDocuments(databaseId, containerId, sqlQuery, 10, (), options);   
     if (result is error){
         test:assertFail(msg = result.message());
     } else {
