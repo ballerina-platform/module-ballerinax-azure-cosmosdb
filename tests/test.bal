@@ -360,8 +360,8 @@ function test_getAllContainers(){
 
     var result = AzureCosmosClient->listContainers(database.id);
     if (result is stream<Container>){
-        var database = result.next();
-        io:println(database?.value);
+        var container = result.next();
+        io:println(container?.value);
     } else {
         test:assertFail(msg = result.message());
     }
