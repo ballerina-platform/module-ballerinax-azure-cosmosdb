@@ -609,7 +609,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
 
 # Create a random UUID removing the unnessary hyphens which will interrupt querying opearations.
 # 
-# + return - UUID withoout hyphens
+# + return - A string UUID withoout hyphens
 public function createRandomUUIDBallerina() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string){
@@ -620,7 +620,7 @@ public function createRandomUUIDBallerina() returns string {
     }
 }
 
-public function createRandomUUID() returns handle = @java:Method {
+function createRandomUUID() returns handle = @java:Method {
     name : "randomUUID", 
     'class : "java.util.UUID"
 } external;

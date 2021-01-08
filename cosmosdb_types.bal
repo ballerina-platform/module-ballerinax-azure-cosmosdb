@@ -104,7 +104,7 @@ public type Container record {|
     ResponseMetadata?...;
 |};
 
-# Represents the elements representing information about a document.
+# Represent the parameters representing information about a document in Cosmos DB.
 # 
 # + id - User generated unique ID for the document. 
 # + documentBody - BSON document.
@@ -119,7 +119,7 @@ public type Document record {|
     ResponseMetadata?...;
 |};
 
-# Represents the elements representing information about a document.
+# Represent the parameters necessary to create an indexing policy when creating a container.
 # 
 # + indexingMode - Mode of indexing.
 # + automatic - Whether indexing is automatic.
@@ -132,7 +132,7 @@ public type IndexingPolicy record {|
     IncludedPath[] excludedPaths?;
 |};
 
-# Represent the structure of included path type.
+# Represent the necessary parameters of included path type.
 # 
 # + path - Path for which the indexing behavior applies to.
 # + indexes - Array of type Index representing index values.
@@ -141,14 +141,14 @@ public type IncludedPath record {|
     Index[] indexes?;
 |};
 
-# Represent the structure of excluded path type.
+# Represent the necessary parameters of excluded path type.
 # 
 # + path - Path that is excluded from indexing. 
 public type ExcludedPath record {|
     string path?;
 |};
 
-# Represent the record type with elements represent an index. 
+# Represent the record type with necessary parameters to represent an index. 
 # 
 # + kind - Type of index. Can be "Hash", "Range" or "Spatial"
 # + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
@@ -161,7 +161,7 @@ public type Index record {|
     int precision?;
 |};
 
-# Represent the record type with elements represent a partition key.
+# Represent the record type with necessary parameters to represent a partition key.
 # 
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
 #               single value.
@@ -173,11 +173,11 @@ public type PartitionKey record {|
     int keyVersion = 1;
 |};
 
-# Reprsnets the record type with necessary paramaters to create partition key range.
+# Reprsent the record type with necessary paramaters to create partition key range.
 # 
 # + id - ID for the partition key range.
-# + minInclusive - Maximum partition key hash value for the partition key range. 
-# + maxExclusive - Minimum partition key hash value for the partition key range. 
+# + minInclusive - Minimum partition key hash value for the partition key range. 
+# + maxExclusive - Maximum partition key hash value for the partition key range. 
 # + status - 
 public type PartitionKeyRange record {|
     string id = "";
@@ -188,7 +188,7 @@ public type PartitionKeyRange record {|
     ResponseMetadata?...;
 |};
 
-# Represent the record type with elements represent a stored procedure.
+# Represent the record type with necessary parameters to represent a stored procedure.
 # 
 # + id - User generated unique ID for the stored procedure. 
 # + body - Body of the stored procedure.
@@ -206,7 +206,7 @@ public type UserDefinedFunction record {|
     ResponseMetadata?...;
 |};
 
-# Represent the record type with elements represent a trigger.
+# Represent the record type with necessary parameters to represent a trigger.
 # 
 # + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
 # + triggerType - When the trigger is fired, "Pre" or "Post".
@@ -217,7 +217,7 @@ public type Trigger record {|
     ResponseMetadata?...;
 |};
 
-# Represent the record type with elements represent a user.
+# Represent the record type with necessary parameters to represent a user.
 # 
 # + id - User generated unique ID for the user. 
 # + permissions - Addressable path of the permissions resource.
@@ -228,7 +228,7 @@ public type User record {|
     ResponseMetadata?...;
 |};
 
-# Represent the record type with elements represent a permission.
+# Represent the record type with necessary parameters to represent a permission.
 # 
 # + id - User generated unique ID for the permission.
 # + permissionMode - Access mode for the resource, "All" or "Read".
@@ -245,7 +245,7 @@ public type Permission record {|
     ResponseMetadata?...;
 |};
 
-# Represent the record type with elements represent an offer.
+# Represent the record type with necessary parameters to represent an offer.
 # 
 # + id - User generated unique ID for the offer.
 # + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined throughput levels.
@@ -290,7 +290,7 @@ public type Query record {|
     QueryParameter[]? parameters = [];
 |};
 
-# Represnent the paramaters related to query.
+# Represents the paramaters related to query.
 # 
 # + name - Name of the parameter.
 # + value - Value of the parameter.
@@ -299,7 +299,7 @@ public type QueryParameter record {|
     string|int|boolean value = "";
 |};
 
-# Represnent the paramaters related to query.
+# Represent the optional parameters which can be passed to the function when creating a document.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
 # + isUpsertRequest - A boolean value which specify if the request is an upsert request.
@@ -312,7 +312,7 @@ public type DocumentCreateOptions record {|
     string? ifMatchEtag = ();
 |};
 
-# Represnent the paramaters related to query.
+# Represent the optional parameters which can be passed to the function when reading the information about a document.
 # 
 # + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
@@ -323,7 +323,7 @@ public type DocumentGetOptions record {|
     string? ifNoneMatchEtag = ();
 |};
 
-# Represnent the paramaters related to query.
+# Represent the optional parameters which can be passed to the function when listing information about the documents.
 # 
 # + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
@@ -338,7 +338,8 @@ public type DocumentListOptions record {|
     string? partitionKeyRangeId = ();
 |};
 
-# Represnent the paramaters related to query. for all
+# Represent the optional parameters which can be passed to the function when reading the information about other resources 
+# in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions etc.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
 # + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
@@ -347,7 +348,7 @@ public type ResourceReadOptions record {|
     string? ifNoneMatchEtag = ();
 |};
 
-# Represnent the paramaters related to query. for all
+# Represent the optional parameters which can be passed to the function when querying containers.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
 # + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
@@ -356,7 +357,8 @@ public type ResourceQueryOptions record {|
     boolean? enableCrossPartition = ();
 |};
 
-# Represnent the paramaters related to query. for all
+# Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
+# 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
 # + ifMatchEtag - Used to make operation conditional for optimistic concurrency. 
 public type ResourceDeleteOptions record {|
