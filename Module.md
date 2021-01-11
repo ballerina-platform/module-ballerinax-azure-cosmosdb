@@ -2,10 +2,10 @@ The Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from
 
 ## Compatibility
 
-|                       |      Version       |
-| :-------------------: | :----------------: |
-|  Ballerina Language   | Swan Lake Preview8 |
-| Cosmos DB API Version |     2018-12-31     |
+|                           |    Version                  |
+|:-------------------------:|:---------------------------:|
+| Ballerina Language        | Swan-Lake-Preview8          |
+| Cosmos DB API Version     | 2018-12-31                  |
 
 ## CosmosDB Clients
 
