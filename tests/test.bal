@@ -14,7 +14,6 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/io;
 import ballerina/test;
 import ballerina/config;
 import ballerina/system;
@@ -56,7 +55,6 @@ function test_createDatabase(){
         test:assertFail(msg = result.message());
     } else {
         database = <@untainted>result;
-        io:println(result);
     }
 }
 
@@ -73,7 +71,6 @@ function test_createDatabaseUsingInvalidId(){
         test:assertFail(msg = "Database created with  '' id value");
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -92,7 +89,6 @@ function test_createDatabaseIfNotExist(){
         test:assertFail(msg = result.message());
     } else {
         ifexist = <@untainted><Database> result;
-        io:println(result);
     }
 }
 
@@ -111,7 +107,6 @@ function test_createDatabaseIfExist(){
         test:assertFail(msg = "Database with non unique id is created");
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -131,7 +126,6 @@ function test_createDatabaseWithManualThroughput(){
         test:assertFail(msg = result.message());
     } else {
         manual = <@untainted>result;
-        io:println(result);
     }
 }
 
@@ -150,7 +144,6 @@ function test_createDatabaseWithInvalidManualThroughput(){
         test:assertFail(msg = "Database created without validating user input");
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -170,7 +163,6 @@ function test_createDBWithAutoscalingThroughput(){
         test:assertFail(msg = result.message());
     } else {
         auto = <@untainted> result;
-        io:println(result);
     }
 }
 
@@ -183,7 +175,6 @@ function test_listAllDatabases(){
     var result = AzureCosmosClient->listDatabases(6);
     if (result is stream<Database>){
         var database = result.next();
-        io:println(database?.value);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -201,7 +192,6 @@ function test_listOneDatabase(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -242,7 +232,6 @@ function test_deleteDatabase(){
         test:assertFail(msg = result1.message());
     } else {
         var output = "";
-        io:println(result1);
     }
 }
 
@@ -263,7 +252,6 @@ function test_createContainer(){
     var result = AzureCosmosClient->createContainer(databaseId, containerId, pk);
     if (result is Container){
         container = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     } 
@@ -301,7 +289,6 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy(){
     var result = AzureCosmosClient->createContainer(databaseId, containerId, pk, ip, throughput);
     if (result is Container){
         var output = "";
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     } 
@@ -326,7 +313,6 @@ function test_createContainerIfNotExist(){
     var result = AzureCosmosClient->createContainerIfNotExist(databaseId, containerId, pk);
     if (result is Container?){
         var output = "";
-        io:println(result);    
     } else {
         test:assertFail(msg = result.message());
     }
@@ -347,7 +333,6 @@ function test_getOneContainer(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -361,7 +346,6 @@ function test_getAllContainers(){
     var result = AzureCosmosClient->listContainers(database.id);
     if (result is stream<Container>){
         var container = result.next();
-        io:println(container?.value);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -401,7 +385,6 @@ function test_deleteContainer(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -418,7 +401,6 @@ function test_GetPartitionKeyRanges(){
     var result = AzureCosmosClient->listPartitionKeyRanges(databaseId, containerId);
     if (result is stream<PartitionKeyRange>){
         var partitionKeyRanges = result.next();
-        io:println(partitionKeyRanges?.value);
     } else {
         test:assertFail(msg = result.message());
     }  
@@ -475,7 +457,6 @@ function test_createDocument(){
     var result = AzureCosmosClient->createDocument(databaseId, containerId,  createDoc);
     if (result is Document){
         document = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -536,7 +517,6 @@ function test_createDocumentWithRequestOptions(){
     var result = AzureCosmosClient->createDocument(databaseId, containerId,  createDoc,  options);
     if (result is Document){
         document = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -557,7 +537,6 @@ function test_getDocumentList(){
         test:assertFail(msg = result.message());
     } else {
        var singleDocument = result.next();
-        io:println(singleDocument?.value);
     }
 }
 
@@ -573,7 +552,6 @@ function test_getDocumentListWithRequestOptions(){
 
     DocumentListOptions options = {
         consistancyLevel : "Eventual", 
-       // changeFeedOption : "Incremental feed", 
         sessionToken: "tag", 
         ifNoneMatchEtag: "hhh", 
         partitionKeyRangeId:"0"
@@ -583,7 +561,6 @@ function test_getDocumentListWithRequestOptions(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -602,7 +579,6 @@ function test_GetOneDocument(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }  
 }
 
@@ -630,7 +606,6 @@ function test_GetOneDocumentWithRequestOptions(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }  
 }
 
@@ -655,7 +630,6 @@ function test_deleteDocument(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }  
 }
 
@@ -676,7 +650,6 @@ function test_queryDocuments(){
     var result = AzureCosmosClient->queryDocuments(databaseId, containerId, sqlQuery, 10, [1234]);   
     if (result is stream<Document>){
         var document = result.next();
-        io:println(document);    
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -707,7 +680,6 @@ function test_queryDocumentsWithRequestOptions(){
     } else {
         var output = "";
         var document = result.next();
-        io:println(document);
     }   
 }
 
@@ -730,7 +702,6 @@ function test_createStoredProcedure(){
     var result = AzureCosmosClient->createStoredProcedure(databaseId, containerId, sp);  
     if (result is StoredProcedure){
         storedPrcedure = <@untainted> result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -756,7 +727,6 @@ function test_replaceStoredProcedure(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }   
 }
 
@@ -776,7 +746,6 @@ function test_getAllStoredProcedures(){
     } else {
         var output = "";
         var storedProcedure = result.next();
-        io:println(storedProcedure);    
     }  
 }
 
@@ -797,7 +766,6 @@ function test_executeOneStoredProcedure(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }        
 }
 
@@ -817,7 +785,6 @@ function test_deleteOneStoredProcedure(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }   
 }
 
@@ -841,7 +808,6 @@ function test_createUDF(){
     var result = AzureCosmosClient->createUserDefinedFunction(databaseId, containerId, createUdf);  
     if (result is UserDefinedFunction){
         udf = <@untainted> result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -867,7 +833,6 @@ function test_replaceUDF(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }   
 }
 
@@ -887,7 +852,6 @@ function test_listAllUDF(){
     } else {
         var output = "";
         var userDefinedFunction = result.next();
-        io:println(userDefinedFunction);    
     }  
 }
 
@@ -907,7 +871,6 @@ function test_deleteUDF(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -935,7 +898,6 @@ function test_createTrigger(){
     var result = AzureCosmosClient->createTrigger(databaseId, containerId, createTrigger);  
     if (result is Trigger){
         trigger = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -965,7 +927,6 @@ function test_replaceTrigger(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }   
 }
 
@@ -985,7 +946,6 @@ function test_listTriggers(){
     } else {
         var output = "";
         var doc = result.next();
-        io:println(doc);
     } 
 }
 
@@ -1005,7 +965,6 @@ function test_deleteTrigger(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     } 
 }
 
@@ -1023,7 +982,6 @@ function test_createUser(){
     var result = AzureCosmosClient->createUser(databaseId, userId);  
     if (result is User){
         test_user = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -1046,7 +1004,6 @@ function test_replaceUserId(){
         test:assertFail(msg = result.message());
     } else {
         test_user = <@untainted>result;
-        io:println(result);
     }  
 }
 
@@ -1066,7 +1023,6 @@ function test_getUser(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }  
 }
 
@@ -1085,7 +1041,6 @@ function test_listUsers(){
     } else {
         var output = "";
         var doc = result.next();
-        io:println(doc);    
     } 
 }
 
@@ -1109,7 +1064,6 @@ function test_deleteUser(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     } 
 }
 
@@ -1135,7 +1089,6 @@ function test_createPermission(){
     var result = AzureCosmosClient->createPermission(databaseId, permissionUserId, createPermission);  
     if (result is Permission){
         permission = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -1164,7 +1117,6 @@ function test_createPermissionWithTTL(){
     var result = AzureCosmosClient->createPermission(databaseId, permissionUserId, createPermission, validityPeriod);  
     if (result is Permission){
         permission = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -1193,7 +1145,6 @@ function test_replacePermission(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }  
 }
 
@@ -1213,7 +1164,6 @@ function test_listPermissions(){
     } else {
         var output = "";
         var permission = result.next();
-        io:println(permission);     
     } 
 }
 
@@ -1233,7 +1183,6 @@ function test_getPermission(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     }
 }
 
@@ -1253,7 +1202,6 @@ function test_deletePermission(){
         test:assertFail(msg = result.message());
     } else {
         var output = "";
-        io:println(result);
     } 
 }
 
@@ -1267,7 +1215,6 @@ function test_listOffers(){
     var result = AzureCosmosClient->listOffers(10);  
     if (result is stream<Offer>){
         var offer = result.next();
-        io:println(offer);    
     } else {
         test:assertFail(msg = result.message());
     }   
@@ -1290,7 +1237,6 @@ function test_getOffer(){
             test:assertFail(msg = result2.message());
         } else {
             var output = "";
-            io:println(result2);
         }  
     }  
 
@@ -1326,7 +1272,6 @@ function test_replaceOffer(){
             test:assertFail(msg = result2.message());
         } else {
             var output = "";
-            io:println(result2);
         }  
     }  
 }
@@ -1358,7 +1303,6 @@ function test_replaceOfferWithOptionalParameter(){
             test:assertFail(msg = result2.message());
         } else {
             var output = "";
-            io:println(result2);
         }  
     }  
 }
@@ -1377,7 +1321,6 @@ function test_queryOffer(){
     var result = AzureCosmosClient->queryOffer(offerQuery, 20);   
     if (result is stream<Offer>){
         var offer = result.next();
-        io:println(offer);    
     } else {
         test:assertFail(msg = result.message());
     }     
@@ -1415,7 +1358,6 @@ function test_getCollection_Resource_Token(){
                 test:assertFail(msg = resultdb.message());
             } else {
                 var output = "";
-                io:println(result);
             }
         }
     }
