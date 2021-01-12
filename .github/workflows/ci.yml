@@ -1,0 +1,21 @@
+name: CI
+
+on: [push]
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Ballerina Build
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
+              with:
+                  args:
+                      build -c
+              env:
+                  BASE_URL: ${{ secrets.BASE_URL }}
+                  KEY_OR_RESOURCE_TOKEN: ${{ secrets.KEY_OR_RESOURCE_TOKEN }}
+                  TOKEN_TYPE: ${{ secrets.TOKEN_TYPE }}
+                  TOKEN_VERSION: ${{ secrets.TOKEN_VERSION }}

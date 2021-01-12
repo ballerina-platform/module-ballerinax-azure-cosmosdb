@@ -20,6 +20,9 @@ public const string TOKEN_TYPE_MASTER = "master";
 # Represents Token type for a resource token
 public const string TOKEN_TYPE_RESOURCE = "resource";
 
+# Calls the service API V1
+public const string SERVICE_VERSION_V1 = "1.0";
+
 # Whether to include indexing directive
 public const string INDEXING_TYPE_INCLUDE = "Include";
 
@@ -87,16 +90,16 @@ const string PATCH = "PATCH";
 const string DELETE = "DELETE";
 
 // Resources
-const string RESOURCE_PATH_DATABASES = "dbs";
-const string RESOURCE_PATH_COLLECTIONS = "colls";
-const string RESOURCE_PATH_DOCUMENTS = "docs";
-const string RESOURCE_PATH_STORED_POCEDURES = "sprocs";
-const string RESOURCE_PATH_PK_RANGES = "pkranges";
-const string RESOURCE_PATH_UDF = "udfs";
-const string RESOURCE_PATH_TRIGGER = "triggers";
-const string RESOURCE_PATH_USER = "users";
-const string RESOURCE_PATH_PERMISSION = "permissions";
-const string RESOURCE_PATH_OFFER = "offers";
+const string RESOURCE_TYPE_DATABASES = "dbs";
+const string RESOURCE_TYPE_COLLECTIONS = "colls";
+const string RESOURCE_TYPE_DOCUMENTS = "docs";
+const string RESOURCE_TYPE_STORED_POCEDURES = "sprocs";
+const string RESOURCE_TYPE_PK_RANGES = "pkranges";
+const string RESOURCE_TYPE_UDF = "udfs";
+const string RESOURCE_TYPE_TRIGGER = "triggers";
+const string RESOURCE_TYPE_USER = "users";
+const string RESOURCE_TYPE_PERMISSION = "permissions";
+const string RESOURCE_TYPE_OFFERS = "offers";
 
 // Cosmos DB SQL API version
 const string API_VERSION = "2018-12-31";
@@ -144,7 +147,7 @@ const string JSON_KEY_OFFER_VERSION = "offerVersion";
 const string JSON_KEY_CONTENT = "content";
 
 // Property in record type representing headers
-const string RESPONSE_HEADERS = "reponseHeaders";
+const string RESPONSE_HEADERS = "reponseMetadata";
 
 // Elements in an error response
 const string ACTIVITY_ID = "ActivityId";
@@ -160,7 +163,7 @@ const int MAX_TIME_TO_LIVE = 18000;
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";
 const string OFFER_VERSION_1 = "V1";
-const FORWARD_SLASH = "/";
+const string FORWARD_SLASH = "/";
 const string EMPTY_STRING = "";
 const string NEW_LINE = "\n";
 const string HTTPS_REGEX = "^(https)://";

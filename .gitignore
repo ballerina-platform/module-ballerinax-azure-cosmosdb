@@ -29,8 +29,7 @@ ballerina.conf
 /target
 
 #json files created inside resources folder
-/src/azure_cosmosdb/resources/*.json
+/modules
 
-#ballerina .lck
-.lck
-
+#resource folder in tests folder
+/tests/resources
