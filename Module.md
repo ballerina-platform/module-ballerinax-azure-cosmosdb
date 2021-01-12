@@ -1,4 +1,6 @@
-The Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from Ballerina and perform various operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`, `User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`.
+The Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from Ballerina and perform various operations
+such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`, 
+`User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`.
 
 ## Compatibility
 
@@ -11,7 +13,7 @@ The Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from
 
 There is only one client provided by Ballerina to interact with CosmosDB.
 
-1. **azure_cosmosdb:Client** - This connects to the running CosmosDB resource and perform different actions
+1. **cosmosdb:Client** - This connects to the running CosmosDB resource and perform different actions
 
    ```ballerina
    cosmosdb:AzureCosmosConfiguration azureConfig = {
@@ -49,12 +51,17 @@ public function main() {
         kind :"Hash",
         'version: 2
     };
-    cosmosdb:Container container1 = azureCosmosClient->createContainer(database1.id, "mycontainer", partitionKey);
+    cosmosdb:Container container1 = azureCosmosClient->createContainer(database1.id, "mycontainer", 
+                                    partitionKey);
 
-    cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", "AccountNumber": 1234 }, partitionKey : [1234] };
-    cosmosdb:Document document2 = { id: "documentid2", documentBody :{ "LastName": "West", "AccountNumber": 7805 }, partitionKey : [7805] };
-    cosmosdb:Document document3 = { id: "documentid3", documentBody :{ "LastName": "Moore", "AccountNumber": 5678 }, partitionKey : [5678] };
-    cosmosdb:Document document4 = { id: "documentid4", documentBody :{ "LastName": "Hope", "AccountNumber": 2343 }, partitionKey : [2343] };
+    cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", 
+                                    "AccountNumber": 1234 }, partitionKey : [1234] };
+    cosmosdb:Document document2 = { id: "documentid2", documentBody :{ "LastName": "West", 
+                                    "AccountNumber": 7805 }, partitionKey : [7805] };
+    cosmosdb:Document document3 = { id: "documentid3", documentBody :{ "LastName": "Moore", 
+                                    "AccountNumber": 5678 }, partitionKey : [5678] };
+    cosmosdb:Document document4 = { id: "documentid4", documentBody :{ "LastName": "Hope", 
+                                    "AccountNumber": 2343 }, partitionKey : [2343] };
 
     log:printInfo("------------------ Inserting Documents -------------------");
     var output1 = azureCosmosClient->createDocument(database1.id, container1.id, document1);
@@ -66,7 +73,8 @@ public function main() {
     stream<Document> documentList = azureCosmosClient->getDocumentList(database1.id, container1.id)
 
     log:printInfo("------------------ Get One Document -------------------");
-    cosmosdb:Document document = azureCosmosClient->getDocument(database1.id, container1.id, document1.id, [1234])
+    cosmosdb:Document document = azureCosmosClient->getDocument(database1.id, container1.id, document1.id, 
+                                                        [1234])
 
     log:printInfo("------------------ Query Documents -------------------");
     cosmosdb:Query sqlQuery = {
