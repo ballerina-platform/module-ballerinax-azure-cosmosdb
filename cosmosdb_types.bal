@@ -202,7 +202,7 @@ public type StoredProcedure record {|
 public type UserDefinedFunction record {|
     string id = "";
     *Common;
-    string body = "";    
+    string body = "";
     ResponseMetadata?...;
 |};
 
@@ -257,7 +257,7 @@ public type Offer record {|
     string id = "";
     *Common;
     string offerVersion = "";
-    string? offerType?; 
+    string? offerType?;
     json content = {};
     string resourceResourceId = "";
     string resourceSelfLink = "";
