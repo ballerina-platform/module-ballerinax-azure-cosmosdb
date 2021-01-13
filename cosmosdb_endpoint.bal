@@ -17,9 +17,9 @@ import ballerina/http;
 
 # Azure Cosmos DB Client Object.
 # 
-# + azureCosmosClient - the HTTP Client
+# + httpClient - the HTTP Client
 public client class Client {
-    private http:Client azureCosmosClient;
+    private http:Client httpClient;
     private string baseUrl;
     private string keyOrResourceToken;
     private string host;
@@ -32,7 +32,7 @@ public client class Client {
         self.host = getHost(azureConfig.baseUrl);
         self.keyType = azureConfig.tokenType;
         self.tokenVersion = azureConfig.tokenVersion;
-        self.azureCosmosClient = new (self.baseUrl);
+        self.httpClient = new (self.baseUrl);
     }
 
     # Create a database inside an Azure Cosmos DB account.
@@ -51,7 +51,7 @@ public client class Client {
         json jsonPayload = {id: databaseId};
         request.setJsonPayload(jsonPayload);
 
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonResponse);
     }
@@ -101,7 +101,7 @@ public client class Client {
         GET, requestPath);
 
         Database[] newArray = [];
-        stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.azureCosmosClient, 
+        stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, 
         requestPath, request, newArray, maxItemCount);
         return databaseStream;
     }
@@ -146,7 +146,7 @@ public client class Client {
             jsonPayload = check jsonPayload.mergeJson({indexingPolicy: <json>indexingPolicy.cloneWithType(json)});
         }
         request.setJsonPayload(<@untainted>jsonPayload);
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToContainerType(jsonResponse);
     }
@@ -201,7 +201,7 @@ public client class Client {
         GET, requestPath);
 
         Container[] newArray = [];
-        stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.azureCosmosClient, 
+        stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.httpClient, 
         requestPath, request, newArray, maxItemCount);
         return containerStream;
     }
@@ -233,7 +233,7 @@ public client class Client {
 
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
-        azureCosmosClient, requestPath, request, newArray);
+        httpClient, requestPath, request, newArray);
         return partitionKeyStream;
     }
 
@@ -255,7 +255,7 @@ public client class Client {
         json jsonPayload = {id: document.id};
         jsonPayload = check jsonPayload.mergeJson(document.documentBody);
         request.setJsonPayload(jsonPayload);
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -280,7 +280,7 @@ public client class Client {
         json jsonPayload = {id: document.id};
         jsonPayload = check jsonPayload.mergeJson(document.documentBody);
         request.setJsonPayload(<@untainted>jsonPayload);
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -302,7 +302,7 @@ public client class Client {
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
         GET, requestPath);
 
-        var response = self.azureCosmosClient->get(requestPath, request);
+        var response = self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -326,7 +326,7 @@ public client class Client {
         GET, requestPath);
 
         Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.azureCosmosClient, 
+        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, 
         requestPath, request, newArray, maxItemCount);
         return documentStream;
     }
@@ -348,7 +348,7 @@ public client class Client {
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
         DELETE, requestPath);
 
-        var response = self.azureCosmosClient->delete(requestPath, request);
+        var response = self.httpClient->delete(requestPath, request);
         json|boolean booleanResponse = check handleResponse(response);
         if (booleanResponse is boolean) {
             return booleanResponse;
@@ -383,7 +383,7 @@ public client class Client {
         }
         request = check setHeadersForQuery(request);
         Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.azureCosmosClient, 
+        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, 
         requestPath, request, newArray, maxItemCount, (), true);
         return documentStream;
     }
@@ -411,7 +411,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureType(jsonResponse);
     }
@@ -436,7 +436,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureType(jsonResponse);
     }
@@ -461,7 +461,7 @@ public client class Client {
 
         StoredProcedure[] newArray = [];
         stream<StoredProcedure>|error storedProcedureStream = <stream<StoredProcedure>|error>retriveStream(self.
-        azureCosmosClient, requestPath, request, newArray, maxItemCount);
+        httpClient, requestPath, request, newArray, maxItemCount);
         return storedProcedureStream;
     }
 
@@ -495,7 +495,7 @@ public client class Client {
         POST, requestPath);
 
         request.setTextPayload(parameters.toString());
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return jsonResponse;
     }
@@ -522,7 +522,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionType(jsonResponse);
     }
@@ -547,7 +547,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionType(jsonResponse);
     }
@@ -572,7 +572,7 @@ public client class Client {
 
         UserDefinedFunction[] newArray = [];
         stream<UserDefinedFunction>|error userDefinedFunctionStream = <stream<UserDefinedFunction>|error>retriveStream(
-        self.azureCosmosClient, requestPath, request, newArray, maxItemCount);
+        self.httpClient, requestPath, request, newArray, maxItemCount);
         return userDefinedFunctionStream;
     }
 
@@ -612,7 +612,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToTriggerType(jsonResponse);
     }
@@ -637,7 +637,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToTriggerType(jsonResponse);
     }
@@ -661,7 +661,7 @@ public client class Client {
         GET, requestPath);
 
         Trigger[] newArray = [];
-        stream<Trigger>|error triggerStream = <stream<Trigger>|error>retriveStream(self.azureCosmosClient, requestPath, 
+        stream<Trigger>|error triggerStream = <stream<Trigger>|error>retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount);
         return triggerStream;
     }
@@ -693,7 +693,7 @@ public client class Client {
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserType(jsonResponse);
     }
@@ -712,7 +712,7 @@ public client class Client {
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserType(jsonResponse);
     }
@@ -747,7 +747,7 @@ public client class Client {
         GET, requestPath);
 
         User[] newArray = [];
-        stream<User>|error userStream = <stream<User>|error>retriveStream(self.azureCosmosClient, requestPath, request, 
+        stream<User>|error userStream = <stream<User>|error>retriveStream(self.httpClient, requestPath, request, 
         newArray, maxItemCount);
         return userStream;
     }
@@ -788,7 +788,7 @@ public client class Client {
             'resource: permission.resourcePath
         };
         request.setJsonPayload(jsonPayload);
-        var response = self.azureCosmosClient->post(requestPath, request);
+        var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -817,7 +817,7 @@ public client class Client {
             'resource: permission.resourcePath
         };
         request.setJsonPayload(<@untainted>jsonPayload);
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -855,7 +855,7 @@ public client class Client {
         GET, requestPath);
 
         Permission[] newArray = [];
-        stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.azureCosmosClient, 
+        stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.httpClient, 
         requestPath, request, newArray, maxItemCount);
         return permissionStream;
     }
@@ -898,7 +898,7 @@ public client class Client {
             jsonPaylod = check jsonPaylod.mergeJson(selectedType);
         }
         request.setJsonPayload(jsonPaylod);
-        var response = self.azureCosmosClient->put(requestPath, request);
+        var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToOfferType(jsonResponse);
     }
@@ -934,7 +934,7 @@ public client class Client {
         GET, requestPath);
 
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.azureCosmosClient, requestPath, 
+        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount);
         return offerStream;
     }
@@ -955,7 +955,7 @@ public client class Client {
         request.setJsonPayload(<json>sqlQuery.cloneWithType(json));
         request = check setHeadersForQuery(request);
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.azureCosmosClient, requestPath, 
+        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount, (), true);
         return offerStream;
     }
@@ -965,7 +965,7 @@ public client class Client {
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
         GET, requestPath);
 
-        var response = self.azureCosmosClient->get(requestPath, request);
+        var response = self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return jsonResponse;
     }
@@ -976,7 +976,7 @@ public client class Client {
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
         DELETE, requestPath);
 
-        var response = self.azureCosmosClient->delete(requestPath, request);
+        var response = self.httpClient->delete(requestPath, request);
         json|boolean booleanResponse = check handleResponse(response);
         if (booleanResponse is boolean) {
             return booleanResponse;
