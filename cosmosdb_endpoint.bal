@@ -101,8 +101,8 @@ public client class Client {
         GET, requestPath);
 
         Database[] newArray = [];
-        stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount);
+        stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, requestPath, 
+        request, newArray, maxItemCount);
         return databaseStream;
     }
 
@@ -201,8 +201,8 @@ public client class Client {
         GET, requestPath);
 
         Container[] newArray = [];
-        stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount);
+        stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.httpClient, requestPath, 
+        request, newArray, maxItemCount);
         return containerStream;
     }
 
@@ -246,7 +246,8 @@ public client class Client {
     # + return - If successful, returns Document. Else returns error.  
     remote function createDocument(string databaseId, string containerId, Document document, 
     DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, RESOURCE_TYPE_DOCUMENTS]);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
+        RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);
         request = check setPartitionKeyHeader(request, document?.partitionKey);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
@@ -326,8 +327,8 @@ public client class Client {
         GET, requestPath);
 
         Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount);
+        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, requestPath, 
+        request, newArray, maxItemCount);
         return documentStream;
     }
 
@@ -368,8 +369,8 @@ public client class Client {
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, Query sqlQuery, int? maxItemCount = (), 
     any[]? partitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, 
-        RESOURCE_TYPE_COLLECTIONS, containerId, RESOURCE_TYPE_DOCUMENTS]);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
+        RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);
         request = check setPartitionKeyHeader(request, partitionKey);
         request = check setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
@@ -383,8 +384,8 @@ public client class Client {
         }
         request = check setHeadersForQuery(request);
         Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount, (), true);
+        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, requestPath, 
+        request, newArray, maxItemCount, (), true);
         return documentStream;
     }
 
@@ -460,8 +461,8 @@ public client class Client {
         GET, requestPath);
 
         StoredProcedure[] newArray = [];
-        stream<StoredProcedure>|error storedProcedureStream = <stream<StoredProcedure>|error>retriveStream(self.
-        httpClient, requestPath, request, newArray, maxItemCount);
+        stream<StoredProcedure>|error storedProcedureStream = <stream<StoredProcedure>|error>retriveStream(self.httpClient, 
+        requestPath, request, newArray, maxItemCount);
         return storedProcedureStream;
     }
 
@@ -661,8 +662,8 @@ public client class Client {
         GET, requestPath);
 
         Trigger[] newArray = [];
-        stream<Trigger>|error triggerStream = <stream<Trigger>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Trigger>|error triggerStream = <stream<Trigger>|error>retriveStream(self.httpClient, requestPath, request, 
+        newArray, maxItemCount);
         return triggerStream;
     }
 
@@ -831,8 +832,8 @@ public client class Client {
     # + return - If successful, returns a Permission. Else returns error.
     remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ()) 
     returns @tainted Permission|error { 
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, RESOURCE_TYPE_PERMISSION, 
-        permissionId]);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
+        RESOURCE_TYPE_PERMISSION, permissionId]);
         [json, ResponseMetadata] jsonResponse = check self.getRecord(requestPath, requestOptions);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -846,7 +847,8 @@ public client class Client {
     # + return - If successful, returns a stream<Permission>. Else returns error.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
     returns @tainted stream<Permission>|error { 
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, RESOURCE_TYPE_PERMISSION]);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
+        RESOURCE_TYPE_PERMISSION]);
         http:Request request = check createRequest(requestOptions);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
@@ -855,8 +857,8 @@ public client class Client {
         GET, requestPath);
 
         Permission[] newArray = [];
-        stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount);
+        stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.httpClient, requestPath, 
+        request, newArray, maxItemCount);
         return permissionStream;
     }
 
@@ -869,8 +871,8 @@ public client class Client {
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
     returns @tainted boolean|error { 
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, RESOURCE_TYPE_PERMISSION, 
-        permissionId]);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
+        RESOURCE_TYPE_PERMISSION, permissionId]);
         return self.deleteRecord(requestPath, requestOptions);
     }
 
@@ -934,8 +936,8 @@ public client class Client {
         GET, requestPath);
 
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
+        newArray, maxItemCount);
         return offerStream;
     }
 
@@ -955,8 +957,8 @@ public client class Client {
         request.setJsonPayload(<json>sqlQuery.cloneWithType(json));
         request = check setHeadersForQuery(request);
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount, (), true);
+        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
+        newArray, maxItemCount, (), true);
         return offerStream;
     }
 

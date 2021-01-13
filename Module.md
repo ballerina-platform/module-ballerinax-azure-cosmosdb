@@ -55,13 +55,13 @@ public function main() {
                                     partitionKey);
 
     cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", 
-                                    "AccountNumber": 1234 }, partitionKey : [1234] };
+                                                    "AccountNumber": 1234 }, partitionKey : [1234] };
     cosmosdb:Document document2 = { id: "documentid2", documentBody :{ "LastName": "West", 
-                                    "AccountNumber": 7805 }, partitionKey : [7805] };
+                                                    "AccountNumber": 7805 }, partitionKey : [7805] };
     cosmosdb:Document document3 = { id: "documentid3", documentBody :{ "LastName": "Moore", 
-                                    "AccountNumber": 5678 }, partitionKey : [5678] };
+                                                    "AccountNumber": 5678 }, partitionKey : [5678] };
     cosmosdb:Document document4 = { id: "documentid4", documentBody :{ "LastName": "Hope", 
-                                    "AccountNumber": 2343 }, partitionKey : [2343] };
+                                                    "AccountNumber": 2343 }, partitionKey : [2343] };
 
     log:printInfo("------------------ Inserting Documents -------------------");
     var output1 = azureCosmosClient->createDocument(database1.id, container1.id, document1);

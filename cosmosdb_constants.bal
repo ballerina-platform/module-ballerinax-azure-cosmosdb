@@ -80,7 +80,7 @@ const string ETAG_HEADER = "etag";
 
 // Time Zone
 const string GMT_ZONE = "Europe/London";
-const string TIME_ZONE_FORMAT= "EEE, dd MMM yyyy HH:mm:ss z";
+const string TIME_ZONE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
 // HTTP methods
 const string GET = "GET";
@@ -112,7 +112,7 @@ const string MINIMUM_MANUAL_THROUGHPUT_ERROR = "The minimum manual throughput is
 const string SETTING_BOTH_VALUES_ERROR = "Cannot set both throughput and maxThroughput headers at once";
 const string NULL_PARTITIONKEY_VALUE_ERROR = "Partition key values are null";
 const string INDEXING_DIRECTIVE_ERROR = "Indexing directive should be either Exclude or Include";
-const string CONSISTANCY_LEVEL_ERROR = "Consistacy level should be one of Strong, Bounded, Session, or Eventual"; 
+const string CONSISTANCY_LEVEL_ERROR = "Consistacy level should be one of Strong, Bounded, Session, or Eventual";
 const string VALIDITY_PERIOD_ERROR = "Resource token validity period must be between 3600 and 18000";
 const string MASTER_KEY_ERROR = "Enter a valid master key and token type should be master key";
 const string JSON_PAYLOAD_ACCESS_ERROR = "Error occurred while accessing the JSON payload of the response";
@@ -139,7 +139,7 @@ const string JSON_KEY_DOCUMENTS = "Documents";
 const string JSON_KEY_OFFERS = "Offers";
 
 // Fields in record types
-const string JSON_KEY_PERMISSIONMODE = "permissionMode"; 
+const string JSON_KEY_PERMISSIONMODE = "permissionMode";
 const string JSON_KEY_RESOURCE = "resource";
 const string JSON_KEY_OFFER_RESOURCE_ID = "offerResourceId";
 const string JSON_KEY_OFFER_TYPE = "offerType";

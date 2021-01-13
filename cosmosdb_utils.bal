@@ -139,8 +139,7 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 // # + requestPath - Request path of the request.
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, 
-                                      string tokenVersion, string httpVerb, string requestPath) 
-returns http:Request|error {
+string tokenVersion, string httpVerb, string requestPath) returns http:Request|error {
     HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
@@ -170,7 +169,7 @@ returns http:Request|error {
 }
 
 isolated function createRequest((DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
-                                ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
+ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
     http:Request request = new;
     if (requestOptions != ()) {
         request = check setRequestOptions(request, requestOptions);
@@ -226,8 +225,7 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
 // # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|
-                                    ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns 
-http:Request|error {
+ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == 
         INDEXING_TYPE_EXCLUDE) {
@@ -309,8 +307,7 @@ isolated function getTime() returns string?|error {
 // # + date - current GMT date and time
 // # + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-                                               string tokenType, string tokenVersion, string date) 
-returns string?|error {
+string tokenType, string tokenVersion, string date) returns string?|error {
     string authorization;
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
     date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
@@ -434,9 +431,8 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 }
 
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|Database[]|
-                       Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|
-                       PartitionKeyRange[] array, int? maxItemCount = (), string? continuationHeader = (), 
-                       boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<
+Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|PartitionKeyRange[] array, int? maxItemCount = (), 
+string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<
 Container>|stream<StoredProcedure>|stream<UserDefinedFunction>|stream<Trigger>|stream<User>|stream<Permission>|stream<
 PartitionKeyRange>|error {
     if (continuationHeader is string) {
