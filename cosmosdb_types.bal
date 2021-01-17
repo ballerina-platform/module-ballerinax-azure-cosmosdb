@@ -49,12 +49,12 @@ public type Common record {|
 # + date - Date time of the response operation.
 public type ResponseMetadata record {|
     string? continuationHeader?;
-    string? sessionToken = ();
-    string? requestCharge = ();
-    string? resourceUsage = ();
+    string sessionToken?;
+    string requestCharge?;
+    string resourceUsage?;
     //string? itemCountHeader = ();
-    string? etag = ();
-    string? date = ();
+    string etag?;
+    string date?;
 |};
 
 # Represent the record type with options represent for throughput.

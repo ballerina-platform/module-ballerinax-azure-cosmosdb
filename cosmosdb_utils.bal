@@ -377,7 +377,7 @@ isolated function mapResponseHeadersToHeadersObject(http:Response|http:PayloadTy
 ResponseMetadata|error {
     ResponseMetadata responseHeaders = {};
     if (httpResponse is http:Response) {
-        responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
+        responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
         responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
         responseHeaders.requestCharge = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
         responseHeaders.resourceUsage = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
@@ -422,12 +422,12 @@ isolated function convertToInt(json|error value) returns int {
 // # + httpResponse - http:Response returned from an http:RequestheaderName
 // # + headerName - name of the header
 // # + return - int value of specified json
-isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string? {
+isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string {
+    string headerValue = "";
     if (httpResponse.hasHeader(headerName)) {
-        return httpResponse.getHeader(headerName);
-    } else {
-        return ();
-    }
+        headerValue = httpResponse.getHeader(headerName);
+    } 
+    return headerValue;
 }
 
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|Database[]|

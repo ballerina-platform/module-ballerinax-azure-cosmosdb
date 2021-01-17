@@ -158,7 +158,7 @@ public client class Client {
     # + partitionKey - A cosmosdb:PartitionKey.
     # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Database. Else returns error.  
+    # + return - If successful, returns Container if a new container is created or () if container already exists. Else returns error.  
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
     IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
         var result = self->getContainer(databaseId, containerId);
