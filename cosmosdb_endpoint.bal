@@ -261,7 +261,6 @@ public client class Client {
         return mapJsonToDocumentType(jsonResponse);
     }
 
-//write a testcase
     # Replace a document inside a container.
     # 
     # + databaseId - ID of the database which container belongs to.
@@ -270,7 +269,7 @@ public client class Client {
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
     remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
-    DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error {
+    DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
         RESOURCE_TYPE_DOCUMENTS, document.id]);
         http:Request request = check createRequest(requestOptions);

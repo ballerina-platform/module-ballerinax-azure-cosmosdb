@@ -168,7 +168,7 @@ string tokenVersion, string httpVerb, string requestPath) returns http:Request|e
     return request;
 }
 
-isolated function createRequest((DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
+isolated function createRequest((DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
 ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
     http:Request request = new;
     if (requestOptions != ()) {
@@ -224,8 +224,8 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
 // # + request - http:Request to set the header
 // # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|
-ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
+isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
+DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);

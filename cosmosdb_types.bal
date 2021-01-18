@@ -304,11 +304,20 @@ public type QueryParameter record {|
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
 # + isUpsertRequest - A boolean value which specify if the request is an upsert request.
 # + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
-# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. 
 public type DocumentCreateOptions record {|
     string? indexingDirective = ();
     string? sessionToken = ();
     boolean isUpsertRequest = false;
+|};
+
+# Represent the optional parameters which can be passed to the function when replacing a document.
+# 
+# + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
+# + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
+# + ifMatchEtag - Used to make operation conditional for optimistic concurrency.
+public type DocumentReplaceOptions record {|
+    string? indexingDirective = ();
+    string? sessionToken = ();
     string? ifMatchEtag = ();
 |};
 

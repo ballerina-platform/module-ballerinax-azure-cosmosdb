@@ -464,8 +464,7 @@ function test_createDocumentWithRequestOptions() {
     string containerId = container.id;
     DocumentCreateOptions options = {
         isUpsertRequest: true,
-        indexingDirective: "Include",
-        ifMatchEtag: "hhh"
+        indexingDirective: "Include"
     };
     Document createDoc = {
         id: string `document_${uuid.toString()}`,
