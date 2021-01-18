@@ -306,9 +306,9 @@ public type QueryParameter record {|
 # + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
 # + ifMatchEtag - Used to make operation conditional for optimistic concurrency. 
 public type DocumentCreateOptions record {|
-    string? sessionToken = ();
-    boolean? isUpsertRequest = ();
     string? indexingDirective = ();
+    string? sessionToken = ();
+    boolean isUpsertRequest = false;
     string? ifMatchEtag = ();
 |};
 
@@ -354,7 +354,7 @@ public type ResourceReadOptions record {|
 # + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
 public type ResourceQueryOptions record {|
     string? sessionToken = ();
-    boolean? enableCrossPartition = ();
+    boolean enableCrossPartition = false;
 |};
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.

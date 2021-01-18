@@ -227,15 +227,11 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
 isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentGetOptions|DocumentListOptions|
 ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
     if (requestOptions?.indexingDirective != ()) {
-        if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == 
-        INDEXING_TYPE_EXCLUDE) {
-            request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
+        if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
+            request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
         } else {
             return prepareError(INDEXING_DIRECTIVE_ERROR);
         }
-    }
-    if (requestOptions?.isUpsertRequest == true) {
-        request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
     if (requestOptions?.consistancyLevel != ()) {
         if (requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
@@ -263,6 +259,9 @@ ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions)
     }
     if (requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
+    }
+    if (requestOptions?.isUpsertRequest == true) {
+        request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
     return request;
 }
@@ -345,7 +344,7 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
             if (jsonResponse is json) {
                 return jsonResponse;
             } else {
-                return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
+                return prepareError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
             }
         } else if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
             return true;
@@ -361,7 +360,7 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
                 error details = error(errorMessage, status = httpResponse.statusCode);
                 return details;
             } else {
-                return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+                return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR, jsonResponse);
             }
         }
     } else {
