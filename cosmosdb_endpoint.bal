@@ -21,16 +21,16 @@ import ballerina/http;
 public client class Client {
     private http:Client httpClient;
     private string baseUrl;
-    private string keyOrResourceToken;
+    private string masterOrResourceToken;
     private string host;
-    private string keyType;
+    private string tokenType;
     private string tokenVersion;
 
     public function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = azureConfig.baseUrl;
-        self.keyOrResourceToken = azureConfig.keyOrResourceToken;
+        self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.keyType = azureConfig.tokenType;
+        self.tokenType = azureConfig.tokenType;
         self.tokenVersion = azureConfig.tokenVersion;
         self.httpClient = new (self.baseUrl);
     }
@@ -45,7 +45,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         http:Request request = new;
         check setThroughputOrAutopilotHeader(request, throughputOption);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json jsonPayload = {id: databaseId};
         request.setJsonPayload(jsonPayload);
@@ -96,7 +96,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         Database[] newArray = [];
         stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, requestPath, 
@@ -129,7 +129,7 @@ public client class Client {
                                         RESOURCE_TYPE_COLLECTIONS]);
         http:Request request = new;
         check setThroughputOrAutopilotHeader(request, throughputOption);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json jsonPayload = {
             id: containerId,
@@ -194,7 +194,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         Container[] newArray = [];
         stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.httpClient, requestPath, 
@@ -227,7 +227,7 @@ public client class Client {
                                         RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);
         setPartitionKeyHeader(request, document?.partitionKey);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
         POST, requestPath);
 
         json jsonPayload = {id: document.id};
@@ -251,7 +251,7 @@ public client class Client {
                                         RESOURCE_TYPE_DOCUMENTS, document.id]);
         http:Request request = check createRequest(requestOptions);
         setPartitionKeyHeader(request, document?.partitionKey);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
         PUT, requestPath);
 
         json jsonPayload = {id: document.id};
@@ -276,7 +276,7 @@ public client class Client {
                                         RESOURCE_TYPE_DOCUMENTS, documentId]);
         http:Request request = check createRequest(requestOptions);
         setPartitionKeyHeader(request, partitionKey);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         var response = self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -298,7 +298,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, 
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
         GET, requestPath);
 
         Document[] newArray = [];
@@ -321,7 +321,7 @@ public client class Client {
                                         RESOURCE_TYPE_DOCUMENTS, documentId]);
         http:Request request = check createRequest(requestOptions);
         setPartitionKeyHeader(request, partitionKey);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, DELETE, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         var response = self.httpClient->delete(requestPath, request);
         json? deleteResponse = check handleResponse(response);
@@ -347,7 +347,7 @@ public client class Client {
                                         RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);
         setPartitionKeyHeader(request, partitionKey);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json|error payload = sqlQuery.cloneWithType(json);
         if (payload is json) {
@@ -355,7 +355,7 @@ public client class Client {
         } else {
             return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
         }
-        request = check setHeadersForQuery(request);
+        setHeadersForQuery(request);
         Document[] newArray = [];
         stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount, (), true);
@@ -372,7 +372,7 @@ public client class Client {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_PK_RANGES]);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
@@ -394,7 +394,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_STORED_POCEDURES]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json|error payload = storedProcedure.cloneWithType(json);
         if (payload is json) {
@@ -418,7 +418,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json|error payload = storedProcedure.cloneWithType(json);
         if (payload is json) {
@@ -446,7 +446,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         StoredProcedure[] newArray = [];
         stream<StoredProcedure>|error storedProcedureStream = <stream<StoredProcedure>|error>retriveStream(self.httpClient, 
@@ -480,7 +480,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         request.setTextPayload(parameters.toString());
         var response = self.httpClient->post(requestPath, request);
@@ -501,7 +501,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_UDF]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json|error payload = userDefinedFunction.cloneWithType(json);
         if (payload is json) {
@@ -525,7 +525,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_UDF, userDefinedFunction.id]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json|error payload = userDefinedFunction.cloneWithType(json);
         if (payload is json) {
@@ -553,7 +553,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         UserDefinedFunction[] newArray = [];
         stream<UserDefinedFunction>|error userDefinedFunctionStream = <stream<UserDefinedFunction>|error>retriveStream(
@@ -588,7 +588,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_TRIGGER]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json|error payload = trigger.cloneWithType(json);
         if (payload is json) {
@@ -612,7 +612,7 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_TRIGGER, trigger.id]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json|error payload = trigger.cloneWithType(json);
         if (payload is json) {
@@ -640,7 +640,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         Trigger[] newArray = [];
         stream<Trigger>|error triggerStream = <stream<Trigger>|error>retriveStream(self.httpClient, requestPath, request, 
@@ -670,7 +670,7 @@ public client class Client {
     remote function createUser(string databaseId, string userId) returns @tainted User|error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
@@ -688,7 +688,7 @@ public client class Client {
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted User|error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
@@ -723,7 +723,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         User[] newArray = [];
         stream<User>|error userStream = <stream<User>|error>retriveStream(self.httpClient, requestPath, request, 
@@ -758,7 +758,7 @@ public client class Client {
         if (validityPeriod is int) {
             setExpiryHeader(request, validityPeriod);
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json jsonPayload = {
             id: permission.id,
@@ -786,7 +786,7 @@ public client class Client {
         if (validityPeriod is int) {
             setExpiryHeader(request, validityPeriod);
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json jsonPayload = {
             id: permission.id,
@@ -829,7 +829,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         Permission[] newArray = [];
         stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.httpClient, requestPath, 
@@ -859,7 +859,7 @@ public client class Client {
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
         http:Request request = new;
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
@@ -906,7 +906,7 @@ public client class Client {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         Offer[] newArray = [];
         stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
@@ -924,10 +924,10 @@ public client class Client {
                                     returns @tainted stream<Offer>|error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         http:Request request = check createRequest(requestOptions);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, POST, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         request.setJsonPayload(<json>sqlQuery.cloneWithType(json));
-        request = check setHeadersForQuery(request);
+        setHeadersForQuery(request);
         Offer[] newArray = [];
         stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
         newArray, maxItemCount, (), true);
@@ -936,7 +936,7 @@ public client class Client {
 
     function getRecord(string requestPath, ResourceReadOptions? requestOptions = ()) returns @tainted [json, ResponseMetadata]|error { 
         http:Request request = check createRequest(requestOptions);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, GET, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         var response = self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -945,7 +945,7 @@ public client class Client {
 
     function deleteRecord(string requestPath, ResourceDeleteOptions? requestOptions = ()) returns @tainted error? {
         http:Request request = check createRequest(requestOptions);
-        setMandatoryHeaders(request, self.host, self.keyOrResourceToken, self.keyType, self.tokenVersion, DELETE, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         var response = self.httpClient->delete(requestPath, request);
         json? deleteResponse = check handleResponse(response);

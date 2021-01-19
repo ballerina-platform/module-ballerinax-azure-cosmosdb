@@ -17,12 +17,12 @@
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account.
-# + keyOrResourceToken - The token usesd to make the request call.
+# + masterOrResourceToken - The token usesd to make the request call.
 # + tokenType - The type of token usesd to make the request call "master" or "resource". 
 # + tokenVersion - The version of the token.
 public type AzureCosmosConfiguration record {|
     string baseUrl;
-    string keyOrResourceToken;
+    string masterOrResourceToken;
     string tokenType;
     string tokenVersion;
 |};

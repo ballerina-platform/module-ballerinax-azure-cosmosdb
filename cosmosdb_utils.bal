@@ -22,7 +22,7 @@ import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
 import ballerina/java;
 import ballerina/log;
-import ballerina/io;
+
 // # Extract the resource type related to cosmos db from a given url
 // #
 // # + url - the URL from which we want to extract resource type
@@ -216,10 +216,9 @@ isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKe
 // # 
 // # + request - http:Request to set the header
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setHeadersForQuery(http:Request request) returns http:Request|error {
+isolated function setHeadersForQuery(http:Request request) {
     var header = request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, true.toString());
-    return request;
 }
 
 // # Set the optional headers to the HTTP request.
@@ -350,7 +349,7 @@ isolated function mapResponseToTuple(http:Response|http:PayloadType|error httpRe
 // # 
 // # + httpResponse - http:Response or http:ClientError returned from an http:Request
 // # + return - If successful, returns json. Else returns error. 
-isolated function handleResponse(http:Response|http:PayloadType|error httpResponse) returns @tainted json?|error {
+isolated function handleResponse(http:Response|http:PayloadType|error httpResponse) returns @tainted json|error {
     if (httpResponse is http:Response) {
         if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
             json|error jsonResponse = httpResponse.getJsonPayload();
@@ -365,12 +364,12 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
             json|error jsonResponse = httpResponse.getJsonPayload();
             if (jsonResponse is json) {
                 string message = jsonResponse.message.toString();
-                string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase;
-                var stoppingIndex = message.indexOf(ACTIVITY_ID);
-                if (stoppingIndex is int) {
-                    errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
-                }
-                error details = error(errorMessage, status = httpResponse.statusCode);
+                // string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase;
+                // var stoppingIndex = message.indexOf(ACTIVITY_ID);
+                // if (stoppingIndex is int) {
+                //     errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
+                // }
+                error details = error(message, status = httpResponse.statusCode);
                 return details;
             } else {
                 return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR, jsonResponse);

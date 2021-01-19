@@ -21,7 +21,7 @@ import ballerina/log;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
-    keyOrResourceToken: config:getAsString("KEY_OR_RESOURCE_TOKEN"),
+    masterOrResourceToken: config:getAsString("KEY_OR_RESOURCE_TOKEN"),
     tokenType: config:getAsString("TOKEN_TYPE"),
     tokenVersion: config:getAsString("TOKEN_VERSION")
 };
@@ -1385,7 +1385,7 @@ function test_getCollection_Resource_Token() {
         if (result?.token is string) {
             AzureCosmosConfiguration configdb = {
                 baseUrl: getConfigValue("BASE_URL"),
-                keyOrResourceToken: result?.token.toString(),
+                masterOrResourceToken: result?.token.toString(),
                 tokenType: "resource",
                 tokenVersion: getConfigValue("TOKEN_VERSION")
             };
