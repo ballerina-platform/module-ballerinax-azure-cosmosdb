@@ -21,6 +21,7 @@ import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
 import ballerina/java;
+import ballerina/log;
 
 // # Extract the resource type related to cosmos db from a given url
 // #
@@ -139,7 +140,7 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 // # + requestPath - Request path of the request.
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, 
-string tokenVersion, string httpVerb, string requestPath) returns http:Request|error {
+string tokenVersion, string httpVerb, string requestPath) {
     HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
@@ -148,24 +149,26 @@ string tokenVersion, string httpVerb, string requestPath) returns http:Request|e
     string?|error date = getTime();
     if (date is string) {
         request.setHeader(DATE_HEADER, date);
-        string? signature = ();
+        string?|error signature = ();
         if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
-            signature = check generateMasterTokenSignature(params.verb, params.resourceType, params.resourceId, keyToken, 
+            signature = generateMasterTokenSignature(params.verb, params.resourceType, params.resourceId, keyToken, 
             tokenType, tokenVersion, date);
         } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
-            signature = check encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING);
+            signature = encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING);
         } else {
-            return prepareError(NULL_RESOURCE_TYPE_ERROR);
+            //return prepareError(NULL_RESOURCE_TYPE_ERROR);
+            log:printError(NULL_RESOURCE_TYPE_ERROR);
         }
         if (signature is string) {
             request.setHeader(AUTHORIZATION_HEADER, signature);
         } else {
-            return prepareError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
+            //return prepareError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
+            log:printError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
         }
     } else {
-        return prepareError(NULL_DATE_ERROR);
+        //return prepareError(NULL_DATE_ERROR);
+        log:printError(NULL_DATE_ERROR);
     }
-    return request;
 }
 
 isolated function createRequest((DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
@@ -182,18 +185,17 @@ ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Reques
 // # + request - http:Request to set the header
 // # + throughputOption - Optional. Throughput parameter of type int or json.
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) returns 
-http:Request|error {
+isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
         } else {
-            return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            log:printError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            //return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
     } else if (throughputOption != ()) {
         request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
     }
-    return request;
 }
 
 // # Set the optional header related to partitionkey value.
@@ -306,19 +308,23 @@ isolated function getTime() returns string?|error {
 // # + date - current GMT date and time
 // # + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-string tokenType, string tokenVersion, string date) returns string?|error {
-    string authorization;
+string tokenType, string tokenVersion, string date) returns string? {
+    string?|error authorization;
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
     date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
     var decoded = array:fromBase64(keyToken);
     if (decoded is byte[]) {
         byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
         string signature = array:toBase64(digest);
-        authorization = check encoding:encodeUriComponent(
-        string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
-        return authorization;
+        authorization = encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
+        if (authorization is string) {
+            return authorization;
+        } else {
+            log:printError(DECODING_ERROR);
+        }
     } else {
-        return prepareError(DECODING_ERROR);
+        log:printError(DECODING_ERROR);
+        //return prepareError(DECODING_ERROR);
     }
 }
 

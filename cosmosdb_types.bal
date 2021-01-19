@@ -351,7 +351,7 @@ public type DocumentListOptions record {|
 # in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions etc.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
-# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
+# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made since that timestamp or otherwise omitted.
 public type ResourceReadOptions record {|
     string? sessionToken = ();
     string? ifNoneMatchEtag = ();
