@@ -22,7 +22,7 @@ import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
 import ballerina/java;
 import ballerina/log;
-
+import ballerina/io;
 // # Extract the resource type related to cosmos db from a given url
 // #
 // # + url - the URL from which we want to extract resource type
@@ -140,13 +140,13 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 // # + requestPath - Request path of the request.
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, 
-string tokenVersion, string httpVerb, string requestPath) {
+                                string tokenVersion, string httpVerb, string requestPath) {
     HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
     request.setHeader(CONNECTION_HEADER, CONNECTION_KEEP_ALIVE);
-    string?|error date = getTime();
+    string? date = getTime();
     if (date is string) {
         request.setHeader(DATE_HEADER, date);
         string?|error signature = ();
@@ -172,10 +172,10 @@ string tokenVersion, string httpVerb, string requestPath) {
 }
 
 isolated function createRequest((DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
-ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
+                                ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
     http:Request request = new;
     if (requestOptions != ()) {
-        request = check setRequestOptions(request, requestOptions);
+        setRequestOptions(request, requestOptions);
     }
     return request;
 }
@@ -185,16 +185,18 @@ ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Reques
 // # + request - http:Request to set the header
 // # + throughputOption - Optional. Throughput parameter of type int or json.
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) {
+isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) returns error? {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
         } else {
-            log:printError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
-            //return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            //log:printError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
     } else if (throughputOption != ()) {
         request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
+    } else {
+        return ();
     }
 }
 
@@ -203,12 +205,11 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 // # + request - http:Request to set the header
 // # + partitionKey - the array containing the value of the partition key
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) returns http:Request|error {
+isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) {
     if (partitionKey is ()) {
-        return request;
+        return ();
     }
     request.setHeader(PARTITION_KEY_HEADER, string `${partitionKey.toString()}`);
-    return request;
 }
 
 // # Set the required headers related to query operations.
@@ -227,12 +228,13 @@ isolated function setHeadersForQuery(http:Request request) returns http:Request|
 // # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
-DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
+                                DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
         } else {
-            return prepareError(INDEXING_DIRECTIVE_ERROR);
+            log:printError(INDEXING_DIRECTIVE_ERROR);
+            //return prepareError(INDEXING_DIRECTIVE_ERROR);
         }
     }
     if (requestOptions?.consistancyLevel != ()) {
@@ -241,7 +243,8 @@ DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptio
         consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
             request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
         } else {
-            return prepareError(CONSISTANCY_LEVEL_ERROR);
+            log:printError(CONSISTANCY_LEVEL_ERROR);
+            //return prepareError(CONSISTANCY_LEVEL_ERROR);
         }
     }
     if (requestOptions?.sessionToken != ()) {
@@ -265,7 +268,6 @@ DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptio
     if (requestOptions?.isUpsertRequest == true) {
         request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
     }
-    return request;
 }
 
 // # Set the optional header specifying time to live.
@@ -273,12 +275,12 @@ DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptio
 // # + request - http:Request to set the header
 // # + validationPeriod - the integer specifying the time to live value for a permission token
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setExpiryHeader(http:Request request, int validationPeriod) returns http:Request|error {
+isolated function setExpiryHeader(http:Request request, int validationPeriod) {
     if (validationPeriod >= MIN_TIME_TO_LIVE && validationPeriod <= MAX_TIME_TO_LIVE) {
         request.setHeader(EXPIRY_HEADER, validationPeriod.toString());
-        return request;
     } else {
-        return prepareError(VALIDITY_PERIOD_ERROR);
+        log:printError(VALIDITY_PERIOD_ERROR);
+        //return prepareError(VALIDITY_PERIOD_ERROR);
     }
 }
 
@@ -286,15 +288,20 @@ isolated function setExpiryHeader(http:Request request, int validationPeriod) re
 // # 
 // # + return - If successful, returns string representing UTC date and time 
 // #               (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
-isolated function getTime() returns string?|error {
+isolated function getTime() returns string? {
     time:Time time1 = time:currentTime();
-    var timeWithZone = check time:toTimeZone(time1, GMT_ZONE);
-    string|error timeString = time:format(timeWithZone, TIME_ZONE_FORMAT);
-    if (timeString is string) {
-        return timeString;
+    var timeWithZone = time:toTimeZone(time1, GMT_ZONE);
+    if (timeWithZone is time:Time) {
+        string|error timeString = time:format(timeWithZone, TIME_ZONE_FORMAT);
+        if (timeString is string) {
+            return timeString;
+        } else {
+            log:printError(TIME_STRING_ERROR);
+            //return prepareError(TIME_STRING_ERROR);
+        }
     } else {
-        return prepareError(TIME_STRING_ERROR);
-    }
+        log:printError(TIME_STRING_ERROR);
+    }    
 }
 
 // # To construct the hashed token signature for a token to set  'Authorization' header.
@@ -308,7 +315,7 @@ isolated function getTime() returns string?|error {
 // # + date - current GMT date and time
 // # + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-string tokenType, string tokenVersion, string date) returns string? {
+                                string tokenType, string tokenVersion, string date) returns string? {
     string?|error authorization;
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
     date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
@@ -333,7 +340,7 @@ string tokenType, string tokenVersion, string date) returns string? {
 // # + httpResponse - the http:Response or http:ClientError returned form the HTTP request
 // # + return - returns a tuple of type [json, ResponseMetadata] if sucessful else, returns error
 isolated function mapResponseToTuple(http:Response|http:PayloadType|error httpResponse) returns @tainted [json, 
-ResponseMetadata]|error {
+                                ResponseMetadata]|error {
     json responseBody = check handleResponse(httpResponse);
     ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
     return [responseBody, responseHeaders];
@@ -343,7 +350,7 @@ ResponseMetadata]|error {
 // # 
 // # + httpResponse - http:Response or http:ClientError returned from an http:Request
 // # + return - If successful, returns json. Else returns error. 
-isolated function handleResponse(http:Response|http:PayloadType|error httpResponse) returns @tainted json|boolean|error {
+isolated function handleResponse(http:Response|http:PayloadType|error httpResponse) returns @tainted json?|error {
     if (httpResponse is http:Response) {
         if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
             json|error jsonResponse = httpResponse.getJsonPayload();
@@ -353,7 +360,7 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
                 return prepareError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
             }
         } else if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
-            return true;
+            return ();
         } else {
             json|error jsonResponse = httpResponse.getJsonPayload();
             if (jsonResponse is json) {
@@ -379,7 +386,7 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
 // # + httpResponse - http:Response or http:ClientError returned from an http:Request
 // # + return - If successful, returns record type ResponseMetadata. Else returns error. 
 isolated function mapResponseHeadersToHeadersObject(http:Response|http:PayloadType|error httpResponse) returns @tainted 
-ResponseMetadata|error {
+                                    ResponseMetadata|error {
     ResponseMetadata responseHeaders = {};
     if (httpResponse is http:Response) {
         responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
