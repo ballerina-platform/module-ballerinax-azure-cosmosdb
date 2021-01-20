@@ -22,9 +22,9 @@ import ballerina/runtime;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("KEY_OR_RESOURCE_TOKEN"),
-    tokenType: config:getAsString("TOKEN_TYPE"),
-    tokenVersion: config:getAsString("TOKEN_VERSION")
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+    // tokenType: config:getAsString("TOKEN_TYPE"),
+    // tokenVersion: config:getAsString("TOKEN_VERSION")
 };
 
 Client azureCosmosClient = new (config);
@@ -217,7 +217,7 @@ function test_listOneDatabase() {
         "test_deleteUser", 
         "test_createContainerIfNotExist", 
         "test_deleteContainer", 
-        "test_createPermissionWithTTL", 
+        "test_createPermissionWithTTL",
         "test_getCollection_Resource_Token"
     ]
 }
@@ -368,8 +368,8 @@ function test_getAllContainers() {
         "test_GetOneDocumentWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentListWithRequestOptions", 
-        "test_getCollection_Resource_Token",
-        "test_getAllContainers"
+        "test_getAllContainers",
+        "test_getCollection_Resource_Token"
         //"test_replaceOfferWithOptionalParameter",
         //"test_replaceOffer"
     ]
@@ -1244,7 +1244,7 @@ function test_getPermission() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_getPermission", "test_listPermissions", "test_replacePermission"]
+    dependsOn: ["test_getPermission", "test_listPermissions", "test_replacePermission", "test_getCollection_Resource_Token"]
 }
 function test_deletePermission() {
     log:print("ACTION : deletePermission()");
@@ -1388,9 +1388,7 @@ function test_getCollection_Resource_Token() {
         if (result?.token is string) {
             AzureCosmosConfiguration configdb = {
                 baseUrl: getConfigValue("BASE_URL"),
-                masterOrResourceToken: result?.token.toString(),
-                tokenType: "resource",
-                tokenVersion: getConfigValue("TOKEN_VERSION")
+                masterOrResourceToken: result?.token.toString()
             };
 
             Client azureCosmosClientDatabase = new (configdb);

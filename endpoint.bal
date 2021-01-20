@@ -30,8 +30,8 @@ public client class Client {
         self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.tokenType = azureConfig.tokenType;
-        self.tokenVersion = azureConfig.tokenVersion;
+        self.tokenType = getTokenType(azureConfig.masterOrResourceToken);
+        self.tokenVersion = TOKEN_VERSION;
         self.httpClient = new (self.baseUrl);
     }
 

@@ -76,6 +76,15 @@ isolated function getResourceId(string url) returns string {
     }
 }
 
+function getTokenType(string token) returns string {
+    boolean contain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
+    if (contain) {
+        return TOKEN_TYPE_RESOURCE;
+    } else {
+        return TOKEN_TYPE_MASTER;
+    }
+}
+
 // # Extract the host of the cosmos db from the base url.
 // #
 // # + url - the Base URL given by the user from which we want to extract host.

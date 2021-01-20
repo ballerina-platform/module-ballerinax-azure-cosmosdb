@@ -14,12 +14,6 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Represents Token type for a master token
-public const string TOKEN_TYPE_MASTER = "master";
-
-# Represents Token type for a resource token
-public const string TOKEN_TYPE_RESOURCE = "resource";
-
 # Calls the service API V1
 public const string SERVICE_VERSION_V1 = "1.0";
 
@@ -103,6 +97,11 @@ const string RESOURCE_TYPE_OFFERS = "offers";
 
 // Cosmos DB SQL API version
 const string API_VERSION = "2018-12-31";
+
+// Token information
+const string TOKEN_TYPE_MASTER = "master";
+const string TOKEN_TYPE_RESOURCE = "resource";
+const string TOKEN_VERSION = "1.0";
 
 //Encoding types
 const string UTF8_URL_ENCODING = "UTF-8";
