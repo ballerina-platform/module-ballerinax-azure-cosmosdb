@@ -1299,7 +1299,8 @@ function test_getOffer() {
 }
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOffer() {
     log:print("ACTION : replaceOffer()");
@@ -1326,7 +1327,8 @@ function test_replaceOffer() {
 }
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOfferWithOptionalParameter() {
     log:print("ACTION : replaceOfferWithOptionalParameter()");
