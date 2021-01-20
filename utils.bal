@@ -115,16 +115,6 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted>url;
 }
 
-isolated function prepareError(string message, error? err = ()) returns error {
-    error azureError;
-    if (err is error) {
-        azureError = AzureError(message, err);
-    } else {
-        azureError = AzureError(message);
-    }
-    return azureError;
-}
-
 // # Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type.
 // #
 // # + httpVerb - HTTP verb of the relevent request.
@@ -378,8 +368,9 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
                 // if (stoppingIndex is int) {
                 //     errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
                 // }
-                error details = error(message, status = httpResponse.statusCode);
-                return details;
+                //return error(message, status = httpResponse.statusCode);
+                return prepareError(message, (), httpResponse.statusCode);
+
             } else {
                 return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR, jsonResponse);
             }

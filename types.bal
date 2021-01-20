@@ -273,8 +273,6 @@ type HeaderParameters record {|
     string resourceId = "";
 |};
 
-public type AzureError distinct error;
-
 type JsonMap map<json>;
 
 # Represents the record type which contain necessary elements for a query.
