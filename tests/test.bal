@@ -17,7 +17,8 @@ import ballerina/test;
 import ballerina/config;
 import ballerina/system;
 import ballerina/log;
-//import ballerina/runtime;
+import ballerina/runtime;
+//import ballerina/io;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -1273,6 +1274,8 @@ function test_listOffers() {
     if (result is stream<Offer>) {
         var offer = result.next();
         offerId = <@untainted>offer?.value?.id;
+        //io:println(offerId);
+        runtime:sleep(1000);
         resourceId = offer?.value?.resourceId;
     } else {
         test:assertFail(msg = result.message());
@@ -1299,8 +1302,7 @@ function test_getOffer() {
 }
 
 @test:Config {
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 }
 function test_replaceOffer() {
     log:print("ACTION : replaceOffer()");
@@ -1327,8 +1329,7 @@ function test_replaceOffer() {
 }
 
 @test:Config {
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 }
 function test_replaceOfferWithOptionalParameter() {
     log:print("ACTION : replaceOfferWithOptionalParameter()");
