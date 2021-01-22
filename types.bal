@@ -104,13 +104,11 @@ public type Container record {|
 # 
 # + id - User generated unique ID for the document. 
 # + documentBody - BSON document.
-# + partitionKey - Array containing the value for the selected partition key.
 # + attachments - Addressable path for the attachments resource.
 public type Document record {|
     string id = "";
     *Common;
     json documentBody = {};
-    any[]? partitionKey?;
     string attachments?;
     ResponseMetadata?...;
 |};
@@ -339,6 +337,11 @@ public type DocumentListOptions record {|
     string? changeFeedOption = ();
     string? ifNoneMatchEtag = ();
     string? partitionKeyRangeId = ();
+|};
+
+public type StoredProcedureOptions record {|
+    any[]? parameters = ();
+    any[]? valueOfPartitionKey = ();
 |};
 
 # Represent the optional parameters which can be passed to the function when reading the information about other resources 

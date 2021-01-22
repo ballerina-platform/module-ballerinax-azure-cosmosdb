@@ -221,12 +221,12 @@ public client class Client {
     # + document - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
-    remote function createDocument(string databaseId, string containerId, Document document, 
+    remote function createDocument(string databaseId, string containerId, Document document, any[] partitionKey,
                                     DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);
-        setPartitionKeyHeader(request, document?.partitionKey);
+        setPartitionKeyHeader(request, partitionKey);
         setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
         POST, requestPath);
 
@@ -245,18 +245,18 @@ public client class Client {
     # + document - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, @tainted Document document, 
+    remote function replaceDocument(string databaseId, string containerId, @tainted Document document, any[] partitionKey, 
                                     DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS, document.id]);
         http:Request request = check createRequest(requestOptions);
-        setPartitionKeyHeader(request, document?.partitionKey);
-        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-        PUT, requestPath);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        setPartitionKeyHeader(request, partitionKey);
 
         json jsonPayload = {id: document.id};
         jsonPayload = check jsonPayload.mergeJson(document.documentBody);
         request.setJsonPayload(<@untainted>jsonPayload);
+
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
@@ -275,8 +275,8 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS, documentId]);
         http:Request request = check createRequest(requestOptions);
-        setPartitionKeyHeader(request, partitionKey);
         setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        setPartitionKeyHeader(request, partitionKey);
 
         var response = self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -446,16 +446,17 @@ public client class Client {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which contain the stored procedure.        
     # + storedProcedureId - ID of the stored procedure to execute.
-    # + parameters - Optional. Function paramaters to pass to javascript function represented as an array.
+    # + options - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                    any[]? parameters) returns @tainted json|error { 
+                                    StoredProcedureOptions? options = ()) returns @tainted json|error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
         http:Request request = new;
         setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        setPartitionKeyHeader(request, options?.valueOfPartitionKey);
 
-        request.setTextPayload(parameters.toString());
+        request.setTextPayload(options?.parameters.toString());
         var response = self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return jsonResponse;

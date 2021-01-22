@@ -206,7 +206,7 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) {
     if (partitionKey is ()) {
-        return ();
+        return;
     }
     request.setHeader(PARTITION_KEY_HEADER, string `${partitionKey.toString()}`);
 }
@@ -644,25 +644,6 @@ PartitionKeyRange>|stream<json>|error {
                 }
             }
             return permissionStream;
-        } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<json[]>) {
-        json[] queryResults = <json[]>array;
-        //update the json array here
-        //Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
-        if (payload.Documents is json) {
-            // stream<json> resultStream = (<@untainted>finalArray).toStream();
-            stream<json> resultStream = queryResults.toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, queryResults, (), <@untainted>headers?.continuationHeader, true);
-                if (typeof streams is typedesc<stream<json>>) {
-                    resultStream = <stream<json>>streams;
-                } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof resultStream).toString()}.`);
-                }
-            }
-            return resultStream;
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }

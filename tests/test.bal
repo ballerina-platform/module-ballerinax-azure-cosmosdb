@@ -415,6 +415,7 @@ function test_createDocument() {
     var uuid = createRandomUUIDBallerina();
     string databaseId = database.id;
     string containerId = container.id;
+    int[] valueOfPartitionKey = [1234];
     Document createDoc = {
         id: string `document_${uuid.toString()}`,
         documentBody: {
@@ -440,11 +441,10 @@ function test_createDocument() {
             },
             "IsRegistered": true,
             "AccountNumber": 1234
-        },
-        partitionKey: [1234]
+        }
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, createDoc);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, createDoc, valueOfPartitionKey);
     if (result is Document) {
         document = <@untainted>result;
     } else {
@@ -466,6 +466,7 @@ function test_createDocumentWithRequestOptions() {
         isUpsertRequest: true,
         indexingDirective: "Include"
     };
+    int[] valueOfPartitionKey = [1234];
     Document createDoc = {
         id: string `document_${uuid.toString()}`,
         documentBody: {
@@ -491,10 +492,9 @@ function test_createDocumentWithRequestOptions() {
             },
             "IsRegistered": true,
             "AccountNumber": 1234
-        },
-        partitionKey: [1234]
+        }
     };
-    var result = azureCosmosClient->createDocument(databaseId, containerId, createDoc, options);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, createDoc, valueOfPartitionKey, options);
     if (result is Document) {
         document = <@untainted>result;
     } else {
@@ -554,8 +554,9 @@ function test_GetOneDocument() {
 
     string databaseId = database.id;
     string containerId = container.id;
+    int[] valueOfPartitionKey = [1234];
 
-    var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, [1234]);
+    var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -572,18 +573,18 @@ function test_GetOneDocumentWithRequestOptions() {
 
     string databaseId = database.id;
     string containerId = container.id;
-    @tainted
     Document getDoc = {
-        id: document.id,
-        partitionKey: [1234]
+        id: document.id
     };
+    int[] valueOfPartitionKey = [1234];
+
     DocumentGetOptions options = {
         consistancyLevel: "Eventual",
         sessionToken: "tag",
         ifNoneMatchEtag: "hhh"
     };
 
-    var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, [1234], options);
+    var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey, options);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -746,8 +747,11 @@ function test_executeOneStoredProcedure() {
     string containerId = container.id;
     string executeSprocId = storedPrcedure.id;
     string[] arrayofparameters = ["Sachi"];
+    StoredProcedureOptions options = {
+        parameters: arrayofparameters
+    };
 
-    var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, executeSprocId, arrayofparameters);
+    var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, executeSprocId, options);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
