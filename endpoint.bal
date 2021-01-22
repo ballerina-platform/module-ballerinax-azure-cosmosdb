@@ -232,7 +232,6 @@ public client class Client {
 
         json jsonPayload = {id: document.id};
         jsonPayload = check jsonPayload.mergeJson(document.documentBody);
-        //io:println(jsonPayload);
         request.setJsonPayload(jsonPayload);
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -356,28 +355,8 @@ public client class Client {
         };
         request.setJsonPayload(<@untainted>payload);
         setHeadersForQuery(request);
-        json[] newArray = [];
-        stream<json>|error documentStream = <stream<json>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount, (), true);
+        stream<json>|error documentStream = <stream<json>|error>getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
         return documentStream;
-    }
-
-    # Retrieve a list of partition key ranges for the container.
-    # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container where the partition key ranges are related to.    
-    # + return - If successful, returns stream<cosmosdb:PartitionKeyRange>. Else returns error.  
-    remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted 
-                                    stream<PartitionKeyRange>|error {
-        http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_PK_RANGES]);
-        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
-
-        PartitionKeyRange[] newArray = [];
-        stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
-        httpClient, requestPath, request, newArray);
-        return partitionKeyStream;
     }
 
     # Create a new stored procedure inside a container.
@@ -654,6 +633,25 @@ public client class Client {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_TRIGGER, triggerId]);
         return self.deleteRecord(requestPath, requestOptions);
+    }
+
+// ------------------------------------------MANAGEMENT PLANE-----------------------------------------------------------
+    # Retrieve a list of partition key ranges for the container.
+    # 
+    # + databaseId - ID of the database which container belongs to.
+    # + containerId - ID of the container where the partition key ranges are related to.    
+    # + return - If successful, returns stream<cosmosdb:PartitionKeyRange>. Else returns error.  
+    remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted 
+                                    stream<PartitionKeyRange>|error {
+        http:Request request = new;
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
+                                        RESOURCE_TYPE_PK_RANGES]);
+        setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+
+        PartitionKeyRange[] newArray = [];
+        stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
+        httpClient, requestPath, request, newArray);
+        return partitionKeyStream;
     }
 
     # Create a user in a database.

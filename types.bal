@@ -355,9 +355,11 @@ public type ResourceReadOptions record {|
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
 # + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
+# + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
 public type ResourceQueryOptions record {|
     string? sessionToken = ();
     boolean enableCrossPartition = false;
+    string? consistancyLevel = ();
 |};
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.

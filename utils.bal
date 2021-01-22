@@ -439,10 +439,47 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
         headerValue = httpResponse.getHeader(headerName);
     } 
     return headerValue;
+} 
+
+isolated function convertJsonArray(json[] array, json[] newArray) {
+    int i = array.length();
+    foreach json element in newArray {
+        array[i] = element;
+        i = i + 1;
+    }
 }
 
+function getQueryResults(http:Client azureCosmosClient, string path, http:Request request, @tainted json[] array, int? maxItemCount = (), 
+                                string? continuationHeader = ()) returns @tainted stream<json>|error {
+    if (continuationHeader is string) {
+        request.setHeader(CONTINUATION_HEADER, continuationHeader);
+    }
+
+    if (maxItemCount is int) {
+        request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+    }
+
+    http:Response|http:PayloadType|error response = azureCosmosClient->post(path, request);
+    var [payload, headers] = check mapResponseToTuple(response);
+
+    if (payload.Documents is json) {
+        convertJsonArray(array, <json[]>payload.Documents);
+        stream<json> documentStream = (<@untainted>array).toStream();
+
+        if (headers?.continuationHeader != ()) {
+            var streams = check getQueryResults(azureCosmosClient, path, request, array, (), headers?.continuationHeader);
+            documentStream = <stream<json>>streams;
+        }
+        return documentStream;
+    } else {
+        return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+    }
+}
+
+
+/// Revisit
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|Database[]|
-Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), 
+Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted 
 string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<
 Container>|stream<StoredProcedure>|stream<UserDefinedFunction>|stream<Trigger>|stream<User>|stream<Permission>|stream<
 PartitionKeyRange>|stream<json>|error {
@@ -463,8 +500,7 @@ PartitionKeyRange>|stream<json>|error {
             Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
             stream<Offer> offerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Offer>>) {
                     offerStream = <stream<Offer>>streams;
                 } else {
@@ -481,8 +517,7 @@ PartitionKeyRange>|stream<json>|error {
             Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
             stream<Document> documentStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Document>>) {
                     documentStream = <stream<Document>>streams;
                 } else {
@@ -499,8 +534,7 @@ PartitionKeyRange>|stream<json>|error {
             Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
             stream<Database> databaseStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Database>>) {
                     databaseStream = <stream<Database>>streams;
                 } else {
@@ -517,8 +551,7 @@ PartitionKeyRange>|stream<json>|error {
             Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
             stream<Container> containerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Container>>) {
                     containerStream = <stream<Container>>streams;
                 } else {
@@ -537,8 +570,7 @@ PartitionKeyRange>|stream<json>|error {
             StoredProcedures);
             stream<StoredProcedure> storedProcedureStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<StoredProcedure>>) {
                     storedProcedureStream = <stream<StoredProcedure>>streams;
                 } else {
@@ -552,8 +584,7 @@ PartitionKeyRange>|stream<json>|error {
             UserDefinedFunctions);
             stream<UserDefinedFunction> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<UserDefinedFunction>>) {
                     userDefinedFunctionStream = <stream<UserDefinedFunction>>streams;
                 } else {
@@ -571,8 +602,7 @@ PartitionKeyRange>|stream<json>|error {
             Trigger[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
             stream<Trigger> triggerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Trigger>>) {
                     triggerStream = <stream<Trigger>>streams;
                 } else {
@@ -589,8 +619,7 @@ PartitionKeyRange>|stream<json>|error {
             User[] finalArray = convertToUserArray(users, <json[]>payload.Users);
             stream<User> userStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<User>>) {
                     userStream = <stream<User>>streams;
                 } else {
@@ -607,8 +636,7 @@ PartitionKeyRange>|stream<json>|error {
             Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
             stream<Permission> permissionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, finalArray, (), headers?.
-                continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Permission>>) {
                     permissionStream = <stream<Permission>>streams;
                 } else {
@@ -627,8 +655,7 @@ PartitionKeyRange>|stream<json>|error {
             // stream<json> resultStream = (<@untainted>finalArray).toStream();
             stream<json> resultStream = queryResults.toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, queryResults, (), headers?.
-                continuationHeader, true);
+                var streams = check retriveStream(azureCosmosClient, path, request, queryResults, (), <@untainted>headers?.continuationHeader, true);
                 if (typeof streams is typedesc<stream<json>>) {
                     resultStream = <stream<json>>streams;
                 } else {

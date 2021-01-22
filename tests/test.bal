@@ -601,7 +601,7 @@ function test_queryDocuments() {
     string databaseId = database.id;
     string containerId = container.id;
     int[] partitionKey = [1234];
-    string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`;
+    string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [], 10, [1234]);
     if (result is stream<json>) {
