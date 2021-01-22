@@ -18,7 +18,7 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
-//import ballerina/io;
+import ballerina/io;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -203,7 +203,6 @@ function test_listOneDatabase() {
         "test_listOneDatabase", 
         "test_createDatabase", 
         "test_getAllContainers", 
-        "test_GetPartitionKeyRanges", 
         "test_getDocumentListWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentList", 
@@ -355,7 +354,6 @@ function test_getAllContainers() {
     groups: ["container"], 
     dependsOn: [
         "test_getOneContainer", 
-        "test_GetPartitionKeyRanges", 
         "test_getDocumentList", 
         "test_deleteDocument", 
         "test_queryDocuments", 
@@ -390,7 +388,8 @@ function test_deleteContainer() {
 
 @test:Config {
     groups: ["partitionKey"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["test_createContainer"],
+    enable: false
 }
 function test_GetPartitionKeyRanges() {
     log:print("ACTION : GetPartitionKeyRanges()");
@@ -602,13 +601,12 @@ function test_queryDocuments() {
     string databaseId = database.id;
     string containerId = container.id;
     int[] partitionKey = [1234];
-    Query sqlQuery = {
-        query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`,
-        parameters: []
-    };
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, sqlQuery, 10, [1234]);
-    if (result is stream<Document>) {
+    string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`;
+
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [], 10, [1234]);
+    if (result is stream<json>) {
         var document = result.next();
+        io:println(document);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -648,15 +646,13 @@ function test_queryDocumentsWithRequestOptions() {
     string databaseId = database.id;
     string containerId = container.id;
     int[] partitionKey = [1234];
-    Query sqlQuery = {
-        query: string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`,
-        parameters: []
-    };
+    string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'Seattle'`;
+
     ResourceQueryOptions options = {
         //sessionToken: "tag", 
         enableCrossPartition: true};
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, sqlQuery, 10, (), options);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [],10, (), options);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -1274,7 +1270,6 @@ function test_listOffers() {
     if (result is stream<Offer>) {
         var offer = result.next();
         offerId = <@untainted>offer?.value?.id;
-        //io:println(offerId);
         runtime:sleep(1000);
         resourceId = offer?.value?.resourceId;
     } else {

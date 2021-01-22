@@ -442,10 +442,10 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 }
 
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|Database[]|
-Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|PartitionKeyRange[] array, int? maxItemCount = (), 
+Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), 
 string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<
 Container>|stream<StoredProcedure>|stream<UserDefinedFunction>|stream<Trigger>|stream<User>|stream<Permission>|stream<
-PartitionKeyRange>|error {
+PartitionKeyRange>|stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
@@ -619,16 +619,38 @@ PartitionKeyRange>|error {
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
-        if (payload.PartitionKeyRanges is json) {
-            PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-            stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
-            return partitionKeyrangesStream;
-
+    } else if (arrayType is typedesc<json[]>) {
+        json[] queryResults = <json[]>array;
+        //update the json array here
+        //Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
+        if (payload.Documents is json) {
+            // stream<json> resultStream = (<@untainted>finalArray).toStream();
+            stream<json> resultStream = queryResults.toStream();
+            if (headers?.continuationHeader != () && maxItemCount is ()) {
+                var streams = check retriveStream(azureCosmosClient, path, request, queryResults, (), headers?.
+                continuationHeader, true);
+                if (typeof streams is typedesc<stream<json>>) {
+                    resultStream = <stream<json>>streams;
+                } else {
+                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof resultStream).toString()}.`);
+                }
+            }
+            return resultStream;
         } else {
             return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else {
+    } 
+    // else if (arrayType is typedesc<PartitionKeyRange[]>) {
+    //     if (payload.PartitionKeyRanges is json) {
+    //         PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
+    //         stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
+    //         return partitionKeyrangesStream;
+
+    //     } else {
+    //         return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+    //     }
+    // } 
+    else {
         return prepareError(INVALID_STREAM_TYPE);
     }
 }

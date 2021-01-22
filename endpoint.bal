@@ -232,6 +232,7 @@ public client class Client {
 
         json jsonPayload = {id: document.id};
         jsonPayload = check jsonPayload.mergeJson(document.documentBody);
+        //io:println(jsonPayload);
         request.setJsonPayload(jsonPayload);
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -341,23 +342,22 @@ public client class Client {
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
-    remote function queryDocuments(string databaseId, string containerId, Query sqlQuery, int? maxItemCount = (), 
-                                    any[]? partitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
+    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [], int? maxItemCount = (), 
+                                    any[]? partitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS]);
         http:Request request = check createRequest(requestOptions);
         setPartitionKeyHeader(request, partitionKey);
         setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        json|error payload = sqlQuery.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
+        json payload = {
+            query: sqlQuery,
+            parameters: checkpanic parameters.cloneWithType(json)
+        };
+        request.setJsonPayload(<@untainted>payload);
         setHeadersForQuery(request);
-        Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, requestPath, 
+        json[] newArray = [];
+        stream<json>|error documentStream = <stream<json>|error>retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount, (), true);
         return documentStream;
     }
@@ -396,12 +396,9 @@ public client class Client {
         http:Request request = new;
         setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        json|error payload = storedProcedure.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted><json>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
+        json payload = checkpanic storedProcedure.cloneWithType(json);
+        request.setJsonPayload(<@untainted>payload);
+        
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureType(jsonResponse);
@@ -420,12 +417,9 @@ public client class Client {
         http:Request request = new;
         setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        json|error payload = storedProcedure.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
+        json payload = checkpanic storedProcedure.cloneWithType(json);
+        request.setJsonPayload(<@untainted>payload);
+        
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureType(jsonResponse);
