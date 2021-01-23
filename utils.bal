@@ -139,7 +139,7 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 // # + requestPath - Request path of the request.
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, 
-                                string tokenVersion, string httpVerb, string requestPath) {
+                                string tokenVersion, string httpVerb, string requestPath) returns error? {
     HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
@@ -155,28 +155,26 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
         } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
             signature = encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING);
         } else {
-            //return prepareError(NULL_RESOURCE_TYPE_ERROR);
-            log:printError(NULL_RESOURCE_TYPE_ERROR);
+            return prepareError(NULL_RESOURCE_TYPE_ERROR);
+            //log:printError(NULL_RESOURCE_TYPE_ERROR);
         }
         if (signature is string) {
             request.setHeader(AUTHORIZATION_HEADER, signature);
         } else {
-            //return prepareError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
-            log:printError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
+            return prepareError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
+            //log:printError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
         }
     } else {
-        //return prepareError(NULL_DATE_ERROR);
-        log:printError(NULL_DATE_ERROR);
+        return prepareError(NULL_DATE_ERROR);
+        //log:printError(NULL_DATE_ERROR);
     }
 }
 
-isolated function createRequest((DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
-                                ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns http:Request|error {
-    http:Request request = new;
+isolated function createRequest(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
+                            DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns error? {
     if (requestOptions != ()) {
-        setRequestOptions(request, requestOptions);
+        check setRequestOptions(request, requestOptions);
     }
-    return request;
 }
 
 // # Set the optional header related to throughput options.
@@ -226,13 +224,13 @@ isolated function setHeadersForQuery(http:Request request) {
 // # + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
-                                DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) {
+                                DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns error? {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
         } else {
-            log:printError(INDEXING_DIRECTIVE_ERROR);
-            //return prepareError(INDEXING_DIRECTIVE_ERROR);
+            //log:printError(INDEXING_DIRECTIVE_ERROR);
+            return prepareError(INDEXING_DIRECTIVE_ERROR);
         }
     }
     if (requestOptions?.consistancyLevel != ()) {
@@ -241,8 +239,8 @@ isolated function setRequestOptions(http:Request request, (DocumentCreateOptions
         consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
             request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
         } else {
-            log:printError(CONSISTANCY_LEVEL_ERROR);
-            //return prepareError(CONSISTANCY_LEVEL_ERROR);
+            //log:printError(CONSISTANCY_LEVEL_ERROR);
+            return prepareError(CONSISTANCY_LEVEL_ERROR);
         }
     }
     if (requestOptions?.sessionToken != ()) {

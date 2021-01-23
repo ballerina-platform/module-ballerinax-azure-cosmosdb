@@ -27,7 +27,7 @@ AzureCosmosConfiguration config = {
     // tokenVersion: config:getAsString("TOKEN_VERSION")
 };
 
-Client azureCosmosClient = new (config);
+CoreClient azureCosmosClient = new (config);
 
 Database database = {};
 Database manual = {};
@@ -1074,7 +1074,7 @@ function test_replaceUserId() {
 function test_getUser() {
     log:print("ACTION : getUser()");
 
-    Client azureCosmosClient = new (config);
+    CoreClient azureCosmosClient = new (config);
     string databaseId = database.id;
     string getUserId = test_user.id;
 
@@ -1390,7 +1390,7 @@ function test_getCollection_Resource_Token() {
                 masterOrResourceToken: result?.token.toString()
             };
 
-            Client azureCosmosClientDatabase = new (configdb);
+            CoreClient azureCosmosClientDatabase = new (configdb);
 
             string containerId = container.id;
 
