@@ -148,25 +148,22 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     string? date = getTime();
     if (date is string) {
         request.setHeader(DATE_HEADER, date);
-        string?|error signature = ();
+        string? signature = ();
         if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
             signature = generateMasterTokenSignature(params.verb, params.resourceType, params.resourceId, keyToken, 
-            tokenType, tokenVersion, date);
+                                            tokenType, tokenVersion, date);
         } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
-            signature = encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING);
+            signature = checkpanic encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING);
         } else {
-            return prepareError(NULL_RESOURCE_TYPE_ERROR);
-            //log:printError(NULL_RESOURCE_TYPE_ERROR);
+            return prepareUserError(NULL_RESOURCE_TYPE_ERROR);
         }
         if (signature is string) {
             request.setHeader(AUTHORIZATION_HEADER, signature);
         } else {
-            return prepareError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
-            //log:printError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
+            return prepareModuleError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
         }
     } else {
-        return prepareError(NULL_DATE_ERROR);
-        //log:printError(NULL_DATE_ERROR);
+        return prepareModuleError(NULL_DATE_ERROR);
     }
 }
 
@@ -187,13 +184,12 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
         } else {
-            //log:printError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
-            return prepareError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            return prepareUserError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
     } else if (throughputOption != ()) {
         request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
     } else {
-        return ();
+        return;
     }
 }
 
@@ -229,8 +225,8 @@ isolated function setRequestOptions(http:Request request, (DocumentCreateOptions
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
         } else {
-            //log:printError(INDEXING_DIRECTIVE_ERROR);
-            return prepareError(INDEXING_DIRECTIVE_ERROR);
+            /////       include and exclude
+            return prepareModuleError(INDEXING_DIRECTIVE_ERROR);
         }
     }
     if (requestOptions?.consistancyLevel != ()) {
@@ -239,8 +235,8 @@ isolated function setRequestOptions(http:Request request, (DocumentCreateOptions
         consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
             request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
         } else {
-            //log:printError(CONSISTANCY_LEVEL_ERROR);
-            return prepareError(CONSISTANCY_LEVEL_ERROR);
+            //log:printError(CONSISTANCY_LEVEL_ERROR);      //// define the consistancy level 
+            return prepareModuleError(CONSISTANCY_LEVEL_ERROR);
         }
     }
     if (requestOptions?.sessionToken != ()) {
@@ -271,12 +267,11 @@ isolated function setRequestOptions(http:Request request, (DocumentCreateOptions
 // # + request - http:Request to set the header
 // # + validationPeriod - the integer specifying the time to live value for a permission token
 // # + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-isolated function setExpiryHeader(http:Request request, int validationPeriod) {
+isolated function setExpiryHeader(http:Request request, int validationPeriod) returns error? {
     if (validationPeriod >= MIN_TIME_TO_LIVE && validationPeriod <= MAX_TIME_TO_LIVE) {
         request.setHeader(EXPIRY_HEADER, validationPeriod.toString());
     } else {
-        log:printError(VALIDITY_PERIOD_ERROR);
-        //return prepareError(VALIDITY_PERIOD_ERROR);
+        return prepareUserError(VALIDITY_PERIOD_ERROR);
     }
 }
 
@@ -288,13 +283,8 @@ isolated function getTime() returns string? {
     time:Time time1 = time:currentTime();
     var timeWithZone = time:toTimeZone(time1, GMT_ZONE);
     if (timeWithZone is time:Time) {
-        string|error timeString = time:format(timeWithZone, TIME_ZONE_FORMAT);
-        if (timeString is string) {
-            return timeString;
-        } else {
-            log:printError(TIME_STRING_ERROR);
-            //return prepareError(TIME_STRING_ERROR);
-        }
+        string timeString = checkpanic time:format(timeWithZone, TIME_ZONE_FORMAT);
+        return timeString;
     } else {
         log:printError(TIME_STRING_ERROR);
     }    
@@ -312,24 +302,13 @@ isolated function getTime() returns string? {
 // # + return - If successful, returns string which is the  hashed token signature. Else returns () or error. 
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
                                 string tokenType, string tokenVersion, string date) returns string? {
-    string?|error authorization;
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
     date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
-    var decoded = array:fromBase64(keyToken);
-    if (decoded is byte[]) {
-        byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
-        string signature = array:toBase64(digest);
-        authorization = encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
-        if (authorization is string) {
-            return authorization;
-        } else {
-            log:printError(DECODING_ERROR);
-            //return prepareError(DECODING_ERROR);
-        }
-    } else {
-        log:printError(DECODING_ERROR);
-        //return prepareError(DECODING_ERROR);
-    }
+    byte[] decoded = checkpanic array:fromBase64(keyToken);
+    byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
+    string signature = array:toBase64(digest);
+    string? authorization = checkpanic encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
+    return authorization;      
 }
 
 // # Map the json payload and necessary header values returend from a response to a tuple.
@@ -360,13 +339,13 @@ isolated function handleResponse(http:Response|http:PayloadType|error httpRespon
                 return jsonResponse;
             } else {
                 string message = jsonResponse.message.toString();
-                return prepareError(message, (), httpResponse.statusCode);
+                return prepareModuleError(message, (), httpResponse.statusCode);
             }
         } else {
-            return prepareError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
+            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
         }
     } else {
-        return prepareError(REST_API_INVOKING_ERROR);
+        return prepareModuleError(REST_API_INVOKING_ERROR);
     }
 }
 
@@ -386,7 +365,7 @@ isolated function mapResponseHeadersToHeadersObject(http:Response|http:PayloadTy
         responseHeaders.date = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
         return responseHeaders;
     } else {
-        return prepareError(REST_API_INVOKING_ERROR);
+        return prepareModuleError(REST_API_INVOKING_ERROR);
     }
 }
 
@@ -444,11 +423,9 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-
     if (maxItemCount is int) {
         request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
     }
-
     http:Response|http:PayloadType|error response = azureCosmosClient->post(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
 
@@ -462,7 +439,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
         }
         return documentStream;
     } else {
-        return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
 }
 
@@ -494,12 +471,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<Offer>>) {
                     offerStream = <stream<Offer>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`);
                 }
             }
             return offerStream;
         } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Document[]>) {
         Document[] documents = <Document[]>array;
@@ -511,12 +488,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<Document>>) {
                     documentStream = <stream<Document>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof documentStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof documentStream).toString()}.`);
                 }
             }
             return documentStream;
         } else {
-            return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
+            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
     } else if (arrayType is typedesc<Database[]>) {
         Database[] databases = <Database[]>array;
@@ -528,12 +505,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<Database>>) {
                     databaseStream = <stream<Database>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof databaseStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof databaseStream).toString()}.`);
                 }
             }
             return databaseStream;
         } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Container[]>) {
         Container[] containers = <Container[]>array;
@@ -545,12 +522,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<Container>>) {
                     containerStream = <stream<Container>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof containerStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof containerStream).toString()}.`);
                 }
             }
             return containerStream;
         } else {
-            return prepareError(JSON_PAYLOAD_ACCESS_ERROR);
+            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
     } else if (arrayType is typedesc<StoredProcedure[]> || arrayType is typedesc<UserDefinedFunction[]>) {
         StoredProcedure[] storedProcedures = <StoredProcedure[]>array;
@@ -564,7 +541,7 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<StoredProcedure>>) {
                     storedProcedureStream = <stream<StoredProcedure>>streams;
                 } else {
-                    return prepareError(
+                    return prepareModuleError(
                     STREAM_IS_NOT_TYPE_ERROR + string `${(typeof storedProcedureStream).toString()}.`);
                 }
             }
@@ -578,13 +555,13 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<UserDefinedFunction>>) {
                     userDefinedFunctionStream = <stream<UserDefinedFunction>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${
                     (typeof userDefinedFunctionStream).toString()}.`);
                 }
             }
             return userDefinedFunctionStream;
         } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Trigger[]>) {
         Trigger[] triggers = <Trigger[]>array;
@@ -596,12 +573,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<Trigger>>) {
                     triggerStream = <stream<Trigger>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof triggerStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof triggerStream).toString()}.`);
                 }
             }
             return triggerStream;
         } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<User[]>) {
         User[] users = <User[]>array;
@@ -613,12 +590,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<User>>) {
                     userStream = <stream<User>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof userStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof userStream).toString()}.`);
                 }
             }
             return userStream;
         } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Permission[]>) {
         Permission[] permissions = <Permission[]>array;
@@ -630,12 +607,12 @@ PartitionKeyRange>|stream<json>|error {
                 if (typeof streams is typedesc<stream<Permission>>) {
                     permissionStream = <stream<Permission>>streams;
                 } else {
-                    return prepareError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof permissionStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof permissionStream).toString()}.`);
                 }
             }
             return permissionStream;
         } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } 
     // else if (arrayType is typedesc<PartitionKeyRange[]>) {
@@ -645,11 +622,11 @@ PartitionKeyRange>|stream<json>|error {
     //         return partitionKeyrangesStream;
 
     //     } else {
-    //         return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
+    //         return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
     //     }
     // } 
     else {
-        return prepareError(INVALID_STREAM_TYPE);
+        return prepareModuleError(INVALID_STREAM_TYPE);
     }
 }
 

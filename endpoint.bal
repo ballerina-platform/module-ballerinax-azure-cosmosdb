@@ -40,8 +40,7 @@ public client class CoreClient {
     # + databaseId - ID of the new database. Must be unique.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) 
-                                    returns @tainted Database|error {
+    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Database|error {
         // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
@@ -83,8 +82,7 @@ public client class CoreClient {
     # + databaseId - ID of the database to retrieve information. 
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) 
-                                    returns @tainted Database|error {
+    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted Database|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
@@ -102,10 +100,11 @@ public client class CoreClient {
     remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
+
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         Database[] newArray = [];
         stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, requestPath, 
@@ -118,8 +117,7 @@ public client class CoreClient {
     # + databaseId - ID of the database to delete.
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted boolean|error {
+    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
@@ -141,8 +139,7 @@ public client class CoreClient {
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
                                     IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, 
-                                        RESOURCE_TYPE_COLLECTIONS]);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
@@ -374,7 +371,7 @@ public client class CoreClient {
 
         json payload = {
             query: sqlQuery,
-            parameters: checkpanic parameters.cloneWithType(json)
+            parameters: <json>parameters.cloneWithType(json)
         };
         request.setJsonPayload(<@untainted>payload);
 
@@ -399,8 +396,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_STORED_POCEDURES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        json payload = checkpanic storedProcedure.cloneWithType(json);
-        request.setJsonPayload(<@untainted>payload);
+        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json));
         
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -420,8 +416,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        json payload = checkpanic storedProcedure.cloneWithType(json);
-        request.setJsonPayload(<@untainted>payload);
+        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json));
         
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -508,13 +503,8 @@ public client class CoreClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_UDF]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
-
-        json|error payload = userDefinedFunction.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
+                
+        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json));
 
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -534,13 +524,9 @@ public client class CoreClient {
                                         RESOURCE_TYPE_UDF, userDefinedFunction.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        json|error payload = userDefinedFunction.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
-
+        
+        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json));
+       
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionType(jsonResponse);
@@ -604,12 +590,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_TRIGGER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        json|error payload = trigger.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
+        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json));
 
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -629,12 +610,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_TRIGGER, trigger.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        json|error payload = trigger.cloneWithType(json);
-        if (payload is json) {
-            request.setJsonPayload(<@untainted>payload);
-        } else {
-            return prepareError(PAYLOAD_IS_NOT_JSON_ERROR);
-        }
+        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json));
 
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -811,7 +787,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_PERMISSION]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
         if (validityPeriod is int) {
-            setExpiryHeader(request, validityPeriod);
+            check setExpiryHeader(request, validityPeriod);
         }
 
         json jsonPayload = {
@@ -840,7 +816,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_PERMISSION, permission.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
         if (validityPeriod is int) {
-            setExpiryHeader(request, validityPeriod);
+            check setExpiryHeader(request, validityPeriod);
         }
 
         json jsonPayload = {
