@@ -42,16 +42,23 @@ public client class CoreClient {
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
     remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) 
                                     returns @tainted Database|error {
+        // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
+        // Setting mandatory headers for the request
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
+        // Setting a request payload
         json jsonPayload = {id: databaseId};
         request.setJsonPayload(jsonPayload);
 
+        // Get the response
         var response = self.httpClient->post(requestPath, request);
+        // Map the payload and headers, of the request to a tuple 
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        // Map the reponse payload and the headers to a record type
         return mapJsonToDatabaseType(jsonResponse);
     }
 
@@ -67,11 +74,8 @@ public client class CoreClient {
             string status = result.detail()[STATUS].toString();
             if (status == STATUS_NOT_FOUND_STRING) {
                 return self->createDatabase(databaseId, throughputOption);
-            } else {
-                return prepareError(AZURE_ERROR + string `${result.message()}`);
             }
         }
-        return ();
     }
 
     # Retrive information of a given database in an Azure Cosmos DB account.
@@ -115,7 +119,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted boolean | error {
+                                    returns @tainted boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
@@ -175,11 +179,8 @@ public client class CoreClient {
             string status = result.detail()[STATUS].toString();
             if (status == STATUS_NOT_FOUND_STRING) {
                 return self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
-            } else {
-                return prepareError(AZURE_ERROR + string `${result.message()}`);
             }
         }
-        return ();
     }
 
     # Retrive information about a container in a database.
