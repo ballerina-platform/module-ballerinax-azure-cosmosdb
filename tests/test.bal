@@ -33,9 +33,9 @@ Database auto = {};
 Database ifexist = {};
 Container container = {};
 Document document = {};
-StoredProcedure storedPrcedure = {};
-UserDefinedFunction udf = {};
-Trigger trigger = {};
+StoredProcedureResponse storedPrcedure = {};
+UserDefinedFunctionResponse udf = {};
+TriggerResponse trigger = {};
 User test_user = {};
 Permission permission = {};
 
@@ -681,7 +681,7 @@ function test_createStoredProcedure() {
     };
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sp);
-    if (result is StoredProcedure) {
+    if (result is StoredProcedureResponse) {
         storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -708,7 +708,7 @@ function test_replaceStoredProcedure() {
         body: replaceSprocBody
     };
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sp);
-    if (result is StoredProcedure) {
+    if (result is StoredProcedureResponse) {
         storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -726,7 +726,7 @@ function test_getAllStoredProcedures() {
     string containerId = container.id;
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<StoredProcedure>) {
+    if (result is stream<StoredProcedureResponse>) {
         var storedProcedure = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -804,7 +804,7 @@ function test_createUDF() {
     };
 
     var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, createUdf);
-    if (result is UserDefinedFunction) {
+    if (result is UserDefinedFunctionResponse) {
         udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -836,7 +836,7 @@ function test_replaceUDF() {
     };
 
     var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, replacementUdf);
-    if (result is UserDefinedFunction) {
+    if (result is UserDefinedFunctionResponse) {
         udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -854,7 +854,7 @@ function test_listAllUDF() {
     string containerId = container.id;
 
     var result = azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is stream<UserDefinedFunction>) {
+    if (result is stream<UserDefinedFunctionResponse>) {
         var userDefinedFunction = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -927,7 +927,7 @@ function test_createTrigger() {
     };
 
     var result = azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
-    if (result is Trigger) {
+    if (result is TriggerResponse) {
         trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -979,7 +979,7 @@ function test_replaceTrigger() {
     };
 
     var result = azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
-    if (result is Trigger) {
+    if (result is TriggerResponse) {
         trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -997,7 +997,7 @@ function test_listTriggers() {
     string containerId = container.id;
 
     var result = azureCosmosClient->listTriggers(databaseId, containerId);
-    if (result is stream<Trigger>) {
+    if (result is stream<TriggerResponse>) {
         var doc = result.next();
     } else {
         test:assertFail(msg = result.message());

@@ -29,9 +29,10 @@ public type AzureCosmosConfiguration record {|
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + timeStamp - Timestamp (_ts) specifies the last updated timestamp of the resource.
 public type Common record {|
-    string resourceId?;
-    string selfReference?;
-    string timeStamp?;
+    string resourceId = "";
+    string selfReference = "";
+    string timeStamp = "";
+    ResponseMetadata responseHeaders = {};
 |};
 
 # Represents the response headers which is returned.
@@ -48,31 +49,16 @@ public type ResponseMetadata record {|
     string sessionToken?;
     string requestCharge?;
     string resourceUsage?;
-    //string? itemCountHeader = ();
     string etag?;
     string date?;
 |};
 
-# Represent the record type with options represent for throughput.
-# 
-# + throughput - Manual throughput value which must be more than 400RU/s.
-# + maxThroughput - Autoscaling throughout which is represented as a json object.
-public type ThroughputProperties record {
-    int? throughput = ();
-    json? maxThroughput = ();
-};
-
 # Represents the elements representing information about a database.
 # 
 # + id - User generated unique ID for the database. 
-# + collections - Addressable path of the collections resource.
-# + users - Addressable path of the users resource.
 public type Database record {|
     string id = "";
     *Common;
-    string collections?;
-    string users?;
-    ResponseMetadata?...;
 |};
 
 # Represents the elements representing information about a collection.
@@ -80,22 +66,12 @@ public type Database record {|
 # + id - User generated unique ID for the container.
 # + indexingPolicy - Object of type IndexingPolicy. 
 # + partitionKey - Object of type PartitionKey.
-# + collections - Addressable path of the collections resource.
-# + storedProcedures - Addressable path of the stored procedures resource.
-# + triggers - Addressable path of the triggers resource.
-# + userDefinedFunctions - Addressable path of the user-defined functions resource.
-# + conflicts - Addressable path of the conflicts resource. 
 # + allowMaterializedViews - Representing whether to allow materialized views.
 public type Container record {|
     string id = "";
     *Common;
     IndexingPolicy indexingPolicy?;
     PartitionKey partitionKey = {};
-    string collections?;
-    string storedProcedures?;
-    string triggers?;
-    string userDefinedFunctions?;
-    string conflicts?;
     boolean allowMaterializedViews?;
     ResponseMetadata?...;
 |};
@@ -104,12 +80,10 @@ public type Container record {|
 # 
 # + id - User generated unique ID for the document. 
 # + documentBody - BSON document.
-# + attachments - Addressable path for the attachments resource.
 public type Document record {|
     string id = "";
     *Common;
     json documentBody = {};
-    string attachments?;
     ResponseMetadata?...;
 |};
 
@@ -188,16 +162,22 @@ public type PartitionKeyRange record {|
 # + body - Body of the stored procedure.
 public type StoredProcedure record {|
     string id = "";
-    *Common;
     string body = "";
-    ResponseMetadata?...;
+|};
+
+public type StoredProcedureResponse record {|
+    *StoredProcedure;
+    *Common;
 |};
 
 public type UserDefinedFunction record {|
     string id = "";
-    *Common;
     string body = "";
-    ResponseMetadata?...;
+|};
+
+public type UserDefinedFunctionResponse record {|
+    *UserDefinedFunction;
+    *Common;
 |};
 
 # Represent the record type with necessary parameters to represent a trigger.
@@ -208,7 +188,11 @@ public type Trigger record {|
     *StoredProcedure;
     string triggerOperation = "";
     string triggerType = "";
-    ResponseMetadata?...;
+|};
+
+public type TriggerResponse record {|
+    *Trigger;
+    *Common;
 |};
 
 # Represent the record type with necessary parameters to represent a user.
@@ -290,4 +274,3 @@ public type QueryParameter record {|
     string name = "";
     string|int|boolean value = "";
 |};
-

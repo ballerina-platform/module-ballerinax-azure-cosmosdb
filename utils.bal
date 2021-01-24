@@ -446,9 +446,9 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 
 /// Revisit
 function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|Database[]|
-Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted 
+Container[]|StoredProcedureResponse[]|UserDefinedFunctionResponse[]|TriggerResponse[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted 
 string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<
-Container>|stream<StoredProcedure>|stream<UserDefinedFunction>|stream<Trigger>|stream<User>|stream<Permission>|stream<
+Container>|stream<StoredProcedureResponse>|stream<UserDefinedFunctionResponse>|stream<TriggerResponse>|stream<User>|stream<Permission>|stream<
 PartitionKeyRange>|stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
@@ -529,17 +529,16 @@ PartitionKeyRange>|stream<json>|error {
         } else {
             return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (arrayType is typedesc<StoredProcedure[]> || arrayType is typedesc<UserDefinedFunction[]>) {
-        StoredProcedure[] storedProcedures = <StoredProcedure[]>array;
-        UserDefinedFunction[] userDefinedFunctions = <UserDefinedFunction[]>array;
+    } else if (arrayType is typedesc<StoredProcedureResponse[]> || arrayType is typedesc<UserDefinedFunctionResponse[]>) {
+        StoredProcedureResponse[] storedProcedures = <StoredProcedureResponse[]>array;
+        UserDefinedFunctionResponse[] userDefinedFunctions = <UserDefinedFunctionResponse[]>array;
         if (payload.StoredProcedures is json) {
-            StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.
-            StoredProcedures);
-            stream<StoredProcedure> storedProcedureStream = (<@untainted>finalArray).toStream();
+            StoredProcedureResponse[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
+            stream<StoredProcedureResponse> storedProcedureStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<StoredProcedure>>) {
-                    storedProcedureStream = <stream<StoredProcedure>>streams;
+                if (typeof streams is typedesc<stream<StoredProcedureResponse>>) {
+                    storedProcedureStream = <stream<StoredProcedureResponse>>streams;
                 } else {
                     return prepareModuleError(
                     STREAM_IS_NOT_TYPE_ERROR + string `${(typeof storedProcedureStream).toString()}.`);
@@ -547,13 +546,13 @@ PartitionKeyRange>|stream<json>|error {
             }
             return storedProcedureStream;
         } else if (payload.UserDefinedFunctions is json) {
-            UserDefinedFunction[] finalArray = convertsToUserDefinedFunctionArray(userDefinedFunctions, <json[]>payload.
-            UserDefinedFunctions);
-            stream<UserDefinedFunction> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
+            UserDefinedFunctionResponse[] finalArray = convertsToUserDefinedFunctionArray(userDefinedFunctions, <json[]>payload.
+                                            UserDefinedFunctions);
+            stream<UserDefinedFunctionResponse> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<UserDefinedFunction>>) {
-                    userDefinedFunctionStream = <stream<UserDefinedFunction>>streams;
+                if (typeof streams is typedesc<stream<UserDefinedFunctionResponse>>) {
+                    userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>>streams;
                 } else {
                     return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${
                     (typeof userDefinedFunctionStream).toString()}.`);
@@ -563,15 +562,15 @@ PartitionKeyRange>|stream<json>|error {
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (arrayType is typedesc<Trigger[]>) {
-        Trigger[] triggers = <Trigger[]>array;
+    } else if (arrayType is typedesc<TriggerResponse[]>) {
+        TriggerResponse[] triggers = <TriggerResponse[]>array;
         if (payload.Triggers is json) {
-            Trigger[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
-            stream<Trigger> triggerStream = (<@untainted>finalArray).toStream();
+            TriggerResponse[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
+            stream<TriggerResponse> triggerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Trigger>>) {
-                    triggerStream = <stream<Trigger>>streams;
+                if (typeof streams is typedesc<stream<TriggerResponse>>) {
+                    triggerStream = <stream<TriggerResponse>>streams;
                 } else {
                     return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof triggerStream).toString()}.`);
                 }
