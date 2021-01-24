@@ -324,6 +324,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
             return authorization;
         } else {
             log:printError(DECODING_ERROR);
+            //return prepareError(DECODING_ERROR);
         }
     } else {
         log:printError(DECODING_ERROR);
@@ -348,30 +349,21 @@ isolated function mapResponseToTuple(http:Response|http:PayloadType|error httpRe
 // # + return - If successful, returns json. Else returns error. 
 isolated function handleResponse(http:Response|http:PayloadType|error httpResponse) returns @tainted json|error {
     if (httpResponse is http:Response) {
-        if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-            json|error jsonResponse = httpResponse.getJsonPayload();
-            if (jsonResponse is json) {
+        if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
+            //If status 204, then no response body. So returns json boolean true.
+            return true;
+        }
+        var jsonResponse = httpResponse.getJsonPayload();
+        if (jsonResponse is json) {
+            if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+            //If status is 200 or 201, request is successful. Returns resulting payload.
                 return jsonResponse;
             } else {
-                return prepareError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
-            }
-        } else if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
-            return ();
-        } else {
-            json|error jsonResponse = httpResponse.getJsonPayload();
-            if (jsonResponse is json) {
                 string message = jsonResponse.message.toString();
-                // string errorMessage = httpResponse.statusCode.toString() + SPACE_STRING + httpResponse.reasonPhrase;
-                // var stoppingIndex = message.indexOf(ACTIVITY_ID);
-                // if (stoppingIndex is int) {
-                //     errorMessage += COLON_WITH_SPACE + message.substring(0, stoppingIndex);
-                // }
-                //return error(message, status = httpResponse.statusCode);
                 return prepareError(message, (), httpResponse.statusCode);
-
-            } else {
-                return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR, jsonResponse);
             }
+        } else {
+            return prepareError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
         }
     } else {
         return prepareError(REST_API_INVOKING_ERROR);

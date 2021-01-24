@@ -115,21 +115,15 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted error? {
+                                    returns @tainted boolean | error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         var response = self.httpClient->delete(requestPath, request);
-        json? deleteResponse = check handleResponse(response);
+        return <boolean>check handleResponse(response);
 
-        ////////////////////check this
-        if (deleteResponse is ()) {
-            return deleteResponse;
-        } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
     }
 
     # Create a container in the given database.
@@ -232,11 +226,14 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted error? {
+                                    returns @tainted boolean|error {
+        http:Request request = new;
+        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-                ////////////////////check this
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
-        return self.deleteRecord(requestPath, requestOptions);
+        var response = self.httpClient->delete(requestPath, request);
+        return <boolean>check handleResponse(response);
     }
 
     # Create a Document inside a container.
@@ -344,7 +341,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted error? { 
+                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -353,12 +350,7 @@ public client class CoreClient {
         setPartitionKeyHeader(request, partitionKey);
 
         var response = self.httpClient->delete(requestPath, request);
-        json? deleteResponse = check handleResponse(response);
-        if (deleteResponse is ()) {
-            return deleteResponse;
-        } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
+        return <boolean>check handleResponse(response);
     }
 
     # Query a container.
@@ -468,13 +460,15 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted error? { 
+                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+        http:Request request = new;
+        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
-        
-                ////////////////////check this
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
-        return self.deleteRecord(requestPath, requestOptions);
+        var response = self.httpClient->delete(requestPath, request);
+        return <boolean>check handleResponse(response);
     }
 
     # Execute a stored procedure in a container.
@@ -583,12 +577,15 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted error? { 
+                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+        http:Request request = new;
+        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_UDF, userDefinedFunctionid]);
-                                                        ////////////////////check this
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
-        return self.deleteRecord(requestPath, requestOptions);
+        var response = self.httpClient->delete(requestPath, request);
+        return <boolean>check handleResponse(response);
     }
 
     # Create a trigger inside a collection.
@@ -675,12 +672,15 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted error? { 
+                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+        http:Request request = new;
+        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_TRIGGER, triggerId]);
-                                                ////////////////////check this
+                                        RESOURCE_TYPE_TRIGGER, triggerId]);        
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
-        return self.deleteRecord(requestPath, requestOptions);
+        var response = self.httpClient->delete(requestPath, request);
+        return <boolean>check handleResponse(response); 
     }
 
 // ------------------------------------------MANAGEMENT PLANE-----------------------------------------------------------
@@ -786,11 +786,14 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted error? {
+                                    returns @tainted boolean|error {
+        http:Request request = new;
+        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-                                                ////////////////////check this
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
-        return self.deleteRecord(requestPath, requestOptions);
+        var response = self.httpClient->delete(requestPath, request);
+        return <boolean>check handleResponse(response);
     }
 
     # Create a permission for a user. 
@@ -903,12 +906,15 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted error? { 
+                                    returns @tainted boolean|error { 
+        http:Request request = new;
+        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                         RESOURCE_TYPE_PERMISSION, permissionId]);
-                                                ////////////////////check this
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
-        return self.deleteRecord(requestPath, requestOptions);
+        var response = self.httpClient->delete(requestPath, request);
+        return <boolean>check handleResponse(response);
     }
 
     # Replace an existing offer.
@@ -1001,19 +1007,5 @@ public client class CoreClient {
         stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
         newArray, maxItemCount, (), true);
         return offerStream;
-    }
-
-    function deleteRecord(string requestPath, ResourceDeleteOptions? requestOptions = ()) returns @tainted error? {
-        http:Request request = new;
-        check createRequest(request, requestOptions);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
-
-        var response = self.httpClient->delete(requestPath, request);
-        json? deleteResponse = check handleResponse(response);
-        if (deleteResponse is ()) {
-            return deleteResponse;
-        } else {
-            return prepareError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
     }
 }
