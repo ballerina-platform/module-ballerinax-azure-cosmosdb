@@ -396,8 +396,13 @@ public client class CoreClient {
                                         RESOURCE_TYPE_STORED_POCEDURES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
-        
+        json payload = {
+            id: storedProcedure.id,
+            body: storedProcedure.storedProcedure
+        };
+        //request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(payload); 
+
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureResponse(jsonResponse);
@@ -416,8 +421,13 @@ public client class CoreClient {
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
-        
+        json payload = {
+            id: storedProcedure.id,
+            body: storedProcedure.storedProcedure
+        };
+        //request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(<@untainted>payload);    
+
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureResponse(jsonResponse);
@@ -504,7 +514,12 @@ public client class CoreClient {
                                         RESOURCE_TYPE_UDF]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
                 
-        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
+        json payload = {
+            id: userDefinedFunction.id,
+            body: userDefinedFunction.userDefinedFunction
+        };
+        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(payload); 
 
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -524,9 +539,13 @@ public client class CoreClient {
                                         RESOURCE_TYPE_UDF, userDefinedFunction.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        
-        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
-       
+        json payload = {
+            id: userDefinedFunction.id,
+            body: userDefinedFunction.userDefinedFunction
+        };
+        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(<@untainted>payload); 
+
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionResponse(jsonResponse);
@@ -590,8 +609,15 @@ public client class CoreClient {
                                         RESOURCE_TYPE_TRIGGER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json)); // we can use checkpanic 
-
+        json payload = {
+            id: trigger.id,
+            body: trigger.triggerFunction,
+            triggerOperation: trigger.triggerOperation,
+            triggerType: trigger.triggerType
+        };
+        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(payload); 
+        
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToTriggerResponse(jsonResponse);
@@ -610,8 +636,15 @@ public client class CoreClient {
                                         RESOURCE_TYPE_TRIGGER, trigger.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json)); // we can use checkpanic 
-
+        json payload = {
+            id: trigger.id,
+            body: trigger.triggerFunction,
+            triggerOperation: trigger.triggerOperation,
+            triggerType: trigger.triggerType
+        };
+        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(<@untainted>payload);
+        
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToTriggerResponse(jsonResponse);

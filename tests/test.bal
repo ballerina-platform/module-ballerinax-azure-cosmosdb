@@ -677,7 +677,7 @@ function test_createStoredProcedure() {
                                         }`;
     StoredProcedure sp = {
         id: string `sproc_${uuid.toString()}`,
-        body: createSprocBody
+        storedProcedure: createSprocBody
     };
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sp);
@@ -705,7 +705,7 @@ function test_replaceStoredProcedure() {
                                             }`;
     StoredProcedure sp = {
         id: storedPrcedure.id,
-        body: replaceSprocBody
+        storedProcedure: replaceSprocBody
     };
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sp);
     if (result is StoredProcedureResponse) {
@@ -800,7 +800,7 @@ function test_createUDF() {
                                             }`;
     UserDefinedFunction createUdf = {
         id: udfId,
-        body: createUDFBody
+        userDefinedFunction: createUDFBody
     };
 
     var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, createUdf);
@@ -832,7 +832,7 @@ function test_replaceUDF() {
                                                 }`;
     UserDefinedFunction replacementUdf = {
         id: udf.id,
-        body: replaceUDFBody
+        userDefinedFunction: replaceUDFBody
     };
 
     var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, replacementUdf);
@@ -921,7 +921,7 @@ function test_createTrigger() {
     string createTriggerType = "Post";
     Trigger createTrigger = {
         id: triggerId,
-        body: createTriggerBody,
+        triggerFunction: createTriggerBody,
         triggerOperation: createTriggerOperation,
         triggerType: createTriggerType
     };
@@ -973,7 +973,7 @@ function test_replaceTrigger() {
     string replaceTriggerType = "Post";
     Trigger replaceTrigger = {
         id: trigger.id,
-        body: replaceTriggerBody,
+        triggerFunction: replaceTriggerBody,
         triggerOperation: replaceTriggerOperation,
         triggerType: replaceTriggerType
     };
@@ -1295,7 +1295,8 @@ function test_getOffer() {
 }
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOffer() {
     log:print("ACTION : replaceOffer()");
@@ -1322,7 +1323,8 @@ function test_replaceOffer() {
 }
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 }
 function test_replaceOfferWithOptionalParameter() {
     log:print("ACTION : replaceOfferWithOptionalParameter()");

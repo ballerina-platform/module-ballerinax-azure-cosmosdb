@@ -529,9 +529,8 @@ PartitionKeyRange>|stream<json>|error {
         } else {
             return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (arrayType is typedesc<StoredProcedureResponse[]> || arrayType is typedesc<UserDefinedFunctionResponse[]>) {
+    } else if (arrayType is typedesc<StoredProcedureResponse[]>) {
         StoredProcedureResponse[] storedProcedures = <StoredProcedureResponse[]>array;
-        UserDefinedFunctionResponse[] userDefinedFunctions = <UserDefinedFunctionResponse[]>array;
         if (payload.StoredProcedures is json) {
             StoredProcedureResponse[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
             stream<StoredProcedureResponse> storedProcedureStream = (<@untainted>finalArray).toStream();
@@ -545,22 +544,25 @@ PartitionKeyRange>|stream<json>|error {
                 }
             }
             return storedProcedureStream;
-        } else if (payload.UserDefinedFunctions is json) {
-            UserDefinedFunctionResponse[] finalArray = convertsToUserDefinedFunctionArray(userDefinedFunctions, <json[]>payload.
-                                            UserDefinedFunctions);
+        } else {
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<UserDefinedFunctionResponse[]>) {
+        UserDefinedFunctionResponse[] userDefineFunctions = <UserDefinedFunctionResponse[]>array;
+        if (payload.UserDefinedFunctions is json) {
+            UserDefinedFunctionResponse[] finalArray = convertsToUserDefinedFunctionArray(userDefineFunctions, <json[]>payload.UserDefinedFunctions);
             stream<UserDefinedFunctionResponse> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<UserDefinedFunctionResponse>>) {
                     userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>>streams;
                 } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${
-                    (typeof userDefinedFunctionStream).toString()}.`);
+                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof userDefinedFunctionStream).toString()}.`);
                 }
             }
             return userDefinedFunctionStream;
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
     } else if (arrayType is typedesc<TriggerResponse[]>) {
         TriggerResponse[] triggers = <TriggerResponse[]>array;

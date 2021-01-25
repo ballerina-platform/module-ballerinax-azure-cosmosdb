@@ -153,10 +153,10 @@ public type PartitionKey record {|
 # Represent the record type with necessary parameters to represent a stored procedure.
 # 
 # + id - User generated unique ID for the stored procedure. 
-# + body - Body of the stored procedure.
+# + storedProcedure - Javasctipt function.
 public type StoredProcedure record {|
     string id = "";
-    string body = "";
+    string storedProcedure = "";
 |};
 
 public type StoredProcedureResponse record {|
@@ -166,7 +166,7 @@ public type StoredProcedureResponse record {|
 
 public type UserDefinedFunction record {|
     string id = "";
-    string body = "";
+    string userDefinedFunction = "";
 |};
 
 public type UserDefinedFunctionResponse record {|
@@ -176,10 +176,13 @@ public type UserDefinedFunctionResponse record {|
 
 # Represent the record type with necessary parameters to represent a trigger.
 # 
+# + id - User generated unique ID for the trigger.
+# + triggerFunction - Javasctipt function.
 # + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
 # + triggerType - When the trigger is fired, "Pre" or "Post".
 public type Trigger record {|
-    *StoredProcedure;
+    string id = "";
+    string triggerFunction = "";
     string triggerOperation = "";
     string triggerType = "";
 |};

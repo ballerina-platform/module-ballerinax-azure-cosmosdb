@@ -160,7 +160,7 @@ isolated function mapJsonToStoredProcedureResponse([json, ResponseMetadata?] jso
     var [payload, headers] = jsonPayload;
     storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     storedProcedureResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    storedProcedureResponse.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
+    storedProcedureResponse.storedProcedure = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
         storedProcedureResponse.responseHeaders = headers;
     }
@@ -177,7 +177,7 @@ UserDefinedFunctionResponse {
     var [payload, headers] = jsonPayload;
     userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    userDefinedFunctionResponse.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
+    userDefinedFunctionResponse.userDefinedFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
         userDefinedFunctionResponse.responseHeaders = headers;
     }
@@ -189,17 +189,17 @@ UserDefinedFunctionResponse {
 // # + jsonPayload - A tuple which contains headers and json object returned from request.
 // # + return - An instance of record type Trigger.
 isolated function mapJsonToTriggerResponse([json, ResponseMetadata?] jsonPayload) returns @tainted TriggerResponse {
-    TriggerResponse trigger = {};
+    TriggerResponse triggerResponse = {};
     var [payload, headers] = jsonPayload;
-    trigger.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    trigger.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    trigger.body = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    trigger.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
-    trigger.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
+    triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    triggerResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
+    triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
+    triggerResponse.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
-        trigger.responseHeaders = headers;
+        triggerResponse.responseHeaders = headers;
     }
-    return trigger;
+    return triggerResponse;
 }
 
 // # Maps the json response returned from the request into record type of User.
