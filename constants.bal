@@ -158,6 +158,9 @@ const int MIN_REQUEST_UNITS = 400;
 const int MIN_TIME_TO_LIVE = 3600;
 const int MAX_TIME_TO_LIVE = 18000;
 
+// Algorithm Used for partitioning
+const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
+
 // String constants
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";

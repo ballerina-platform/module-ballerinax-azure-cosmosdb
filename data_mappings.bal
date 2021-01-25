@@ -40,11 +40,10 @@ isolated function mapJsonToContainerType([json, ResponseMetadata?] jsonPayload) 
     container.id = payload.id.toString();
     container.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     container.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
-    container.allowMaterializedViews = convertToBoolean(payload.allowMaterializedViews);
     container.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
     container.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
     if (headers is ResponseMetadata) {
-        container[RESPONSE_HEADERS] = headers;
+        container.responseHeaders = headers;
     }
     return container;
 }
@@ -59,12 +58,12 @@ isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) r
     document.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
-    JsonMap|error documentBodyJson = payload.cloneWithType(JsonMap);
-    if (documentBodyJson is JsonMap) {
+    map<json>|error documentBodyJson = payload.cloneWithType(JsonMap); /// Why this does not work with map<json>??
+    if (documentBodyJson is map<json>) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
     }
     if (headers is ResponseMetadata) {
-        document[RESPONSE_HEADERS] = headers;
+        document.responseHeaders = headers;
     }
     return document;
 }
@@ -104,7 +103,6 @@ isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted Ind
 isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @tainted PartitionKey {
     PartitionKey partitionKey = {};
     partitionKey.paths = convertToStringArray(<json[]>jsonPayload.paths);
-    partitionKey.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
     partitionKey.keyVersion = convertToInt(jsonPayload.'version);
     return partitionKey;
 }
@@ -121,7 +119,7 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseMetadata?] jsonPaylo
     partitionKeyRange.maxExclusive = payload.maxExclusive != () ? payload.maxExclusive.toString() : EMPTY_STRING;
     partitionKeyRange.status = payload.status != () ? payload.status.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
-        partitionKeyRange[RESPONSE_HEADERS] = headers;
+        partitionKeyRange.responseHeaders = headers;
     }
     return partitionKeyRange;
 }
@@ -214,7 +212,7 @@ isolated function mapJsonToUserType([json, ResponseMetadata?] jsonPayload) retur
     user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
-        user[RESPONSE_HEADERS] = headers;
+        user.responseHeaders = headers;
     }
     return user;
 }
@@ -232,7 +230,7 @@ isolated function mapJsonToPermissionType([json, ResponseMetadata?] jsonPayload)
     permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
     permission.resourcePath = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
-        permission[RESPONSE_HEADERS] = headers;
+        permission.responseHeaders = headers;
     }
     return permission;
 }
@@ -252,7 +250,7 @@ isolated function mapJsonToOfferType([json, ResponseMetadata?] jsonPayload) retu
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
     if (headers is ResponseMetadata) {
-        offer[RESPONSE_HEADERS] = headers;
+        offer.responseHeaders = headers;
     }
     return offer;
 }

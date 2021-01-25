@@ -201,10 +201,12 @@ function test_listOneDatabase() {
         "test_listOneDatabase", 
         "test_createDatabase", 
         "test_getAllContainers", 
+        "test_createContainerIfNotExist", 
+        "test_deleteContainer",
+        "test_createCollectionWithManualThroughputAndIndexingPolicy",
         "test_getDocumentListWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentList", 
-        "test_createCollectionWithManualThroughputAndIndexingPolicy", 
         "test_deleteDocument", 
         "test_deleteOneStoredProcedure", 
         "test_getAllStoredProcedures", 
@@ -212,8 +214,6 @@ function test_listOneDatabase() {
         "test_deleteUDF", 
         "test_deleteTrigger", 
         "test_deleteUser", 
-        "test_createContainerIfNotExist", 
-        "test_deleteContainer", 
         "test_createPermissionWithTTL",
         "test_getCollection_Resource_Token"
     ]
@@ -352,6 +352,7 @@ function test_getAllContainers() {
     groups: ["container"], 
     dependsOn: [
         "test_getOneContainer", 
+        "test_getAllContainers",
         "test_getDocumentList", 
         "test_deleteDocument", 
         "test_queryDocuments", 
@@ -364,10 +365,9 @@ function test_getAllContainers() {
         "test_GetOneDocumentWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
         "test_getDocumentListWithRequestOptions", 
-        "test_getAllContainers",
         "test_getCollection_Resource_Token"
-        //"test_replaceOfferWithOptionalParameter",
-        //"test_replaceOffer"
+        // "test_replaceOfferWithOptionalParameter",
+        // "test_replaceOffer"
     ]
 }
 function test_deleteContainer() {
@@ -414,35 +414,34 @@ function test_createDocument() {
     string databaseId = database.id;
     string containerId = container.id;
     int[] valueOfPartitionKey = [1234];
-    Document createDoc = {
-        id: string `document_${uuid.toString()}`,
-        documentBody: {
-            "LastName": "keeeeeee",
-            "Parents": [{
-                "FamilyName": null,
-                "FirstName": "Thomas"
-            }, {
-                "FamilyName": null,
-                "FirstName": "Mary Kay"
-            }],
-            "Children": [{
-                "FamilyName": null,
-                "FirstName": "Henriette Thaulow",
-                "Gender": "female",
-                "Grade": 5,
-                "Pets": [{"GivenName": "Fluffy"}]
-            }],
-            "Address": {
-                "State": "WA",
-                "County": "King",
-                "City": "Seattle"
-            },
-            "IsRegistered": true,
-            "AccountNumber": 1234
-        }
+    string id = string `document_${uuid.toString()}`;
+
+    json documentBody = {
+        "LastName": "keeeeeee",
+        "Parents": [{
+            "FamilyName": null,
+            "FirstName": "Thomas"
+        }, {
+            "FamilyName": null,
+            "FirstName": "Mary Kay"
+        }],
+        "Children": [{
+            "FamilyName": null,
+            "FirstName": "Henriette Thaulow",
+            "Gender": "female",
+            "Grade": 5,
+            "Pets": [{"GivenName": "Fluffy"}]
+        }],
+        "Address": {
+            "State": "WA",
+            "County": "King",
+            "City": "Seattle"
+        },
+        "IsRegistered": true,
+        "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, createDoc, valueOfPartitionKey);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey);
     if (result is Document) {
         document = <@untainted>result;
     } else {
@@ -465,40 +464,41 @@ function test_createDocumentWithRequestOptions() {
         indexingDirective: "Include"
     };
     int[] valueOfPartitionKey = [1234];
-    Document createDoc = {
-        id: string `document_${uuid.toString()}`,
-        documentBody: {
-            "LastName": "keeeeeee",
-            "Parents": [{
-                "FamilyName": null,
-                "FirstName": "Thomas"
-            }, {
-                "FamilyName": null,
-                "FirstName": "Mary Kay"
-            }],
-            "Children": [{
-                "FamilyName": null,
-                "FirstName": "Henriette Thaulow",
-                "Gender": "female",
-                "Grade": 5,
-                "Pets": [{"GivenName": "Fluffy"}]
-            }],
-            "Address": {
-                "State": "WA",
-                "County": "King",
-                "City": "Seattle"
-            },
-            "IsRegistered": true,
-            "AccountNumber": 1234
-        }
+    string id = string `document_${uuid.toString()}`;
+
+    json documentBody = {
+        "LastName": "keeeeeee",
+        "Parents": [{
+            "FamilyName": null,
+            "FirstName": "Thomas"
+        }, {
+            "FamilyName": null,
+            "FirstName": "Mary Kay"
+        }],
+        "Children": [{
+            "FamilyName": null,
+            "FirstName": "Henriette Thaulow",
+            "Gender": "female",
+            "Grade": 5,
+            "Pets": [{"GivenName": "Fluffy"}]
+        }],
+        "Address": {
+            "State": "WA",
+            "County": "King",
+            "City": "Seattle"
+        },
+        "IsRegistered": true,
+        "AccountNumber": 1234
     };
-    var result = azureCosmosClient->createDocument(databaseId, containerId, createDoc, valueOfPartitionKey, options);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, options);
     if (result is Document) {
         document = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
 }
+
+// Replace document 
 
 @test:Config {
     groups: ["document"],

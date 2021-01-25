@@ -146,13 +146,13 @@ public client class CoreClient {
         json jsonPayload = {
             id: containerId,
             partitionKey: {
-                paths: <json>partitionKey.paths.cloneWithType(json),
+                paths: <json>partitionKey.paths.cloneWithType(json), // we can use checkpanic 
                 kind: partitionKey.kind,
                 Version: partitionKey?.keyVersion
             }
         };
-        if (indexingPolicy != ()) {
-            jsonPayload = check jsonPayload.mergeJson({indexingPolicy: <json>indexingPolicy.cloneWithType(json)});
+        if (indexingPolicy != ()) {  //////////////
+            jsonPayload = checkpanic jsonPayload.mergeJson({indexingPolicy: <json>indexingPolicy.cloneWithType(json)}); // we can use checkpanic 
         }
         request.setJsonPayload(<@untainted>jsonPayload);
 
@@ -241,17 +241,17 @@ public client class CoreClient {
     # + document - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
-    remote function createDocument(string databaseId, string containerId, Document document, any[] partitionKey,
+    remote function createDocument(string databaseId, string containerId, string documentId, json document, any[] valueOfPartitionKey,
                                     DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
+        setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        json jsonPayload = {id: document.id};
-        jsonPayload = check jsonPayload.mergeJson(document.documentBody);
+        json jsonPayload = {id: documentId};
+        jsonPayload = checkpanic jsonPayload.mergeJson(document); ////////////////////
         request.setJsonPayload(jsonPayload);
 
         var response = self.httpClient->post(requestPath, request);
@@ -266,17 +266,17 @@ public client class CoreClient {
     # + document - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, @tainted Document document, any[] partitionKey, 
+    remote function replaceDocument(string databaseId, string containerId, string documentId, json document, any[] valueOfPartitionKey, 
                                     DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS, document.id]);
+                                        RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
+        setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        json jsonPayload = {id: document.id};
-        jsonPayload = check jsonPayload.mergeJson(document.documentBody);
+        json jsonPayload = {id: documentId};
+        jsonPayload = checkpanic jsonPayload.mergeJson(document); ///////////////
         request.setJsonPayload(<@untainted>jsonPayload);
 
         var response = self.httpClient->put(requestPath, request);
@@ -289,17 +289,17 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
     # + documentId - Id of the document to retrieve. 
-    # + partitionKey - Array containing the value of parition key field of the container.
+    # + valueOfPartitionKey - Array containing the value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
-    remote function getDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
+    remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
                                     DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
+        setPartitionKeyHeader(request, valueOfPartitionKey);
 
         var response = self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -335,17 +335,17 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.    
     # + documentId - ID of the document to delete. 
-    # + partitionKey - Array containing the value of parition key  of the container.
+    # + valueOfPartitionKey - Array containing the value of parition key  of the container.
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    remote function deleteDocument(string databaseId, string containerId, string documentId, any[] partitionKey, 
+    remote function deleteDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
                                     ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
+        setPartitionKeyHeader(request, valueOfPartitionKey);
 
         var response = self.httpClient->delete(requestPath, request);
         return <boolean>check handleResponse(response);
@@ -356,22 +356,22 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container to query.     
     # + sqlQuery - A cosmosdb:Query containing the SQL query and parameters.
-    # + partitionKey - Optional. An array containing the value of the partition key specified for the document.
+    # + valueOfPartitionKey - Optional. An array containing the value of the partition key specified for the document.
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [], int? maxItemCount = (), 
-                                    any[]? partitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
+                                    any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
+        setPartitionKeyHeader(request, valueOfPartitionKey);
 
         json payload = {
             query: sqlQuery,
-            parameters: <json>parameters.cloneWithType(json)
+            parameters: <json>parameters.cloneWithType(json) //// we can use checkpanic 
         };
         request.setJsonPayload(<@untainted>payload);
 
@@ -396,7 +396,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_STORED_POCEDURES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json));
+        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
         
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -416,7 +416,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json));
+        request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
         
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -504,7 +504,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_UDF]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
                 
-        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json));
+        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
 
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -525,7 +525,7 @@ public client class CoreClient {
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         
-        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json));
+        request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
        
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -590,7 +590,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_TRIGGER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json));
+        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json)); // we can use checkpanic 
 
         var response = self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -610,7 +610,7 @@ public client class CoreClient {
                                         RESOURCE_TYPE_TRIGGER, trigger.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
-        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json));
+        request.setJsonPayload(<@untainted><json>trigger.cloneWithType(json)); // we can use checkpanic 
 
         var response = self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -914,7 +914,7 @@ public client class CoreClient {
         };
         if (offerType is string && offer.offerVersion == OFFER_VERSION_1) {
             json selectedType = {offerType: offerType};
-            jsonPaylod = check jsonPaylod.mergeJson(selectedType);
+            jsonPaylod = checkpanic jsonPaylod.mergeJson(selectedType); ////////////
         }
         request.setJsonPayload(jsonPaylod);
 
@@ -977,7 +977,7 @@ public client class CoreClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
-        request.setJsonPayload(<json>sqlQuery.cloneWithType(json));
+        request.setJsonPayload(<json>sqlQuery.cloneWithType(json)); // we can use checkpanic 
         setHeadersForQuery(request);
 
         Offer[] newArray = [];

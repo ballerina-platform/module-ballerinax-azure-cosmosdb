@@ -23,11 +23,25 @@ public type AzureCosmosConfiguration record {|
     string masterOrResourceToken;
 |};
 
+# Represent the record type with the necessary paramateres for creation of authorization signature.
+# 
+# + verb - HTTP verb of the request call.
+# + apiVersion - Version of the API.
+# + resourceType - Resource type, the relevent request targetted to.
+# + resourceId - Resource ID, the relevent request targetted to.
+type HeaderParameters record {|
+    string verb = "";
+    string apiVersion = API_VERSION;
+    string resourceType = "";
+    string resourceId = "";
+|};
+
 # Represents the common elements which are returned inside json reponse body.
 # 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + timeStamp - Timestamp (_ts) specifies the last updated timestamp of the resource.
+# + responseHeaders - The important response headers.
 public type Common record {|
     string resourceId = "";
     string selfReference = "";
@@ -41,7 +55,6 @@ public type Common record {|
 # + sessionToken - Session token of the request.
 # + requestCharge - This is the number of normalized requests a.k.a. request units (RU) for the operation.
 # + resourceUsage - Current usage count of a resource in an account.  
-//# + itemCount - Number of items returned for a query or read-feed request.
 # + etag - Resource etag for the resource retrieved same as eTag in the response. 
 # + date - Date time of the response operation.
 public type ResponseMetadata record {|
@@ -66,14 +79,11 @@ public type Database record {|
 # + id - User generated unique ID for the container.
 # + indexingPolicy - Object of type IndexingPolicy. 
 # + partitionKey - Object of type PartitionKey.
-# + allowMaterializedViews - Representing whether to allow materialized views.
 public type Container record {|
     string id = "";
-    *Common;
-    IndexingPolicy indexingPolicy?;
+    IndexingPolicy indexingPolicy = {};
     PartitionKey partitionKey = {};
-    boolean allowMaterializedViews?;
-    ResponseMetadata?...;
+    *Common;
 |};
 
 # Represent the parameters representing information about a document in Cosmos DB.
@@ -82,9 +92,8 @@ public type Container record {|
 # + documentBody - BSON document.
 public type Document record {|
     string id = "";
-    *Common;
     json documentBody = {};
-    ResponseMetadata?...;
+    *Common;
 |};
 
 # Represent the parameters necessary to create an indexing policy when creating a container.
@@ -122,11 +131,11 @@ public type ExcludedPath record {|
 # + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
 #               or "LineString"
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
-#                   and 1-100 for String. Not applicable for Point, Polygon, and LineString data types.
+#                   and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1
 public type Index record {|
-    string kind = "";
+    string kind = "Hash";
     string dataType = "";
-    int precision?;
+    int precision = -1;
 |};
 
 # Represent the record type with necessary parameters to represent a partition key.
@@ -137,23 +146,8 @@ public type Index record {|
 # + keyVersion - Version of partition key.
 public type PartitionKey record {|
     string[] paths = [];
-    string kind = "Hash";
+    readonly string kind = PARTITIONING_ALGORITHM_TYPE_HASH;
     int keyVersion = 1;
-|};
-
-# Reprsent the record type with necessary paramaters to create partition key range.
-# 
-# + id - ID for the partition key range.
-# + minInclusive - Minimum partition key hash value for the partition key range. 
-# + maxExclusive - Maximum partition key hash value for the partition key range. 
-# + status - 
-public type PartitionKeyRange record {|
-    string id = "";
-    *Common;
-    string minInclusive = "";
-    string maxExclusive = "";
-    string status = "";
-    ResponseMetadata?...;
 |};
 
 # Represent the record type with necessary parameters to represent a stored procedure.
@@ -195,66 +189,6 @@ public type TriggerResponse record {|
     *Common;
 |};
 
-# Represent the record type with necessary parameters to represent a user.
-# 
-# + id - User generated unique ID for the user. 
-# + permissions - Addressable path of the permissions resource.
-public type User record {|
-    string id = "";
-    *Common;
-    string permissions?;
-    ResponseMetadata?...;
-|};
-
-# Represent the record type with necessary parameters to represent a permission.
-# 
-# + id - User generated unique ID for the permission.
-# + permissionMode - Access mode for the resource, "All" or "Read".
-# + resourcePath - Full addressable path of the resource associated with the permission.
-# + validityPeriod - Optional. Validity period of the resource token.
-# + token - System generated resource token for the particular resource and user.
-public type Permission record {|
-    string id = "";
-    *Common;
-    string permissionMode = "";
-    string resourcePath = "";
-    int validityPeriod?;
-    string token?;
-    ResponseMetadata?...;
-|};
-
-# Represent the record type with necessary parameters to represent an offer.
-# 
-# + id - User generated unique ID for the offer.
-# + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined throughput levels.
-# + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
-# + content - Information about the offer.
-# + resourceResourceId - The resource id(_rid) of the collection.
-# + resourceSelfLink - The self-link of the collection.
-public type Offer record {|
-    string id = "";
-    *Common;
-    string offerVersion = "";
-    string? offerType?;
-    json content = {};
-    string resourceResourceId = "";
-    string resourceSelfLink = "";
-    ResponseMetadata?...;
-|};
-
-# Represent the record type with the necessary paramateres for creation of authorization signature.
-# 
-# + verb - HTTP verb of the request call.
-# + apiVersion - Version of the API.
-# + resourceType - Resource type, the relevent request targetted to.
-# + resourceId - Resource ID, the relevent request targetted to.
-type HeaderParameters record {|
-    string verb = "";
-    string apiVersion = API_VERSION;
-    string resourceType = "";
-    string resourceId = "";
-|};
-
 type JsonMap map<json>;
 
 # Represents the record type which contain necessary elements for a query.
@@ -273,4 +207,63 @@ public type Query record {|
 public type QueryParameter record {|
     string name = "";
     string|int|boolean value = "";
+|};
+
+// ---------------------------------------------Managment Plane-------------------------------------------------------
+# Reprsent the record type with necessary paramaters to create partition key range.
+# 
+# + id - ID for the partition key range.
+# + minInclusive - Minimum partition key hash value for the partition key range. 
+# + maxExclusive - Maximum partition key hash value for the partition key range. 
+# + status - 
+public type PartitionKeyRange record {|
+    string id = "";
+    string minInclusive = "";
+    string maxExclusive = "";
+    string status = "";
+    *Common;
+|};
+
+# Represent the record type with necessary parameters to represent a user.
+# 
+# + id - User generated unique ID for the user. 
+# + permissions - Addressable path of the permissions resource.
+public type User record {|
+    string id = "";
+    string permissions?;
+    *Common;
+|};
+
+# Represent the record type with necessary parameters to represent a permission.
+# 
+# + id - User generated unique ID for the permission.
+# + permissionMode - Access mode for the resource, "All" or "Read".
+# + resourcePath - Full addressable path of the resource associated with the permission.
+# + validityPeriod - Optional. Validity period of the resource token.
+# + token - System generated resource token for the particular resource and user.
+public type Permission record {|
+    string id = "";
+    string permissionMode = "";
+    string resourcePath = "";
+    int validityPeriod?;
+    string token?;
+    *Common;
+|};
+
+# Represent the record type with necessary parameters to represent an offer.
+# 
+# + id - User generated unique ID for the offer.
+# + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined throughput levels.
+# + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
+# + content - Information about the offer.
+# + resourceResourceId - The resource id(_rid) of the collection.
+# + resourceSelfLink - The self-link of the collection.
+public type Offer record {|
+    string id = "";
+    string offerVersion = "";
+    string? offerType?;
+    json content = {};
+    string resourceResourceId = "";
+    string resourceSelfLink = "";
+    *Common;
 |};
