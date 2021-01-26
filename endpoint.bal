@@ -135,10 +135,10 @@ public client class CoreClient {
         //return <boolean>check handleResponse(response);  - this is the way in gmail connector
         json|error value = handleResponse(response);
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
     # Create a container in the given database.
@@ -251,10 +251,10 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
     # Create a Document inside a container.
@@ -318,8 +318,8 @@ public client class CoreClient {
     # + valueOfPartitionKey - Array containing the value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
-	remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
-        	DocumentGetOptions? requestOptions = ()) returns @tainted DocumentResponse|error { 
+    remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
+            DocumentGetOptions? requestOptions = ()) returns @tainted DocumentResponse|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -379,10 +379,10 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
     # Query a container.
@@ -514,10 +514,11 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}    }
+            return value;
+        }
+    }
 
     # Execute a stored procedure in a container.
     # 
@@ -639,11 +640,11 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
-	}
+            return value;
+        }
+    }
 
     # Create a trigger inside a collection.
     # 
@@ -737,7 +738,7 @@ public client class CoreClient {
     #       to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -748,10 +749,10 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
 // ------------------------------------------MANAGEMENT PLANE-----------------------------------------------------------
@@ -876,10 +877,11 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}    }
+            return value;
+        }   
+    }
 
     # Create a permission for a user. 
     # 
@@ -1008,10 +1010,10 @@ public client class CoreClient {
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}    
+            return value;
+        }   
 	}
 
     # Replace an existing offer.
