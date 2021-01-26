@@ -23,6 +23,61 @@ import ballerina/lang.array as array;
 import ballerina/java;
 import ballerina/log;
 
+
+// Validate if the base URL is an empty string
+// 
+//  + url - the URL from which we want to extract resource type
+//
+isolated function validateBaseUrl(string url) returns string|error {
+    if (url != "") {
+        return url;
+    }
+    return prepareUserError(EMPTY_BASE_URL_ERROR);
+}
+
+// Validate if the  is an empty string
+// 
+//  + token - the token provided by the user to access Cosmos DB.
+//
+isolated function validateMasterToken(string token) returns string|error {
+    if (token != "") {
+        byte[]|error encodedValue = encoding:decodeBase64Url(token);
+        if (encodedValue is byte[]) {
+            return token;
+        } else {
+            return prepareUserError(INVALID_MASTER_TOKEN_ERROR);
+        }
+    }
+    return prepareUserError(EMPTY_MASTER_TOKEN_ERROR);
+}
+
+//  Extract the type of token used for accessing the Cosmos DB.
+// 
+//  + token - the token provided by the user to access Cosmos DB.
+//
+function getTokenType(string token) returns string {
+    boolean contain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
+    if (contain) {
+        return TOKEN_TYPE_RESOURCE;
+    } else {
+        return TOKEN_TYPE_MASTER;
+    }
+}
+
+//  Extract the host of the cosmos db from the base url.
+// 
+//  + url - the Base URL given by the user from which we want to extract host.
+//  + return - string representing the resource id.
+//
+isolated function getHost(string url) returns string {
+    string replaced = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
+    int? lastIndex = str:lastIndexOf(replaced, FORWARD_SLASH);
+    if (lastIndex is int) {
+        replaced = replaced.substring(0, lastIndex);
+    }
+    return replaced;
+}
+
 //  Extract the resource type related to cosmos db from a given url
 // 
 //  + url - the URL from which we want to extract resource type
@@ -76,29 +131,6 @@ isolated function getResourceId(string url) returns string {
         }
         return resourceId;
     }
-}
-
-function getTokenType(string token) returns string {
-    boolean contain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
-    if (contain) {
-        return TOKEN_TYPE_RESOURCE;
-    } else {
-        return TOKEN_TYPE_MASTER;
-    }
-}
-
-//  Extract the host of the cosmos db from the base url.
-// 
-//  + url - the Base URL given by the user from which we want to extract host.
-//  + return - string representing the resource id.
-//
-isolated function getHost(string url) returns string {
-    string replaced = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
-    int? lastIndex = str:lastIndexOf(replaced, FORWARD_SLASH);
-    if (lastIndex is int) {
-        replaced = replaced.substring(0, lastIndex);
-    }
-    return replaced;
 }
 
 //  Prepare the url out of a given string array 
@@ -454,7 +486,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
             stream<Offer> offerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Offer>>) {
                     offerStream = <stream<Offer>>streams;
                 } else {
@@ -471,7 +504,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             DocumentResponse[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
             stream<DocumentResponse> documentStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<DocumentResponse>>) {
                     documentStream = <stream<DocumentResponse>>streams;
                 } else {
@@ -488,7 +522,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
             stream<Database> databaseStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (),
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Database>>) {
                     databaseStream = <stream<Database>>streams;
                 } else {
@@ -505,7 +540,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
             stream<Container> containerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Container>>) {
                     containerStream = <stream<Container>>streams;
                 } else {
@@ -519,10 +555,12 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
     } else if (arrayType is typedesc<StoredProcedureResponse[]>) {
         StoredProcedureResponse[] storedProcedures = <StoredProcedureResponse[]>array;
         if (payload.StoredProcedures is json) {
-            StoredProcedureResponse[] finalArray = convertToStoredProcedureArray(storedProcedures, <json[]>payload.StoredProcedures);
+            StoredProcedureResponse[] finalArray = convertToStoredProcedureArray(storedProcedures, 
+                    <json[]>payload.StoredProcedures);
             stream<StoredProcedureResponse> storedProcedureStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<StoredProcedureResponse>>) {
                     storedProcedureStream = <stream<StoredProcedureResponse>>streams;
                 } else {
@@ -537,10 +575,12 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
     } else if (arrayType is typedesc<UserDefinedFunctionResponse[]>) {
         UserDefinedFunctionResponse[] userDefineFunctions = <UserDefinedFunctionResponse[]>array;
         if (payload.UserDefinedFunctions is json) {
-            UserDefinedFunctionResponse[] finalArray = convertsToUserDefinedFunctionArray(userDefineFunctions, <json[]>payload.UserDefinedFunctions);
+            UserDefinedFunctionResponse[] finalArray = convertsToUserDefinedFunctionArray(userDefineFunctions, 
+                    <json[]>payload.UserDefinedFunctions);
             stream<UserDefinedFunctionResponse> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<UserDefinedFunctionResponse>>) {
                     userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>>streams;
                 } else {
@@ -557,7 +597,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             TriggerResponse[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
             stream<TriggerResponse> triggerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<TriggerResponse>>) {
                     triggerStream = <stream<TriggerResponse>>streams;
                 } else {
@@ -574,7 +615,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             User[] finalArray = convertToUserArray(users, <json[]>payload.Users);
             stream<User> userStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<User>>) {
                     userStream = <stream<User>>streams;
                 } else {
@@ -591,7 +633,8 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
             Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
             stream<Permission> permissionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
+                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+                        <@untainted>headers?.continuationHeader);
                 if (typeof streams is typedesc<stream<Permission>>) {
                     permissionStream = <stream<Permission>>streams;
                 } else {

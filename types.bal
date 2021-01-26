@@ -17,10 +17,10 @@
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account.
-# + masterOrResourceToken - The token used to make the request call.
+# + masterToken - The token used to make the request call.
 public type AzureCosmosConfiguration record {|
     string baseUrl;
-    string masterOrResourceToken;
+    string masterToken;
 |};
 
 # Represent the record type with the necessary paramateres for creation of authorization signature.

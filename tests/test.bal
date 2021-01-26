@@ -21,7 +21,7 @@ import ballerina/runtime;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+    masterToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
 
 CoreClient azureCosmosClient = new (config);
@@ -210,8 +210,7 @@ function test_listOneDatabase() {
         "test_deleteUDF", 
         "test_deleteTrigger", 
         "test_deleteUser", 
-        "test_createPermissionWithTTL",
-        "test_getCollection_Resource_Token"
+        "test_createPermissionWithTTL"
     ]
 }
 function test_deleteDatabase() {
@@ -359,8 +358,7 @@ function test_getAllContainers() {
         "test_deleteTrigger", 
         "test_GetOneDocumentWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
-        "test_getDocumentListWithRequestOptions", 
-        "test_getCollection_Resource_Token"
+        "test_getDocumentListWithRequestOptions"
         // "test_replaceOfferWithOptionalParameter",
         // "test_replaceOffer"
     ]
@@ -1102,7 +1100,7 @@ function test_listUsers() {
 @test:Config {
     groups: ["user"],
     dependsOn: 
-    ["test_replaceUserId", "test_deletePermission", "test_createPermissionWithTTL", "test_getCollection_Resource_Token"]
+    ["test_replaceUserId", "test_deletePermission", "test_createPermissionWithTTL"]
 }
 function test_deleteUser() {
     log:print("ACTION : deleteUser()");
@@ -1239,7 +1237,7 @@ function test_getPermission() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_getPermission", "test_listPermissions", "test_replacePermission", "test_getCollection_Resource_Token"]
+    dependsOn: ["test_getPermission", "test_listPermissions", "test_replacePermission"]
 }
 function test_deletePermission() {
     log:print("ACTION : deletePermission()");
@@ -1366,40 +1364,40 @@ function test_queryOffer() {
     }
 }
 
-@test:Config {
-    groups: ["permission"],
-    dependsOn: ["test_createPermission"]
-}
-function test_getCollection_Resource_Token() {
-    log:print("ACTION : createCollection_Resource_Token()");
+// @test:Config {
+//     groups: ["permission"],
+//     dependsOn: ["test_createPermission"]
+// }
+// function test_getCollection_Resource_Token() {
+//     log:print("ACTION : createCollection_Resource_Token()");
 
-    string databaseId = database.id;
-    string permissionUserId = test_user.id;
-    string permissionId = permission.id;
+//     string databaseId = database.id;
+//     string permissionUserId = test_user.id;
+//     string permissionId = permission.id;
 
-    var result = azureCosmosClient->getPermission(databaseId, permissionUserId, permissionId);
-    if (result is error) {
-        test:assertFail(msg = result.message());
-    } else {
-        if (result?.token is string) {
-            AzureCosmosConfiguration configdb = {
-                baseUrl: getConfigValue("BASE_URL"),
-                masterOrResourceToken: result?.token.toString()
-            };
+//     var result = azureCosmosClient->getPermission(databaseId, permissionUserId, permissionId);
+//     if (result is error) {
+//         test:assertFail(msg = result.message());
+//     } else {
+//         if (result?.token is string) {
+//             AzureCosmosConfiguration configdb = {
+//                 baseUrl: getConfigValue("BASE_URL"),
+//                 masterOrResourceToken: result?.token.toString()
+//             };
 
-            CoreClient azureCosmosClientDatabase = new (configdb);
+//             CoreClient azureCosmosClientDatabase = new (configdb);
 
-            string containerId = container.id;
+//             string containerId = container.id;
 
-            var resultdb = azureCosmosClientDatabase->getContainer(databaseId, containerId);
-            if (resultdb is error) {
-                test:assertFail(msg = resultdb.message());
-            } else {
-                var output = "";
-            }
-        }
-    }
-}
+//             var resultdb = azureCosmosClientDatabase->getContainer(databaseId, containerId);
+//             if (resultdb is error) {
+//                 test:assertFail(msg = resultdb.message());
+//             } else {
+//                 var output = "";
+//             }
+//         }
+//     }
+// }
 
 isolated function getConfigValue(string key) returns string {
     return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);
