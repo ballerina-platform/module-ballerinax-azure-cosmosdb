@@ -18,7 +18,6 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
-//import ballerina/io;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -30,7 +29,6 @@ CoreClient azureCosmosClient = new (config);
 Database database = {};
 Database manual = {};
 Database auto = {};
-Database ifexist = {};
 Container container = {};
 Document document = {};
 StoredProcedureResponse storedPrcedure = {};
@@ -222,8 +220,7 @@ function test_deleteDatabase() {
     var result1 = azureCosmosClient->deleteDatabase(database.id);
     var result2 = azureCosmosClient->deleteDatabase(manual.id);
     var result3 = azureCosmosClient->deleteDatabase(auto.id);
-    var result4 = azureCosmosClient->deleteDatabase(ifexist.id);
-    if (result1 is boolean && result2 is boolean && result3 is boolean && result4 is boolean?) {
+    if (result1 is boolean && result2 is boolean && result3 is boolean) {
         var output = "";
     } else {
         test:assertFail(msg = "Failed to delete one of the databases");
