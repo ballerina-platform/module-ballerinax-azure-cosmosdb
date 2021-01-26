@@ -59,11 +59,11 @@ public type Common record {|
 # + date - Date time of the response operation.
 public type ResponseMetadata record {|
     string? continuationHeader?;
-    string sessionToken?;
-    string requestCharge?;
-    string resourceUsage?;
-    string etag?;
-    string date?;
+    string sessionToken = "";
+    string requestCharge = "";
+    string resourceUsage = "";
+    string etag = "";
+    string date = "";
 |};
 
 # Represents the elements representing information about a database.

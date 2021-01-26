@@ -1014,7 +1014,7 @@ public client class CoreClient {
         } else {
             return value;
         }   
-	}
+    }
 
     # Replace an existing offer.
     # 
