@@ -89,10 +89,14 @@ public type Container record {|
 # Represent the parameters representing information about a document in Cosmos DB.
 # 
 # + id - User generated unique ID for the document. 
-# + documentBody - BSON document.
+# + documentBody - JSON document.
 public type Document record {|
     string id = "";
     json documentBody = {};
+|};
+
+public type DocumentResponse record {|
+    *Document;
     *Common;
 |};
 
@@ -129,9 +133,9 @@ public type ExcludedPath record {|
 # 
 # + kind - Type of index. Can be "Hash", "Range" or "Spatial"
 # + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
-#               or "LineString"
+#        or "LineString"
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
-#                   and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1
+#        and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1
 public type Index record {|
     string kind = "Hash";
     string dataType = "";

@@ -454,9 +454,9 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 
 
 /// Revisit
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|Database[]|
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|DocumentResponse[]|Database[]|
 Container[]|StoredProcedureResponse[]|UserDefinedFunctionResponse[]|TriggerResponse[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted 
-string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<
+string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<DocumentResponse>|stream<Database>|stream<
 Container>|stream<StoredProcedureResponse>|stream<UserDefinedFunctionResponse>|stream<TriggerResponse>|stream<User>|stream<Permission>|stream<
 PartitionKeyRange>|stream<json>|error {
     if (continuationHeader is string) {
@@ -487,15 +487,15 @@ PartitionKeyRange>|stream<json>|error {
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (arrayType is typedesc<Document[]>) {
-        Document[] documents = <Document[]>array;
+    } else if (arrayType is typedesc<DocumentResponse[]>) {
+        DocumentResponse[] documents = <DocumentResponse[]>array;
         if (payload.Documents is json) {
-            Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
-            stream<Document> documentStream = (<@untainted>finalArray).toStream();
+            DocumentResponse[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
+            stream<DocumentResponse> documentStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Document>>) {
-                    documentStream = <stream<Document>>streams;
+                if (typeof streams is typedesc<stream<DocumentResponse>>) {
+                    documentStream = <stream<DocumentResponse>>streams;
                 } else {
                     return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof documentStream).toString()}.`);
                 }

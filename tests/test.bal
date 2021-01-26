@@ -30,7 +30,7 @@ Database database = {};
 Database manual = {};
 Database auto = {};
 Container container = {};
-Document document = {};
+DocumentResponse document = {};
 StoredProcedureResponse storedPrcedure = {};
 UserDefinedFunctionResponse udf = {};
 TriggerResponse trigger = {};
@@ -410,7 +410,6 @@ function test_createDocument() {
     string containerId = container.id;
     int[] valueOfPartitionKey = [1234];
     string id = string `document_${uuid.toString()}`;
-
     json documentBody = {
         "LastName": "keeeeeee",
         "Parents": [{
@@ -436,8 +435,13 @@ function test_createDocument() {
         "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey);
-    if (result is Document) {
+    Document newDocument = {
+        id: id,
+        documentBody: documentBody
+    };
+
+    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey);
+    if (result is DocumentResponse) {
         document = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -485,8 +489,13 @@ function test_createDocumentWithRequestOptions() {
         "IsRegistered": true,
         "AccountNumber": 1234
     };
-    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, options);
-    if (result is Document) {
+    Document newDocument = {
+        id: id,
+        documentBody: documentBody
+    };
+
+    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey, options);
+    if (result is DocumentResponse) {
         document = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -506,7 +515,7 @@ function test_getDocumentList() {
     string containerId = container.id;
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is stream<Document>) {
+    if (result is stream<DocumentResponse>) {
         var singleDocument = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -531,7 +540,7 @@ function test_getDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
-    if (result is stream<Document>) {
+    if (result is stream<DocumentResponse>) {
         var singleDocument = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -550,7 +559,7 @@ function test_GetOneDocument() {
     int[] valueOfPartitionKey = [1234];
 
     var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey);
-    if (result is Document) {
+    if (result is DocumentResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -566,9 +575,6 @@ function test_GetOneDocumentWithRequestOptions() {
 
     string databaseId = database.id;
     string containerId = container.id;
-    Document getDoc = {
-        id: document.id
-    };
     int[] valueOfPartitionKey = [1234];
 
     DocumentGetOptions options = {
@@ -578,7 +584,7 @@ function test_GetOneDocumentWithRequestOptions() {
     };
 
     var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey, options);
-    if (result is Document) {
+    if (result is DocumentResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());

@@ -69,7 +69,7 @@ public client class CoreClient {
     // # + throughputOption - Optional. Throughput parameter of type int OR json.
     // # + return - If successful, returns cosmosdb:Database. Else returns error.  
     // remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
-    //                                 Database?|error { // error boolean for checking if database exist
+    //        Database?|error { // error boolean for checking if database exist
     //     var result = self->getDatabase(databaseId);
     //     if (result is error) {
     //         string status = result.detail()[STATUS].toString();
@@ -261,21 +261,21 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
-    # + document - A cosmosdb:Document which includes the ID and the document to save in the database. 
+    # + newDocument - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
-    remote function createDocument(string databaseId, string containerId, string documentId, json document,
-            any[] valueOfPartitionKey, DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
+    remote function createDocument(string databaseId, string containerId, Document newDocument, any[] valueOfPartitionKey, 
+            DocumentCreateOptions? requestOptions = ()) returns @tainted DocumentResponse|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS]);
+                RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
                 POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        json jsonPayload = {id: documentId};
-        jsonPayload = check jsonPayload.mergeJson(document);
+        json jsonPayload = {id: newDocument.id};
+        jsonPayload = check jsonPayload.mergeJson(newDocument.documentBody);
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
@@ -287,22 +287,22 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
-    # + document - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
+    # + newDocument - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, string documentId, json document, 
-            any[] valueOfPartitionKey, DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
+    remote function replaceDocument(string databaseId, string containerId, @tainted Document newDocument, any[] valueOfPartitionKey, 
+            DocumentReplaceOptions? requestOptions = ()) returns @tainted DocumentResponse|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS, documentId]);
+                RESOURCE_TYPE_DOCUMENTS, newDocument.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
                 PUT, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        json jsonPayload = {id: documentId};
-        jsonPayload = check jsonPayload.mergeJson(document); 
+        json jsonPayload = {id: newDocument.id};
+        jsonPayload = check jsonPayload.mergeJson(newDocument.documentBody); 
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
@@ -319,7 +319,7 @@ public client class CoreClient {
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
 	remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
-        	DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
+        	DocumentGetOptions? requestOptions = ()) returns @tainted DocumentResponse|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -341,7 +341,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns stream<Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
-                DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
+            DocumentListOptions? requestOptions = ()) returns @tainted stream<DocumentResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -352,8 +352,8 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, requestPath, 
+        DocumentResponse[] newArray = [];
+        stream<DocumentResponse>|error documentStream = <stream<DocumentResponse>|error>retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount);
         return documentStream;
     }
@@ -367,7 +367,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -521,7 +521,7 @@ public client class CoreClient {
     # Execute a stored procedure in a container.
     # 
     # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container which contain the stored procedure.        
+    # + containerId - ID of the container which contain the stored procedure.
     # + storedProcedureId - ID of the stored procedure to execute.
     # + options - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
@@ -681,7 +681,7 @@ public client class CoreClient {
     # + trigger - A cosmosdb:Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns @tainted 
-                                    TriggerResponse|error {
+            TriggerResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, trigger.id]);
@@ -710,7 +710,7 @@ public client class CoreClient {
     #       the request.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
-                                    ResourceReadOptions? requestOptions = ()) returns @tainted stream<TriggerResponse>|error { 
+            ResourceReadOptions? requestOptions = ()) returns @tainted stream<TriggerResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -736,7 +736,7 @@ public client class CoreClient {
     #       to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -891,7 +891,7 @@ public client class CoreClient {
             returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                                        RESOURCE_TYPE_PERMISSION]);
+                RESOURCE_TYPE_PERMISSION]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
                 POST, requestPath);
         if (validityPeriod is int) {
