@@ -212,7 +212,8 @@ public type QueryParameter record {|
     string|int|boolean value = "";
 |};
 
-// ---------------------------------------------Managment Plane-------------------------------------------------------
+// ---------------------------------------------Managment Plane---------------------------------------------------------
+
 # Reprsent the record type with necessary paramaters to create partition key range.
 # 
 # + id - ID for the partition key range.

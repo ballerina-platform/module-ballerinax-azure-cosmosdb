@@ -45,7 +45,8 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         // Setting mandatory headers for the request
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
         // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
@@ -54,41 +55,44 @@ public client class CoreClient {
         request.setJsonPayload(jsonPayload);
 
         // Get the response
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         // Map the payload and headers, of the request to a tuple 
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         // Map the reponse payload and the headers to a record type
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
-    # 
-    # + databaseId - ID of the new database.
-    # + throughputOption - Optional. Throughput parameter of type int OR json.
-    # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
-                                    Database?|error {
-        var result = self->getDatabase(databaseId);
-        if (result is error) {
-            string status = result.detail()[STATUS].toString();
-            if (status == STATUS_NOT_FOUND_STRING) {
-                return self->createDatabase(databaseId, throughputOption);
-            }
-        }
-    }
+    // Check this one for possible error in creation can't we handle this one inside the create database function itself
+    // # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
+    // # 
+    // # + databaseId - ID of the new database.
+    // # + throughputOption - Optional. Throughput parameter of type int OR json.
+    // # + return - If successful, returns cosmosdb:Database. Else returns error.  
+    // remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
+    //                                 Database?|error { // error boolean for checking if database exist
+    //     var result = self->getDatabase(databaseId);
+    //     if (result is error) {
+    //         string status = result.detail()[STATUS].toString();
+    //         if (status == STATUS_NOT_FOUND_STRING) {
+    //             return self->createDatabase(databaseId, throughputOption);
+    //         }
+    //     }
+    // }
 
     # Retrive information of a given database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to retrieve information. 
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted Database|error {
+    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted 
+            Database|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
 
-        var response = self.httpClient->get(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonResponse);
     }
@@ -101,7 +105,8 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -115,17 +120,25 @@ public client class CoreClient {
     # Delete a given database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to delete.
-    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities 
+    #       to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error {
+    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted 
+            boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
-
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        //return <boolean>check handleResponse(response);  - this is the way in gmail connector
+        json|error value = handleResponse(response);
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}
     }
 
     # Create a container in the given database.
@@ -137,48 +150,50 @@ public client class CoreClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns cosmosdb:Container. Else returns error.  
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
-                                    IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
+            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
             id: containerId,
             partitionKey: {
-                paths: <json>partitionKey.paths.cloneWithType(json), // we can use checkpanic 
+                paths: check partitionKey.paths.cloneWithType(json),
                 kind: partitionKey.kind,
                 Version: partitionKey?.keyVersion
             }
         };
-        if (indexingPolicy != ()) {  //////////////
-            jsonPayload = checkpanic jsonPayload.mergeJson({indexingPolicy: <json>indexingPolicy.cloneWithType(json)}); // we can use checkpanic 
+        if (indexingPolicy != ()) {
+            jsonPayload = check jsonPayload.mergeJson({indexingPolicy: check indexingPolicy.cloneWithType(json)});
         }
         request.setJsonPayload(<@untainted>jsonPayload);
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # Create a container in the database only if the specified container ID does not exist already.
-    # 
-    # + databaseId - ID of the database the container belongs to.
-    # + containerId - ID of the new container.    
-    # + partitionKey - A cosmosdb:PartitionKey.
-    # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
-    # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Container if a new container is created or () if container already exists. Else returns error.  
-    remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
-                                    IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
-        var result = self->getContainer(databaseId, containerId);
-        if result is error {
-            string status = result.detail()[STATUS].toString();
-            if (status == STATUS_NOT_FOUND_STRING) {
-                return self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
-            }
-        }
-    }
+    // Check this one for possible error in creation we handle this one inside the create container function itself
+    // # 
+    // # + databaseId - ID of the database the container belongs to.
+    // # + containerId - ID of the new container.    
+    // # + partitionKey - A cosmosdb:PartitionKey.
+    // # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
+    // # + throughputOption - Optional. Throughput parameter of type int or json.
+    // # + return - If successful, returns Container if a new container is created or () if container already exists. 
+    // #       Else returns error.  
+    // remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
+    //         IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
+    //     var result = self->getContainer(databaseId, containerId);
+    //     if result is error {
+    //         string status = result.detail()[STATUS].toString();
+    //         if (status == STATUS_NOT_FOUND_STRING) {
+    //             return self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
+    //         }
+    //     }
+    // }
 
     # Retrive information about a container in a database.
     # 
@@ -186,14 +201,15 @@ public client class CoreClient {
     # + containerId - ID of the container to retrive infromation.  
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns cosmosdb:Container. Else returns error.  
-    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) returns @tainted 
-                                    Container|error {
+    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) 
+            returns @tainted Container|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
 
-        var response = self.httpClient->get(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToContainerType(jsonResponse);
     }
@@ -206,7 +222,8 @@ public client class CoreClient {
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -224,14 +241,20 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted boolean|error {
+            returns @tainted boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}
     }
 
     # Create a Document inside a container.
@@ -241,20 +264,21 @@ public client class CoreClient {
     # + document - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
-    remote function createDocument(string databaseId, string containerId, string documentId, json document, any[] valueOfPartitionKey,
-                                    DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
+    remote function createDocument(string databaseId, string containerId, string documentId, json document,
+            any[] valueOfPartitionKey, DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         json jsonPayload = {id: documentId};
-        jsonPayload = checkpanic jsonPayload.mergeJson(document); ////////////////////
+        jsonPayload = check jsonPayload.mergeJson(document);
         request.setJsonPayload(jsonPayload);
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -264,22 +288,24 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
     # + document - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
-    # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, string documentId, json document, any[] valueOfPartitionKey, 
-                                    DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
+    remote function replaceDocument(string databaseId, string containerId, string documentId, json document, 
+            any[] valueOfPartitionKey, DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                                         RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         json jsonPayload = {id: documentId};
-        jsonPayload = checkpanic jsonPayload.mergeJson(document); ///////////////
+        jsonPayload = check jsonPayload.mergeJson(document); 
         request.setJsonPayload(<@untainted>jsonPayload);
 
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -292,16 +318,17 @@ public client class CoreClient {
     # + valueOfPartitionKey - Array containing the value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
-    remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
-                                    DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
+	remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
+        	DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_DOCUMENTS, documentId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        var response = self.httpClient->get(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -314,12 +341,13 @@ public client class CoreClient {
     # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns stream<Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
-                                    DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
+                DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_DOCUMENTS]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -343,12 +371,18 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+                RESOURCE_TYPE_DOCUMENTS, documentId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}
     }
 
     # Query a container.
@@ -360,18 +394,18 @@ public client class CoreClient {
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
-    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [], int? maxItemCount = (), 
-                                    any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
+    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [],
+            int? maxItemCount = (), any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS]);
+                RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         json payload = {
             query: sqlQuery,
-            parameters: <json>parameters.cloneWithType(json) //// we can use checkpanic 
+            parameters: check parameters.cloneWithType(json)
         };
         request.setJsonPayload(<@untainted>payload);
 
@@ -389,21 +423,21 @@ public client class CoreClient {
     # + containerId - ID of the container which stored procedure will be created.     
     # + storedProcedure - A cosmosdb:StoredProcedure.
     # + return - If successful, returns a cosmosdb:StoredProcedure. Else returns error. 
-    remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) returns @tainted 
-                                    StoredProcedureResponse|error {
+    remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) 
+            returns @tainted StoredProcedureResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_STORED_POCEDURES]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+                RESOURCE_TYPE_STORED_POCEDURES]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
 
         json payload = {
             id: storedProcedure.id,
             body: storedProcedure.storedProcedure
         };
-        //request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
         request.setJsonPayload(payload); 
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureResponse(jsonResponse);
     }
@@ -415,20 +449,20 @@ public client class CoreClient {
     # + storedProcedure - A cosmosdb:StoredProcedure which replaces the existing one.
     # + return - If successful, returns a cosmosdb:StoredProcedure. Else returns error. 
     remote function replaceStoredProcedure(string databaseId, string containerId, @tainted StoredProcedure storedProcedure) 
-                                    returns @tainted StoredProcedureResponse|error { 
+            returns @tainted StoredProcedureResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+                RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
 
         json payload = {
             id: storedProcedure.id,
             body: storedProcedure.storedProcedure
         };
-        //request.setJsonPayload(<@untainted><json>storedProcedure.cloneWithType(json)); // we can use checkpanic 
         request.setJsonPayload(<@untainted>payload);    
 
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToStoredProcedureResponse(jsonResponse);
     }
@@ -441,13 +475,14 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:StoredProcedure>. Else returns error. 
     remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
-                                    ResourceReadOptions? requestOptions = ()) returns @tainted stream<StoredProcedureResponse>|error { 
+            ResourceReadOptions? requestOptions = ()) returns @tainted stream<StoredProcedureResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_STORED_POCEDURES]);
+                RESOURCE_TYPE_STORED_POCEDURES]);
         
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -463,19 +498,25 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which contain the stored procedure.     
     # + storedProcedureId - ID of the stored procedure to delete.
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities 
+    #       to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
-
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
-    }
+                RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
+        
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}    }
 
     # Execute a stored procedure in a container.
     # 
@@ -485,16 +526,17 @@ public client class CoreClient {
     # + options - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                    StoredProcedureOptions? options = ()) returns @tainted json|error { 
+            StoredProcedureOptions? options = ()) returns @tainted json|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+                RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
         setPartitionKeyHeader(request, options?.valueOfPartitionKey);
 
         request.setTextPayload(options?.parameters.toString());
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return jsonResponse;
     }
@@ -508,20 +550,20 @@ public client class CoreClient {
     # + userDefinedFunction - A cosmosdb:UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     remote function createUserDefinedFunction(string databaseId, string containerId, UserDefinedFunction userDefinedFunction) 
-                                    returns @tainted UserDefinedFunctionResponse|error { 
+            returns @tainted UserDefinedFunctionResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_UDF]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+                RESOURCE_TYPE_UDF]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
                 
         json payload = {
             id: userDefinedFunction.id,
             body: userDefinedFunction.userDefinedFunction
         };
-        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
         request.setJsonPayload(payload); 
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionResponse(jsonResponse);
     }
@@ -533,20 +575,20 @@ public client class CoreClient {
     # + userDefinedFunction - A cosmosdb:UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, @tainted UserDefinedFunction userDefinedFunction) 
-                                    returns @tainted UserDefinedFunctionResponse|error { 
+            returns @tainted UserDefinedFunctionResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_UDF, userDefinedFunction.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+                RESOURCE_TYPE_UDF, userDefinedFunction.id]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
 
         json payload = {
             id: userDefinedFunction.id,
             body: userDefinedFunction.userDefinedFunction
         };
-        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
         request.setJsonPayload(<@untainted>payload); 
 
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserDefinedFunctionResponse(jsonResponse);
     }
@@ -556,15 +598,17 @@ public client class CoreClient {
     # + databaseId - ID of the database which user belongs to.
     # + containerId - ID of the container which user defined functions belongs to.    
     # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
     remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
-                                    ResourceReadOptions? requestOptions = ()) returns @tainted stream<UserDefinedFunctionResponse>|error { 
+            ResourceReadOptions? requestOptions = ()) returns @tainted stream<UserDefinedFunctionResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_UDF]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_UDF]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -583,16 +627,22 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_UDF, userDefinedFunctionid]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+                RESOURCE_TYPE_UDF, userDefinedFunctionid]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
-    }
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}
+	}
 
     # Create a trigger inside a collection.
     # 
@@ -603,11 +653,13 @@ public client class CoreClient {
     # + containerId - ID of the container where trigger is created.    
     # + trigger - A cosmosdb:Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
-    remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted TriggerResponse|error { 
+    remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted 
+            TriggerResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_TRIGGER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+                RESOURCE_TYPE_TRIGGER]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
 
         json payload = {
             id: trigger.id,
@@ -615,10 +667,9 @@ public client class CoreClient {
             triggerOperation: trigger.triggerOperation,
             triggerType: trigger.triggerType
         };
-        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
         request.setJsonPayload(payload); 
         
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToTriggerResponse(jsonResponse);
     }
@@ -633,8 +684,9 @@ public client class CoreClient {
                                     TriggerResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_TRIGGER, trigger.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+                RESOURCE_TYPE_TRIGGER, trigger.id]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
 
         json payload = {
             id: trigger.id,
@@ -642,10 +694,9 @@ public client class CoreClient {
             triggerOperation: trigger.triggerOperation,
             triggerType: trigger.triggerType
         };
-        //request.setJsonPayload(<@untainted><json>userDefinedFunction.cloneWithType(json)); // we can use checkpanic 
         request.setJsonPayload(<@untainted>payload);
         
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToTriggerResponse(jsonResponse);
     }
@@ -655,15 +706,17 @@ public client class CoreClient {
     # + databaseId - ID of the database where the container is created.
     # + containerId - ID of the container where the triggers are created.     
     # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
                                     ResourceReadOptions? requestOptions = ()) returns @tainted stream<TriggerResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_TRIGGER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_TRIGGER]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -679,32 +732,41 @@ public client class CoreClient {
     # + databaseId - ID of the database where the container is created.
     # + containerId - ID of the container where the trigger is created. 
     # + triggerId - ID of the trigger to be deleted.
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities 
+    #       to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
                                     ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_TRIGGER, triggerId]);        
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+                RESOURCE_TYPE_TRIGGER, triggerId]);        
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response); 
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}
     }
 
 // ------------------------------------------MANAGEMENT PLANE-----------------------------------------------------------
+
     # Retrieve a list of partition key ranges for the container.
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container where the partition key ranges are related to.    
     # + return - If successful, returns stream<cosmosdb:PartitionKeyRange>. Else returns error.  
     remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted 
-                                    stream<PartitionKeyRange>|error {
+            stream<PartitionKeyRange>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_PK_RANGES]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_PK_RANGES]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
 
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
@@ -720,12 +782,13 @@ public client class CoreClient {
     remote function createUser(string databaseId, string userId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserType(jsonResponse);
     }
@@ -739,12 +802,13 @@ public client class CoreClient {
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
 
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserType(jsonResponse);
     }
@@ -753,16 +817,18 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of user to get.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a User. Else returns error.
     remote function getUser(string databaseId, string userId, ResourceReadOptions? requestOptions = ()) returns @tainted 
-                                    User|error {
+            User|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
 
-        var response = self.httpClient->get(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserType(jsonResponse);
     }
@@ -771,14 +837,16 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database where users is created.
     # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a stream<User>. Else returns error.
     remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
-                                    returns @tainted stream<User>|error { 
+            returns @tainted stream<User>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -793,18 +861,24 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database where user is created.
     # + userId - ID of user to delete.
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted boolean|error {
+            returns @tainted boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
-    }
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}    }
 
     # Create a permission for a user. 
     # 
@@ -814,11 +888,12 @@ public client class CoreClient {
     # + validityPeriod - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
     remote function createPermission(string databaseId, string userId, Permission permission, int? validityPeriod = ()) 
-                                    returns @tainted Permission|error {
+            returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                                         RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -830,7 +905,7 @@ public client class CoreClient {
         };
         request.setJsonPayload(jsonPayload);
 
-        var response = self.httpClient->post(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -843,11 +918,12 @@ public client class CoreClient {
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, @tainted Permission permission, 
-                                    int? validityPeriod = ()) returns @tainted Permission|error { 
+            int? validityPeriod = ()) returns @tainted Permission|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                                        RESOURCE_TYPE_PERMISSION, permission.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+                RESOURCE_TYPE_PERMISSION, permission.id]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -859,7 +935,7 @@ public client class CoreClient {
         };
         request.setJsonPayload(<@untainted>jsonPayload);
 
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -869,17 +945,19 @@ public client class CoreClient {
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of user where the the permission belongs to.
     # + permissionId - ID of the permission to get information.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a Permission. Else returns error.
     remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ()) 
-                                    returns @tainted Permission|error { 
+            returns @tainted Permission|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                                        RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_PERMISSION, permissionId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
 
-        var response = self.httpClient->get(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -889,15 +967,17 @@ public client class CoreClient {
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of user where the the permissions is created.
     # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a stream<Permission>. Else returns error.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
-                                    returns @tainted stream<Permission>|error { 
+            returns @tainted stream<Permission>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                                        RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+                RESOURCE_TYPE_PERMISSION]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -916,16 +996,22 @@ public client class CoreClient {
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
-                                    returns @tainted boolean|error { 
+            returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                                        RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+                RESOURCE_TYPE_PERMISSION, permissionId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                DELETE, requestPath);
 
-        var response = self.httpClient->delete(requestPath, request);
-        return <boolean>check handleResponse(response);
-    }
+        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        json|error value = handleResponse(response); 
+        if (value is json) {
+			return true;
+        } else {
+			return value;
+		}    
+	}
 
     # Replace an existing offer.
     # 
@@ -935,7 +1021,8 @@ public client class CoreClient {
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                PUT, requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
@@ -947,11 +1034,11 @@ public client class CoreClient {
         };
         if (offerType is string && offer.offerVersion == OFFER_VERSION_1) {
             json selectedType = {offerType: offerType};
-            jsonPaylod = checkpanic jsonPaylod.mergeJson(selectedType); ////////////
+            jsonPaylod = checkpanic jsonPaylod.mergeJson(selectedType);
         }
         request.setJsonPayload(jsonPaylod);
 
-        var response = self.httpClient->put(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToOfferType(jsonResponse);
     }
@@ -959,15 +1046,17 @@ public client class CoreClient {
     # Get information about an offer.
     # 
     # + offerId - The ID of the offer.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a Offer. Else returns error.
     remote function getOffer(string offerId, ResourceReadOptions? requestOptions = ()) returns @tainted Offer|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
 
-        var response = self.httpClient->get(requestPath, request);
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToOfferType(jsonResponse);
     }
@@ -979,14 +1068,16 @@ public client class CoreClient {
     # levels and pre-defined performance levels. 
     # 
     # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a stream<Offer> Else returns error.
     remote function listOffers(int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) returns @tainted 
-                                    stream<Offer>|error { 
+            stream<Offer>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -1001,16 +1092,18 @@ public client class CoreClient {
     # 
     # + sqlQuery - SQL query.
     # + maxItemCount - Optional. Maximum number of records to obtain.
-    # + requestOptions - Optional. The cosmosdb:ResourceQueryOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceQueryOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a stream<Offer>. Else returns error.
     remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
-                                    returns @tainted stream<Offer>|error { 
+            returns @tainted stream<Offer>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                POST, requestPath);
 
-        request.setJsonPayload(<json>sqlQuery.cloneWithType(json)); // we can use checkpanic 
+        request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);
 
         Offer[] newArray = [];

@@ -45,7 +45,7 @@ Permission permission = {};
 function test_createDatabase() {
     log:print("ACTION : createDatabase()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string createDatabaseId = string `database_${uuid.toString()}`;
 
     var result = azureCosmosClient->createDatabase(createDatabaseId);
@@ -72,43 +72,43 @@ function test_createDatabaseUsingInvalidId() {
     }
 }
 
-@test:Config {
-    groups: ["database"],
-    dependsOn: ["test_createDatabase"]
-}
-function test_createDatabaseIfNotExist() {
-    log:print("ACTION : createDatabaseIfNotExist()");
+// @test:Config {
+//     groups: ["database"],
+//     dependsOn: ["test_createDatabase"]
+// }
+// function test_createDatabaseIfNotExist() {
+//     log:print("ACTION : createDatabaseIfNotExist()");
 
-    var uuid = createRandomUUIDBallerina();
-    string createDatabaseId = string `databasee_${uuid.toString()}`;
+//     var uuid = createRandomUUIDWithoutHyphens();
+//     string createDatabaseId = string `databasee_${uuid.toString()}`;
 
-    var result = azureCosmosClient->createDatabaseIfNotExist(createDatabaseId);
-    if (result is Database?) {
-        if (result is Database) {
-            ifexist = <@untainted>result;
-        }
-    } else {
-        test:assertFail(msg = result.message());
-    }
-}
+//     var result = azureCosmosClient->createDatabaseIfNotExist(createDatabaseId);
+//     if (result is Database?) {
+//         if (result is Database) {
+//             ifexist = <@untainted>result;
+//         }
+//     } else {
+//         test:assertFail(msg = result.message());
+//     }
+// }
 
-@test:Config {
-    groups: ["database"],
-    dependsOn: ["test_createDatabase"]
-}
-function test_createDatabaseIfExist() {
-    log:print("ACTION : createDatabaseIfExist()");
+// @test:Config {
+//     groups: ["database"],
+//     dependsOn: ["test_createDatabase"]
+// }
+// function test_createDatabaseIfExist() {
+//     log:print("ACTION : createDatabaseIfExist()");
 
-    var uuid = createRandomUUIDBallerina();
-    string createDatabaseId = database.id;
+//     var uuid = createRandomUUIDWithoutHyphens();
+//     string createDatabaseId = database.id;
 
-    var result = azureCosmosClient->createDatabaseIfNotExist(createDatabaseId);
-    if (result is Database) {
-        test:assertFail(msg = "Database with non unique id is created");
-    } else {
-        var output = "";
-    }
-}
+//     var result = azureCosmosClient->createDatabaseIfNotExist(createDatabaseId);
+//     if (result is Database) {
+//         test:assertFail(msg = "Database with non unique id is created");
+//     } else {
+//         var output = "";
+//     }
+// }
 
 @test:Config {
     groups: ["database"]
@@ -116,7 +116,7 @@ function test_createDatabaseIfExist() {
 function test_createDatabaseWithManualThroughput() {
     log:print("ACTION : createDatabaseWithManualThroughput()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
     int throughput = 1000;
 
@@ -134,7 +134,7 @@ function test_createDatabaseWithManualThroughput() {
 function test_createDatabaseWithInvalidManualThroughput() {
     log:print("ACTION : createDatabaseWithInvalidManualThroughput()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string createDatabaseManualId = string `databasem_${uuid.toString()}`;
     int throughput = 40;
 
@@ -152,7 +152,7 @@ function test_createDatabaseWithInvalidManualThroughput() {
 function test_createDBWithAutoscalingThroughput() {
     log:print("ACTION : createDBWithAutoscalingThroughput()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string createDatabaseAutoId = string `databasea_${uuid.toString()}`;
     json maxThroughput = {"maxThroughput": 4000};
 
@@ -197,11 +197,9 @@ function test_listOneDatabase() {
     groups: ["database"], 
     dependsOn: [
         "test_createDatabase", 
-        "test_createDatabaseIfNotExist", 
         "test_listOneDatabase", 
         "test_createDatabase", 
         "test_getAllContainers", 
-        "test_createContainerIfNotExist", 
         "test_deleteContainer",
         "test_createCollectionWithManualThroughputAndIndexingPolicy",
         "test_getDocumentListWithRequestOptions", 
@@ -239,7 +237,7 @@ function test_deleteDatabase() {
 function test_createContainer() {
     log:print("ACTION : createContainer()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = string `container_${uuid.toString()}`;
     PartitionKey pk = {
@@ -261,7 +259,7 @@ function test_createContainer() {
 function test_createCollectionWithManualThroughputAndIndexingPolicy() {
     log:print("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = string `container_${uuid.toString()}`;
     IndexingPolicy ip = {
@@ -291,29 +289,29 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
     }
 }
 
-@test:Config {
-    groups: ["container"],
-    dependsOn: ["test_createDatabase", "test_getOneContainer"]
-}
-function test_createContainerIfNotExist() {
-    log:print("ACTION : createContainerIfNotExist()");
+// @test:Config {
+//     groups: ["container"],
+//     dependsOn: ["test_createDatabase", "test_getOneContainer"]
+// }
+// function test_createContainerIfNotExist() {
+//     log:print("ACTION : createContainerIfNotExist()");
 
-    var uuid = createRandomUUIDBallerina();
-    string databaseId = database.id;
-    string containerId = string `container_${uuid.toString()}`;
-    PartitionKey pk = {
-        paths: ["/AccountNumber"],
-        kind: "Hash",
-        keyVersion: 2
-    };
+//     var uuid = createRandomUUIDWithoutHyphens();
+//     string databaseId = database.id;
+//     string containerId = string `container_${uuid.toString()}`;
+//     PartitionKey pk = {
+//         paths: ["/AccountNumber"],
+//         kind: "Hash",
+//         keyVersion: 2
+//     };
 
-    var result = azureCosmosClient->createContainerIfNotExist(databaseId, containerId, pk);
-    if (result is Container?) {
-        var output = "";
-    } else {
-        test:assertFail(msg = result.message());
-    }
-}
+//     var result = azureCosmosClient->createContainerIfNotExist(databaseId, containerId, pk);
+//     if (result is Container?) {
+//         var output = "";
+//     } else {
+//         test:assertFail(msg = result.message());
+//     }
+// }
 
 @test:Config {
     groups: ["container"],
@@ -410,7 +408,7 @@ function test_GetPartitionKeyRanges() {
 function test_createDocument() {
     log:print("ACTION : createDocument()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
     int[] valueOfPartitionKey = [1234];
@@ -456,7 +454,7 @@ function test_createDocument() {
 function test_createDocumentWithRequestOptions() {
     log:print("ACTION : createDocumentWithRequestOptions()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
     DocumentCreateOptions options = {
@@ -667,7 +665,7 @@ function test_deleteDocument() {
 function test_createStoredProcedure() {
     log:print("ACTION : createStoredProcedure()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
     string createSprocBody = string `function (){
@@ -782,7 +780,7 @@ function test_deleteOneStoredProcedure() {
 function test_createUDF() {
     log:print("ACTION : createUDF()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
     string udfId = string `udf_${uuid.toString()}`;
@@ -887,7 +885,7 @@ function test_deleteUDF() {
 function test_createTrigger() {
     log:print("ACTION : createTrigger()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
     string triggerId = string `trigger_${uuid.toString()}`;
@@ -1030,7 +1028,7 @@ function test_deleteTrigger() {
 function test_createUser() {
     log:print("ACTION : createUser()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string userId = string `user_${uuid.toString()}`;
 
@@ -1049,7 +1047,7 @@ function test_createUser() {
 function test_replaceUserId() {
     log:print("ACTION : replaceUserId()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string newReplaceId = string `user_${uuid.toString()}`;
     string databaseId = database.id;
     string replaceUser = test_user.id;
@@ -1124,7 +1122,7 @@ function test_deleteUser() {
 function test_createPermission() {
     log:print("ACTION : createPermission()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string permissionUserId = test_user.id;
     string permissionId = string `permission_${uuid.toString()}`;
@@ -1151,7 +1149,7 @@ function test_createPermission() {
 function test_createPermissionWithTTL() {
     log:print("ACTION : createPermission()");
 
-    var uuid = createRandomUUIDBallerina();
+    var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string permissionUserId = test_user.id;
     string permissionId = string `permission_${uuid.toString()}`;
