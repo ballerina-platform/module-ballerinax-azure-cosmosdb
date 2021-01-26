@@ -112,8 +112,8 @@ public client class CoreClient {
         }
 
         Database[] newArray = [];
-        stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request, 
+                newArray, maxItemCount);
         return databaseStream;
     }
 
@@ -229,8 +229,8 @@ public client class CoreClient {
         }
 
         Container[] newArray = [];
-        stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request, 
+                newArray, maxItemCount);
         return containerStream;
     }
 
@@ -353,7 +353,7 @@ public client class CoreClient {
         }
 
         DocumentResponse[] newArray = [];
-        stream<DocumentResponse>|error documentStream = <stream<DocumentResponse>|error>retriveStream(self.httpClient, requestPath, 
+        stream<DocumentResponse> documentStream = <stream<DocumentResponse>> check retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount);
         return documentStream;
     }
@@ -395,7 +395,8 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [],
-            int? maxItemCount = (), any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
+            int? maxItemCount = (), any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
+            @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -410,7 +411,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>payload);
 
         setHeadersForQuery(request);
-        stream<json>|error documentStream = <stream<json>|error>getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
+        stream<json> documentStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
         return documentStream;
     }
 
@@ -488,8 +489,8 @@ public client class CoreClient {
         }
 
         StoredProcedureResponse[] newArray = [];
-        stream<StoredProcedureResponse>|error storedProcedureStream = <stream<StoredProcedureResponse>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount);
+        stream<StoredProcedureResponse> storedProcedureStream = <stream<StoredProcedureResponse>> check retriveStream(
+                self.httpClient, requestPath, request, newArray, maxItemCount);
         return storedProcedureStream;
     }
 
@@ -614,7 +615,7 @@ public client class CoreClient {
         }
 
         UserDefinedFunctionResponse[] newArray = [];
-        stream<UserDefinedFunctionResponse>|error userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>|error>retriveStream(
+        stream<UserDefinedFunctionResponse> userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>> check retriveStream(
         self.httpClient, requestPath, request, newArray, maxItemCount);
         return userDefinedFunctionStream;
     }
@@ -722,8 +723,8 @@ public client class CoreClient {
         }
 
         TriggerResponse[] newArray = [];
-        stream<TriggerResponse>|error triggerStream = <stream<TriggerResponse>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount);
+        stream<TriggerResponse> triggerStream = <stream<TriggerResponse>> check retriveStream(self.httpClient, requestPath, 
+                request, newArray, maxItemCount);
         return triggerStream;
     }
 
@@ -769,8 +770,8 @@ public client class CoreClient {
                 GET, requestPath);
 
         PartitionKeyRange[] newArray = [];
-        stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
-        httpClient, requestPath, request, newArray);
+        stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
+                requestPath, request, newArray);
         return partitionKeyStream;
     }
 
@@ -852,8 +853,8 @@ public client class CoreClient {
         }
 
         User[] newArray = [];
-        stream<User>|error userStream = <stream<User>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount);
+        stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request, newArray, 
+                maxItemCount);
         return userStream;
     }
 
@@ -983,8 +984,8 @@ public client class CoreClient {
         }
 
         Permission[] newArray = [];
-        stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
+                request, newArray, maxItemCount);
         return permissionStream;
     }
 
@@ -1083,8 +1084,8 @@ public client class CoreClient {
         }
 
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount);
+        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray,
+                maxItemCount);
         return offerStream;
     }
 
@@ -1107,8 +1108,8 @@ public client class CoreClient {
         setHeadersForQuery(request);
 
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount, (), true);
+        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray, 
+                maxItemCount, (), true);
         return offerStream;
     }
 }

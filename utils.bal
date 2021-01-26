@@ -119,18 +119,11 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted>url;
 }
 
-//  Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type.
-// 
-//  + httpVerb - HTTP verb of the relevent request.
-//  + url - The endpoint to which the request call is made.
-//  + return - An instance of record type HeaderParameters.
-//
-isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
-    HeaderParameters params = {};
-    params.verb = httpVerb;
-    params.resourceType = getResourceType(url);
-    params.resourceId = getResourceId(url);
-    return params;
+isolated function createRequest(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
+        DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns error? {
+    if (requestOptions != ()) {
+        check setRequestOptions(request, requestOptions);
+    }
 }
 
 //  Attach mandatory basic headers to call a REST endpoint.
@@ -173,11 +166,56 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     }
 }
 
-isolated function createRequest(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
-        DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns error? {
-    if (requestOptions != ()) {
-        check setRequestOptions(request, requestOptions);
-    }
+//  Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type.
+// 
+//  + httpVerb - HTTP verb of the relevent request.
+//  + url - The endpoint to which the request call is made.
+//  + return - An instance of record type HeaderParameters.
+//
+isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
+    HeaderParameters params = {};
+    params.verb = httpVerb;
+    params.resourceType = getResourceType(url);
+    params.resourceId = getResourceId(url);
+    return params;
+}
+
+//  Get the current time in the specific format.
+//  
+//  + return - If successful, returns string representing UTC date and time 
+//          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
+//
+isolated function getTime() returns string? {
+    time:Time time1 = time:currentTime();
+    var timeWithZone = time:toTimeZone(time1, GMT_ZONE);
+    if (timeWithZone is time:Time) {
+        string timeString = checkpanic time:format(timeWithZone, TIME_ZONE_FORMAT);
+        return timeString;
+    } else {
+        log:printError(TIME_STRING_ERROR);
+    }    
+}
+
+//  To construct the hashed token signature for a token to set  'Authorization' header.
+//  
+//  + verb - HTTP verb, such as GET, POST, or PUT
+//  + resourceType - identifies the type of resource that the request is for, Eg. "dbs", "colls", "docs"
+//  + resourceId -dentity property of the resource that the request is directed at
+//  + keyToken - master or resource token
+//  + tokenType - denotes the type of token: master or resource.
+//  + tokenVersion - denotes the version of the token, currently 1.0.
+//  + date - current GMT date and time
+//  + return - If successful, returns string which is the  hashed token signature. Else returns () or error.
+// 
+isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
+        string tokenType, string tokenVersion, string date) returns string?|error {
+    string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
+    date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
+    byte[] decoded = check array:fromBase64(keyToken); 
+    byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
+    string signature = array:toBase64(digest); 
+    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8"); //make another var
+    return authorization;      
 }
 
 //  Set the optional header related to throughput options.
@@ -284,44 +322,6 @@ isolated function setExpiryHeader(http:Request request, int validationPeriod) re
     }
 }
 
-//  Get the current time in the specific format.
-//  
-//  + return - If successful, returns string representing UTC date and time 
-//          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
-//
-isolated function getTime() returns string? {
-    time:Time time1 = time:currentTime();
-    var timeWithZone = time:toTimeZone(time1, GMT_ZONE);
-    if (timeWithZone is time:Time) {
-        string timeString = checkpanic time:format(timeWithZone, TIME_ZONE_FORMAT);
-        return timeString;
-    } else {
-        log:printError(TIME_STRING_ERROR);
-    }    
-}
-
-//  To construct the hashed token signature for a token to set  'Authorization' header.
-//  
-//  + verb - HTTP verb, such as GET, POST, or PUT
-//  + resourceType - identifies the type of resource that the request is for, Eg. "dbs", "colls", "docs"
-//  + resourceId -dentity property of the resource that the request is directed at
-//  + keyToken - master or resource token
-//  + tokenType - denotes the type of token: master or resource.
-//  + tokenVersion - denotes the version of the token, currently 1.0.
-//  + date - current GMT date and time
-//  + return - If successful, returns string which is the  hashed token signature. Else returns () or error.
-// 
-isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-        string tokenType, string tokenVersion, string date) returns string?|error {
-    string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
-    date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
-    byte[] decoded = check array:fromBase64(keyToken); 
-    byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
-    string signature = array:toBase64(digest); 
-    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8"); //make another var
-    return authorization;      
-}
-
 //  Map the json payload and necessary header values returend from a response to a tuple.
 //  
 //  + httpResponse - the http:Response or http:ClientError returned form the HTTP request
@@ -330,7 +330,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 isolated function mapResponseToTuple(http:Response httpResponse) returns @tainted [json, 
         ResponseMetadata]|error {
     json responseBody = check handleResponse(httpResponse);
-    ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersObject(httpResponse);
+    ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
     return [responseBody, responseHeaders];
 }
 
@@ -364,7 +364,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 //  + httpResponse - http:Response or http:ClientError returned from an http:Request
 //  + return - If successful, returns record type ResponseMetadata. Else returns error.
 //
-isolated function mapResponseHeadersToHeadersObject(http:Response httpResponse) returns @tainted ResponseMetadata|error {
+isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseMetadata|error {
     ResponseMetadata responseHeaders = {};
     responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
@@ -373,36 +373,6 @@ isolated function mapResponseHeadersToHeadersObject(http:Response httpResponse) 
     responseHeaders.etag = getHeaderIfExist(httpResponse, ETAG_HEADER);
     responseHeaders.date = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
     return responseHeaders;
-}
-
-//  Convert json string values to boolean.
-//  
-//  + value - json value which has reprsents boolean value
-//  + return - boolean value of specified json
-//
-isolated function convertToBoolean(json|error value) returns boolean {
-    if (value is json) {
-        boolean|error result = 'boolean:fromString(value.toString());
-        if (result is boolean) {
-            return result;
-        }
-    }
-    return false;
-}
-
-//  Convert json string values to int
-//  
-//  + value - json value which has reprsents int value
-//  + return - int value of specified json
-//
-isolated function convertToInt(json|error value) returns int {
-    if (value is json) {
-        int|error result = 'int:fromString(value.toString());
-        if (result is int) {
-            return result;
-        }
-    }
-    return 0;
 }
 
 //  Convert json string values to int
@@ -419,31 +389,32 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
     return headerValue;
 } 
 
-isolated function convertJsonArray(json[] array, json[] newArray) {
-    int i = array.length();
-    foreach json element in newArray {
-        array[i] = element;
-        i = i + 1;
-    }
-}
-
+//  Get a stream of json documents which is returned as query results
+//  
+//  + azureCosmosClient - 
+//  + path - 
+//  + request - n
+//  + array - 
+//  + maxItemCount - 
+//  + continuationHeader - 
+// 
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request, @tainted json[] array, 
         int? maxItemCount = (), string? continuationHeader = ()) returns @tainted stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    if (maxItemCount is int) {
+    if (maxItemCount is int) { // this is per page value
         request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
     }
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
-    var [payload, headers] = check mapResponseToTuple(response);
+    var [payload, responseHeaders] = check mapResponseToTuple(response);
 
     if (payload.Documents is json) {
-        convertJsonArray(array, <json[]>payload.Documents);
+        appendNewArray(array, <json[]>payload.Documents);
         stream<json> documentStream = (<@untainted>array).toStream();
 
-        if (headers?.continuationHeader != ()) {
-            var streams = check getQueryResults(azureCosmosClient, path, request, array, (), headers?.continuationHeader);
+        if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
+            var streams = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
             documentStream = <stream<json>>streams;
         }
         return documentStream;
@@ -452,13 +423,20 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     }
 }
 
+isolated function appendNewArray(json[] array, json[] newArray) {
+    int i = array.length();
+    foreach json element in newArray {
+        array[i] = element;
+        i = i + 1;
+    }
+}
 
-/// Revisit
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|DocumentResponse[]|Database[]|
-Container[]|StoredProcedureResponse[]|UserDefinedFunctionResponse[]|TriggerResponse[]|User[]|Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted 
-string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<Offer>|stream<DocumentResponse>|stream<Database>|stream<
-Container>|stream<StoredProcedureResponse>|stream<UserDefinedFunctionResponse>|stream<TriggerResponse>|stream<User>|stream<Permission>|stream<
-PartitionKeyRange>|stream<json>|error {
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|DocumentResponse[]|
+        Database[]|Container[]|StoredProcedureResponse[]|UserDefinedFunctionResponse[]|TriggerResponse[]|User[]|
+        Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted string? continuationHeader = (), 
+        boolean? isQuery = ()) returns @tainted stream<Offer>|stream<DocumentResponse>|stream<Database>|stream<Container>|
+        stream<StoredProcedureResponse>|stream<UserDefinedFunctionResponse>|stream<TriggerResponse>|stream<User>|
+        stream<Permission>|stream<PartitionKeyRange>|stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
@@ -624,20 +602,48 @@ PartitionKeyRange>|stream<json>|error {
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } 
-    // else if (arrayType is typedesc<PartitionKeyRange[]>) {
-    //     if (payload.PartitionKeyRanges is json) {
-    //         PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-    //         stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
-    //         return partitionKeyrangesStream;
+    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
+        if (payload.PartitionKeyRanges is json) {
+            PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
+            stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
+            return partitionKeyrangesStream;
 
-    //     } else {
-    //         return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
-    //     }
-    // } 
-    else {
+        } else {
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else {
         return prepareModuleError(INVALID_STREAM_TYPE);
     }
+}
+
+//  Convert json string values to boolean.
+//  
+//  + value - json value which has reprsents boolean value
+//  + return - boolean value of specified json
+//
+isolated function convertToBoolean(json|error value) returns boolean {
+    if (value is json) {
+        boolean|error result = 'boolean:fromString(value.toString());
+        if (result is boolean) {
+            return result;
+        }
+    }
+    return false;
+}
+
+//  Convert json string values to int
+//  
+//  + value - json value which has reprsents int value
+//  + return - int value of specified json
+//
+isolated function convertToInt(json|error value) returns int {
+    if (value is json) {
+        int|error result = 'int:fromString(value.toString());
+        if (result is int) {
+            return result;
+        }
+    }
+    return 0;
 }
 
 # Create a random UUID removing the unnecessary hyphens which will interrupt querying opearations.
