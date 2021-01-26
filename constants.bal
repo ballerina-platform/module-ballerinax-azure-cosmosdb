@@ -126,6 +126,9 @@ const string STREAM_IS_NOT_TYPE_ERROR = "The stream is not type";
 const string INVALID_STREAM_TYPE = "Invalid stream type";
 const string AZURE_ERROR = "Error occured";
 const string PAYLOAD_IS_NOT_JSON_ERROR = "Request payload is not json";
+const string EMPTY_BASE_URL_ERROR = "Base URL cannot be empty";
+const string EMPTY_MASTER_TOKEN_ERROR = "Master token cannot be empty";
+const string INVALID_MASTER_TOKEN_ERROR = "Master token is not valid";
 
 // json keys in response
 const string JSON_KEY_ID = "id";

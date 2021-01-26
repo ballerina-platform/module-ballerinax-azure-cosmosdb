@@ -21,16 +21,16 @@ import ballerina/http;
 public client class CoreClient {
     private http:Client httpClient;
     private string baseUrl;
-    private string masterOrResourceToken;
+    private string masterToken;
     private string host;
     private string tokenType;
     private string tokenVersion;
 
     public function init(AzureCosmosConfiguration azureConfig) {
-        self.baseUrl = azureConfig.baseUrl;
-        self.masterOrResourceToken = azureConfig.masterOrResourceToken;
+        self.baseUrl = checkpanic validateBaseUrl(azureConfig.baseUrl);
+        self.masterToken = checkpanic validateMasterToken(azureConfig.masterToken);
         self.host = getHost(azureConfig.baseUrl);
-        self.tokenType = getTokenType(azureConfig.masterOrResourceToken);
+        self.tokenType = getTokenType(azureConfig.masterToken);
         self.tokenVersion = TOKEN_VERSION;
         self.httpClient = new (self.baseUrl);
     }
@@ -45,8 +45,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         // Setting mandatory headers for the request
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
         // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
@@ -69,7 +68,7 @@ public client class CoreClient {
     // # + throughputOption - Optional. Throughput parameter of type int OR json.
     // # + return - If successful, returns cosmosdb:Database. Else returns error.  
     // remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
-    //                                 Database?|error { // error boolean for checking if database exist
+    //        Database?|error { // error boolean for checking if database exist
     //     var result = self->getDatabase(databaseId);
     //     if (result is error) {
     //         string status = result.detail()[STATUS].toString();
@@ -89,8 +88,7 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -105,15 +103,14 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         Database[] newArray = [];
-        stream<Database>|error databaseStream = <stream<Database>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request, 
+                newArray, maxItemCount);
         return databaseStream;
     }
 
@@ -128,17 +125,16 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         //return <boolean>check handleResponse(response);  - this is the way in gmail connector
         json|error value = handleResponse(response);
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
     # Create a container in the given database.
@@ -153,8 +149,7 @@ public client class CoreClient {
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
@@ -206,8 +201,7 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -222,15 +216,14 @@ public client class CoreClient {
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         Container[] newArray = [];
-        stream<Container>|error containerStream = <stream<Container>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request, 
+                newArray, maxItemCount);
         return containerStream;
     }
 
@@ -245,37 +238,35 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
     # Create a Document inside a container.
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
-    # + document - A cosmosdb:Document which includes the ID and the document to save in the database. 
+    # + newDocument - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
-    remote function createDocument(string databaseId, string containerId, string documentId, json document,
-            any[] valueOfPartitionKey, DocumentCreateOptions? requestOptions = ()) returns @tainted Document|error { 
+    remote function createDocument(string databaseId, string containerId, Document newDocument, any[] valueOfPartitionKey, 
+            DocumentCreateOptions? requestOptions = ()) returns @tainted DocumentResponse|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+                RESOURCE_TYPE_DOCUMENTS]);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        json jsonPayload = {id: documentId};
-        jsonPayload = check jsonPayload.mergeJson(document);
+        json jsonPayload = {id: newDocument.id};
+        jsonPayload = check jsonPayload.mergeJson(newDocument.documentBody);
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
@@ -287,22 +278,21 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
-    # + document - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
+    # + newDocument - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, string documentId, json document, 
-            any[] valueOfPartitionKey, DocumentReplaceOptions? requestOptions = ()) returns @tainted Document|error {
+    remote function replaceDocument(string databaseId, string containerId, @tainted Document newDocument, any[] valueOfPartitionKey, 
+            DocumentReplaceOptions? requestOptions = ()) returns @tainted DocumentResponse|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                                        RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+                RESOURCE_TYPE_DOCUMENTS, newDocument.id]);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
-        json jsonPayload = {id: documentId};
-        jsonPayload = check jsonPayload.mergeJson(document); 
+        json jsonPayload = {id: newDocument.id};
+        jsonPayload = check jsonPayload.mergeJson(newDocument.documentBody); 
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
@@ -318,14 +308,13 @@ public client class CoreClient {
     # + valueOfPartitionKey - Array containing the value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
-	remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
-        	DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
+    remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
+            DocumentGetOptions? requestOptions = ()) returns @tainted DocumentResponse|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
@@ -341,19 +330,18 @@ public client class CoreClient {
     # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns stream<Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
-                DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
+            DocumentListOptions? requestOptions = ()) returns @tainted stream<DocumentResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Document[] newArray = [];
-        stream<Document>|error documentStream = <stream<Document>|error>retriveStream(self.httpClient, requestPath, 
+        DocumentResponse[] newArray = [];
+        stream<DocumentResponse> documentStream = <stream<DocumentResponse>> check retriveStream(self.httpClient, requestPath, 
         request, newArray, maxItemCount);
         return documentStream;
     }
@@ -367,22 +355,21 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
     # Query a container.
@@ -395,12 +382,13 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [],
-            int? maxItemCount = (), any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
+            int? maxItemCount = (), any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
+            @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         json payload = {
@@ -410,7 +398,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>payload);
 
         setHeadersForQuery(request);
-        stream<json>|error documentStream = <stream<json>|error>getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
+        stream<json> documentStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
         return documentStream;
     }
 
@@ -428,8 +416,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json payload = {
             id: storedProcedure.id,
@@ -453,8 +440,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json payload = {
             id: storedProcedure.id,
@@ -481,15 +467,14 @@ public client class CoreClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES]);
         
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         StoredProcedureResponse[] newArray = [];
-        stream<StoredProcedureResponse>|error storedProcedureStream = <stream<StoredProcedureResponse>|error>retriveStream(self.httpClient, 
-        requestPath, request, newArray, maxItemCount);
+        stream<StoredProcedureResponse> storedProcedureStream = <stream<StoredProcedureResponse>> check retriveStream(
+                self.httpClient, requestPath, request, newArray, maxItemCount);
         return storedProcedureStream;
     }
 
@@ -507,21 +492,21 @@ public client class CoreClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
         
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}    }
+            return value;
+        }
+    }
 
     # Execute a stored procedure in a container.
     # 
     # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container which contain the stored procedure.        
+    # + containerId - ID of the container which contain the stored procedure.
     # + storedProcedureId - ID of the stored procedure to execute.
     # + options - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
     # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
@@ -530,8 +515,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
         setPartitionKeyHeader(request, options?.valueOfPartitionKey);
 
         request.setTextPayload(options?.parameters.toString());
@@ -554,8 +538,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
                 
         json payload = {
             id: userDefinedFunction.id,
@@ -579,8 +562,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunction.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json payload = {
             id: userDefinedFunction.id,
@@ -607,14 +589,13 @@ public client class CoreClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         UserDefinedFunctionResponse[] newArray = [];
-        stream<UserDefinedFunctionResponse>|error userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>|error>retriveStream(
+        stream<UserDefinedFunctionResponse> userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>> check retriveStream(
         self.httpClient, requestPath, request, newArray, maxItemCount);
         return userDefinedFunctionStream;
     }
@@ -632,17 +613,16 @@ public client class CoreClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunctionid]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
-	}
+            return value;
+        }
+    }
 
     # Create a trigger inside a collection.
     # 
@@ -658,8 +638,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json payload = {
             id: trigger.id,
@@ -681,12 +660,11 @@ public client class CoreClient {
     # + trigger - A cosmosdb:Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns @tainted 
-                                    TriggerResponse|error {
+            TriggerResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, trigger.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json payload = {
             id: trigger.id,
@@ -710,20 +688,19 @@ public client class CoreClient {
     #       the request.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
-                                    ResourceReadOptions? requestOptions = ()) returns @tainted stream<TriggerResponse>|error { 
+            ResourceReadOptions? requestOptions = ()) returns @tainted stream<TriggerResponse>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         TriggerResponse[] newArray = [];
-        stream<TriggerResponse>|error triggerStream = <stream<TriggerResponse>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount);
+        stream<TriggerResponse> triggerStream = <stream<TriggerResponse>> check retriveStream(self.httpClient, requestPath, 
+                request, newArray, maxItemCount);
         return triggerStream;
     }
 
@@ -736,21 +713,20 @@ public client class CoreClient {
     #       to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-                                    ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
+            ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, triggerId]);        
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}
+            return value;
+        }
     }
 
 // ------------------------------------------MANAGEMENT PLANE-----------------------------------------------------------
@@ -765,12 +741,11 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_PK_RANGES]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         PartitionKeyRange[] newArray = [];
-        stream<PartitionKeyRange>|error partitionKeyStream = <stream<PartitionKeyRange>|error>retriveStream(self.
-        httpClient, requestPath, request, newArray);
+        stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
+                requestPath, request, newArray);
         return partitionKeyStream;
     }
 
@@ -782,8 +757,7 @@ public client class CoreClient {
     remote function createUser(string databaseId, string userId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
@@ -802,8 +776,7 @@ public client class CoreClient {
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
@@ -825,8 +798,7 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -845,15 +817,14 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         User[] newArray = [];
-        stream<User>|error userStream = <stream<User>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount);
+        stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request, newArray, 
+                maxItemCount);
         return userStream;
     }
 
@@ -869,16 +840,16 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}    }
+            return value;
+        }   
+    }
 
     # Create a permission for a user. 
     # 
@@ -891,9 +862,8 @@ public client class CoreClient {
             returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                                        RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+                RESOURCE_TYPE_PERMISSION]);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -922,8 +892,7 @@ public client class CoreClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permission.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -954,8 +923,7 @@ public client class CoreClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -976,15 +944,14 @@ public client class CoreClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         Permission[] newArray = [];
-        stream<Permission>|error permissionStream = <stream<Permission>|error>retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
+                request, newArray, maxItemCount);
         return permissionStream;
     }
 
@@ -1001,17 +968,16 @@ public client class CoreClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
         if (value is json) {
-			return true;
+            return true;
         } else {
-			return value;
-		}    
-	}
+            return value;
+        }   
+    }
 
     # Replace an existing offer.
     # 
@@ -1021,8 +987,7 @@ public client class CoreClient {
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
@@ -1053,8 +1018,7 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -1076,15 +1040,14 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount);
+        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray,
+                maxItemCount);
         return offerStream;
     }
 
@@ -1100,15 +1063,14 @@ public client class CoreClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
 
         request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);
 
         Offer[] newArray = [];
-        stream<Offer>|error offerStream = <stream<Offer>|error>retriveStream(self.httpClient, requestPath, request, 
-        newArray, maxItemCount, (), true);
+        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray, 
+                maxItemCount, (), true);
         return offerStream;
     }
 }

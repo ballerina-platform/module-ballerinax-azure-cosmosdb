@@ -21,7 +21,7 @@ import ballerina/runtime;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+    masterToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
 
 CoreClient azureCosmosClient = new (config);
@@ -30,7 +30,7 @@ Database database = {};
 Database manual = {};
 Database auto = {};
 Container container = {};
-Document document = {};
+DocumentResponse document = {};
 StoredProcedureResponse storedPrcedure = {};
 UserDefinedFunctionResponse udf = {};
 TriggerResponse trigger = {};
@@ -210,8 +210,7 @@ function test_listOneDatabase() {
         "test_deleteUDF", 
         "test_deleteTrigger", 
         "test_deleteUser", 
-        "test_createPermissionWithTTL",
-        "test_getCollection_Resource_Token"
+        "test_createPermissionWithTTL"
     ]
 }
 function test_deleteDatabase() {
@@ -359,8 +358,7 @@ function test_getAllContainers() {
         "test_deleteTrigger", 
         "test_GetOneDocumentWithRequestOptions", 
         "test_createDocumentWithRequestOptions", 
-        "test_getDocumentListWithRequestOptions", 
-        "test_getCollection_Resource_Token"
+        "test_getDocumentListWithRequestOptions"
         // "test_replaceOfferWithOptionalParameter",
         // "test_replaceOffer"
     ]
@@ -410,7 +408,6 @@ function test_createDocument() {
     string containerId = container.id;
     int[] valueOfPartitionKey = [1234];
     string id = string `document_${uuid.toString()}`;
-
     json documentBody = {
         "LastName": "keeeeeee",
         "Parents": [{
@@ -436,8 +433,13 @@ function test_createDocument() {
         "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey);
-    if (result is Document) {
+    Document newDocument = {
+        id: id,
+        documentBody: documentBody
+    };
+
+    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey);
+    if (result is DocumentResponse) {
         document = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -485,8 +487,13 @@ function test_createDocumentWithRequestOptions() {
         "IsRegistered": true,
         "AccountNumber": 1234
     };
-    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, options);
-    if (result is Document) {
+    Document newDocument = {
+        id: id,
+        documentBody: documentBody
+    };
+
+    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey, options);
+    if (result is DocumentResponse) {
         document = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -506,7 +513,7 @@ function test_getDocumentList() {
     string containerId = container.id;
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is stream<Document>) {
+    if (result is stream<DocumentResponse>) {
         var singleDocument = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -531,7 +538,7 @@ function test_getDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
-    if (result is stream<Document>) {
+    if (result is stream<DocumentResponse>) {
         var singleDocument = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -550,7 +557,7 @@ function test_GetOneDocument() {
     int[] valueOfPartitionKey = [1234];
 
     var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey);
-    if (result is Document) {
+    if (result is DocumentResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -566,9 +573,6 @@ function test_GetOneDocumentWithRequestOptions() {
 
     string databaseId = database.id;
     string containerId = container.id;
-    Document getDoc = {
-        id: document.id
-    };
     int[] valueOfPartitionKey = [1234];
 
     DocumentGetOptions options = {
@@ -578,7 +582,7 @@ function test_GetOneDocumentWithRequestOptions() {
     };
 
     var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey, options);
-    if (result is Document) {
+    if (result is DocumentResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -1096,7 +1100,7 @@ function test_listUsers() {
 @test:Config {
     groups: ["user"],
     dependsOn: 
-    ["test_replaceUserId", "test_deletePermission", "test_createPermissionWithTTL", "test_getCollection_Resource_Token"]
+    ["test_replaceUserId", "test_deletePermission", "test_createPermissionWithTTL"]
 }
 function test_deleteUser() {
     log:print("ACTION : deleteUser()");
@@ -1233,7 +1237,7 @@ function test_getPermission() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_getPermission", "test_listPermissions", "test_replacePermission", "test_getCollection_Resource_Token"]
+    dependsOn: ["test_getPermission", "test_listPermissions", "test_replacePermission"]
 }
 function test_deletePermission() {
     log:print("ACTION : deletePermission()");
@@ -1360,40 +1364,40 @@ function test_queryOffer() {
     }
 }
 
-@test:Config {
-    groups: ["permission"],
-    dependsOn: ["test_createPermission"]
-}
-function test_getCollection_Resource_Token() {
-    log:print("ACTION : createCollection_Resource_Token()");
+// @test:Config {
+//     groups: ["permission"],
+//     dependsOn: ["test_createPermission"]
+// }
+// function test_getCollection_Resource_Token() {
+//     log:print("ACTION : createCollection_Resource_Token()");
 
-    string databaseId = database.id;
-    string permissionUserId = test_user.id;
-    string permissionId = permission.id;
+//     string databaseId = database.id;
+//     string permissionUserId = test_user.id;
+//     string permissionId = permission.id;
 
-    var result = azureCosmosClient->getPermission(databaseId, permissionUserId, permissionId);
-    if (result is error) {
-        test:assertFail(msg = result.message());
-    } else {
-        if (result?.token is string) {
-            AzureCosmosConfiguration configdb = {
-                baseUrl: getConfigValue("BASE_URL"),
-                masterOrResourceToken: result?.token.toString()
-            };
+//     var result = azureCosmosClient->getPermission(databaseId, permissionUserId, permissionId);
+//     if (result is error) {
+//         test:assertFail(msg = result.message());
+//     } else {
+//         if (result?.token is string) {
+//             AzureCosmosConfiguration configdb = {
+//                 baseUrl: getConfigValue("BASE_URL"),
+//                 masterOrResourceToken: result?.token.toString()
+//             };
 
-            CoreClient azureCosmosClientDatabase = new (configdb);
+//             CoreClient azureCosmosClientDatabase = new (configdb);
 
-            string containerId = container.id;
+//             string containerId = container.id;
 
-            var resultdb = azureCosmosClientDatabase->getContainer(databaseId, containerId);
-            if (resultdb is error) {
-                test:assertFail(msg = resultdb.message());
-            } else {
-                var output = "";
-            }
-        }
-    }
-}
+//             var resultdb = azureCosmosClientDatabase->getContainer(databaseId, containerId);
+//             if (resultdb is error) {
+//                 test:assertFail(msg = resultdb.message());
+//             } else {
+//                 var output = "";
+//             }
+//         }
+//     }
+// }
 
 isolated function getConfigValue(string key) returns string {
     return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);

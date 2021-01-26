@@ -24,7 +24,9 @@ public type DocumentReplaceOptions record {|
 # 
 # + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
-# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
+# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or 
+#       otherwise omitted.Makes operation conditional to only execute if the resource has changed. The value should be 
+#       the etag of the resource.
 public type DocumentGetOptions record {|
     string? consistancyLevel = ();
     string? sessionToken = ();
@@ -36,7 +38,9 @@ public type DocumentGetOptions record {|
 # + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy. 
 # + changeFeedOption - Must be set to "Incremental feed" or omitted otherwise.
-# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or otherwise omitted.
+# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or 
+#       otherwise omitted.Makes operation conditional to only execute if the resource has changed. The value should be 
+#       the etag of the resource.
 # + partitionKeyRangeId - The partition key range ID for reading data.
 public type DocumentListOptions record {|
     string? consistancyLevel = ();
@@ -55,7 +59,9 @@ public type StoredProcedureOptions record {|
 # in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions etc.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
-# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made since that timestamp or otherwise omitted.
+# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or 
+#       otherwise omitted.Makes operation conditional to only execute if the resource has changed. The value should be 
+#       the etag of the resource.
 public type ResourceReadOptions record {|
     string? sessionToken = ();
     string? ifNoneMatchEtag = ();
@@ -75,7 +81,8 @@ public type ResourceQueryOptions record {|
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
-# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. 
+# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. The operation will be executed if the 
+#       current etag is matched with the sent etag. If not 412 Precondition failure error will be returned.
 public type ResourceDeleteOptions record {|
     string? sessionToken = ();
     string? ifMatchEtag = ();
