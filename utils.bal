@@ -366,6 +366,18 @@ isolated function mapResponseToTuple(http:Response httpResponse) returns @tainte
     return [responseBody, responseHeaders];
 }
 
+//  Map the json payload and necessary header values returend from a response to a tuple.
+//  
+//  + httpResponse - the http:Response or http:ClientError returned form the HTTP request
+//  + return - returns a tuple of type [json, ResponseMetadata] if sucessful else, returns error
+//
+isolated function mapCreationResponseToTuple(http:Response httpResponse) returns @tainted [boolean, 
+        ResponseMetadata]|error {
+    boolean responseBody = check handleCreationResponse(httpResponse);
+    ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
+    return [responseBody, responseHeaders];
+}
+
 //  Handle sucess or error reponses to requests and extract the json payload.
 //  
 //  + httpResponse - http:Response or http:ClientError returned from an http:Request
@@ -381,6 +393,27 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
         if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
             //If status is 200 or 201, request is successful. Returns resulting payload.
             return jsonResponse;
+            
+        } else {
+            string message = jsonResponse.message.toString();
+            return prepareModuleError(message, (), httpResponse.statusCode);
+        }
+    } else {
+        return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
+    }
+}
+
+//  Handle sucess or error reponses to requests and extract the json payload.
+//  
+//  + httpResponse - http:Response or http:ClientError returned from an http:Request
+//  + return - If successful, returns json. Else returns error. 
+//
+isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
+    var jsonResponse = httpResponse.getJsonPayload();
+    if (jsonResponse is json) {
+        if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+            //If status is 200 or 201, request is successful. Returns resulting payload.
+            return true;
             
         } else {
             string message = jsonResponse.message.toString();
@@ -463,11 +496,11 @@ isolated function appendNewArray(json[] array, json[] newArray) {
     }
 }
 
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|DocumentResponse[]|
-        Database[]|Container[]|StoredProcedureResponse[]|UserDefinedFunctionResponse[]|TriggerResponse[]|User[]|
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|
+        Database[]|Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|
         Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted string? continuationHeader = (), 
-        boolean? isQuery = ()) returns @tainted stream<Offer>|stream<DocumentResponse>|stream<Database>|stream<Container>|
-        stream<StoredProcedureResponse>|stream<UserDefinedFunctionResponse>|stream<TriggerResponse>|stream<User>|
+        boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<Container>|
+        stream<StoredProcedure>|stream<UserDefinedFunction>|stream<Trigger>|stream<User>|
         stream<Permission>|stream<PartitionKeyRange>|stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
@@ -498,16 +531,16 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (arrayType is typedesc<DocumentResponse[]>) {
-        DocumentResponse[] documents = <DocumentResponse[]>array;
+    } else if (arrayType is typedesc<Document[]>) {
+        Document[] documents = <Document[]>array;
         if (payload.Documents is json) {
-            DocumentResponse[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
-            stream<DocumentResponse> documentStream = (<@untainted>finalArray).toStream();
+            Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
+            stream<Document> documentStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
                         <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<DocumentResponse>>) {
-                    documentStream = <stream<DocumentResponse>>streams;
+                if (typeof streams is typedesc<stream<Document>>) {
+                    documentStream = <stream<Document>>streams;
                 } else {
                     return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof documentStream).toString()}.`);
                 }
@@ -552,17 +585,17 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (arrayType is typedesc<StoredProcedureResponse[]>) {
-        StoredProcedureResponse[] storedProcedures = <StoredProcedureResponse[]>array;
+    } else if (arrayType is typedesc<StoredProcedure[]>) {
+        StoredProcedure[] storedProcedures = <StoredProcedure[]>array;
         if (payload.StoredProcedures is json) {
-            StoredProcedureResponse[] finalArray = convertToStoredProcedureArray(storedProcedures, 
+            StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, 
                     <json[]>payload.StoredProcedures);
-            stream<StoredProcedureResponse> storedProcedureStream = (<@untainted>finalArray).toStream();
+            stream<StoredProcedure> storedProcedureStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
                         <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<StoredProcedureResponse>>) {
-                    storedProcedureStream = <stream<StoredProcedureResponse>>streams;
+                if (typeof streams is typedesc<stream<StoredProcedure>>) {
+                    storedProcedureStream = <stream<StoredProcedure>>streams;
                 } else {
                     return prepareModuleError(
                     STREAM_IS_NOT_TYPE_ERROR + string `${(typeof storedProcedureStream).toString()}.`);
@@ -572,17 +605,17 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (arrayType is typedesc<UserDefinedFunctionResponse[]>) {
-        UserDefinedFunctionResponse[] userDefineFunctions = <UserDefinedFunctionResponse[]>array;
+    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
+        UserDefinedFunction[] userDefineFunctions = <UserDefinedFunction[]>array;
         if (payload.UserDefinedFunctions is json) {
-            UserDefinedFunctionResponse[] finalArray = convertsToUserDefinedFunctionArray(userDefineFunctions, 
+            UserDefinedFunction[] finalArray = convertsToUserDefinedFunctionArray(userDefineFunctions, 
                     <json[]>payload.UserDefinedFunctions);
-            stream<UserDefinedFunctionResponse> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
+            stream<UserDefinedFunction> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
                         <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<UserDefinedFunctionResponse>>) {
-                    userDefinedFunctionStream = <stream<UserDefinedFunctionResponse>>streams;
+                if (typeof streams is typedesc<stream<UserDefinedFunction>>) {
+                    userDefinedFunctionStream = <stream<UserDefinedFunction>>streams;
                 } else {
                     return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof userDefinedFunctionStream).toString()}.`);
                 }
@@ -591,16 +624,16 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         } else {
             return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
         }
-    } else if (arrayType is typedesc<TriggerResponse[]>) {
-        TriggerResponse[] triggers = <TriggerResponse[]>array;
+    } else if (arrayType is typedesc<Trigger[]>) {
+        Trigger[] triggers = <Trigger[]>array;
         if (payload.Triggers is json) {
-            TriggerResponse[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
-            stream<TriggerResponse> triggerStream = (<@untainted>finalArray).toStream();
+            Trigger[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
+            stream<Trigger> triggerStream = (<@untainted>finalArray).toStream();
             if (headers?.continuationHeader != () && maxItemCount is ()) {
                 var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
                         <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<TriggerResponse>>) {
-                    triggerStream = <stream<TriggerResponse>>streams;
+                if (typeof streams is typedesc<stream<Trigger>>) {
+                    triggerStream = <stream<Trigger>>streams;
                 } else {
                     return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof triggerStream).toString()}.`);
                 }

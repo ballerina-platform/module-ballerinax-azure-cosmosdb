@@ -52,19 +52,33 @@ isolated function mapJsonToContainerType([json, ResponseMetadata?] jsonPayload) 
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Document.
-isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) returns @tainted DocumentResponse {
-    DocumentResponse document = {};
+isolated function mapJsonToResultType([boolean, ResponseMetadata?] jsonPayload) returns @tainted CreationResult {
+    CreationResult result = {};
+    var [status, headers] = jsonPayload;
+    result.status = status ? true : false;
+    if (headers is ResponseMetadata) {
+        result.responseHeaders = headers;
+    }
+    return result;
+}
+
+//  Maps the json response returned from the request into record type of Document.
+// 
+//  + jsonPayload - A tuple which contains headers and json object returned from request.
+//  + return - An instance of record type Document.
+isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) returns @tainted Document {
+    Document document = {};
     var [payload, headers] = jsonPayload;
     document.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
+    //document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    //document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     map<json>|error documentBodyJson = payload.cloneWithType(JsonMap); /// Why this does not work with map<json>??
     if (documentBodyJson is map<json>) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
     }
-    if (headers is ResponseMetadata) {
-        document.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     document.responseHeaders = headers;
+    // }
     return document;
 }
 
@@ -155,15 +169,15 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type StoredProcedure.
-isolated function mapJsonToStoredProcedureResponse([json, ResponseMetadata?] jsonPayload) returns @tainted StoredProcedureResponse {
-    StoredProcedureResponse storedProcedureResponse = {};
+isolated function mapJsonToStoredProcedureResponse([json, ResponseMetadata?] jsonPayload) returns @tainted StoredProcedure {
+    StoredProcedure storedProcedureResponse = {};
     var [payload, headers] = jsonPayload;
-    storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    //storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     storedProcedureResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     storedProcedureResponse.storedProcedure = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        storedProcedureResponse.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     storedProcedureResponse.responseHeaders = headers;
+    // }
     return storedProcedureResponse;
 }
 
@@ -171,16 +185,16 @@ isolated function mapJsonToStoredProcedureResponse([json, ResponseMetadata?] jso
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type UserDefinedFunction.
-isolated function mapJsonToUserDefinedFunctionResponse([json, ResponseMetadata?] jsonPayload) returns @tainted 
-UserDefinedFunctionResponse {
-    UserDefinedFunctionResponse userDefinedFunctionResponse = {};
+isolated function mapJsonToUserDefinedFunction([json, ResponseMetadata?] jsonPayload) returns @tainted 
+UserDefinedFunction {
+    UserDefinedFunction userDefinedFunctionResponse = {};
     var [payload, headers] = jsonPayload;
-    userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    //userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.userDefinedFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        userDefinedFunctionResponse.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     userDefinedFunctionResponse.responseHeaders = headers;
+    // }
     return userDefinedFunctionResponse;
 }
 
@@ -188,17 +202,17 @@ UserDefinedFunctionResponse {
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Trigger.
-isolated function mapJsonToTriggerResponse([json, ResponseMetadata?] jsonPayload) returns @tainted TriggerResponse {
-    TriggerResponse triggerResponse = {};
+isolated function mapJsonToTrigger([json, ResponseMetadata?] jsonPayload) returns @tainted Trigger {
+    Trigger triggerResponse = {};
     var [payload, headers] = jsonPayload;
-    triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    //triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     triggerResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
     triggerResponse.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        triggerResponse.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     triggerResponse.responseHeaders = headers;
+    // }
     return triggerResponse;
 }
 
@@ -290,8 +304,8 @@ isolated function convertToContainerArray(@tainted Container[] containers, json[
 //  + documents - An existing array of type Document.
 //  + sourceDocumentArrayJsonObject - Json object which contain the array of document information.
 //  + return - An array of type Document.
-isolated function convertToDocumentArray(@tainted DocumentResponse[] documents, json[] sourceDocumentArrayJsonObject) 
-        returns @tainted DocumentResponse[] {
+isolated function convertToDocumentArray(@tainted Document[] documents, json[] sourceDocumentArrayJsonObject) 
+        returns @tainted Document[] {
     int i = documents.length();
     foreach json document in sourceDocumentArrayJsonObject {
         documents[i] = mapJsonToDocumentType([document, ()]);
@@ -305,8 +319,8 @@ isolated function convertToDocumentArray(@tainted DocumentResponse[] documents, 
 //  + storedProcedures - An existing array of type StoredProcedure.
 //  + sourceStoredProcedureArrayJsonObject - Json object which contain the array of stored procedure information.
 //  + return - An array of type StoredProcedure.
-isolated function convertToStoredProcedureArray(@tainted StoredProcedureResponse[] storedProcedures, 
-        json[] sourceStoredProcedureArrayJsonObject) returns @tainted StoredProcedureResponse[] {
+isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, 
+        json[] sourceStoredProcedureArrayJsonObject) returns @tainted StoredProcedure[] {
     int i = storedProcedures.length();
     foreach json storedProcedure in sourceStoredProcedureArrayJsonObject {
         storedProcedures[i] = mapJsonToStoredProcedureResponse([storedProcedure, ()]);
@@ -320,11 +334,11 @@ isolated function convertToStoredProcedureArray(@tainted StoredProcedureResponse
 //  + userDefinedFunctions - An existing array of type UserDefinedFunction.
 //  + sourceUdfArrayJsonObject - Json object which contain the array of user defined function information.
 //  + return - An array of type UserDefinedFunction.
-isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunctionResponse[] userDefinedFunctions, 
-        json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunctionResponse[] {
+isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunction[] userDefinedFunctions, 
+        json[] sourceUdfArrayJsonObject) returns @tainted UserDefinedFunction[] {
     int i = userDefinedFunctions.length();
     foreach json userDefinedFunction in sourceUdfArrayJsonObject {
-        userDefinedFunctions[i] = mapJsonToUserDefinedFunctionResponse([userDefinedFunction, ()]);
+        userDefinedFunctions[i] = mapJsonToUserDefinedFunction([userDefinedFunction, ()]);
         i = i + 1;
     }
     return userDefinedFunctions;
@@ -335,11 +349,11 @@ isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunctio
 //  + triggers - An existing array of type Trigger.
 //  + sourceTriggerArrayJsonObject - Json object which contain the array of trigger information.
 //  + return - An array of type Trigger.
-isolated function convertToTriggerArray(@tainted TriggerResponse[] triggers, json[] sourceTriggerArrayJsonObject) returns 
-        @tainted TriggerResponse[] {
+isolated function convertToTriggerArray(@tainted Trigger[] triggers, json[] sourceTriggerArrayJsonObject) returns 
+        @tainted Trigger[] {
     int i = triggers.length();
     foreach json trigger in sourceTriggerArrayJsonObject {
-        triggers[i] = mapJsonToTriggerResponse([trigger, ()]);
+        triggers[i] = mapJsonToTrigger([trigger, ()]);
         i = i + 1;
     }
     return triggers;

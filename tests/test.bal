@@ -18,6 +18,7 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
+import ballerina/io;
 
 AzureCosmosConfiguration clientConfig = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -32,15 +33,26 @@ AzureCosmosManagementConfiguration managementConfig = {
 CoreClient azureCosmosClient = new(clientConfig);
 CoreManagementClient azureCosmosManagementClient = new(managementConfig);
 
+var randomString = createRandomUUIDWithoutHyphens();
+
 Database database = {};
 Database manual = {};
 Database auto = {};
 Database ifExist = {};
 Container container = {};
-DocumentResponse document = {};
-StoredProcedureResponse storedPrcedure = {};
+
+Document document = {};
+string documentId = string `document_${randomString.toString()}`;
+
+StoredProcedure storedProcedure = {};
+string sprocId = string `sproc_${randomString.toString()}`;
+
 UserDefinedFunctionResponse udf = {};
-TriggerResponse trigger = {};
+string udfId = string `udf_${randomString.toString()}`;
+
+Trigger trigger = {};
+string triggerId = string `trigger_${randomString.toString()}`;
+
 User test_user = {};
 Permission permission = {};
 
@@ -396,7 +408,6 @@ function test_createDocument() {
     string databaseId = database.id;
     string containerId = container.id;
     int[] valueOfPartitionKey = [1234];
-    string id = string `document_${uuid.toString()}`;
     json documentBody = {
         "LastName": "keeeeeee",
         "Parents": [{
@@ -423,13 +434,13 @@ function test_createDocument() {
     };
 
     Document newDocument = {
-        id: id,
+        id: documentId,
         documentBody: documentBody
     };
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey);
-    if (result is DocumentResponse) {
-        document = <@untainted>result;
+    if (result is CreationResult) {
+        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -482,8 +493,8 @@ function test_createDocumentWithRequestOptions() {
     };
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey, options);
-    if (result is DocumentResponse) {
-        document = <@untainted>result;
+    if (result is CreationResult) {
+        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -502,8 +513,8 @@ function test_getDocumentList() {
     string containerId = container.id;
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is stream<DocumentResponse>) {
-        var singleDocument = result.next();
+    if (result is stream<Document>) {
+        var oneElement = result.next(); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -527,7 +538,7 @@ function test_getDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
-    if (result is stream<DocumentResponse>) {
+    if (result is stream<Document>) {
         var singleDocument = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -545,8 +556,8 @@ function test_GetOneDocument() {
     string containerId = container.id;
     int[] valueOfPartitionKey = [1234];
 
-    var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey);
-    if (result is DocumentResponse) {
+    var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, valueOfPartitionKey);
+    if (result is Document) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -570,8 +581,8 @@ function test_GetOneDocumentWithRequestOptions() {
         ifNoneMatchEtag: "hhh"
     };
 
-    var result = azureCosmosClient->getDocument(databaseId, containerId, document.id, valueOfPartitionKey, options);
-    if (result is DocumentResponse) {
+    var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, valueOfPartitionKey, options);
+    if (result is Document) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -631,7 +642,8 @@ function test_queryDocumentsWithRequestOptions() {
         "test_createDocument", 
         "test_GetOneDocument", 
         "test_GetOneDocumentWithRequestOptions", 
-        "test_queryDocuments"
+        "test_queryDocuments",
+        "test_getDocumentList"
     ]
 }
 function test_deleteDocument() {
@@ -640,7 +652,7 @@ function test_deleteDocument() {
     string databaseId = database.id;
     string containerId = container.id;
 
-    var result = azureCosmosClient->deleteDocument(databaseId, containerId, document.id, [1234]);
+    var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, [1234]);
     if (result is boolean) {
         var output = "";
     } else {
@@ -664,13 +676,13 @@ function test_createStoredProcedure() {
                                             response.setBody("Hello,  World");
                                         }`;
     StoredProcedure sp = {
-        id: string `sproc_${uuid.toString()}`,
+        id: sprocId,
         storedProcedure: createSprocBody
     };
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sp);
-    if (result is StoredProcedureResponse) {
-        storedPrcedure = <@untainted>result;
+    if (result is CreationResult) {
+        //storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -678,7 +690,7 @@ function test_createStoredProcedure() {
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_createStoredProcedure"]
+    dependsOn: ["test_createStoredProcedure", "test_getAllStoredProcedures"]
 }
 function test_replaceStoredProcedure() {
     log:print("ACTION : replaceStoredProcedure()");
@@ -692,12 +704,12 @@ function test_replaceStoredProcedure() {
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
     StoredProcedure sp = {
-        id: storedPrcedure.id,
+        id: sprocId,
         storedProcedure: replaceSprocBody
     };
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sp);
-    if (result is StoredProcedureResponse) {
-        storedPrcedure = <@untainted>result;
+    if (result is CreationResult) {
+        //storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -705,32 +717,15 @@ function test_replaceStoredProcedure() {
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_createContainer"]
-}
-function test_getAllStoredProcedures() {
-    log:print("ACTION : getAllStoredProcedures()");
-
-    string databaseId = database.id;
-    string containerId = container.id;
-
-    var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<StoredProcedureResponse>) {
-        var storedProcedure = result.next();
-    } else {
-        test:assertFail(msg = result.message());
-    }
-}
-
-@test:Config {
-    groups: ["storedProcedure"],
-    dependsOn: ["test_replaceStoredProcedure"]
+    dependsOn: ["test_replaceStoredProcedure"
+]
 }
 function test_executeOneStoredProcedure() {
     log:print("ACTION : executeOneStoredProcedure()");
 
     string databaseId = database.id;
     string containerId = container.id;
-    string executeSprocId = storedPrcedure.id;
+    string executeSprocId = sprocId;
     string[] arrayofparameters = ["Sachi"];
     StoredProcedureOptions options = {
         parameters: arrayofparameters
@@ -743,17 +738,38 @@ function test_executeOneStoredProcedure() {
         test:assertFail(msg = result.message());
     }
 }
+@test:Config {
+    groups: ["storedProcedure"],
+    dependsOn: ["test_createContainer"]
+}
+function test_getAllStoredProcedures() {
+    log:print("ACTION : getAllStoredProcedures()");
+
+    string databaseId = database.id;
+    string containerId = container.id;
+
+    var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (result is stream<StoredProcedure>) {
+        var oneElement = result.next();
+    
+    } else {
+        test:assertFail(msg = result.message());
+    }
+}
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_createStoredProcedure", "test_executeOneStoredProcedure", "test_getAllStoredProcedures"]
+    dependsOn: [
+        "test_createStoredProcedure", 
+        "test_executeOneStoredProcedure"    
+    ]
 }
 function test_deleteOneStoredProcedure() {
     log:print("ACTION : deleteOneStoredProcedure()");
 
     string databaseId = database.id;
     string containerId = container.id;
-    string deleteSprocId = storedPrcedure.id;
+    string deleteSprocId = sprocId;
 
     var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, deleteSprocId);
     if (result is boolean) {
@@ -773,7 +789,6 @@ function test_createUDF() {
     var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
-    string udfId = string `udf_${uuid.toString()}`;
     string createUDFBody = string `function tax(income){
 
                                                 if (income == undefined)
@@ -792,8 +807,8 @@ function test_createUDF() {
     };
 
     var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, createUdf);
-    if (result is UserDefinedFunctionResponse) {
-        udf = <@untainted>result;
+    if (result is CreationResult) {
+        //udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -819,13 +834,13 @@ function test_replaceUDF() {
                                                         return income * 0.4;
                                                 }`;
     UserDefinedFunction replacementUdf = {
-        id: udf.id,
+        id: udfId,
         userDefinedFunction: replaceUDFBody
     };
 
     var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, replacementUdf);
-    if (result is UserDefinedFunctionResponse) {
-        udf = <@untainted>result;
+    if (result is CreationResult) {
+        //udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -842,7 +857,7 @@ function test_listAllUDF() {
     string containerId = container.id;
 
     var result = azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is stream<UserDefinedFunctionResponse>) {
+    if (result is stream<UserDefinedFunction>) {
         var userDefinedFunction = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -856,7 +871,7 @@ function test_listAllUDF() {
 function test_deleteUDF() {
     log:print("ACTION : deleteUDF()");
 
-    string deleteUDFId = udf.id;
+    string deleteUDFId = udfId;
     string databaseId = database.id;
     string containerId = container.id;
 
@@ -878,7 +893,7 @@ function test_createTrigger() {
     var uuid = createRandomUUIDWithoutHyphens();
     string databaseId = database.id;
     string containerId = container.id;
-    string triggerId = string `trigger_${uuid.toString()}`;
+    string triggerIdd = string `trigger_${uuid.toString()}`;
     string createTriggerBody = string `function updateMetadata() {
                                             var context = getContext();
                                             var collection = context.getCollection();
@@ -915,8 +930,8 @@ function test_createTrigger() {
     };
 
     var result = azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
-    if (result is TriggerResponse) {
-        trigger = <@untainted>result;
+    if (result is CreationResult) {
+        //trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -960,15 +975,15 @@ function test_replaceTrigger() {
     string replaceTriggerOperation = "All";
     string replaceTriggerType = "Post";
     Trigger replaceTrigger = {
-        id: trigger.id,
+        id: triggerId,
         triggerFunction: replaceTriggerBody,
         triggerOperation: replaceTriggerOperation,
         triggerType: replaceTriggerType
     };
 
     var result = azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
-    if (result is TriggerResponse) {
-        trigger = <@untainted>result;
+    if (result is CreationResult) {
+        //trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -985,7 +1000,7 @@ function test_listTriggers() {
     string containerId = container.id;
 
     var result = azureCosmosClient->listTriggers(databaseId, containerId);
-    if (result is stream<TriggerResponse>) {
+    if (result is stream<Trigger>) {
         var doc = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -999,7 +1014,7 @@ function test_listTriggers() {
 function test_deleteTrigger() {
     log:print("ACTION : deleteTrigger()");
 
-    string deleteTriggerId = trigger.id;
+    string deleteTriggerId = triggerId;
     string databaseId = database.id;
     string containerId = container.id;
 

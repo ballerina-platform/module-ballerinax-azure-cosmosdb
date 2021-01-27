@@ -75,6 +75,11 @@ public type ResponseMetadata record {|
     string date = "";
 |};
 
+public type CreationResult record {|
+    boolean status = false;
+    *Common;
+|};
+
 # Represents the elements representing information about a database.
 # 
 # + id - User generated unique ID for the database. 
