@@ -28,7 +28,7 @@ public client class CoreClient {
 
     public function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = checkpanic validateBaseUrl(azureConfig.baseUrl);
-        self.masterOrResourceToken = azureConfig.masterOrResourceToken;/////////////// create to validate both master and resource token
+        self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
         self.tokenType = getTokenType(azureConfig.masterOrResourceToken);
         self.tokenVersion = TOKEN_VERSION;

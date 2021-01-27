@@ -21,12 +21,12 @@ import ballerina/runtime;
 
 AzureCosmosConfiguration clientConfig = {
     baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_TOKEN")
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
 
 AzureCosmosManagementConfiguration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterToken: config:getAsString("MASTER_TOKEN")
+    baseUrl: config:getAsString("MASTER_TOKEN"),
+    masterToken: config:getAsString("")
 };
 
 CoreClient azureCosmosClient = new(clientConfig);
