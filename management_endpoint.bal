@@ -152,7 +152,6 @@ public client class CoreManagementClient {
         }
         return result;
     }
-    
 
     # Delete a given container in a database.
     # 
@@ -199,7 +198,7 @@ public client class CoreManagementClient {
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of the new user.
     # + return - If successful, returns a User. Else returns error.
-    remote function createUser(string databaseId, string userId) returns @tainted User|error {
+    remote function createUser(string databaseId, string userId) returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
@@ -208,8 +207,8 @@ public client class CoreManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToUserType(jsonResponse);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        return mapJsonToResultType(jsonResponse);
     }
 
     # Replace the id of an existing user for a database.
@@ -218,7 +217,7 @@ public client class CoreManagementClient {
     # + userId - Old ID of the user.
     # + newUserId - New ID for the user.
     # + return - If successful, returns a User. Else returns error.
-    remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted User|error {
+    remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
@@ -227,8 +226,8 @@ public client class CoreManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToUserType(jsonResponse);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        return mapJsonToResultType(jsonResponse);
     }
 
     # To get information of a user from a database.
@@ -304,7 +303,7 @@ public client class CoreManagementClient {
     # + validityPeriod - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
     remote function createPermission(string databaseId, string userId, Permission permission, int? validityPeriod = ()) 
-            returns @tainted Permission|error {
+            returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
@@ -321,8 +320,8 @@ public client class CoreManagementClient {
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToPermissionType(jsonResponse);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        return mapJsonToResultType(jsonResponse);
     }
 
     # Replace an existing permission.
@@ -333,7 +332,7 @@ public client class CoreManagementClient {
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, @tainted Permission permission, 
-            int? validityPeriod = ()) returns @tainted Permission|error { 
+            int? validityPeriod = ()) returns @tainted CreationResult|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permission.id]);
@@ -350,8 +349,8 @@ public client class CoreManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToPermissionType(jsonResponse);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        return mapJsonToResultType(jsonResponse);
     }
 
     # To get information of a permission belongs to a user.
@@ -429,7 +428,7 @@ public client class CoreManagementClient {
     # + offer - A cosmosdb:Offer.
     # + offerType - Optional. Type of the offer.
     # + return - If successful, returns a Offer. Else returns error.
-    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
+    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
@@ -449,8 +448,8 @@ public client class CoreManagementClient {
         request.setJsonPayload(jsonPaylod);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToOfferType(jsonResponse);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        return mapJsonToResultType(jsonResponse);
     }
 
     # Get information about an offer.
