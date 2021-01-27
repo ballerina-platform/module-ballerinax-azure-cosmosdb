@@ -376,7 +376,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
         //If status 204, then no response body. So returns empty json.
         return {};
     }
-    var jsonResponse = httpResponse.getJsonPayload(); // check with both ways
+    var jsonResponse = httpResponse.getJsonPayload();
     if (jsonResponse is json) {
         if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
             //If status is 200 or 201, request is successful. Returns resulting payload.
@@ -435,7 +435,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    if (maxItemCount is int) { // this is per page value
+    if (maxItemCount is int) { // this is max item count per page value
         request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
     }
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
