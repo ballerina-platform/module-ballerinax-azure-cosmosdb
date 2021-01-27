@@ -25,8 +25,8 @@ AzureCosmosConfiguration clientConfig = {
 };
 
 AzureCosmosManagementConfiguration managementConfig = {
-    baseUrl: config:getAsString("MASTER_TOKEN"),
-    masterToken: config:getAsString("")
+    baseUrl: config:getAsString("BASE_URL"),
+    masterToken: config:getAsString("MASTER_TOKEN")
 };
 
 CoreClient azureCosmosClient = new(clientConfig);
