@@ -23,7 +23,6 @@ import ballerina/lang.array as array;
 import ballerina/java;
 import ballerina/log;
 
-
 // Validate if the base URL is an empty string
 // 
 //  + url - the URL from which we want to extract resource type
@@ -475,19 +474,26 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     var [payload, responseHeaders] = check mapResponseToTuple(response);
 
     if (payload.Documents is json) {
-        appendNewArray(array, <json[]>payload.Documents);
+        appendNewJsonArray(array, <json[]>payload.Documents);
         stream<json> documentStream = (<@untainted>array).toStream();
         if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
-            var streams = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
-            documentStream = <stream<json>>streams;
+            documentStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
         }
         return documentStream;
-    } else {
+    } else if (payload.Offers is json) {
+        appendNewJsonArray(array, <json[]>payload.Offers);
+        stream<json> offerStream = (<@untainted>array).toStream();
+        if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
+            offerStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
+        }
+        return offerStream;
+    }
+    else {
         return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
 }
 
-isolated function appendNewArray(json[] array, json[] newArray) {
+isolated function appendNewJsonArray(json[] array, json[] newArray) {
     int i = array.length();
     foreach json element in newArray {
         array[i] = element;
@@ -495,220 +501,93 @@ isolated function appendNewArray(json[] array, json[] newArray) {
     }
 }
 
-isolated function createStream(typedesc<record{}[]> typeDescription, json[] jsonArray, string? continuationHeader = (), int? maxItemCount = ()) {
-
-    stream<record{}> newStream;
-    <record{}>[] finalArray;
-    match typeDescription {
-        typedesc<Offer[]> =>{
-            finalArray = ConvertToOfferArray(offers, jsonArray);
-        }
-        typedesc<Permission[]> =>{
-            finalArray = convertToDatabaseArray(databases, jsonArray);
-        }
-    }
-    newStream = (<@untainted>finalArray).toStream();
-    if (continuationHeader != () && maxItemCount is ()) {
-        var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), continuationHeader);
-        if (typeof streams is typedesc<stream<record{}>>) {
-            newStream = <stream<record{}>>streams;
-        } else {
-            return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof newStream).toString()}.`);
-        }
-    }
-    return newStream;
-}
-
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request, record{}[]|json[] array, 
-        int? maxItemCount = (), @tainted string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<record{}>|stream<json>|error {
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request,@tainted record{}[] array, 
+        int? maxItemCount = (), @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    http:Response response;
-    if (isQuery == true) {
-        response = <http:Response>check azureCosmosClient->post(path, request);
-    } else {
-        response = <http:Response>check azureCosmosClient->get(path, request);
-    }
+
+    http:Response response = <http:Response>check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
+
+    stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, array, payload, headers?.continuationHeader, maxItemCount);
+    return finalStream;
+}
+
+function createStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
+        json payload, @tainted string? continuationHeader = (), int? maxItemCount = ()) returns @tainted stream<record{}>|error {
     var arrayType = typeof array;
+    record{}[] finalArray = array;
+
     if (arrayType is typedesc<Offer[]>) {
-        Offer[] offers = <Offer[]>array;
         if (payload.Offers is json) {
-            Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
-            stream<Offer> offerStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Offer>>) {
-                    offerStream = <stream<Offer>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`);
-                }
-            }
-            return offerStream;
+            finalArray = ConvertToOfferArray(<Offer[]>array, <json[]>payload.Offers);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Document[]>) {
-        Document[] documents = <Document[]>array;
         if (payload.Documents is json) {
-            Document[] finalArray = convertToDocumentArray(documents, <json[]>payload.Documents);
-            stream<Document> documentStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Document>>) {
-                    documentStream = <stream<Document>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof documentStream).toString()}.`);
-                }
-            }
-            return documentStream;
+            finalArray = convertToDocumentArray(<Document[]>array, <json[]>payload.Documents);
         } else {
-            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Database[]>) {
-        Database[] databases = <Database[]>array;
         if (payload.Databases is json) {
-            Database[] finalArray = convertToDatabaseArray(databases, <json[]>payload.Databases);
-            stream<Database> databaseStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (),
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Database>>) {
-                    databaseStream = <stream<Database>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof databaseStream).toString()}.`);
-                }
-            }
-            return databaseStream;
+            finalArray = convertToDatabaseArray(<Database[]>array, <json[]>payload.Databases);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Container[]>) {
-        Container[] containers = <Container[]>array;
         if (payload.DocumentCollections is json) {
-            Container[] finalArray = convertToContainerArray(containers, <json[]>payload.DocumentCollections);
-            stream<Container> containerStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Container>>) {
-                    containerStream = <stream<Container>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof containerStream).toString()}.`);
-                }
-            }
-            return containerStream;
-        } else {
-            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
-        }
-    } else if (arrayType is typedesc<StoredProcedure[]>) {
-        StoredProcedure[] storedProcedures = <StoredProcedure[]>array;
-        if (payload.StoredProcedures is json) {
-            StoredProcedure[] finalArray = convertToStoredProcedureArray(storedProcedures, 
-                    <json[]>payload.StoredProcedures);
-            stream<StoredProcedure> storedProcedureStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<StoredProcedure>>) {
-                    storedProcedureStream = <stream<StoredProcedure>>streams;
-                } else {
-                    return prepareModuleError(
-                    STREAM_IS_NOT_TYPE_ERROR + string `${(typeof storedProcedureStream).toString()}.`);
-                }
-            }
-            return storedProcedureStream;
+            finalArray = convertToContainerArray(<Container[]>array, <json[]>payload.DocumentCollections);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
-    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
-        UserDefinedFunction[] userDefineFunctions = <UserDefinedFunction[]>array;
-        if (payload.UserDefinedFunctions is json) {
-            UserDefinedFunction[] finalArray = convertsToUserDefinedFunctionArray(userDefineFunctions, 
-                    <json[]>payload.UserDefinedFunctions);
-            stream<UserDefinedFunction> userDefinedFunctionStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<UserDefinedFunction>>) {
-                    userDefinedFunctionStream = <stream<UserDefinedFunction>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof userDefinedFunctionStream).toString()}.`);
-                }
-            }
-            return userDefinedFunctionStream;
+    } else if (arrayType is typedesc<StoredProcedure[]>) {
+        if (payload.StoredProcedures is json) {
+            finalArray = convertToStoredProcedureArray(<StoredProcedure[]>array, <json[]>payload.StoredProcedures);
         } else {
-            return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR);
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }     
+    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
+        if (payload.UserDefinedFunctions is json) {
+            finalArray = convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>array, <json[]>payload.UserDefinedFunctions);
+        } else {
+            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Trigger[]>) {
-        Trigger[] triggers = <Trigger[]>array;
         if (payload.Triggers is json) {
-            Trigger[] finalArray = convertToTriggerArray(triggers, <json[]>payload.Triggers);
-            stream<Trigger> triggerStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Trigger>>) {
-                    triggerStream = <stream<Trigger>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof triggerStream).toString()}.`);
-                }
-            }
-            return triggerStream;
+            finalArray = convertToTriggerArray(<Trigger[]>array, <json[]>payload.Triggers);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<User[]>) {
-        User[] users = <User[]>array;
         if (payload.Users is json) {
-            User[] finalArray = convertToUserArray(users, <json[]>payload.Users);
-            stream<User> userStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<User>>) {
-                    userStream = <stream<User>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof userStream).toString()}.`);
-                }
-            }
-            return userStream;
+            finalArray = convertToUserArray(<User[]>array, <json[]>payload.Users);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Permission[]>) {
-        Permission[] permissions = <Permission[]>array;
         if (payload.Permissions is json) {
-            Permission[] finalArray = convertToPermissionArray(permissions, <json[]>payload.Permissions);
-            stream<Permission> permissionStream = (<@untainted>finalArray).toStream();
-            if (headers?.continuationHeader != () && maxItemCount is ()) {
-                var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-                        <@untainted>headers?.continuationHeader);
-                if (typeof streams is typedesc<stream<Permission>>) {
-                    permissionStream = <stream<Permission>>streams;
-                } else {
-                    return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof permissionStream).toString()}.`);
-                }
-            }
-            return permissionStream;
+            finalArray = convertToPermissionArray(<Permission[]>array, <json[]>payload.Permissions);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<PartitionKeyRange[]>) {
         if (payload.PartitionKeyRanges is json) {
-            PartitionKeyRange[] finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-            stream<PartitionKeyRange> partitionKeyrangesStream = (<@untainted>finalArray).toStream();
-            return partitionKeyrangesStream;
-
+            finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else {
         return prepareModuleError(INVALID_STREAM_TYPE);
     }
+
+    stream<record{}> newStream = (<@untainted>finalArray).toStream();
+    if (continuationHeader != () && maxItemCount is ()) {
+        newStream = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), continuationHeader);
+    }
+    return newStream;
 }
 
 //  Convert json string values to boolean.

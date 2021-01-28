@@ -503,7 +503,7 @@ public client class CoreManagementClient {
     #       the request.
     # + return - If successful, returns a stream<Offer>. Else returns error.
     remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
-            returns @tainted stream<Offer>|error { 
+            returns @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
@@ -512,9 +512,7 @@ public client class CoreManagementClient {
         request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);
 
-        Offer[] newArray = [];
-        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray, 
-                maxItemCount, (), true);
+        stream<json> offerStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
         return offerStream;
     }
 }

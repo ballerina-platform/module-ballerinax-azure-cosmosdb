@@ -49,12 +49,11 @@ type HeaderParameters record {|
 # 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + timeStamp - Timestamp (_ts) specifies the last updated timestamp of the resource.
+//# + timeStamp - Timestamp (_ts) specifies the last updated timestamp of the resource.
 # + responseHeaders - The important response headers.
 public type Common record {|
     string resourceId = "";
     string selfReference = "";
-    string timeStamp = "";
     ResponseMetadata responseHeaders = {};
 |};
 
@@ -107,10 +106,6 @@ public type Container record {|
 public type Document record {|
     string id = "";
     json documentBody = {};
-|};
-
-public type DocumentResponse record {|
-    *Document;
     *Common;
 |};
 
@@ -175,20 +170,12 @@ public type PartitionKey record {|
 public type StoredProcedure record {|
     string id = "";
     string storedProcedure = "";
-|};
-
-public type StoredProcedureResponse record {|
-    *StoredProcedure;
     *Common;
 |};
 
 public type UserDefinedFunction record {|
     string id = "";
     string userDefinedFunction = "";
-|};
-
-public type UserDefinedFunctionResponse record {|
-    *UserDefinedFunction;
     *Common;
 |};
 
@@ -203,10 +190,6 @@ public type Trigger record {|
     string triggerFunction = "";
     string triggerOperation = "";
     string triggerType = "";
-|};
-
-public type TriggerResponse record {|
-    *Trigger;
     *Common;
 |};
 
@@ -289,46 +272,3 @@ public type Offer record {|
     string resourceSelfLink = "";
     *Common;
 |};
-
-// class streamGenerator {
-
-//     private typedesc<record{}[]> typeofArray;
-
-//     function init(typedesc<record{}[]> typeDescription, json[] jsonArray) {
-//         self.typeofArray = typeDescription;
-//     }
-
-//     function create() returns stream<record{}>{
-//         any[] finalArry = []
-//         match self.typeofArray {
-//             typedesc<Offer[]> =>{
-//                 Offer[] finalArray = ConvertToOfferArray(offers, jsonArray);
-//                 stream<Offer> offerStream = (<@untainted>finalArray).toStream();
-//             }
-//             typedesc<Permission[]> =>{
-                
-//             }
-//         }
-
-//     }
-
-//     // if (arrayType is typedesc<Offer[]>) {
-//     //     Offer[] offers = <Offer[]>array;
-//     //     if (payload.Offers is json) {
-//     //         Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
-//     //         stream<Offer> offerStream = (<@untainted>finalArray).toStream();
-//     //         if (headers?.continuationHeader != () && maxItemCount is ()) {
-//     //             var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
-//     //                     <@untainted>headers?.continuationHeader);
-//     //             if (typeof streams is typedesc<stream<Offer>>) {
-//     //                 offerStream = <stream<Offer>>streams;
-//     //             } else {
-//     //                 return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`);
-//     //             }
-//     //         }
-//     //         return offerStream;
-//     //     } else {
-//     //         return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
-//     //     }
-//     // }
-// }

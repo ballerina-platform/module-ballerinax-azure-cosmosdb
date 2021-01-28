@@ -200,8 +200,8 @@ public client class CoreClient {
         }
 
         Document[] newArray = [];
-        stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, 
-        request, newArray, maxItemCount);
+        stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request, 
+                newArray, maxItemCount);
         return documentStream;
     }
 
@@ -332,8 +332,8 @@ public client class CoreClient {
         }
 
         StoredProcedure[] newArray = [];
-        stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(
-                self.httpClient, requestPath, request, newArray, maxItemCount);
+        stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(self.httpClient, 
+                requestPath, request, newArray, maxItemCount);
         return storedProcedureStream;
     }
 
@@ -558,8 +558,8 @@ public client class CoreClient {
         }
 
         Trigger[] newArray = [];
-        stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, 
-                request, newArray, maxItemCount);
+        stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request, 
+                newArray, maxItemCount);
         return triggerStream;
     }
 

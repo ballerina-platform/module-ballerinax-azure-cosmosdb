@@ -18,7 +18,6 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
-import ballerina/io;
 
 AzureCosmosConfiguration clientConfig = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -47,20 +46,15 @@ string containerId = string `container_${randomString.toString()}`;
 Document document = {};
 string documentId = string `document_${randomString.toString()}`;
 
-StoredProcedure storedProcedure = {};
 string sprocId = string `sproc_${randomString.toString()}`;
 
-UserDefinedFunctionResponse udf = {};
 string udfId = string `udf_${randomString.toString()}`;
 
-Trigger trigger = {};
 string triggerId = string `trigger_${randomString.toString()}`;
 
-User test_user = {};
 string userId = string `user_${randomString.toString()}`;
 string newUserId = string `userr_${randomString.toString()}`;
 
-Permission permission = {};
 string permissionId = string `permission_${randomString.toString()}`;
 
 @test:Config {
@@ -190,7 +184,7 @@ function test_listAllDatabases() {
     var result = azureCosmosClient->listDatabases(6);
     if (result is stream<Database>) {
         var databaseStream = result.next();
-        io:println(databaseStream);
+        //io:println(databaseStream);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -217,6 +211,7 @@ function test_listOneDatabase() {
         "test_createDatabase", 
         "test_listOneDatabase", 
         "test_createDatabase", 
+        "test_listAllDatabases",
         "test_getAllContainers", 
         "test_deleteContainer",
         "test_createCollectionWithManualThroughputAndIndexingPolicy",
@@ -431,7 +426,7 @@ function test_createDocument() {
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey);
     if (result is CreationResult) {
-        io:println(result);
+
     } else {
         test:assertFail(msg = result.message());
     }
@@ -484,7 +479,7 @@ function test_createDocumentWithRequestOptions() {
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey, options);
     if (result is CreationResult) {
-        io:println(result);
+
     } else {
         test:assertFail(msg = result.message());
     }
@@ -581,7 +576,6 @@ function test_queryDocuments() {
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [], 10, [1234]);
     if (result is stream<json>) {
         var document = result.next();
-        //io:println(document);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -604,7 +598,6 @@ function test_queryDocumentsWithRequestOptions() {
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [],10, (), options);
     if (result is stream<json>) {
         var document = result.next();
-        //io:println(document);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -985,7 +978,6 @@ function test_createUser() {
     var result = azureCosmosManagementClient->createUser(databaseId, userId);
     if (result is CreationResult) {
         //test_user = <@untainted>result;
-        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -1075,7 +1067,6 @@ function test_createPermission() {
         permissionMode: permissionMode,
         resourcePath: permissionResource
     };
-    io:println(permissionId);
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission);
     if (result is CreationResult) {
@@ -1098,7 +1089,6 @@ function test_createPermissionWithTTL() {
 
     var uuid = createRandomUUIDWithoutHyphens();
     string newPermissionId = string `permission_${uuid.toString()}`;
-    io:println(newPermissionId);
     string permissionMode = "Read";
     string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
     int validityPeriod = 9000;
@@ -1122,8 +1112,7 @@ function test_createPermissionWithTTL() {
 }
 function test_replacePermission() {
     log:print("ACTION : replacePermission()");
-    io:println(permissionId);
-    io:println(userId);
+
     string permissionMode = "All";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
     Permission replacePermission = {
@@ -1147,9 +1136,6 @@ function test_replacePermission() {
 function test_listPermissions() {
     log:print("ACTION : listPermissions()");
 
-    io:println(permissionId);
-    io:println(userId);
-
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
     if (result is error) {
         test:assertFail(msg = result.message());
@@ -1166,8 +1152,6 @@ function test_listPermissions() {
 function test_getPermission() {
     log:print("ACTION : getPermission()");
 
-    io:println(permissionId);
-    io:println(userId);
     var result = azureCosmosManagementClient->getPermission(databaseId, newUserId, permissionId);
     if (result is Permission) {
         var output = "";
@@ -1203,7 +1187,7 @@ string? resourceId = "";
 function test_listOffers() {
     log:print("ACTION : listOffers()");
 
-    var result = azureCosmosManagementClient->listOffers(10);
+    var result = azureCosmosManagementClient->listOffers(3);
     if (result is stream<Offer>) {
         var offer = result.next();
         offerId = <@untainted>offer?.value?.id;
@@ -1297,7 +1281,7 @@ function test_queryOffer() {
     Query offerQuery = {query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.
         toString()}"`};
     var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
-    if (result is stream<Offer>) {
+    if (result is stream<json>) {
         var offer = result.next();
     } else {
         test:assertFail(msg = result.message());

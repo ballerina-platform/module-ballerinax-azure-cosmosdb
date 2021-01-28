@@ -23,10 +23,9 @@ isolated function mapJsonToDatabaseType([json, ResponseMetadata?] jsonPayload) r
     var [payload, headers] = jsonPayload;
     database.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     database.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    database.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        database.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     database.responseHeaders = headers;
+    // }
     return database;
 }
 
@@ -39,12 +38,11 @@ isolated function mapJsonToContainerType([json, ResponseMetadata?] jsonPayload) 
     var [payload, headers] = jsonPayload;
     container.id = payload.id.toString();
     container.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    container.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     container.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
     container.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
-    if (headers is ResponseMetadata) {
-        container.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     container.responseHeaders = headers;
+    // }
     return container;
 }
 
@@ -70,8 +68,8 @@ isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) r
     Document document = {};
     var [payload, headers] = jsonPayload;
     document.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    //document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    //document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
+    document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     map<json>|error documentBodyJson = payload.cloneWithType(JsonMap); /// Why this does not work with map<json>??
     if (documentBodyJson is map<json>) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
@@ -132,9 +130,9 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseMetadata?] jsonPaylo
     partitionKeyRange.minInclusive = payload.minInclusive != () ? payload.minInclusive.toString() : EMPTY_STRING;
     partitionKeyRange.maxExclusive = payload.maxExclusive != () ? payload.maxExclusive.toString() : EMPTY_STRING;
     partitionKeyRange.status = payload.status != () ? payload.status.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        partitionKeyRange.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     partitionKeyRange.responseHeaders = headers;
+    // }
     return partitionKeyRange;
 }
 
@@ -172,7 +170,7 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 isolated function mapJsonToStoredProcedureResponse([json, ResponseMetadata?] jsonPayload) returns @tainted StoredProcedure {
     StoredProcedure storedProcedureResponse = {};
     var [payload, headers] = jsonPayload;
-    //storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     storedProcedureResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     storedProcedureResponse.storedProcedure = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     // if (headers is ResponseMetadata) {
@@ -189,7 +187,7 @@ isolated function mapJsonToUserDefinedFunction([json, ResponseMetadata?] jsonPay
 UserDefinedFunction {
     UserDefinedFunction userDefinedFunctionResponse = {};
     var [payload, headers] = jsonPayload;
-    //userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.userDefinedFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     // if (headers is ResponseMetadata) {
@@ -205,7 +203,7 @@ UserDefinedFunction {
 isolated function mapJsonToTrigger([json, ResponseMetadata?] jsonPayload) returns @tainted Trigger {
     Trigger triggerResponse = {};
     var [payload, headers] = jsonPayload;
-    //triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     triggerResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
@@ -225,9 +223,9 @@ isolated function mapJsonToUserType([json, ResponseMetadata?] jsonPayload) retur
     var [payload, headers] = jsonPayload;
     user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        user.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     user.responseHeaders = headers;
+    // }
     return user;
 }
 
@@ -243,9 +241,9 @@ isolated function mapJsonToPermissionType([json, ResponseMetadata?] jsonPayload)
     permission.token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
     permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
     permission.resourcePath = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        permission.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     permission.responseHeaders = headers;
+    // }
     return permission;
 }
 
@@ -263,9 +261,9 @@ isolated function mapJsonToOfferType([json, ResponseMetadata?] jsonPayload) retu
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
-        offer.responseHeaders = headers;
-    }
+    // if (headers is ResponseMetadata) {
+    //     offer.responseHeaders = headers;
+    // }
     return offer;
 }
 
