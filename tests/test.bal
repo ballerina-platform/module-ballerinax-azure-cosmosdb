@@ -58,6 +58,7 @@ string triggerId = string `trigger_${randomString.toString()}`;
 
 User test_user = {};
 string userId = string `user_${randomString.toString()}`;
+string newUserId = string `userr_${randomString.toString()}`;
 
 Permission permission = {};
 string permissionId = string `permission_${randomString.toString()}`;
@@ -189,6 +190,7 @@ function test_listAllDatabases() {
     var result = azureCosmosClient->listDatabases(6);
     if (result is stream<Database>) {
         var databaseStream = result.next();
+        io:println(databaseStream);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -983,6 +985,7 @@ function test_createUser() {
     var result = azureCosmosManagementClient->createUser(databaseId, userId);
     if (result is CreationResult) {
         //test_user = <@untainted>result;
+        io:println(result);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -990,15 +993,11 @@ function test_createUser() {
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["test_createUser", "test_getUser"]
+    dependsOn: ["test_createUser"]
 }
 function test_replaceUserId() {
     log:print("ACTION : replaceUserId()");
-
-    var uuid = createRandomUUIDWithoutHyphens();
-    string newReplaceId = string `user_${uuid.toString()}`;
-
-    var result = azureCosmosManagementClient->replaceUserId(databaseId, userId, newReplaceId);
+    var result = azureCosmosManagementClient->replaceUserId(databaseId, userId, newUserId);
     if (result is CreationResult) {
         //test_user = <@untainted>result;
     } else {
@@ -1008,12 +1007,12 @@ function test_replaceUserId() {
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["test_createUser"]
+    dependsOn: ["test_createUser", "test_replaceUserId"]
 }
 function test_getUser() {
     log:print("ACTION : getUser()");
 
-    var result = azureCosmosManagementClient->getUser(databaseId, userId);
+    var result = azureCosmosManagementClient->getUser(databaseId, newUserId);
     if (result is User) {
         var output = "";
     } else {
@@ -1023,7 +1022,7 @@ function test_getUser() {
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["test_createUser"]
+    dependsOn: ["test_createDatabase"]
 }
 function test_listUsers() {
     log:print("ACTION : listUsers()");
@@ -1039,20 +1038,18 @@ function test_listUsers() {
 @test:Config {
     groups: ["user"],
     dependsOn: 
-    [
-        "test_replaceUserId", 
+    [           
         "test_deletePermission",
-        "test_createPermission" ,
-        "test_createPermissionWithTTL",
-        "test_getPermission",
-        "test_replacePermission",
+        "test_replaceUserId",
+        "test_getUser",
+        "test_createPermission",
         "test_listPermissions"
     ]
 }
 function test_deleteUser() {
     log:print("ACTION : deleteUser()");
 
-    var result = azureCosmosManagementClient->deleteUser(databaseId, userId);
+    var result = azureCosmosManagementClient->deleteUser(databaseId, newUserId);
     if (result is boolean) {
         var output = "";
     } else {
@@ -1065,7 +1062,7 @@ function test_deleteUser() {
     dependsOn: [
         "test_createDatabase",
         "test_listOneDatabase", 
-        "test_createUser"
+        "test_replaceUserId"
     ]
 }
 function test_createPermission() {
@@ -1078,8 +1075,9 @@ function test_createPermission() {
         permissionMode: permissionMode,
         resourcePath: permissionResource
     };
+    io:println(permissionId);
 
-    var result = azureCosmosManagementClient->createPermission(databaseId, userId, createPermission);
+    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission);
     if (result is CreationResult) {
         //permission = <@untainted>result;
     } else {
@@ -1091,7 +1089,7 @@ function test_createPermission() {
     groups: ["permission"],
     dependsOn: [
         "test_createDatabase", 
-        "test_createUser",
+        "test_replaceUserId",
         "test_listOneDatabase"
     ]
 }
@@ -1100,9 +1098,9 @@ function test_createPermissionWithTTL() {
 
     var uuid = createRandomUUIDWithoutHyphens();
     string newPermissionId = string `permission_${uuid.toString()}`;
-
+    io:println(newPermissionId);
     string permissionMode = "Read";
-    string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
+    string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
     int validityPeriod = 9000;
     Permission createPermission = {
         id: newPermissionId,
@@ -1110,7 +1108,7 @@ function test_createPermissionWithTTL() {
         resourcePath: permissionResource
     };
 
-    var result = azureCosmosManagementClient->createPermission(databaseId, userId, createPermission, validityPeriod);
+    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission, validityPeriod);
     if (result is CreationResult) {
         //permission = <@untainted>result;
     } else {
@@ -1124,7 +1122,8 @@ function test_createPermissionWithTTL() {
 }
 function test_replacePermission() {
     log:print("ACTION : replacePermission()");
-
+    io:println(permissionId);
+    io:println(userId);
     string permissionMode = "All";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
     Permission replacePermission = {
@@ -1133,7 +1132,7 @@ function test_replacePermission() {
         resourcePath: permissionResource
     };
 
-    var result = azureCosmosManagementClient->replacePermission(databaseId, userId, replacePermission);
+    var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, replacePermission);
     if (result is CreationResult) {
         //permission = <@untainted>result;
     } else {
@@ -1148,7 +1147,10 @@ function test_replacePermission() {
 function test_listPermissions() {
     log:print("ACTION : listPermissions()");
 
-    var result = azureCosmosManagementClient->listPermissions(databaseId, userId);
+    io:println(permissionId);
+    io:println(userId);
+
+    var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -1164,7 +1166,9 @@ function test_listPermissions() {
 function test_getPermission() {
     log:print("ACTION : getPermission()");
 
-    var result = azureCosmosManagementClient->getPermission(databaseId, userId, permissionId);
+    io:println(permissionId);
+    io:println(userId);
+    var result = azureCosmosManagementClient->getPermission(databaseId, newUserId, permissionId);
     if (result is Permission) {
         var output = "";
     } else {
@@ -1174,16 +1178,15 @@ function test_getPermission() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: [
-        "test_getPermission", 
-        "test_listPermissions", 
-        "test_replacePermission"
+    dependsOn: [  
+        "test_replacePermission",
+        "test_getPermission"
     ]
 }
 function test_deletePermission() {
     log:print("ACTION : deletePermission()");
 
-    var result = azureCosmosManagementClient->deletePermission(databaseId, userId, permissionId);
+    var result = azureCosmosManagementClient->deletePermission(databaseId, newUserId, permissionId);
     if (result is boolean) {
         var output = "";
     } else {

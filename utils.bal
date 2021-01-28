@@ -477,7 +477,6 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     if (payload.Documents is json) {
         appendNewArray(array, <json[]>payload.Documents);
         stream<json> documentStream = (<@untainted>array).toStream();
-
         if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
             var streams = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
             documentStream = <stream<json>>streams;
@@ -496,12 +495,32 @@ isolated function appendNewArray(json[] array, json[] newArray) {
     }
 }
 
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request, Offer[]|Document[]|
-        Database[]|Container[]|StoredProcedure[]|UserDefinedFunction[]|Trigger[]|User[]|
-        Permission[]|PartitionKeyRange[]|json[] array, int? maxItemCount = (), @tainted string? continuationHeader = (), 
-        boolean? isQuery = ()) returns @tainted stream<Offer>|stream<Document>|stream<Database>|stream<Container>|
-        stream<StoredProcedure>|stream<UserDefinedFunction>|stream<Trigger>|stream<User>|
-        stream<Permission>|stream<PartitionKeyRange>|stream<json>|error {
+isolated function createStream(typedesc<record{}[]> typeDescription, json[] jsonArray, string? continuationHeader = (), int? maxItemCount = ()) {
+
+    stream<record{}> newStream;
+    <record{}>[] finalArray;
+    match typeDescription {
+        typedesc<Offer[]> =>{
+            finalArray = ConvertToOfferArray(offers, jsonArray);
+        }
+        typedesc<Permission[]> =>{
+            finalArray = convertToDatabaseArray(databases, jsonArray);
+        }
+    }
+    newStream = (<@untainted>finalArray).toStream();
+    if (continuationHeader != () && maxItemCount is ()) {
+        var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), continuationHeader);
+        if (typeof streams is typedesc<stream<record{}>>) {
+            newStream = <stream<record{}>>streams;
+        } else {
+            return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof newStream).toString()}.`);
+        }
+    }
+    return newStream;
+}
+
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request, record{}[]|json[] array, 
+        int? maxItemCount = (), @tainted string? continuationHeader = (), boolean? isQuery = ()) returns @tainted stream<record{}>|stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }

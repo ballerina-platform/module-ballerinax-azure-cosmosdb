@@ -289,3 +289,46 @@ public type Offer record {|
     string resourceSelfLink = "";
     *Common;
 |};
+
+// class streamGenerator {
+
+//     private typedesc<record{}[]> typeofArray;
+
+//     function init(typedesc<record{}[]> typeDescription, json[] jsonArray) {
+//         self.typeofArray = typeDescription;
+//     }
+
+//     function create() returns stream<record{}>{
+//         any[] finalArry = []
+//         match self.typeofArray {
+//             typedesc<Offer[]> =>{
+//                 Offer[] finalArray = ConvertToOfferArray(offers, jsonArray);
+//                 stream<Offer> offerStream = (<@untainted>finalArray).toStream();
+//             }
+//             typedesc<Permission[]> =>{
+                
+//             }
+//         }
+
+//     }
+
+//     // if (arrayType is typedesc<Offer[]>) {
+//     //     Offer[] offers = <Offer[]>array;
+//     //     if (payload.Offers is json) {
+//     //         Offer[] finalArray = ConvertToOfferArray(offers, <json[]>payload.Offers);
+//     //         stream<Offer> offerStream = (<@untainted>finalArray).toStream();
+//     //         if (headers?.continuationHeader != () && maxItemCount is ()) {
+//     //             var streams = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+//     //                     <@untainted>headers?.continuationHeader);
+//     //             if (typeof streams is typedesc<stream<Offer>>) {
+//     //                 offerStream = <stream<Offer>>streams;
+//     //             } else {
+//     //                 return prepareModuleError(STREAM_IS_NOT_TYPE_ERROR + string `${(typeof offerStream).toString()}.`);
+//     //             }
+//     //         }
+//     //         return offerStream;
+//     //     } else {
+//     //         return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//     //     }
+//     // }
+// }
