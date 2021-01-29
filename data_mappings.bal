@@ -23,9 +23,9 @@ isolated function mapJsonToDatabaseType([json, ResponseMetadata?] jsonPayload) r
     var [payload, headers] = jsonPayload;
     database.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     database.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
-    //     database.responseHeaders = headers;
-    // }
+    if (headers is ResponseMetadata) {
+        database.responseHeaders = headers;
+    }
     return database;
 }
 

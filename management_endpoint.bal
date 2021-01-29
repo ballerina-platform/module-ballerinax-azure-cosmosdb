@@ -91,7 +91,7 @@ public client class CoreManagementClient {
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        //return <boolean>check handleResponse(response);  - this is the way in gmail connector
+        //return <boolean> check handleResponse(response);
         json|error value = handleResponse(response);
         if (value is json) {
             return true;

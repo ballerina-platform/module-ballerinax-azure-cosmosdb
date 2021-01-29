@@ -245,7 +245,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
     byte[] decoded = check array:fromBase64(keyToken); 
     byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
     string signature = array:toBase64(digest); 
-    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8"); //make another var
+    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
     return authorization;      
 }
 
@@ -430,7 +430,8 @@ isolated function handleCreationResponse(http:Response httpResponse) returns @ta
 //
 isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseMetadata|error {
     ResponseMetadata responseHeaders = {};
-    responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
+    responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : 
+            getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
     responseHeaders.requestCharge = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
     responseHeaders.resourceUsage = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
@@ -507,10 +508,11 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
 
-    http:Response response = <http:Response>check azureCosmosClient->get(path, request);
+    http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
 
-    stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, array, payload, headers?.continuationHeader, maxItemCount);
+    stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, array, payload, 
+            headers?.continuationHeader, maxItemCount);
     return finalStream;
 }
 
