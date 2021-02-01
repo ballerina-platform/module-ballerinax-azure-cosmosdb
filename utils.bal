@@ -21,7 +21,6 @@ import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
 import ballerina/java;
-import ballerina/log;
 
 // Validate if the base URL is an empty string
 // 
@@ -40,14 +39,11 @@ isolated function validateBaseUrl(string url) returns string|error {
 //
 isolated function validateMasterToken(string token) returns string|error {
     if (token != "") {
-        byte[]|error encodedValue = encoding:decodeBase64Url(token);
-        if (encodedValue is byte[]) {
-            return token;
-        } else {
-            return prepareUserError(INVALID_MASTER_TOKEN_ERROR);
-        }
+        byte[] encodedValue = check encoding:decodeBase64Url(token);
+        return token;
+    } else {
+        return prepareUserError(EMPTY_MASTER_TOKEN_ERROR);
     }
-    return prepareUserError(EMPTY_MASTER_TOKEN_ERROR);
 }
 
 //  Extract the type of token used for accessing the Cosmos DB.
@@ -175,7 +171,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
     request.setHeader(http:CONNECTION, CONNECTION_KEEP_ALIVE);
-    string? date = getTime();
+    string? date = check getTime();
     if (date is string) {
         request.setHeader(DATE_HEADER, date);
         string? signature = ();
@@ -216,15 +212,11 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 //  + return - If successful, returns string representing UTC date and time 
 //          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
 //
-isolated function getTime() returns string? {
+isolated function getTime() returns string?|error {
     time:Time currentTime = time:currentTime();
-    var timeWithZone = time:toTimeZone(currentTime, GMT_ZONE);
-    if (timeWithZone is time:Time) {
-        string timeString = checkpanic time:format(timeWithZone, TIME_ZONE_FORMAT);
-        return timeString;
-    } else {
-        log:printError(TIME_STRING_ERROR);
-    }    
+    time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
+    string timeString = check time:format(timeWithZone, TIME_ZONE_FORMAT);
+    return timeString; 
 }
 
 //  To construct the hashed token signature for a token to set  'Authorization' header.
@@ -279,7 +271,8 @@ isolated function setPartitionKeyHeader(http:Request request, any? partitionKeyV
     if (partitionKeyValue is ()) {
         return;
     }
-    request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKeyValue.toString()}]`);
+    any[] partitionKeyArray = [partitionKeyValue];
+    request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
 }
 
 //  Set the required headers related to query operations.
@@ -387,18 +380,14 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
         //If status 204, then no response body. So returns empty json.
         return {};
     }
-    var jsonResponse = httpResponse.getJsonPayload();
-    if (jsonResponse is json) {
-        if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-            //If status is 200 or 201, request is successful. Returns resulting payload.
-            return jsonResponse;
-            
-        } else {
-            string message = jsonResponse.message.toString();
-            return prepareModuleError(message, (), httpResponse.statusCode);
-        }
+    json jsonResponse = check httpResponse.getJsonPayload();
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+        //If status is 200 or 201, request is successful. Returns resulting payload.
+        return jsonResponse;
+        
     } else {
-        return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
+        string message = jsonResponse.message.toString();
+        return prepareModuleError(message, (), httpResponse.statusCode);
     }
 }
 
@@ -408,18 +397,14 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 //  + return - If successful, returns json. Else returns error. 
 //
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
-    var jsonResponse = httpResponse.getJsonPayload();
-    if (jsonResponse is json) {
-        if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-            //If status is 200 or 201, request is successful. Returns resulting payload.
-            return true;
-            
-        } else {
-            string message = jsonResponse.message.toString();
-            return prepareModuleError(message, (), httpResponse.statusCode);
-        }
+    json jsonResponse = check httpResponse.getJsonPayload();
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+        //If status is 200 or 201, request is successful. Returns resulting payload.
+        return true;
+        
     } else {
-        return prepareModuleError(JSON_PAYLOAD_ACCESS_ERROR, jsonResponse);
+        string message = jsonResponse.message.toString();
+        return prepareModuleError(message, (), httpResponse.statusCode);
     }
 }
 

@@ -372,7 +372,7 @@ function test_deleteContainer() {
 function test_createDocument() {
     log:print("ACTION : createDocument()");
 
-    int valueOfPartitionKey = 1234;
+    int valueOfPartitionKeyN = 1234;
     json documentBody = {
         "LastName": "keeeeeee",
         "Parents": [{
@@ -403,7 +403,7 @@ function test_createDocument() {
         documentBody: documentBody
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKeyN);
     if (result is Result) {
 
     } else {
