@@ -272,3 +272,12 @@ public type Offer record {|
     string resourceSelfLink = "";
     *Common;
 |};
+
+
+class StreamGenerator {
+
+    
+    public isolated function next() returns record {}|error? {
+
+    }
+}

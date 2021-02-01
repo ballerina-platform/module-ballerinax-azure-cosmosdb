@@ -398,7 +398,7 @@ function test_deleteContainer() {
 function test_createDocument() {
     log:print("ACTION : createDocument()");
 
-    int[] valueOfPartitionKey = [1234];
+    int valueOfPartitionKey = 1234;
     json documentBody = {
         "LastName": "keeeeeee",
         "Parents": [{
@@ -450,7 +450,7 @@ function test_createDocumentWithRequestOptions() {
         isUpsertRequest: true,
         indexingDirective: "Include"
     };
-    int[] valueOfPartitionKey = [1234];
+    int valueOfPartitionKey = 1234;
     string id = string `document_${uuid.toString()}`;
 
     json documentBody = {
@@ -536,7 +536,7 @@ function test_getDocumentListWithRequestOptions() {
 function test_GetOneDocument() {
     log:print("ACTION : GetOneDocument()");
 
-    int[] valueOfPartitionKey = [1234];
+    int valueOfPartitionKey = 1234;
     var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, valueOfPartitionKey);
     if (result is Document) {
         var output = "";
@@ -552,7 +552,7 @@ function test_GetOneDocument() {
 function test_GetOneDocumentWithRequestOptions() {
     log:print("ACTION : GetOneDocumentWithRequestOptions()");
 
-    int[] valueOfPartitionKey = [1234];
+    int valueOfPartitionKey = 1234;
 
     DocumentGetOptions options = {
         consistancyLevel: "Eventual",
@@ -575,10 +575,10 @@ function test_GetOneDocumentWithRequestOptions() {
 function test_queryDocuments() {
     log:print("ACTION : queryDocuments()");
 
-    int[] partitionKey = [1234];
+    int partitionKey = 1234;
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [], 10, [1234]);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [], 10, partitionKey);
     if (result is stream<json>) {
         var document = result.next();
     } else {
@@ -593,7 +593,7 @@ function test_queryDocuments() {
 function test_queryDocumentsWithRequestOptions() {
     log:print("ACTION : queryDocumentsWithRequestOptions()");
 
-    int[] partitionKey = [1234];
+    int partitionKey = 1234;
     string query = string `SELECT * FROM ${containerId} f WHERE f.Address.City = 'Seattle'`;
 
     ResourceQueryOptions options = {
@@ -622,7 +622,7 @@ function test_queryDocumentsWithRequestOptions() {
 function test_deleteDocument() {
     log:print("ACTION : deleteDocument()");
 
-    var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, [1234]);
+    var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
     if (result is boolean) {
         var output = "";
     } else {

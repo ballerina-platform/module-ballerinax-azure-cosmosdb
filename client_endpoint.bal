@@ -115,7 +115,7 @@ public client class CoreClient {
     # + newDocument - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
-    remote function createDocument(string databaseId, string containerId, Document newDocument, any[] valueOfPartitionKey, 
+    remote function createDocument(string databaseId, string containerId, Document newDocument, any valueOfPartitionKey, 
             DocumentCreateOptions? requestOptions = ()) returns @tainted CreationResult|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
@@ -141,7 +141,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, @tainted Document newDocument, any[] valueOfPartitionKey, 
+    remote function replaceDocument(string databaseId, string containerId, @tainted Document newDocument, any valueOfPartitionKey, 
             DocumentReplaceOptions? requestOptions = ()) returns @tainted CreationResult|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
@@ -167,7 +167,7 @@ public client class CoreClient {
     # + valueOfPartitionKey - Array containing the value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns Document. Else returns error.  
-    remote function getDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
+    remote function getDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
             DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
@@ -213,7 +213,7 @@ public client class CoreClient {
     # + valueOfPartitionKey - Array containing the value of parition key  of the container.
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
-    remote function deleteDocument(string databaseId, string containerId, string documentId, any[] valueOfPartitionKey, 
+    remote function deleteDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
             ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
@@ -241,7 +241,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [],
-            int? maxItemCount = (), any[]? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
+            int? maxItemCount = (), any? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
             @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);

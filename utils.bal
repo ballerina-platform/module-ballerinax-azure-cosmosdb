@@ -275,11 +275,11 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 //  + partitionKey - the array containing the value of the partition key
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setPartitionKeyHeader(http:Request request, any[]? partitionKey) {
+isolated function setPartitionKeyHeader(http:Request request, any? partitionKey) {
     if (partitionKey is ()) {
         return;
     }
-    request.setHeader(PARTITION_KEY_HEADER, string `${partitionKey.toString()}`);
+    request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKey.toString()}]`);
 }
 
 //  Set the required headers related to query operations.
