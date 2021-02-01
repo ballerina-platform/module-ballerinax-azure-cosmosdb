@@ -36,13 +36,10 @@ public const string CONSISTANCY_LEVEL_SESSION = "Session";
 public const string CONSISTANCY_LEVEL_EVENTUAL = "Eventual";
 
 // Request headers
-const string CONTENT_TYPE_HEADER = "Content-Type";
 const string API_VERSION_HEADER = "x-ms-version";
 const string HOST_HEADER = "Host";
 const string ACCEPT_HEADER = "Accept";
-const string CONNECTION_HEADER = "Connection";
 const string DATE_HEADER = "x-ms-date";
-const string AUTHORIZATION_HEADER = "Authorization";
 const string THROUGHPUT_HEADER = "x-ms-offer-throughput";
 const string AUTOPILET_THROUGHPUT_HEADER = "x-ms-cosmos-offer-autopilot-settings";
 const string INDEXING_DIRECTIVE_HEADER = "x-ms-indexing-directive";
@@ -50,8 +47,6 @@ const string IS_UPSERT_HEADER = "x-ms-documentdb-is-upsert";
 const string MAX_ITEM_COUNT_HEADER = "x-ms-max-item-count";
 const string CONSISTANCY_LEVEL_HEADER = "x-ms-consistency-level";
 const string A_IM_HEADER = "A-IM";
-const string NON_MATCH_HEADER = "If-None-Match";
-const string IF_MATCH_HEADER = "If-Match";
 const string PARTITIONKEY_RANGE_HEADER = "x-ms-documentdb-partitionkeyrangeid";
 const string ISQUERY_HEADER = "x-ms-documentdb-isquery";
 const string PARTITION_KEY_HEADER = "x-ms-documentdb-partitionkey";
@@ -69,19 +64,10 @@ const string SESSION_TOKEN_HEADER = "x-ms-session-token";
 const string REQUEST_CHARGE_HEADER = "x-ms-request-charge";
 const string RESOURCE_USAGE_HEADER = "x-ms-resource-usage";
 const string ITEM_COUNT_HEADER = "x-ms-item-count";
-const string RESPONSE_DATE_HEADER = "Date";
-const string ETAG_HEADER = "etag";
 
 // Time Zone
 const string GMT_ZONE = "Europe/London";
 const string TIME_ZONE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
-
-// HTTP methods
-const string GET = "GET";
-const string PUT = "PUT";
-const string POST = "POST";
-const string PATCH = "PATCH";
-const string DELETE = "DELETE";
 
 // Resources
 const string RESOURCE_TYPE_DATABASES = "dbs";

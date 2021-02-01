@@ -174,7 +174,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     request.setHeader(API_VERSION_HEADER, params.apiVersion);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
-    request.setHeader(CONNECTION_HEADER, CONNECTION_KEEP_ALIVE);
+    request.setHeader(http:CONNECTION, CONNECTION_KEEP_ALIVE);
     string? date = getTime();
     if (date is string) {
         request.setHeader(DATE_HEADER, date);
@@ -188,7 +188,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
             return prepareUserError(NULL_RESOURCE_TYPE_ERROR);
         }
         if (signature is string) {
-            request.setHeader(AUTHORIZATION_HEADER, signature);
+            request.setHeader(http:AUTH_HEADER, signature);
         } else {
             return prepareModuleError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
         }
@@ -323,13 +323,13 @@ isolated function setRequestOptions(http:Request request, (DocumentCreateOptions
         request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString());
     }
     if (requestOptions?.ifNoneMatchEtag != ()) {
-        request.setHeader(NON_MATCH_HEADER, requestOptions?.ifNoneMatchEtag.toString());
+        request.setHeader(http:IF_NONE_MATCH, requestOptions?.ifNoneMatchEtag.toString());
     }
     if (requestOptions?.partitionKeyRangeId != ()) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
     }
     if (requestOptions?.ifMatchEtag != ()) {
-        request.setHeader(IF_MATCH_HEADER, requestOptions?.ifMatchEtag.toString());
+        request.setHeader(http:IF_MATCH, requestOptions?.ifMatchEtag.toString());
     }
     if (requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
@@ -435,8 +435,8 @@ isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) 
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
     responseHeaders.requestCharge = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
     responseHeaders.resourceUsage = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
-    responseHeaders.etag = getHeaderIfExist(httpResponse, ETAG_HEADER);
-    responseHeaders.date = getHeaderIfExist(httpResponse, RESPONSE_DATE_HEADER);
+    responseHeaders.etag = getHeaderIfExist(httpResponse, http:ETAG);
+    responseHeaders.date = getHeaderIfExist(httpResponse, http:DATE);
     return responseHeaders;
 }
 

@@ -45,7 +45,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         // Setting mandatory headers for the request
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
+                requestPath);
         // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
@@ -88,7 +89,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         //return <boolean> check handleResponse(response);
@@ -112,7 +114,8 @@ public client class CoreManagementClient {
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
+                requestPath);
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
@@ -164,7 +167,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_DELETE, 
+                requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -185,7 +189,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_PK_RANGES]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
 
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
@@ -201,7 +206,8 @@ public client class CoreManagementClient {
     remote function createUser(string databaseId, string userId) returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
+                requestPath);
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
@@ -220,7 +226,8 @@ public client class CoreManagementClient {
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
+                requestPath);
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
@@ -242,7 +249,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -261,7 +269,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -284,7 +293,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_DELETE, 
+                requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -307,7 +317,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
+                requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -336,7 +347,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permission.id]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
+                requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -367,7 +379,8 @@ public client class CoreManagementClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -388,7 +401,8 @@ public client class CoreManagementClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -412,7 +426,8 @@ public client class CoreManagementClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_DELETE, 
+                requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -431,7 +446,8 @@ public client class CoreManagementClient {
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted CreationResult|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
+                requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
@@ -462,7 +478,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -484,7 +501,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
+                requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -507,7 +525,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
+                requestPath);
 
         request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);

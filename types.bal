@@ -275,9 +275,7 @@ public type Offer record {|
 
 
 class StreamGenerator {
-
-    
     public isolated function next() returns record {}|error? {
-
+        
     }
 }
