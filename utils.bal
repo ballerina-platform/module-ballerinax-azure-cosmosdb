@@ -55,8 +55,8 @@ isolated function validateMasterToken(string token) returns string|error {
 //  + token - the token provided by the user to access Cosmos DB.
 //
 function getTokenType(string token) returns string {
-    boolean contain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
-    if (contain) {
+    boolean ifContain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
+    if (ifContain) {
         return TOKEN_TYPE_RESOURCE;
     } else {
         return TOKEN_TYPE_MASTER;
@@ -69,12 +69,12 @@ function getTokenType(string token) returns string {
 //  + return - string representing the resource id.
 //
 isolated function getHost(string url) returns string {
-    string replaced = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
-    int? lastIndex = str:lastIndexOf(replaced, FORWARD_SLASH);
+    string replacedString = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
+    int? lastIndex = str:lastIndexOf(replacedString, FORWARD_SLASH);
     if (lastIndex is int) {
-        replaced = replaced.substring(0, lastIndex);
+        replacedString = replacedString.substring(0, lastIndex);
     }
-    return replaced;
+    return replacedString;
 }
 
 //  Extract the resource type related to cosmos db from a given url
@@ -204,11 +204,11 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
 //  + return - An instance of record type HeaderParameters.
 //
 isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
-    HeaderParameters params = {};
-    params.verb = httpVerb;
-    params.resourceType = getResourceType(url);
-    params.resourceId = getResourceId(url);
-    return params;
+    HeaderParameters parameters = {};
+    parameters.verb = httpVerb;
+    parameters.resourceType = getResourceType(url);
+    parameters.resourceId = getResourceId(url);
+    return parameters;
 }
 
 //  Get the current time in the specific format.
@@ -217,8 +217,8 @@ isolated function mapParametersToHeaderType(string httpVerb, string url) returns
 //          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
 //
 isolated function getTime() returns string? {
-    time:Time time1 = time:currentTime();
-    var timeWithZone = time:toTimeZone(time1, GMT_ZONE);
+    time:Time currentTime = time:currentTime();
+    var timeWithZone = time:toTimeZone(currentTime, GMT_ZONE);
     if (timeWithZone is time:Time) {
         string timeString = checkpanic time:format(timeWithZone, TIME_ZONE_FORMAT);
         return timeString;
@@ -242,8 +242,8 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
         string tokenType, string tokenVersion, string date) returns string?|error {
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
     date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
-    byte[] decoded = check array:fromBase64(keyToken); 
-    byte[] digest = crypto:hmacSha256(payload.toBytes(), decoded);
+    byte[] decodedArray = check array:fromBase64(keyToken); 
+    byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest); 
     string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
     return authorization;      
@@ -275,11 +275,11 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 //  + partitionKey - the array containing the value of the partition key
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setPartitionKeyHeader(http:Request request, any? partitionKey) {
-    if (partitionKey is ()) {
+isolated function setPartitionKeyHeader(http:Request request, any? partitionKeyValue) {
+    if (partitionKeyValue is ()) {
         return;
     }
-    request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKey.toString()}]`);
+    request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKeyValue.toString()}]`);
 }
 
 //  Set the required headers related to query operations.

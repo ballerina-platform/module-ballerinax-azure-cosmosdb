@@ -40,7 +40,7 @@ public client class CoreManagementClient {
     # + databaseId - ID of the new database. Must be unique.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Database|error {
+    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Result|error {
         // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
@@ -57,9 +57,9 @@ public client class CoreManagementClient {
         // Get the response
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         // Map the payload and headers, of the request to a tuple 
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
         // Map the reponse payload and the headers to a record type
-        return mapJsonToDatabaseType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
@@ -68,7 +68,7 @@ public client class CoreManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
     remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
-           Database?|error {
+           Result?|error {
         var result = self->createDatabase(databaseId);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
@@ -111,7 +111,7 @@ public client class CoreManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns cosmosdb:Container. Else returns error.  
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
+            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
@@ -132,8 +132,8 @@ public client class CoreManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToContainerType(jsonResponse);
+        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Create a container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
@@ -146,7 +146,7 @@ public client class CoreManagementClient {
     # + return - If successful, returns Container if a new container is created or () if container already exists. 
     #       Else returns error.  
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
+            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result?|error { 
         var result = self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
@@ -203,7 +203,7 @@ public client class CoreManagementClient {
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of the new user.
     # + return - If successful, returns a User. Else returns error.
-    remote function createUser(string databaseId, string userId) returns @tainted CreationResult|error {
+    remote function createUser(string databaseId, string userId) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
@@ -214,7 +214,7 @@ public client class CoreManagementClient {
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Replace the id of an existing user for a database.
@@ -223,7 +223,7 @@ public client class CoreManagementClient {
     # + userId - Old ID of the user.
     # + newUserId - New ID for the user.
     # + return - If successful, returns a User. Else returns error.
-    remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted CreationResult|error {
+    remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
@@ -234,7 +234,7 @@ public client class CoreManagementClient {
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # To get information of a user from a database.
@@ -313,7 +313,7 @@ public client class CoreManagementClient {
     # + validityPeriod - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
     remote function createPermission(string databaseId, string userId, Permission permission, int? validityPeriod = ()) 
-            returns @tainted CreationResult|error {
+            returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
@@ -332,7 +332,7 @@ public client class CoreManagementClient {
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Replace an existing permission.
@@ -343,7 +343,7 @@ public client class CoreManagementClient {
     # + validityPeriod - Optional. Validity period of the permission
     # + return - If successful, returns a Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, @tainted Permission permission, 
-            int? validityPeriod = ()) returns @tainted CreationResult|error { 
+            int? validityPeriod = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permission.id]);
@@ -362,7 +362,7 @@ public client class CoreManagementClient {
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # To get information of a permission belongs to a user.
@@ -443,7 +443,7 @@ public client class CoreManagementClient {
     # + offer - A cosmosdb:Offer.
     # + offerType - Optional. Type of the offer.
     # + return - If successful, returns a Offer. Else returns error.
-    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted CreationResult|error {
+    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
         check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
@@ -465,7 +465,7 @@ public client class CoreManagementClient {
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Get information about an offer.

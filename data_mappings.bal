@@ -50,10 +50,10 @@ isolated function mapJsonToContainerType([json, ResponseMetadata?] jsonPayload) 
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Document.
-isolated function mapJsonToResultType([boolean, ResponseMetadata?] jsonPayload) returns @tainted CreationResult {
-    CreationResult result = {};
+isolated function mapTupleToResultType([boolean, ResponseMetadata?] jsonPayload) returns @tainted Result {
+    Result result = {};
     var [status, headers] = jsonPayload;
-    result.status = status ? true : false;
+    result.success = status ? true : false;
     if (headers is ResponseMetadata) {
         result.responseHeaders = headers;
     }
@@ -85,9 +85,9 @@ isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) r
 //  + reponsePayload - A json map which contains json payload returned from the request.
 //  + return - Json object which contains only the document.
 isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
-    var deleteKeys = [JSON_KEY_ID, JSON_KEY_RESOURCE_ID, JSON_KEY_SELF_REFERENCE, JSON_KEY_ETAG, JSON_KEY_TIMESTAMP, 
+    var keysToDelete = [JSON_KEY_ID, JSON_KEY_RESOURCE_ID, JSON_KEY_SELF_REFERENCE, JSON_KEY_ETAG, JSON_KEY_TIMESTAMP, 
     JSON_KEY_ATTACHMENTS];
-    foreach var keyValue in deleteKeys {
+    foreach var keyValue in keysToDelete {
         if (reponsePayload.hasKey(keyValue)) {
             var removedValue = reponsePayload.remove(keyValue);
         }
@@ -167,7 +167,7 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type StoredProcedure.
-isolated function mapJsonToStoredProcedureResponse([json, ResponseMetadata?] jsonPayload) returns @tainted StoredProcedure {
+isolated function mapJsonToStoredProcedure([json, ResponseMetadata?] jsonPayload) returns @tainted StoredProcedure {
     StoredProcedure storedProcedureResponse = {};
     var [payload, headers] = jsonPayload;
     storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
@@ -321,7 +321,7 @@ isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] store
         json[] sourceStoredProcedureArrayJsonObject) returns @tainted StoredProcedure[] {
     int i = storedProcedures.length();
     foreach json storedProcedure in sourceStoredProcedureArrayJsonObject {
-        storedProcedures[i] = mapJsonToStoredProcedureResponse([storedProcedure, ()]);
+        storedProcedures[i] = mapJsonToStoredProcedure([storedProcedure, ()]);
         i = i + 1;
     }
     return storedProcedures;

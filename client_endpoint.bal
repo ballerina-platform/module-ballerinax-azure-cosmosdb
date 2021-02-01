@@ -67,9 +67,9 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Database[] newArray = [];
+        Database[] emptyArray = [];
         stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request, 
-                newArray, maxItemCount);
+                emptyArray, maxItemCount);
         return databaseStream;
     }
 
@@ -106,9 +106,9 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Container[] newArray = [];
+        Container[] emptyArray = [];
         stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request, 
-                newArray, maxItemCount);
+                emptyArray, maxItemCount);
         return containerStream;
     }
 
@@ -120,7 +120,7 @@ public client class CoreClient {
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns Document. Else returns error.  
     remote function createDocument(string databaseId, string containerId, Document newDocument, any valueOfPartitionKey, 
-            DocumentCreateOptions? requestOptions = ()) returns @tainted CreationResult|error { 
+            DocumentCreateOptions? requestOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -135,7 +135,7 @@ public client class CoreClient {
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Replace a document inside a container.
@@ -147,7 +147,7 @@ public client class CoreClient {
     #       request.
     # + return - If successful, returns a cosmosdb:Document. Else returns error. 
     remote function replaceDocument(string databaseId, string containerId, @tainted Document newDocument, any valueOfPartitionKey, 
-            DocumentReplaceOptions? requestOptions = ()) returns @tainted CreationResult|error {
+            DocumentReplaceOptions? requestOptions = ()) returns @tainted Result|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -162,7 +162,7 @@ public client class CoreClient {
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Get information about one document in a container.
@@ -207,9 +207,9 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Document[] newArray = [];
+        Document[] emptyArray = [];
         stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request, 
-                newArray, maxItemCount);
+                emptyArray, maxItemCount);
         return documentStream;
     }
 
@@ -281,7 +281,7 @@ public client class CoreClient {
     # + storedProcedure - A cosmosdb:StoredProcedure.
     # + return - If successful, returns a cosmosdb:StoredProcedure. Else returns error. 
     remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) 
-            returns @tainted CreationResult|error {
+            returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES]);
@@ -296,7 +296,7 @@ public client class CoreClient {
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Replace a stored procedure in a container with new one.
@@ -306,7 +306,7 @@ public client class CoreClient {
     # + storedProcedure - A cosmosdb:StoredProcedure which replaces the existing one.
     # + return - If successful, returns a cosmosdb:StoredProcedure. Else returns error. 
     remote function replaceStoredProcedure(string databaseId, string containerId, @tainted StoredProcedure storedProcedure) 
-            returns @tainted CreationResult|error { 
+            returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedure.id]);
@@ -321,7 +321,7 @@ public client class CoreClient {
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # List information of all stored procedures in a container.
@@ -344,9 +344,9 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        StoredProcedure[] newArray = [];
+        StoredProcedure[] emptyArray = [];
         stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(self.httpClient, 
-                requestPath, request, newArray, maxItemCount);
+                requestPath, request, emptyArray, maxItemCount);
         return storedProcedureStream;
     }
 
@@ -408,7 +408,7 @@ public client class CoreClient {
     # + userDefinedFunction - A cosmosdb:UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     remote function createUserDefinedFunction(string databaseId, string containerId, UserDefinedFunction userDefinedFunction) 
-            returns @tainted CreationResult|error { 
+            returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF]);
@@ -423,7 +423,7 @@ public client class CoreClient {
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Replace an existing user defined function in a collection.
@@ -433,7 +433,7 @@ public client class CoreClient {
     # + userDefinedFunction - A cosmosdb:UserDefinedFunction.
     # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, @tainted UserDefinedFunction userDefinedFunction) 
-            returns @tainted CreationResult|error { 
+            returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunction.id]);
@@ -448,7 +448,7 @@ public client class CoreClient {
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Get a list of existing user defined functions inside a collection.
@@ -471,9 +471,9 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        UserDefinedFunction[] newArray = [];
+        UserDefinedFunction[] emptyArray = [];
         stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retriveStream(
-        self.httpClient, requestPath, request, newArray, maxItemCount);
+        self.httpClient, requestPath, request, emptyArray, maxItemCount);
         return userDefinedFunctionStream;
     }
 
@@ -512,7 +512,7 @@ public client class CoreClient {
     # + trigger - A cosmosdb:Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted 
-            CreationResult|error { 
+            Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER]);
@@ -529,7 +529,7 @@ public client class CoreClient {
         
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # Replace an existing trigger inside a collection.
@@ -539,7 +539,7 @@ public client class CoreClient {
     # + trigger - A cosmosdb:Trigger.
     # + return - If successful, returns a Trigger. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns @tainted 
-            CreationResult|error {
+            Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, trigger.id]);
@@ -556,7 +556,7 @@ public client class CoreClient {
         
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapJsonToResultType(jsonResponse);
+        return mapTupleToResultType(jsonResponse);
     }
 
     # List existing triggers inside a collection.
@@ -579,9 +579,9 @@ public client class CoreClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Trigger[] newArray = [];
+        Trigger[] emptyArray = [];
         stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request, 
-                newArray, maxItemCount);
+                emptyArray, maxItemCount);
         return triggerStream;
     }
 

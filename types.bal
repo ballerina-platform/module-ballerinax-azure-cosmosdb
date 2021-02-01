@@ -74,8 +74,8 @@ public type ResponseMetadata record {|
     string date = "";
 |};
 
-public type CreationResult record {|
-    boolean status = false;
+public type Result record {|
+    boolean success = false;
     *Common;
 |};
 

@@ -18,7 +18,6 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
-import ballerina/io;
 
 AzureCosmosConfiguration clientConfig = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -35,28 +34,26 @@ CoreManagementClient azureCosmosManagementClient = new(managementConfig);
 
 var randomString = createRandomUUIDWithoutHyphens();
 
-Database database = {};
 string databaseId = string `database_${randomString.toString()}`;
+string createDatabaseManualId = string `databasem_${randomString.toString()}`;
+string createDatabaseAutoId = string `databasea_${randomString.toString()}`;
+string createDatabaseExistId = string `databasee_${randomString.toString()}`;
 
-Database manual = {};
-Database auto = {};
-Database ifExist = {};
-Container container = {};
 string containerId = string `container_${randomString.toString()}`;
+string containerWithOptionsId = string `containero_${randomString.toString()}`;
+string containerIfNotExistId = string `containerx_${randomString.toString()}`;
 
-Document document = {};
 string documentId = string `document_${randomString.toString()}`;
-
 string sprocId = string `sproc_${randomString.toString()}`;
-
 string udfId = string `udf_${randomString.toString()}`;
-
 string triggerId = string `trigger_${randomString.toString()}`;
 
 string userId = string `user_${randomString.toString()}`;
 string newUserId = string `userr_${randomString.toString()}`;
-
 string permissionId = string `permission_${randomString.toString()}`;
+
+Database database = {};
+Container container = {};
 
 @test:Config {
     groups: ["database"]
@@ -65,10 +62,9 @@ function test_createDatabase() {
     log:print("ACTION : createDatabase()");
 
     var result = azureCosmosManagementClient->createDatabase(databaseId);
-    if (result is Database) {
-        //database = <@untainted>result;
+    if (result is Result && result.success == true) {
     } else {
-        test:assertFail(msg = result.message());
+        test:assertFail("Failed creating database");
     }
 }
 
@@ -80,7 +76,7 @@ function test_createDatabaseUsingInvalidId() {
 
     string createDatabaseId = "";
     var result = azureCosmosManagementClient->createDatabase(createDatabaseId);
-    if (result is Database) {
+    if (result is Result) {
         test:assertFail(msg = "Database created with  '' id value");
     } else {
         var output = "";
@@ -94,16 +90,11 @@ function test_createDatabaseUsingInvalidId() {
 function test_createDatabaseIfNotExist() {
     log:print("ACTION : createDatabaseIfNotExist()");
 
-    var uuid = createRandomUUIDWithoutHyphens();
-    string createDatabaseId = string `databasee_${uuid.toString()}`;
-
-    var result = azureCosmosManagementClient->createDatabaseIfNotExist(createDatabaseId);
-    if (result is Database?) {
-        if (result is Database) {
-            ifExist = <@untainted>result;
-        }
+    var result = azureCosmosManagementClient->createDatabaseIfNotExist(createDatabaseExistId);
+    if (result is Result && result.success == true) {
+  
     } else {
-        test:assertFail(msg = result.message());
+        test:assertFail("Failed creating database");
     }
 }
 
@@ -115,7 +106,7 @@ function test_createDatabaseIfExist() {
     log:print("ACTION : createDatabaseIfExist()");
 
     var result = azureCosmosManagementClient->createDatabaseIfNotExist(databaseId);
-    if (result is Database) {
+    if (result is Result && result.success == true) {
         test:assertFail(msg = "Database with non unique id is created");
     } else {
         var output = "";
@@ -127,16 +118,12 @@ function test_createDatabaseIfExist() {
 }
 function test_createDatabaseWithManualThroughput() {
     log:print("ACTION : createDatabaseWithManualThroughput()");
-
-    var uuid = createRandomUUIDWithoutHyphens();
-    string createDatabaseManualId = string `databasem_${uuid.toString()}`;
     int throughput = 1000;
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseManualId, throughput);
-    if (result is Database) {
-        manual = <@untainted>result;
+    if (result is Result && result.success == true) {
     } else {
-        test:assertFail(msg = result.message());
+        test:assertFail("Failed creating database");
     }
 }
 
@@ -145,13 +132,10 @@ function test_createDatabaseWithManualThroughput() {
 }
 function test_createDatabaseWithInvalidManualThroughput() {
     log:print("ACTION : createDatabaseWithInvalidManualThroughput()");
-
-    var uuid = createRandomUUIDWithoutHyphens();
-    string createDatabaseManualId = string `databasem_${uuid.toString()}`;
     int throughput = 40;
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseManualId, throughput);
-    if (result is Database) {
+    if (result is Result && result.success == true) {
         test:assertFail(msg = "Database created without validating user input");
     } else {
         var output = "";
@@ -164,15 +148,12 @@ function test_createDatabaseWithInvalidManualThroughput() {
 function test_createDBWithAutoscalingThroughput() {
     log:print("ACTION : createDBWithAutoscalingThroughput()");
 
-    var uuid = createRandomUUIDWithoutHyphens();
-    string createDatabaseAutoId = string `databasea_${uuid.toString()}`;
     json maxThroughput = {"maxThroughput": 4000};
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseAutoId, maxThroughput);
-    if (result is Database) {
-        auto = <@untainted>result;
+    if (result is Result && result.success == true) {
     } else {
-        test:assertFail(msg = result.message());
+        test:assertFail("Failed creating database");
     }
 }
 
@@ -185,7 +166,6 @@ function test_listAllDatabases() {
     var result = azureCosmosClient->listDatabases(6);
     if (result is stream<Database>) {
         var databaseStream = result.next();
-        //io:println(databaseStream);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -201,7 +181,6 @@ function test_listOneDatabase() {
     var result = azureCosmosClient->getDatabase(databaseId);
     if (result is Database) {
         database = <@untainted>result;
-        io:println(database);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -237,8 +216,8 @@ function test_deleteDatabase() {
     log:print("ACTION : deleteDatabase()");
 
     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
-    var result2 = azureCosmosManagementClient->deleteDatabase(manual.id);
-    var result3 = azureCosmosManagementClient->deleteDatabase(auto.id);
+    var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseManualId);
+    var result3 = azureCosmosManagementClient->deleteDatabase(createDatabaseAutoId);
     if (result1 == true && result2 == true && result3 == true) {
         var output = "";
     } else {
@@ -258,10 +237,9 @@ function test_createContainer() {
         keyVersion: 2
     };
     var result = azureCosmosManagementClient->createContainer(databaseId, containerId, pk);
-    if (result is Container) {
-        container = <@untainted>result;
+    if (result is Result && result.success == true) {
     } else {
-        test:assertFail(msg = result.message());
+        test:assertFail("Unable to create Container");
     }
 }
 
@@ -272,8 +250,6 @@ function test_createContainer() {
 function test_createCollectionWithManualThroughputAndIndexingPolicy() {
     log:print("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
 
-    var uuid = createRandomUUIDWithoutHyphens();
-    string containerId = string `container_${uuid.toString()}`;
     IndexingPolicy ip = {
         indexingMode: "consistent",
         automatic: true,
@@ -293,11 +269,11 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
         keyVersion: 2
     };
 
-    var result = azureCosmosManagementClient->createContainer(databaseId, containerId, pk, ip, throughput);
-    if (result is Container) {
+    var result = azureCosmosManagementClient->createContainer(databaseId, containerWithOptionsId, pk, ip, throughput);
+    if (result is Result && result.success == true) {
         var output = "";
     } else {
-        test:assertFail(msg = result.message());
+        test:assertFail("SUccessfully created");
     }
 }
 
@@ -308,16 +284,14 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
 function test_createContainerIfNotExist() {
     log:print("ACTION : createContainerIfNotExist()");
 
-    var uuid = createRandomUUIDWithoutHyphens();
-    string containerId = string `container_${uuid.toString()}`;
     PartitionKey pk = {
         paths: ["/AccountNumber"],
         kind: "Hash",
         keyVersion: 2
     };
 
-    var result = azureCosmosManagementClient->createContainerIfNotExist(databaseId, containerId, pk);
-    if (result is Container?) {
+    var result = azureCosmosManagementClient->createContainerIfNotExist(databaseId, containerIfNotExistId, pk);
+    if (result is Result?) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -430,7 +404,7 @@ function test_createDocument() {
     };
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey);
-    if (result is CreationResult) {
+    if (result is Result) {
 
     } else {
         test:assertFail(msg = result.message());
@@ -483,7 +457,7 @@ function test_createDocumentWithRequestOptions() {
     };
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey, options);
-    if (result is CreationResult) {
+    if (result is Result) {
 
     } else {
         test:assertFail(msg = result.message());
@@ -648,7 +622,7 @@ function test_createStoredProcedure() {
     };
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sp);
-    if (result is CreationResult) {
+    if (result is Result) {
         //storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -672,7 +646,7 @@ function test_replaceStoredProcedure() {
         storedProcedure: replaceSprocBody
     };
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sp);
-    if (result is CreationResult) {
+    if (result is Result) {
         //storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -758,7 +732,7 @@ function test_createUDF() {
     };
 
     var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, createUdf);
-    if (result is CreationResult) {
+    if (result is Result) {
         //udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -788,7 +762,7 @@ function test_replaceUDF() {
     };
 
     var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, replacementUdf);
-    if (result is CreationResult) {
+    if (result is Result) {
         //udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -868,7 +842,7 @@ function test_createTrigger() {
     };
 
     var result = azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
-    if (result is CreationResult) {
+    if (result is Result) {
         //trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -918,7 +892,7 @@ function test_replaceTrigger() {
     };
 
     var result = azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
-    if (result is CreationResult) {
+    if (result is Result) {
         //trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -981,7 +955,7 @@ function test_createUser() {
     log:print("ACTION : createUser()");
 
     var result = azureCosmosManagementClient->createUser(databaseId, userId);
-    if (result is CreationResult) {
+    if (result is Result) {
         //test_user = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -995,7 +969,7 @@ function test_createUser() {
 function test_replaceUserId() {
     log:print("ACTION : replaceUserId()");
     var result = azureCosmosManagementClient->replaceUserId(databaseId, userId, newUserId);
-    if (result is CreationResult) {
+    if (result is Result) {
         //test_user = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -1074,7 +1048,7 @@ function test_createPermission() {
     };
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission);
-    if (result is CreationResult) {
+    if (result is Result) {
         //permission = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -1104,7 +1078,7 @@ function test_createPermissionWithTTL() {
     };
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission, validityPeriod);
-    if (result is CreationResult) {
+    if (result is Result) {
         //permission = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -1127,7 +1101,7 @@ function test_replacePermission() {
     };
 
     var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, replacePermission);
-    if (result is CreationResult) {
+    if (result is Result) {
         //permission = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -1240,7 +1214,7 @@ function test_replaceOffer() {
             resourceId: <string>resourceId
         };
         var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
-        if (result is CreationResult) {
+        if (result is Result) {
             var output = "";
         } else {
             test:assertFail(msg = result.message());
@@ -1267,7 +1241,7 @@ function test_replaceOfferWithOptionalParameter() {
             resourceId: <string>resourceId
         };
         var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
-        if (result is CreationResult) {
+        if (result is Result) {
             var output = "";
         } else {
             test:assertFail(msg = result.message());
