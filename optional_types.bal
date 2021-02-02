@@ -87,3 +87,6 @@ public type ResourceDeleteOptions record {|
     string? sessionToken = ();
     string? ifMatchEtag = ();
 |};
+
+type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|DocumentListOptions|ResourceReadOptions|
+        ResourceQueryOptions|ResourceDeleteOptions;

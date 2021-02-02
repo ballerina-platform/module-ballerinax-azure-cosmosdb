@@ -40,6 +40,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
     # + newDocument - A cosmosdb:Document which includes the ID and the document to save in the database. 
+    # + valueOfPartitionKey - The value of parition key field of the container. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDocument(string databaseId, string containerId, Document newDocument, any valueOfPartitionKey, 
@@ -65,7 +66,8 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
-    # + newDocument - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
+    # + newDocument - A cosmosdb:Document which includes the ID and the new document to replace the existing one.
+    # + valueOfPartitionKey - The value of parition key field of the container. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
@@ -93,7 +95,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
     # + documentId - Id of the document to retrieve. 
-    # + valueOfPartitionKey - Array containing the value of parition key field of the container.
+    # + valueOfPartitionKey - The value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
     # + return - If successful, returns cosmosdb:Document. Else returns error.  
     remote function getDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
@@ -141,7 +143,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.    
     # + documentId - ID of the document to delete. 
-    # + valueOfPartitionKey - Array containing the value of parition key  of the container.
+    # + valueOfPartitionKey - The value of parition key field of the container.
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
@@ -168,7 +170,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container to query.     
     # + sqlQuery - A cosmosdb:Query containing the SQL query and parameters.
-    # + valueOfPartitionKey - Optional. An array containing the value of the partition key specified for the document.
+    # + valueOfPartitionKey - Optional. The value of parition key field of the container.
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<json>. Else returns error.

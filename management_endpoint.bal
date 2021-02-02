@@ -18,7 +18,7 @@ import ballerina/http;
 # Azure Cosmos DB Client Object for management operations.
 # 
 # + httpClient - the HTTP Client
-public client class CoreManagementClient {
+public client class ManagementClient {
     private http:Client httpClient;
     private string baseUrl;
     private string masterOrResourceToken;

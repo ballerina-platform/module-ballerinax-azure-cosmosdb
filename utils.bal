@@ -278,8 +278,7 @@ isolated function setHeadersForQuery(http:Request request) {
 //  + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setRequestOptions(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
-        DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns error? {
+isolated function setRequestOptions(http:Request request, Options? requestOptions) returns error? {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
@@ -428,19 +427,19 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 
 //  Get a stream of json documents which is returned as query results
 //  
-//  + azureCosmosClient - 
-//  + path - 
-//  + request - n
-//  + array - 
-//  + maxItemCount - 
-//  + continuationHeader - 
+//  + azureCosmosClient - client which calls the azure endpoint
+//  + path - pathe to which API call is made
+//  + request - http request object 
+//  + array - the array with the returned results
+//  + maxItemCount - maximum item count per one page value 
+//  + continuationHeader - the continuation header which points to the next page
 // 
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request, @tainted json[] array, 
         int? maxItemCount = (), string? continuationHeader = ()) returns @tainted stream<json>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
-    if (maxItemCount is int) { // this is max item count per page value
+    if (maxItemCount is int) {
         request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
     }
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
@@ -474,7 +473,7 @@ isolated function appendNewJsonArray(json[] array, json[] newArray) {
     }
 }
 
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request,@tainted record{}[] array, 
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
         int? maxItemCount = (), @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);

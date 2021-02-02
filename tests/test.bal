@@ -25,7 +25,7 @@ AzureCosmosConfiguration config = {
 };
 
 CoreClient azureCosmosClient = new(config);
-CoreManagementClient azureCosmosManagementClient = new(config);
+ManagementClient azureCosmosManagementClient = new(config);
 
 var randomString = createRandomUUIDWithoutHyphens();
 
