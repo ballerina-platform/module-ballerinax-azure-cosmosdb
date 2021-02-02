@@ -74,6 +74,9 @@ public type ResponseMetadata record {|
     string date = "";
 |};
 
+# Represents information about the status of the relevent create or update request.
+# 
+# + success - A boolean representing the status of the request.
 public type Result record {|
     boolean success = false;
     *Common;

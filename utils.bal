@@ -508,55 +508,55 @@ function createStream(http:Client azureCosmosClient, string path, http:Request r
 
     if (arrayType is typedesc<Offer[]>) {
         if (payload.Offers is json) {
-            finalArray = ConvertToOfferArray(<Offer[]>array, <json[]>payload.Offers);
+            convertToOfferArray(<Offer[]>array, <json[]>payload.Offers);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Document[]>) {
         if (payload.Documents is json) {
-            finalArray = convertToDocumentArray(<Document[]>array, <json[]>payload.Documents);
+            convertToDocumentArray(<Document[]>array, <json[]>payload.Documents);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Database[]>) {
         if (payload.Databases is json) {
-            finalArray = convertToDatabaseArray(<Database[]>array, <json[]>payload.Databases);
+            convertToDatabaseArray(<Database[]>array, <json[]>payload.Databases);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Container[]>) {
         if (payload.DocumentCollections is json) {
-            finalArray = convertToContainerArray(<Container[]>array, <json[]>payload.DocumentCollections);
+            convertToContainerArray(<Container[]>array, <json[]>payload.DocumentCollections);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<StoredProcedure[]>) {
         if (payload.StoredProcedures is json) {
-            finalArray = convertToStoredProcedureArray(<StoredProcedure[]>array, <json[]>payload.StoredProcedures);
+            convertToStoredProcedureArray(<StoredProcedure[]>array, <json[]>payload.StoredProcedures);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }     
     } else if (arrayType is typedesc<UserDefinedFunction[]>) {
         if (payload.UserDefinedFunctions is json) {
-            finalArray = convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>array, <json[]>payload.UserDefinedFunctions);
+            convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>array, <json[]>payload.UserDefinedFunctions);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Trigger[]>) {
         if (payload.Triggers is json) {
-            finalArray = convertToTriggerArray(<Trigger[]>array, <json[]>payload.Triggers);
+            convertToTriggerArray(<Trigger[]>array, <json[]>payload.Triggers);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<User[]>) {
         if (payload.Users is json) {
-            finalArray = convertToUserArray(<User[]>array, <json[]>payload.Users);
+            convertToUserArray(<User[]>array, <json[]>payload.Users);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Permission[]>) {
         if (payload.Permissions is json) {
-            finalArray = convertToPermissionArray(<Permission[]>array, <json[]>payload.Permissions);
+            convertToPermissionArray(<Permission[]>array, <json[]>payload.Permissions);
         } else {
             return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }

@@ -30,18 +30,6 @@ isolated function prepareModuleError(string message, error? err = (), int? statu
     return azureError;
 }
 
-// isolated function prepareLanguageError(string message, error? err = (), int? status = ()) returns error {
-//     error languageError;
-//     if (status is int) {
-//         languageError = BallerinaLanguageError(message, status = status);
-//     } else if (err is error){
-//         languageError = BallerinaLanguageError(message, err);
-//     } else {
-//         languageError = BallerinaLanguageError(message);
-//     }
-//     return languageError;
-// }
-
 isolated function prepareUserError(string message, error? err = (), int? status = ()) returns error {
     error userError;
     if (status is int) {
