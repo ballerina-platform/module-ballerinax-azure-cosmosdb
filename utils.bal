@@ -33,19 +33,6 @@ isolated function validateBaseUrl(string url) returns string|error {
     return prepareUserError(EMPTY_BASE_URL_ERROR);
 }
 
-// Validate if the  is an empty string
-// 
-//  + token - the token provided by the user to access Cosmos DB.
-//
-isolated function validateMasterToken(string token) returns string|error {
-    if (token != "") {
-        byte[] encodedValue = check encoding:decodeBase64Url(token);
-        return token;
-    } else {
-        return prepareUserError(EMPTY_MASTER_TOKEN_ERROR);
-    }
-}
-
 //  Extract the type of token used for accessing the Cosmos DB.
 // 
 //  + token - the token provided by the user to access Cosmos DB.

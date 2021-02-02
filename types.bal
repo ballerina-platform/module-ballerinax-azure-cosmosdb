@@ -23,15 +23,6 @@ public type AzureCosmosConfiguration record {|
     string masterOrResourceToken;
 |};
 
-# Represents configuration parameters to create Azure Cosmos DB client.
-# 
-# + baseUrl - Base URL of the Azure Cosmos DB account.
-# + masterToken - The master token used to make the request call provided by the portal
-public type AzureCosmosManagementConfiguration record {|
-    string baseUrl;
-    string masterToken;
-|};
-
 # Represent the record type with the necessary paramateres for creation of authorization signature.
 # 
 # + verb - HTTP verb of the request call.
@@ -49,7 +40,6 @@ type HeaderParameters record {|
 # 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
-//# + timeStamp - Timestamp (_ts) specifies the last updated timestamp of the resource.
 # + responseHeaders - The important response headers.
 public type Common record {|
     string resourceId = "";
@@ -76,7 +66,7 @@ public type ResponseMetadata record {|
 
 # Represents information about the status of the relevent create or update request.
 # 
-# + success - A boolean representing the status of the request.
+# + success - A boolean representing the success status of the request.
 public type Result record {|
     boolean success = false;
     *Common;
@@ -261,7 +251,8 @@ public type Permission record {|
 # Represent the record type with necessary parameters to represent an offer.
 # 
 # + id - User generated unique ID for the offer.
-# + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined throughput levels.
+# + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined 
+#       throughput levels.
 # + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
 # + content - Information about the offer.
 # + resourceResourceId - The resource id(_rid) of the collection.
@@ -275,10 +266,3 @@ public type Offer record {|
     string resourceSelfLink = "";
     *Common;
 |};
-
-
-class StreamGenerator {
-    public isolated function next() returns record {}|error? {
-        
-    }
-}

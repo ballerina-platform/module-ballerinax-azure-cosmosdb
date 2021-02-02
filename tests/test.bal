@@ -19,18 +19,13 @@ import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
 
-AzureCosmosConfiguration clientConfig = {
+AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
 
-AzureCosmosManagementConfiguration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterToken: config:getAsString("MASTER_TOKEN")
-};
-
-CoreClient azureCosmosClient = new(clientConfig);
-CoreManagementClient azureCosmosManagementClient = new(managementConfig);
+CoreClient azureCosmosClient = new(config);
+CoreManagementClient azureCosmosManagementClient = new(config);
 
 var randomString = createRandomUUIDWithoutHyphens();
 
@@ -163,7 +158,7 @@ function test_createDBWithAutoscalingThroughput() {
 function test_listAllDatabases() {
     log:print("ACTION : listAllDatabases()");
 
-    var result = azureCosmosClient->listDatabases(6);
+    var result = azureCosmosManagementClient->listDatabases(6);
     if (result is stream<Database>) {
         var databaseStream = result.next();
     } else {
@@ -178,7 +173,7 @@ function test_listAllDatabases() {
 function test_listOneDatabase() {
     log:print("ACTION : listOneDatabase()");
 
-    var result = azureCosmosClient->getDatabase(databaseId);
+    var result = azureCosmosManagementClient->getDatabase(databaseId);
     if (result is Database) {
         database = <@untainted>result;
     } else {
@@ -305,7 +300,7 @@ function test_createContainerIfNotExist() {
 function test_getOneContainer() {
     log:print("ACTION : getOneContainer()");
 
-    var result = azureCosmosClient->getContainer(databaseId, containerId);
+    var result = azureCosmosManagementClient->getContainer(databaseId, containerId);
     if (result is Container) {
         container = <@untainted>result;
     } else {
@@ -320,7 +315,7 @@ function test_getOneContainer() {
 function test_getAllContainers() {
     log:print("ACTION : getAllContainers()");
 
-    var result = azureCosmosClient->listContainers(databaseId);
+    var result = azureCosmosManagementClient->listContainers(databaseId);
     if (result is stream<Container>) {
         var container = result.next();
     } else {

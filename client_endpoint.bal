@@ -35,90 +35,13 @@ public client class CoreClient {
         self.httpClient = new (self.baseUrl);
     }
 
-    # Retrive information of a given database in an Azure Cosmos DB account.
-    # 
-    # + databaseId - ID of the database to retrieve information. 
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
-    # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted 
-            Database|error {
-        http:Request request = new;
-        check createRequest(request, requestOptions);
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
-
-        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToDatabaseType(jsonResponse);
-    }
-
-    # List information of all databases in an Azure Cosmos DB account.
-    # 
-    # + maxItemCount - Optional. Maximum number of Databases in the returning stream.
-    # + return - If successful, returns stream<cosmosdb:Database>. else returns error. 
-    remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
-        http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
-
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
-        }
-
-        Database[] emptyArray = [];
-        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request, 
-                emptyArray, maxItemCount);
-        return databaseStream;
-    }
-
-    # Retrive information about a container in a database.
-    # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container to retrive infromation.  
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
-    # + return - If successful, returns cosmosdb:Container. Else returns error.  
-    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) 
-            returns @tainted Container|error {
-        http:Request request = new;
-        check createRequest(request, requestOptions);
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
-
-        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
-        return mapJsonToContainerType(jsonResponse);
-    }
-
-    # List information of all containers in a database
-    # 
-    # + databaseId - ID of the database where the containers belong to.
-    # + maxItemCount - Optional. Maximum number of Containers to in the returning stream.
-    # + return - If successful, returns stream<cosmosdb:Container>. Else returns error.  
-    remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
-        http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
-        }
-
-        Container[] emptyArray = [];
-        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request, 
-                emptyArray, maxItemCount);
-        return containerStream;
-    }
-
     # Create a Document inside a container.
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which document belongs to.
     # + newDocument - A cosmosdb:Document which includes the ID and the document to save in the database. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
-    # + return - If successful, returns Document. Else returns error.  
+    # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDocument(string databaseId, string containerId, Document newDocument, any valueOfPartitionKey, 
             DocumentCreateOptions? requestOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
@@ -145,7 +68,7 @@ public client class CoreClient {
     # + newDocument - A cosmosdb:Document which includes the ID and the new document to replace the existing one. 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
     #       request.
-    # + return - If successful, returns a cosmosdb:Document. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceDocument(string databaseId, string containerId, @tainted Document newDocument, any valueOfPartitionKey, 
             DocumentReplaceOptions? requestOptions = ()) returns @tainted Result|error {
         http:Request request = new;
@@ -172,7 +95,7 @@ public client class CoreClient {
     # + documentId - Id of the document to retrieve. 
     # + valueOfPartitionKey - Array containing the value of parition key field of the container.
     # + requestOptions - Optional. Object of type DocumentGetOptions.
-    # + return - If successful, returns Document. Else returns error.  
+    # + return - If successful, returns cosmosdb:Document. Else returns error.  
     remote function getDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
             DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
@@ -194,7 +117,7 @@ public client class CoreClient {
     # + containerId - ID of the container which documents belongs to.
     # + maxItemCount - Optional. Maximum number of documents in the returning stream.
     # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the request.
-    # + return - If successful, returns stream<Document> Else, returns error. 
+    # + return - If successful, returns stream<cosmosdb:Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
             DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
         http:Request request = new;
@@ -248,7 +171,7 @@ public client class CoreClient {
     # + valueOfPartitionKey - Optional. An array containing the value of the partition key specified for the document.
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
-    # + return - If successful, returns a stream<cosmosdb:Document>. Else returns error.
+    # + return - If successful, returns a stream<json>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [],
             int? maxItemCount = (), any? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
             @tainted stream<json>|error { 
@@ -279,7 +202,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which stored procedure will be created.     
     # + storedProcedure - A cosmosdb:StoredProcedure.
-    # + return - If successful, returns a cosmosdb:StoredProcedure. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createStoredProcedure(string databaseId, string containerId, StoredProcedure storedProcedure) 
             returns @tainted Result|error {
         http:Request request = new;
@@ -304,7 +227,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which existing stored procedure belongs to. 
     # + storedProcedure - A cosmosdb:StoredProcedure which replaces the existing one.
-    # + return - If successful, returns a cosmosdb:StoredProcedure. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceStoredProcedure(string databaseId, string containerId, @tainted StoredProcedure storedProcedure) 
             returns @tainted Result|error { 
         http:Request request = new;
@@ -406,7 +329,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which user defined will be created.  
     # + userDefinedFunction - A cosmosdb:UserDefinedFunction.
-    # + return - If successful, returns a UserDefinedFunction. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createUserDefinedFunction(string databaseId, string containerId, UserDefinedFunction userDefinedFunction) 
             returns @tainted Result|error { 
         http:Request request = new;
@@ -431,7 +354,7 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container in which user defined function is created.    
     # + userDefinedFunction - A cosmosdb:UserDefinedFunction.
-    # + return - If successful, returns a UserDefinedFunction. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, @tainted UserDefinedFunction userDefinedFunction) 
             returns @tainted Result|error { 
         http:Request request = new;
@@ -458,7 +381,7 @@ public client class CoreClient {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
+    # + return - If successful, returns a stream<cosmosdb:UserDefinedFunction>. Else returns error. 
     remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? requestOptions = ()) returns @tainted stream<UserDefinedFunction>|error { 
         http:Request request = new;
@@ -510,7 +433,7 @@ public client class CoreClient {
     # + databaseId - ID of the database where container is created.
     # + containerId - ID of the container where trigger is created.    
     # + trigger - A cosmosdb:Trigger.
-    # + return - If successful, returns a Trigger. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, Trigger trigger) returns @tainted 
             Result|error { 
         http:Request request = new;
@@ -537,7 +460,7 @@ public client class CoreClient {
     # + databaseId - ID of the database where container is created.
     # + containerId - ID of the container where trigger is created.     
     # + trigger - A cosmosdb:Trigger.
-    # + return - If successful, returns a Trigger. Else returns error. 
+    # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, @tainted Trigger trigger) returns @tainted 
             Result|error {
         http:Request request = new;
@@ -566,7 +489,7 @@ public client class CoreClient {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a stream<Trigger>. Else returns error. 
+    # + return - If successful, returns a stream<cosmosdb:Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? requestOptions = ()) returns @tainted stream<Trigger>|error { 
         http:Request request = new;

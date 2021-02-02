@@ -21,16 +21,16 @@ import ballerina/http;
 public client class CoreManagementClient {
     private http:Client httpClient;
     private string baseUrl;
-    private string masterToken;
+    private string masterOrResourceToken;
     private string host;
     private string tokenType;
     private string tokenVersion;
 
-    public function init(AzureCosmosManagementConfiguration azureConfig) {
+    public function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = checkpanic validateBaseUrl(azureConfig.baseUrl);
-        self.masterToken = checkpanic validateMasterToken(azureConfig.masterToken);
+        self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.tokenType = TOKEN_TYPE_MASTER;
+        self.tokenType = getTokenType(azureConfig.masterOrResourceToken);
         self.tokenVersion = TOKEN_VERSION;
         self.httpClient = new (self.baseUrl);
     }
@@ -39,14 +39,14 @@ public client class CoreManagementClient {
     # 
     # + databaseId - ID of the new database. Must be unique.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns cosmosdb:Database. Else returns error.  
+    # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Result|error {
         // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         // Setting mandatory headers for the request
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_POST, requestPath);
         // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
@@ -66,7 +66,7 @@ public client class CoreManagementClient {
     # 
     # + databaseId - ID of the new database.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
-    # + return - If successful, returns cosmosdb:Database. Else returns error.  
+    # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
            Result?|error {
         var result = self->createDatabase(databaseId);
@@ -76,6 +76,44 @@ public client class CoreManagementClient {
             }
         }
         return result;
+    }
+
+        # Retrive information of a given database in an Azure Cosmos DB account.
+    # 
+    # + databaseId - ID of the database to retrieve information. 
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + return - If successful, returns cosmosdb:Database. Else returns error.  
+    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted 
+            Database|error {
+        http:Request request = new;
+        check createRequest(request, requestOptions);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
+
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
+        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToDatabaseType(jsonResponse);
+    }
+
+    # List information of all databases in an Azure Cosmos DB account.
+    # 
+    # + maxItemCount - Optional. Maximum number of Databases in the returning stream.
+    # + return - If successful, returns stream<cosmosdb:Database>. else returns error. 
+    remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
+        http:Request request = new;
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
+
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
+        if (maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        }
+
+        Database[] emptyArray = [];
+        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request, 
+                emptyArray, maxItemCount);
+        return databaseStream;
     }
 
     # Delete a given database in an Azure Cosmos DB account.
@@ -89,7 +127,7 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, 
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
                 http:HTTP_DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
@@ -109,13 +147,13 @@ public client class CoreManagementClient {
     # + partitionKey - A cosmosdb:PartitionKey.
     # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns cosmosdb:Container. Else returns error.  
+    # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_POST, requestPath);
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
@@ -143,7 +181,7 @@ public client class CoreManagementClient {
     # + partitionKey - A cosmosdb:PartitionKey.
     # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Container if a new container is created or () if container already exists. 
+    # + return - If successful, returns cosmosdb:Result if a new container is created or () if container already exists. 
     #       Else returns error.  
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result?|error { 
@@ -154,6 +192,45 @@ public client class CoreManagementClient {
             }
         }
         return result;
+    }
+
+    # Retrive information about a container in a database.
+    # 
+    # + databaseId - ID of the database which container belongs to.
+    # + containerId - ID of the container to retrive infromation.  
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + return - If successful, returns cosmosdb:Container. Else returns error.  
+    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) 
+            returns @tainted Container|error {
+        http:Request request = new;
+        check createRequest(request, requestOptions);
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
+
+        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
+        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToContainerType(jsonResponse);
+    }
+
+    # List information of all containers in a database
+    # 
+    # + databaseId - ID of the database where the containers belong to.
+    # + maxItemCount - Optional. Maximum number of Containers to in the returning stream.
+    # + return - If successful, returns stream<cosmosdb:Container>. Else returns error.  
+    remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
+        http:Request request = new;
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
+        if (maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        }
+
+        Container[] emptyArray = [];
+        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request, 
+                emptyArray, maxItemCount);
+        return containerStream;
     }
 
     # Delete a given container in a database.
@@ -167,8 +244,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_DELETE, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -189,8 +266,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_PK_RANGES]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
 
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
@@ -202,12 +279,12 @@ public client class CoreManagementClient {
     # 
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of the new user.
-    # + return - If successful, returns a User. Else returns error.
+    # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function createUser(string databaseId, string userId) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_POST, requestPath);
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
@@ -222,12 +299,12 @@ public client class CoreManagementClient {
     # + databaseId - ID of the database where the user is created.
     # + userId - Old ID of the user.
     # + newUserId - New ID for the user.
-    # + return - If successful, returns a User. Else returns error.
+    # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_PUT, requestPath);
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
@@ -243,14 +320,14 @@ public client class CoreManagementClient {
     # + userId - ID of user to get.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a User. Else returns error.
+    # + return - If successful, returns a cosmosdb:User. Else returns error.
     remote function getUser(string databaseId, string userId, ResourceReadOptions? requestOptions = ()) returns @tainted 
             User|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -263,14 +340,14 @@ public client class CoreManagementClient {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a stream<User>. Else returns error.
+    # + return - If successful, returns a stream<cosmosdb:User>. Else returns error.
     remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
             returns @tainted stream<User>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -293,8 +370,8 @@ public client class CoreManagementClient {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_DELETE, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -311,14 +388,14 @@ public client class CoreManagementClient {
     # + userId - ID of user to which the permission belongs.
     # + permission - A cosmosdb:Permission.
     # + validityPeriod - Optional. Validity period of the permission.
-    # + return - If successful, returns a Permission. Else returns error.
+    # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function createPermission(string databaseId, string userId, Permission permission, int? validityPeriod = ()) 
             returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_POST, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -341,14 +418,14 @@ public client class CoreManagementClient {
     # + userId - ID of user where the the permission is created.
     # + permission - A cosmosdb:Permission.
     # + validityPeriod - Optional. Validity period of the permission
-    # + return - If successful, returns a Permission. Else returns error.
+    # + return - If successful, returns a cosmosdb:Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, @tainted Permission permission, 
             int? validityPeriod = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permission.id]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_PUT, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -372,15 +449,15 @@ public client class CoreManagementClient {
     # + permissionId - ID of the permission to get information.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a Permission. Else returns error.
+    # + return - If successful, returns a cosmosdb:Permission. Else returns error.
     remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ()) 
             returns @tainted Permission|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -394,15 +471,15 @@ public client class CoreManagementClient {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a stream<Permission>. Else returns error.
+    # + return - If successful, returns a stream<cosmosdb:Permission>. Else returns error.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
             returns @tainted stream<Permission>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -426,8 +503,8 @@ public client class CoreManagementClient {
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_DELETE, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_DELETE, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -442,12 +519,12 @@ public client class CoreManagementClient {
     # 
     # + offer - A cosmosdb:Offer.
     # + offerType - Optional. Type of the offer.
-    # + return - If successful, returns a Offer. Else returns error.
+    # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_PUT, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_PUT, requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
@@ -473,13 +550,13 @@ public client class CoreManagementClient {
     # + offerId - The ID of the offer.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a Offer. Else returns error.
+    # + return - If successful, returns a cosmosdb:Offer. Else returns error.
     remote function getOffer(string offerId, ResourceReadOptions? requestOptions = ()) returns @tainted Offer|error {
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
@@ -495,14 +572,14 @@ public client class CoreManagementClient {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a stream<Offer> Else returns error.
+    # + return - If successful, returns a stream<cosmosdb:Offer> Else returns error.
     remote function listOffers(int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) returns @tainted 
             stream<Offer>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_GET, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -519,14 +596,14 @@ public client class CoreManagementClient {
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceQueryOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns a stream<Offer>. Else returns error.
+    # + return - If successful, returns a stream<json>. Else returns error.
     remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
             returns @tainted stream<json>|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterToken, self.tokenType, self.tokenVersion, http:HTTP_POST, 
-                requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
+                http:HTTP_POST, requestPath);
 
         request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);
