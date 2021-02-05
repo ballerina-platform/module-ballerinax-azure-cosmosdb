@@ -29,5 +29,4 @@ jobs:
             build -c
         env:
          BASE_URL: ${{ secrets.BASE_URL }}
-         MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_TOKEN }}
-         MASTER_TOKEN: ${{ secrets.MASTER_TOKEN }}
+         MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}

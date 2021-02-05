@@ -20,8 +20,7 @@ jobs:
                       build -c --skip-tests
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
-                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_TOKEN }}
-                  MASTER_TOKEN: ${{ secrets.MASTER_TOKEN }}
+                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
             - name: Ballerina Push
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
