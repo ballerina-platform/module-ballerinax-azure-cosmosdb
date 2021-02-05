@@ -57,7 +57,7 @@ public client class ManagementClient {
         // Get the response
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         // Map the payload and headers, of the request to a tuple 
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         // Map the reponse payload and the headers to a record type
         return mapTupleToResultType(jsonResponse);
     }
@@ -92,7 +92,7 @@ public client class ManagementClient {
                 http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDatabaseType(jsonResponse);
     }
 
@@ -170,7 +170,7 @@ public client class ManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -209,7 +209,7 @@ public client class ManagementClient {
                 http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToContainerType(jsonResponse);
     }
 
@@ -290,7 +290,7 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -310,7 +310,7 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -330,7 +330,7 @@ public client class ManagementClient {
                 http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToUserType(jsonResponse);
     }
 
@@ -408,7 +408,7 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -438,7 +438,7 @@ public client class ManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -460,7 +460,7 @@ public client class ManagementClient {
                 http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToPermissionType(jsonResponse);
     }
 
@@ -541,7 +541,7 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPaylod);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -559,7 +559,7 @@ public client class ManagementClient {
                 http:HTTP_GET, requestPath);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToOfferType(jsonResponse);
     }
 

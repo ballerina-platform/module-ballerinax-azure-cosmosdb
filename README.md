@@ -2,6 +2,7 @@ Ballerina Connector For Azure Cosmos DB
 ===================
 
 ## Connector Overview
+
 Azure Cosmos DB Ballerina connector is a connector for connecting to Azure Cosmos DB via Ballerina language easily. 
 It provides capability to connect to Azure Cosmos DB and to execute basic database operations like Create, Read, 
 Update and Delete databases and containers, Executing SQL queries to query containers etc. Apart from this it allows 
@@ -18,6 +19,7 @@ is used.
 ![connecting to Cosmos DB](resources/connector.gif)
 
 ## Key features of Azure Cosmos DB 
+
 - Has a guaranteed low latency that is backed by a comprehensive set of Service Level Agreements (SLAs).
 - Five Different types of Consistency levels: strong, bounded staleness, session, consistent prefix, and eventual.
 - Multi-model approach which provides the ability to use document, key-value, wide-column, or graph-based data. 
@@ -48,6 +50,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
     Ballerina Swan Lake Preview Version 8 is require
 
 ## Limitations
+
 - Only data plane operations are supported from the connector. (Some Management plane operations are not supported)
 - Changing the type of throughput in databases (Auto Scaling -> Manual) is not allowed.
 - Only Core(SQL) API is supported.

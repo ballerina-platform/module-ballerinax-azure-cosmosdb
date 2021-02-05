@@ -59,9 +59,9 @@ public type StoredProcedureOptions record {|
 # in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions etc.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
-# + ifNoneMatchEtag - Specify "*" to return all new changes, "<eTag>" to return changes made sice that timestamp or 
-#       otherwise omitted.Makes operation conditional to only execute if the resource has changed. The value should be 
-#       the etag of the resource.
+# + ifNoneMatchEtag - check if the resource's ETag value does not matches the ETag value provided in the Condition property. 
+#       This is applicable only on GET. Makes operation conditional to only execute if the resource has changed. The 
+#       value should be the etag of the resource.
 public type ResourceReadOptions record {|
     string? sessionToken = ();
     string? ifNoneMatchEtag = ();
@@ -81,8 +81,10 @@ public type ResourceQueryOptions record {|
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to aquire session level consistancy.
-# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. The operation will be executed if the 
-#       current etag is matched with the sent etag. If not 412 Precondition failure error will be returned.
+# + ifMatchEtag - You can provide the Etag with your Update, Upsert or Delete operations. Used to make operation 
+#       conditional for optimistic concurrency. will check if the resource's ETag value matches the ETag value provided 
+#       in the Condition property. This is applicable only on PUT and DELETE which means Update, Upsert and Delete operations. 
+#       If the resorce is changes a 412 Precondition failure error will be returned.
 public type ResourceDeleteOptions record {|
     string? sessionToken = ();
     string? ifMatchEtag = ();

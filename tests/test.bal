@@ -179,47 +179,6 @@ function test_listOneDatabase() {
     }
 }
 
-// @test:Config {
-//     groups: ["database"], 
-//     dependsOn: [
-//         "test_createDatabase", 
-//         "test_listOneDatabase", 
-//         "test_createDatabase", 
-//         "test_listAllDatabases",
-//         "test_getAllContainers", 
-//         "test_deleteContainer",
-//         "test_createCollectionWithManualThroughputAndIndexingPolicy",
-//         "test_getDocumentListWithRequestOptions", 
-//         "test_createDocumentWithRequestOptions", 
-//         "test_getDocumentList", 
-//         "test_deleteDocument", 
-//         "test_deleteOneStoredProcedure", 
-//         "test_getAllStoredProcedures", 
-//         "test_listUsers", 
-//         "test_deleteUDF", 
-//         "test_deleteTrigger", 
-//         "test_deleteUser",
-//         "test_createPermission",
-//         "test_createPermissionWithTTL",
-//         "test_createContainerIfNotExist",
-//         "test_deletePermission"
-//     ]
-// }
-// function test_deleteDatabase() {
-//     log:print("ACTION : deleteDatabase()");
-
-//     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
-//     var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseManualId);
-//     var result3 = azureCosmosManagementClient->deleteDatabase(createDatabaseAutoId);
-//     var result4 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
-
-//     if (result1 == true && result2 == true && result3 == true && result4 == true) {
-//         var output = "";
-//     } else {
-//         test:assertFail(msg = "Failed to delete one of the databases");
-//     }
-// }
-
 @test:Config {
     groups: ["container"]
 }
@@ -1299,7 +1258,6 @@ function test_getCollection_Resource_Token() {
 @test:AfterSuite {}
 function afterFunc() {
     log:print("ACTION : deleteDatabases()");
-
     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
     var result4 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
 

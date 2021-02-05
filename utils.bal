@@ -335,24 +335,24 @@ isolated function setExpiryHeader(http:Request request, int validationPeriod) re
 //  Map the json payload and necessary header values returend from a response to a tuple.
 //  
 //  + httpResponse - the http:Response or http:ClientError returned form the HTTP request
-//  + return - returns a tuple of type [json, ResponseMetadata] if sucessful else, returns error
+//  + return - returns a tuple of type [json, ResponseHeaders] if sucessful else, returns error
 //
 isolated function mapResponseToTuple(http:Response httpResponse) returns @tainted [json, 
-        ResponseMetadata]|error {
+        ResponseHeaders]|error {
     json responseBody = check handleResponse(httpResponse);
-    ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
+    ResponseHeaders responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
     return [responseBody, responseHeaders];
 }
 
 //  Map the json payload and necessary header values returend from a response to a tuple.
 //  
 //  + httpResponse - the http:Response or http:ClientError returned form the HTTP request
-//  + return - returns a tuple of type [json, ResponseMetadata] if sucessful else, returns error
+//  + return - returns a tuple of type [json, ResponseHeaders] if sucessful else, returns error
 //
 isolated function mapCreationResponseToTuple(http:Response httpResponse) returns @tainted [boolean, 
-        ResponseMetadata]|error {
+        ResponseHeaders]|error {
     boolean responseBody = check handleCreationResponse(httpResponse);
-    ResponseMetadata responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
+    ResponseHeaders responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
     return [responseBody, responseHeaders];
 }
 
@@ -394,13 +394,13 @@ isolated function handleCreationResponse(http:Response httpResponse) returns @ta
     }
 }
 
-//  Get the http:Response and extract the headers to the record type ResponseMetadata
+//  Get the http:Response and extract the headers to the record type ResponseHeaders
 //  
 //  + httpResponse - http:Response or http:ClientError returned from an http:Request
-//  + return - If successful, returns record type ResponseMetadata. Else returns error.
+//  + return - If successful, returns record type ResponseHeaders. Else returns error.
 //
-isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseMetadata|error {
-    ResponseMetadata responseHeaders = {};
+isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseHeaders|error {
+    ResponseHeaders responseHeaders = {};
     responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : 
             getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);

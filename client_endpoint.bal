@@ -58,7 +58,7 @@ public client class CoreClient {
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -86,7 +86,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -109,7 +109,7 @@ public client class CoreClient {
         setPartitionKeyHeader(request, valueOfPartitionKey);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseMetadata] jsonResponse = check mapResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         return mapJsonToDocumentType(jsonResponse);
     }
 
@@ -220,7 +220,7 @@ public client class CoreClient {
         request.setJsonPayload(payload); 
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -245,7 +245,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>payload);    
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -347,7 +347,7 @@ public client class CoreClient {
         request.setJsonPayload(payload); 
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -372,7 +372,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>payload); 
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -453,7 +453,7 @@ public client class CoreClient {
         request.setJsonPayload(payload); 
         
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 
@@ -480,7 +480,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>payload);
         
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseMetadata] jsonResponse = check mapCreationResponseToTuple(response);
+        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
 

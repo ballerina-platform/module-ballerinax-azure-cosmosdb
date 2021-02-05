@@ -18,12 +18,12 @@
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Database.
-isolated function mapJsonToDatabaseType([json, ResponseMetadata?] jsonPayload) returns Database {
+isolated function mapJsonToDatabaseType([json, ResponseHeaders?] jsonPayload) returns Database {
     Database database = {};
     var [payload, headers] = jsonPayload;
     database.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     database.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    if (headers is ResponseMetadata) {
+    if (headers is ResponseHeaders) {
         database.responseHeaders = headers;
     }
     return database;
@@ -33,14 +33,14 @@ isolated function mapJsonToDatabaseType([json, ResponseMetadata?] jsonPayload) r
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Container.
-isolated function mapJsonToContainerType([json, ResponseMetadata?] jsonPayload) returns @tainted Container {
+isolated function mapJsonToContainerType([json, ResponseHeaders?] jsonPayload) returns @tainted Container {
     Container container = {};
     var [payload, headers] = jsonPayload;
     container.id = payload.id.toString();
     container.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     container.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
     container.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     container.responseHeaders = headers;
     // }
     return container;
@@ -50,11 +50,11 @@ isolated function mapJsonToContainerType([json, ResponseMetadata?] jsonPayload) 
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Document.
-isolated function mapTupleToResultType([boolean, ResponseMetadata?] jsonPayload) returns @tainted Result {
+isolated function mapTupleToResultType([boolean, ResponseHeaders?] jsonPayload) returns @tainted Result {
     Result result = {};
     var [status, headers] = jsonPayload;
     result.success = status ? true : false;
-    if (headers is ResponseMetadata) {
+    if (headers is ResponseHeaders) {
         result.responseHeaders = headers;
     }
     return result;
@@ -64,7 +64,7 @@ isolated function mapTupleToResultType([boolean, ResponseMetadata?] jsonPayload)
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Document.
-isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) returns @tainted Document {
+isolated function mapJsonToDocumentType([json, ResponseHeaders?] jsonPayload) returns @tainted Document {
     Document document = {};
     var [payload, headers] = jsonPayload;
     document.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
@@ -74,7 +74,7 @@ isolated function mapJsonToDocumentType([json, ResponseMetadata?] jsonPayload) r
     if (documentBodyJson is map<json>) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
     }
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     document.responseHeaders = headers;
     // }
     return document;
@@ -123,14 +123,14 @@ isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @taint
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type PartitionKeyRange.
-isolated function mapJsonToPartitionKeyRange([json, ResponseMetadata?] jsonPayload) returns @tainted PartitionKeyRange {
+isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayload) returns @tainted PartitionKeyRange {
     PartitionKeyRange partitionKeyRange = {};
     var [payload, headers] = jsonPayload;
     partitionKeyRange.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     partitionKeyRange.minInclusive = payload.minInclusive != () ? payload.minInclusive.toString() : EMPTY_STRING;
     partitionKeyRange.maxExclusive = payload.maxExclusive != () ? payload.maxExclusive.toString() : EMPTY_STRING;
     partitionKeyRange.status = payload.status != () ? payload.status.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     partitionKeyRange.responseHeaders = headers;
     // }
     return partitionKeyRange;
@@ -167,13 +167,13 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type StoredProcedure.
-isolated function mapJsonToStoredProcedure([json, ResponseMetadata?] jsonPayload) returns @tainted StoredProcedure {
+isolated function mapJsonToStoredProcedure([json, ResponseHeaders?] jsonPayload) returns @tainted StoredProcedure {
     StoredProcedure storedProcedureResponse = {};
     var [payload, headers] = jsonPayload;
     storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     storedProcedureResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     storedProcedureResponse.storedProcedure = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     storedProcedureResponse.responseHeaders = headers;
     // }
     return storedProcedureResponse;
@@ -183,14 +183,14 @@ isolated function mapJsonToStoredProcedure([json, ResponseMetadata?] jsonPayload
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type UserDefinedFunction.
-isolated function mapJsonToUserDefinedFunction([json, ResponseMetadata?] jsonPayload) returns @tainted 
+isolated function mapJsonToUserDefinedFunction([json, ResponseHeaders?] jsonPayload) returns @tainted 
 UserDefinedFunction {
     UserDefinedFunction userDefinedFunctionResponse = {};
     var [payload, headers] = jsonPayload;
     userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.userDefinedFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     userDefinedFunctionResponse.responseHeaders = headers;
     // }
     return userDefinedFunctionResponse;
@@ -200,7 +200,7 @@ UserDefinedFunction {
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Trigger.
-isolated function mapJsonToTrigger([json, ResponseMetadata?] jsonPayload) returns @tainted Trigger {
+isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns @tainted Trigger {
     Trigger triggerResponse = {};
     var [payload, headers] = jsonPayload;
     triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
@@ -208,7 +208,7 @@ isolated function mapJsonToTrigger([json, ResponseMetadata?] jsonPayload) return
     triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
     triggerResponse.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     triggerResponse.responseHeaders = headers;
     // }
     return triggerResponse;
@@ -218,12 +218,12 @@ isolated function mapJsonToTrigger([json, ResponseMetadata?] jsonPayload) return
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type User.
-isolated function mapJsonToUserType([json, ResponseMetadata?] jsonPayload) returns @tainted User {
+isolated function mapJsonToUserType([json, ResponseHeaders?] jsonPayload) returns @tainted User {
     User user = {};
     var [payload, headers] = jsonPayload;
     user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     user.responseHeaders = headers;
     // }
     return user;
@@ -233,7 +233,7 @@ isolated function mapJsonToUserType([json, ResponseMetadata?] jsonPayload) retur
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Permission.
-isolated function mapJsonToPermissionType([json, ResponseMetadata?] jsonPayload) returns @tainted Permission {
+isolated function mapJsonToPermissionType([json, ResponseHeaders?] jsonPayload) returns @tainted Permission {
     Permission permission = {};
     var [payload, headers] = jsonPayload;
     permission.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
@@ -241,7 +241,7 @@ isolated function mapJsonToPermissionType([json, ResponseMetadata?] jsonPayload)
     permission.token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
     permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
     permission.resourcePath = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     permission.responseHeaders = headers;
     // }
     return permission;
@@ -251,7 +251,7 @@ isolated function mapJsonToPermissionType([json, ResponseMetadata?] jsonPayload)
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Offer.
-isolated function mapJsonToOfferType([json, ResponseMetadata?] jsonPayload) returns @tainted Offer {
+isolated function mapJsonToOfferType([json, ResponseHeaders?] jsonPayload) returns @tainted Offer {
     Offer offer = {};
     var [payload, headers] = jsonPayload;
     offer.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
@@ -261,7 +261,7 @@ isolated function mapJsonToOfferType([json, ResponseMetadata?] jsonPayload) retu
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
-    // if (headers is ResponseMetadata) {
+    // if (headers is ResponseHeaders) {
     //     offer.responseHeaders = headers;
     // }
     return offer;

@@ -36,17 +36,6 @@ type HeaderParameters record {|
     string resourceId = "";
 |};
 
-# Represents the common elements which are returned inside json reponse body.
-# 
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + responseHeaders - The important response headers.
-public type Common record {|
-    string resourceId = "";
-    string selfReference = "";
-    ResponseMetadata responseHeaders = {};
-|};
-
 # Represents the response headers which is returned.
 # 
 # + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read.
@@ -55,7 +44,7 @@ public type Common record {|
 # + resourceUsage - Current usage count of a resource in an account.  
 # + etag - Resource etag for the resource retrieved same as eTag in the response. 
 # + date - Date time of the response operation.
-public type ResponseMetadata record {|
+public type ResponseHeaders record {|
     string? continuationHeader?;
     string sessionToken = "";
     string requestCharge = "";
@@ -67,39 +56,59 @@ public type ResponseMetadata record {|
 # Represents information about the status of the relevent create or update request.
 # 
 # + success - A boolean representing the success status of the request.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
+# + responseHeaders - The important response headers.
 public type Result record {|
     boolean success = false;
-    *Common;
+    string resourceId = "";
+    string selfReference = "";
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represents the elements representing information about a database.
 # 
 # + id - User generated unique ID for the database. 
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
+# + responseHeaders - The important response headers.
 public type Database record {|
     string id = "";
-    *Common;
+    string resourceId = "";
+    string selfReference = "";
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represents the elements representing information about a collection.
 # 
 # + id - User generated unique ID for the container.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + indexingPolicy - Object of type IndexingPolicy. 
 # + partitionKey - Object of type PartitionKey.
+# + responseHeaders - The important response headers.
 public type Container record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     IndexingPolicy indexingPolicy = {};
     PartitionKey partitionKey = {};
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represent the parameters representing information about a document in Cosmos DB.
 # 
 # + id - User generated unique ID for the document. 
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + documentBody - JSON document.
+# + responseHeaders - The important response headers.
 public type Document record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     json documentBody = {};
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represent the parameters necessary to create an indexing policy when creating a container.
@@ -158,32 +167,44 @@ public type PartitionKey record {|
 
 # Represent the record type with necessary parameters to represent a stored procedure.
 # 
-# + id - User generated unique ID for the stored procedure. 
+# + id - User generated unique ID for the stored procedure.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource. 
 # + storedProcedure - Javasctipt function.
+# + responseHeaders - The important response headers.
 public type StoredProcedure record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string storedProcedure = "";
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 public type UserDefinedFunction record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string userDefinedFunction = "";
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represent the record type with necessary parameters to represent a trigger.
 # 
 # + id - User generated unique ID for the trigger.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + triggerFunction - Javasctipt function.
 # + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
 # + triggerType - When the trigger is fired, "Pre" or "Post".
+# + responseHeaders - The important response headers.
 public type Trigger record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string triggerFunction = "";
     string triggerOperation = "";
     string triggerType = "";
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 type JsonMap map<json>;
@@ -211,58 +232,78 @@ public type QueryParameter record {|
 # Reprsent the record type with necessary paramaters to create partition key range.
 # 
 # + id - ID for the partition key range.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + minInclusive - Minimum partition key hash value for the partition key range. 
 # + maxExclusive - Maximum partition key hash value for the partition key range. 
 # + status - 
+# + responseHeaders - The important response headers.
 public type PartitionKeyRange record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string minInclusive = "";
     string maxExclusive = "";
     string status = "";
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represent the record type with necessary parameters to represent a user.
 # 
 # + id - User generated unique ID for the user. 
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + permissions - Addressable path of the permissions resource.
+# + responseHeaders - The important response headers.
 public type User record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string permissions?;
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represent the record type with necessary parameters to represent a permission.
 # 
 # + id - User generated unique ID for the permission.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + permissionMode - Access mode for the resource, "All" or "Read".
 # + resourcePath - Full addressable path of the resource associated with the permission.
 # + validityPeriod - Optional. Validity period of the resource token.
 # + token - System generated resource token for the particular resource and user.
+# + responseHeaders - The important response headers.
 public type Permission record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string permissionMode = "";
     string resourcePath = "";
     int validityPeriod?;
     string token?;
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
 
 # Represent the record type with necessary parameters to represent an offer.
 # 
 # + id - User generated unique ID for the offer.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined 
 #       throughput levels.
 # + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
 # + content - Information about the offer.
 # + resourceResourceId - The resource id(_rid) of the collection.
 # + resourceSelfLink - The self-link of the collection.
+# + responseHeaders - The important response headers.
 public type Offer record {|
     string id = "";
+    string resourceId = "";
+    string selfReference = "";
     string offerVersion = "";
     string? offerType?;
     json content = {};
     string resourceResourceId = "";
     string resourceSelfLink = "";
-    *Common;
+    ResponseHeaders responseHeaders = {};
 |};
