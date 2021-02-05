@@ -50,9 +50,7 @@ string permissionId = string `permission_${randomString.toString()}`;
 Database database = {};
 Container container = {};
 
-@test:Config {
-    groups: ["database"]
-}
+@test:BeforeSuite
 function test_createDatabase() {
     log:print("ACTION : createDatabase()");
 
@@ -79,8 +77,7 @@ function test_createDatabaseUsingInvalidId() {
 }
 
 @test:Config {
-    groups: ["database"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["database"]
 }
 function test_createDatabaseIfNotExist() {
     log:print("ACTION : createDatabaseIfNotExist()");
@@ -94,8 +91,7 @@ function test_createDatabaseIfNotExist() {
 }
 
 @test:Config {
-    groups: ["database"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["database"]
 }
 function test_createDatabaseIfExist() {
     log:print("ACTION : createDatabaseIfExist()");
@@ -109,7 +105,8 @@ function test_createDatabaseIfExist() {
 }
 
 @test:Config {
-    groups: ["database"]
+    groups: ["database"],
+    enable: false
 }
 function test_createDatabaseWithManualThroughput() {
     log:print("ACTION : createDatabaseWithManualThroughput()");
@@ -123,7 +120,8 @@ function test_createDatabaseWithManualThroughput() {
 }
 
 @test:Config {
-    groups: ["database"]
+    groups: ["database"],
+    enable: false
 }
 function test_createDatabaseWithInvalidManualThroughput() {
     log:print("ACTION : createDatabaseWithInvalidManualThroughput()");
@@ -138,7 +136,8 @@ function test_createDatabaseWithInvalidManualThroughput() {
 }
 
 @test:Config {
-    groups: ["database"]
+    groups: ["database"],
+    enable: false
 }
 function test_createDBWithAutoscalingThroughput() {
     log:print("ACTION : createDBWithAutoscalingThroughput()");
@@ -167,8 +166,7 @@ function test_listAllDatabases() {
 }
 
 @test:Config {
-    groups: ["database"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["database"]
 }
 function test_listOneDatabase() {
     log:print("ACTION : listOneDatabase()");
@@ -181,48 +179,49 @@ function test_listOneDatabase() {
     }
 }
 
-@test:Config {
-    groups: ["database"], 
-    dependsOn: [
-        "test_createDatabase", 
-        "test_listOneDatabase", 
-        "test_createDatabase", 
-        "test_listAllDatabases",
-        "test_getAllContainers", 
-        "test_deleteContainer",
-        "test_createCollectionWithManualThroughputAndIndexingPolicy",
-        "test_getDocumentListWithRequestOptions", 
-        "test_createDocumentWithRequestOptions", 
-        "test_getDocumentList", 
-        "test_deleteDocument", 
-        "test_deleteOneStoredProcedure", 
-        "test_getAllStoredProcedures", 
-        "test_listUsers", 
-        "test_deleteUDF", 
-        "test_deleteTrigger", 
-        "test_deleteUser",
-        "test_createPermission",
-        "test_createPermissionWithTTL",
-        "test_createContainerIfNotExist",
-        "test_deletePermission"
-    ]
-}
-function test_deleteDatabase() {
-    log:print("ACTION : deleteDatabase()");
+// @test:Config {
+//     groups: ["database"], 
+//     dependsOn: [
+//         "test_createDatabase", 
+//         "test_listOneDatabase", 
+//         "test_createDatabase", 
+//         "test_listAllDatabases",
+//         "test_getAllContainers", 
+//         "test_deleteContainer",
+//         "test_createCollectionWithManualThroughputAndIndexingPolicy",
+//         "test_getDocumentListWithRequestOptions", 
+//         "test_createDocumentWithRequestOptions", 
+//         "test_getDocumentList", 
+//         "test_deleteDocument", 
+//         "test_deleteOneStoredProcedure", 
+//         "test_getAllStoredProcedures", 
+//         "test_listUsers", 
+//         "test_deleteUDF", 
+//         "test_deleteTrigger", 
+//         "test_deleteUser",
+//         "test_createPermission",
+//         "test_createPermissionWithTTL",
+//         "test_createContainerIfNotExist",
+//         "test_deletePermission"
+//     ]
+// }
+// function test_deleteDatabase() {
+//     log:print("ACTION : deleteDatabase()");
 
-    var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
-    var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseManualId);
-    var result3 = azureCosmosManagementClient->deleteDatabase(createDatabaseAutoId);
-    if (result1 == true && result2 == true && result3 == true) {
-        var output = "";
-    } else {
-        test:assertFail(msg = "Failed to delete one of the databases");
-    }
-}
+//     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
+//     var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseManualId);
+//     var result3 = azureCosmosManagementClient->deleteDatabase(createDatabaseAutoId);
+//     var result4 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
+
+//     if (result1 == true && result2 == true && result3 == true && result4 == true) {
+//         var output = "";
+//     } else {
+//         test:assertFail(msg = "Failed to delete one of the databases");
+//     }
+// }
 
 @test:Config {
-    groups: ["container"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["container"]
 }
 function test_createContainer() {
     log:print("ACTION : createContainer()");
@@ -257,14 +256,14 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
             }]
         }]
     };
-    int throughput = 600;
+    //int throughput = 600;
     PartitionKey pk = {
         paths: ["/AccountNumber"],
         kind: "Hash",
         keyVersion: 2
     };
 
-    var result = azureCosmosManagementClient->createContainer(databaseId, containerWithOptionsId, pk, ip, throughput);
+    var result = azureCosmosManagementClient->createContainer(databaseId, containerWithOptionsId, pk, ip);
     if (result is Result && result.success == true) {
         var output = "";
     } else {
@@ -274,7 +273,7 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["test_createDatabase", "test_getOneContainer"]
+    dependsOn: ["test_getOneContainer"]
 }
 function test_createContainerIfNotExist() {
     log:print("ACTION : createContainerIfNotExist()");
@@ -309,8 +308,7 @@ function test_getOneContainer() {
 }
 
 @test:Config {
-    groups: ["container"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["container"]
 }
 function test_getAllContainers() {
     log:print("ACTION : getAllContainers()");
@@ -943,8 +941,7 @@ function test_GetPartitionKeyRanges() {
 }
 
 @test:Config {
-    groups: ["user"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["user"]
 }
 function test_createUser() {
     log:print("ACTION : createUser()");
@@ -987,8 +984,7 @@ function test_getUser() {
 }
 
 @test:Config {
-    groups: ["user"],
-    dependsOn: ["test_createDatabase"]
+    groups: ["user"]
 }
 function test_listUsers() {
     log:print("ACTION : listUsers()");
@@ -1026,7 +1022,6 @@ function test_deleteUser() {
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "test_createDatabase",
         "test_listOneDatabase", 
         "test_replaceUserId"
     ]
@@ -1053,7 +1048,6 @@ function test_createPermission() {
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "test_createDatabase", 
         "test_replaceUserId",
         "test_listOneDatabase"
     ]
@@ -1156,7 +1150,8 @@ string? offerId = "";
 string? resourceId = "";
 
 @test:Config {
-    groups: ["offer"]
+    groups: ["offer"],
+    enable: false
 } 
 function test_listOffers() {
     log:print("ACTION : listOffers()");
@@ -1174,7 +1169,8 @@ function test_listOffers() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: ["test_listOffers"]
+    dependsOn: ["test_listOffers"],
+    enable: false
 }
 function test_getOffer() {
     log:print("ACTION : getOffer()");
@@ -1248,7 +1244,8 @@ function test_replaceOfferWithOptionalParameter() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: ["test_createDatabase", "test_createContainer"]
+    dependsOn: ["test_createContainer"],
+    enable: false
 }
 function test_queryOffer() {
     log:print("ACTION : queryOffer()");
@@ -1262,40 +1259,56 @@ function test_queryOffer() {
     }
 }
 
-// @test:Config {
-//     groups: ["permission"],
-//     dependsOn: ["test_createPermission"]
-// }
-// function test_getCollection_Resource_Token() {
-//     log:print("ACTION : createCollection_Resource_Token()");
+@test:Config {
+    groups: ["permission"],
+    dependsOn: ["test_createPermission"],
+    enable: false
+}
+function test_getCollection_Resource_Token() {
+    log:print("ACTION : createCollection_Resource_Token()");
 
-//     string databaseId = database.id;
-//     string permissionUserId = test_user.id;
-//     string permissionId = permission.id;
+    string permissionDatabaseId = databaseId;
+    string permissionUserId = newUserId;
+    string userPermissionId = permissionId;
 
-//     var result = azureCosmosManagementClient->getPermission(databaseId, permissionUserId, permissionId);
-//     if (result is error) {
-//         test:assertFail(msg = result.message());
-//     } else {
-//         if (result?.token is string) {
-//             AzureCosmosConfiguration configdb = {
-//                 baseUrl: getConfigValue("BASE_URL"),
-//                 masterOrResourceToken: result?.token.toString()
-//             };
+    var result = azureCosmosManagementClient->getPermission(databaseId, permissionUserId, userPermissionId);
+    if (result is error) {
+        test:assertFail(msg = result.message());
+    } else {
+        if (result?.token is string) {
+            AzureCosmosConfiguration configdb = {
+                baseUrl: getConfigValue("BASE_URL"),
+                masterOrResourceToken: result?.token.toString()
+            };
 
-//             CoreClient azureCosmosClientDatabase = new (configdb);
+            ManagementClient managementClient = new (configdb);
 
-//             string containerId = container.id;
+            string containerId = container.id;
 
-//             var resultdb = azureCosmosClientDatabase->getContainer(databaseId, containerId);
-//             if (resultdb is error) {
-//                 test:assertFail(msg = resultdb.message());
-//             } else {
-//                 var output = "";
-//             }
-//         }
-//     }
-// }
+            var resultdb = managementClient->getContainer(databaseId, containerId);
+            if (resultdb is error) {
+                test:assertFail(msg = resultdb.message());
+            } else {
+                var output = "";
+            }
+        }
+    }
+}
+
+// The `AfterSuite` function is executed after all the test functions in this module.
+@test:AfterSuite {}
+function afterFunc() {
+    log:print("ACTION : deleteDatabases()");
+
+    var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
+    var result4 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
+
+    if (result1 == true && result4 == true) {
+        var output = "";
+    } else {
+        test:assertFail(msg = "Failed to delete one of the databases");
+    }
+}
 
 isolated function getConfigValue(string key) returns string {
     return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);
