@@ -96,10 +96,10 @@ public client class CoreClient {
     # + containerId - ID of the container which document belongs to.
     # + documentId - Id of the document to retrieve. 
     # + valueOfPartitionKey - The value of parition key field of the container.
-    # + requestOptions - Optional. Object of type DocumentGetOptions.
+    # + requestOptions - Optional. Object of type ResourceReadOptions.
     # + return - If successful, returns cosmosdb:Document. Else returns error.  
     remote function getDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
-            DocumentGetOptions? requestOptions = ()) returns @tainted Document|error { 
+            ResourceReadOptions? requestOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 

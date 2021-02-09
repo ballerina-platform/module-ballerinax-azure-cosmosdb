@@ -304,8 +304,7 @@ function test_getAllContainers() {
         // "test_replaceOfferWithOptionalParameter",
         // "test_replaceOffer",
         
-    ],
-    enable: false
+    ]
 }
 function test_deleteContainer() {
     log:print("ACTION : deleteContainer()");
@@ -484,7 +483,7 @@ function test_GetOneDocumentWithRequestOptions() {
 
     int valueOfPartitionKey = 1234;
 
-    DocumentGetOptions options = {
+    ResourceReadOptions options = {
         consistancyLevel: "Eventual",
         sessionToken: "tag",
         ifNoneMatchEtag: "hhh"
