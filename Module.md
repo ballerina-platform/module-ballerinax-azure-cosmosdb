@@ -24,7 +24,7 @@ operations
         baseUrl : <BASE_URL>,
         masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:CoreClient coreClient = new (configuration);
+    cosmosdb:CoreClient coreClient = new(configuration);
    ```
 2. **cosmosdb:ManagementClient** - This connects to the running CosmosDB databases and containers to execute management-plane 
 operations 
@@ -54,7 +54,6 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:ManagementClient managementClient = new(configuration);
 
     cosmosdb:Result databaseResult = checkpanic managementClient->createDatabase(<DATABASE_ID>);
@@ -75,11 +74,10 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:ManagementClient managementClient = new(configuration);
 
     cosmosdb:PartitionKey partitionKey = {
-        paths: ["/AccountNumber"],
+        paths: ["/accountNumber"],
         kind :"Hash",
         'version: 2
     };
@@ -101,12 +99,9 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", 
-
-    log:printInfo("------------------ Inserting Documents -------------------");
+    cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", accountNumber: 001234222 }
     cosmosdb:Result documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, document1, 
             <VALUE_OF_PARTITIONKEY>); 
 }
@@ -125,12 +120,9 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    log:printInfo("------------------ List Documents -------------------");
     stream<cosmosdb:Document> documentList = checkpanic coreClient->getDocumentList(<DATABASE_ID>, <CONTAINER_ID>);
-
 }
 ```
 ### Get Document
@@ -144,13 +136,10 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    log:printInfo("------------------ Get One Document -------------------");
     cosmosdb:Document returnedDocument = checkpanic coreClient->getDocument(<DATABASE_ID>, <CONTAINER_ID>, 
             <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
-
 }
 ```
 
@@ -165,10 +154,8 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    log:printInfo("------------------ Query Documents -------------------");
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
     stream<json> resultStream = checkpanic coreClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
@@ -177,9 +164,6 @@ public function main() {
     error? e = resultStream.forEach(function (json document){
                     log:printInfo(document);
                 });    
-
-    log:printInfo("------------------ Delete Document -------------------");
-    _ = checkpanic coreClient->deleteDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
 
 }
 ```
@@ -195,10 +179,8 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    log:printInfo("------------------ Delete Document -------------------");
     _ = checkpanic coreClient->deleteDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
 
 }
