@@ -23,7 +23,7 @@
 hs_err_pid*
 
 #Ballerina configuartion file
-ballerina.conf
+*.conf
 
 #Target folder of ballerina project
 /target
