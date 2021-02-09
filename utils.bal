@@ -20,7 +20,6 @@ import ballerina/encoding;
 import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
-import ballerina/java;
 
 // Validate if the base URL is an empty string
 // 
@@ -133,8 +132,7 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted>url;
 }
 
-isolated function createRequest(http:Request request, (DocumentCreateOptions|DocumentReplaceOptions|DocumentGetOptions|
-        DocumentListOptions|ResourceReadOptions|ResourceQueryOptions|ResourceDeleteOptions)? requestOptions) returns error? {
+isolated function createRequest(http:Request request, Options? requestOptions) returns error? {
     if (requestOptions != ()) {
         check setRequestOptions(request, requestOptions);
     }
@@ -385,7 +383,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
     json jsonResponse = check httpResponse.getJsonPayload();
     if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-        //If status is 200 or 201, request is successful. Returns resulting payload.
+        //If status is 200 or 201, request is successful returns true. Else Returns resulting payload.
         return true;
         
     } else {
@@ -592,21 +590,3 @@ isolated function convertToInt(json|error value) returns int {
     }
     return 0;
 }
-
-# Create a random UUID removing the unnecessary hyphens which will interrupt querying opearations.
-# 
-# + return - A string UUID without hyphens
-public function createRandomUUIDWithoutHyphens() returns string {
-    string? stringUUID = java:toString(createRandomUUID());
-    if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
-        return stringUUID;
-    } else {
-        return "";
-    }
-}
-
-function createRandomUUID() returns handle = @java:Method {
-    name: "randomUUID",
-    'class: "java.util.UUID"
-} external;

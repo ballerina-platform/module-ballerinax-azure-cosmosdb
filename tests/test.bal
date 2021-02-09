@@ -18,6 +18,8 @@ import ballerina/config;
 import ballerina/system;
 import ballerina/log;
 import ballerina/runtime;
+import ballerina/java;
+import ballerina/stringutils;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -300,8 +302,10 @@ function test_getAllContainers() {
         "test_createPermission",
         "test_createPermissionWithTTL"
         // "test_replaceOfferWithOptionalParameter",
-        // "test_replaceOffer"
-    ]
+        // "test_replaceOffer",
+        
+    ],
+    enable: false
 }
 function test_deleteContainer() {
     log:print("ACTION : deleteContainer()");
@@ -519,14 +523,13 @@ function test_queryDocuments() {
 function test_queryDocumentsWithRequestOptions() {
     log:print("ACTION : queryDocumentsWithRequestOptions()");
 
-    int partitionKey = 1234;
     string query = string `SELECT * FROM ${containerId} f WHERE f.Address.City = 'Seattle'`;
 
     ResourceQueryOptions options = {
         //sessionToken: "tag", 
         enableCrossPartition: true};
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [],10, (), options);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, (),(), (), options);
     if (result is stream<json>) {
         var document = result.next();
     } else {
@@ -1271,3 +1274,21 @@ function afterFunc() {
 isolated function getConfigValue(string key) returns string {
     return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);
 }
+
+# Create a random UUID removing the unnecessary hyphens which will interrupt querying opearations.
+# 
+# + return - A string UUID without hyphens
+public function createRandomUUIDWithoutHyphens() returns string {
+    string? stringUUID = java:toString(createRandomUUID());
+    if (stringUUID is string) {
+        stringUUID = stringutils:replace(stringUUID, "-", "");
+        return stringUUID;
+    } else {
+        return "";
+    }
+}
+
+function createRandomUUID() returns handle = @java:Method {
+    name: "randomUUID",
+    'class: "java.util.UUID"
+} external;

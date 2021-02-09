@@ -174,7 +174,7 @@ public client class CoreClient {
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<json>. Else returns error.
-    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[] parameters = [],
+    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[]? parameters = (),
             int? maxItemCount = (), any? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
             @tainted stream<json>|error { 
         http:Request request = new;
@@ -187,7 +187,7 @@ public client class CoreClient {
 
         json payload = {
             query: sqlQuery,
-            parameters: check parameters.cloneWithType(json)
+            parameters: parameters != () ? check parameters.cloneWithType(json) : []
         };
         request.setJsonPayload(<@untainted>payload);
 
