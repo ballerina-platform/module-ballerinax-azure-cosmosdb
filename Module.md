@@ -2,8 +2,8 @@ The Azure Cosmos DB is Microsoft’s  NOSQL  database in Azure technology stack.
 multi-model database which  is used for managing data across the world. Key purposes of the Azure CosmosDB is to achieve 
 low latency and high availability while maintaining a flexible scalability. 
 The Ballerina Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from Ballerina and perform various 
-operations such as `find`, `create`, `read`, `update`, and `delete` operations of` Databases`,` Containers`,
-` User Defined Functions`,` Tiggers`,` Stored Procedures`,` Users`,` Permissions` and` Offers`. 
+operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`,
+`User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`. 
 
 ## Compatibility
 
@@ -13,7 +13,6 @@ operations such as `find`, `create`, `read`, `update`, and `delete` operations o
 | Cosmos DB API Version     | 2018-12-31                  |
 
 ## CosmosDB Clients
-
 There are two clients provided by Ballerina to interact with CosmosDB.
 
 1. **cosmosdb:CoreClient** - This connects to the running CosmosDB databases and containers to execute data-plane 
@@ -38,8 +37,6 @@ operations
    ```
 
 ## Samples 
-First, import the `ballerinax/azure.cosmosdb` module into the Ballerina project.
-
 ### Creating a database
 For creating a database in Azure we have to provide a unique database ID which does not already exist in the specific 
 cosmos DB account. This operation will return a record of type Result. This will contain the success as true if the 
