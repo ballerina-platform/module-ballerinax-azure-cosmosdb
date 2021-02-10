@@ -10,8 +10,10 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() { 
     string databaseId = "my_database";
+    string userId = "my_user";
+    string permissionId = "my_permission";
 
-    log:print("List users");
-    stream<cosmosdb:User> userList = checkpanic managementClient->listUsers(databaseId);
+    log:print("Get intormation about one permission");
+    cosmosdb:Permission permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
     log:print("Success!");
 }
