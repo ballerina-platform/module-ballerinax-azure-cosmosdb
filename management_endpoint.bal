@@ -78,7 +78,7 @@ public client class ManagementClient {
         return result;
     }
 
-        # Retrive information of a given database in an Azure Cosmos DB account.
+    # Retrive information of a given database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to retrieve information. 
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.

@@ -52,7 +52,6 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 | Cosmos DB API Version     | 2018-12-31                  |
 | Ballerina Language        | Swan-Lake-Preview8          |
 | Java Development Kit (JDK)| 11                          |
-|
 
 ## Limitations
 - Only data plane operations are supported from the connector. (Some Management plane operations are not supported)
