@@ -22,11 +22,11 @@ cosmosdb:AzureCosmosConfiguration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-
 cosmosdb:CoreClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
     int partitionKeyValue = 0;

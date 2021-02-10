@@ -22,7 +22,6 @@ cosmosdb:AzureCosmosConfiguration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-
 cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() { 
