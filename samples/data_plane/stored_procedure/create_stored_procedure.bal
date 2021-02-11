@@ -40,6 +40,7 @@ public function main() {
         storedProcedure: storedProcedureBody
     };
 
-    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, containerId, storedProcedureRecord);
+    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
+            containerId, storedProcedureRecord);
     log:print("Success!");
 }

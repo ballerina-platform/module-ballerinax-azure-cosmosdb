@@ -384,7 +384,7 @@ the special optional parameter can be used.
 - `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
 json object.
 
-Get one Container
+### Get one Container
 This operation is related to reading information about a container which is already created inside a database. It mainly 
 returns the ID of the container, The indexing policy and partition key along with the resourceId.
 
@@ -618,7 +618,8 @@ public function main() {
     };
         
     log:print("Create permission for a user");
-    cosmosdb:Result createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, <@untainted>newPermission);
+    cosmosdb:Result createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
+            <@untainted>newPermission);
     log:print("Success!");
 }
 ```
@@ -649,7 +650,8 @@ public function main() {
         resourcePath: permissionResourceReplace
     };
     log:print("Replace permission");
-    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, replacedPermission);
+    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
+            replacedPermission);
     log:print("Success!");
 }
 ```
@@ -768,7 +770,8 @@ public function main() {
         documentBody: documentBody
     };
 
-    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, document, partitionKeyValue); 
+    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, document, 
+            partitionKeyValue); 
     log:print("Success!");
 }
 ```
@@ -809,7 +812,8 @@ public function main() {
         id: documentId,
         documentBody: newDocumentBody
     };
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, newDocument, partitionKeyValue);
+    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, newDocument, 
+            partitionKeyValue);
     log:print("Success!");
 }
 ```
@@ -833,7 +837,8 @@ public function main() {
     int partitionKeyValue = 0;
     
     log:print("Read the  document by id");
-    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
+    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
+            partitionKeyValue);
     log:print("Success!");
 }
 ```
@@ -927,14 +932,404 @@ User Defined Functions.
 A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
 collection as a single transaction.
 
-- ## User Defined functions
+### Create Stored Procedure
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string storedProcedureId = "my_stored_procedure";
+    
+    log:print("Creating stored procedure");
+    string storedProcedureBody = string `function (){
+                                            var context = getContext();
+                                            var response = context.getResponse();
+                                            response.setBody("Hello,  World");
+                                        }`;
+    cosmosdb:StoredProcedure storedProcedureRecord = {
+        id: storedProcedureId,
+        storedProcedure: storedProcedureBody
+    };
+
+    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
+            containerId, storedProcedureRecord);
+    log:print("Success!");
+}
+```
+### Replace Stored Procedure
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string existingStoredProcedureId = "my_storedprocedure"
+
+    // Replace stored procedure
+    log:print("Replacing stored procedure");
+    string newStoredProcedureBody = string `function heloo(personToGreet){
+                                                var context = getContext();
+                                                var response = context.getResponse();
+                                                response.setBody("Hello, " + personToGreet);
+                                            }`;
+    cosmosdb:StoredProcedure newStoredProcedure = {
+        id: existingStoredProcedureId,
+        storedProcedure: newStoredProcedureBody
+    };
+    cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
+            containerId, newStoredProcedure);
+    log:print("Success!");
+}
+```
+
+### List Stored Procedures
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("List stored procedure");
+    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    log:print("Success!");
+}
+```
+
+### Delete Stored Procedure
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string storedProcedureId = "my_stored_procedure";
+    
+    log:print("Deleting stored procedure");
+    _ = checkpanic azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
+    log:print("Success!");
+}
+```
+
+- ## User Defined Functions
 User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
 extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
 refer to them when writing queries.
 
+### Create User Defined Function
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string udfId = "my_udf";
+
+    log:print("Creating a user defined function");
+    string userDefinedFunctionBody = string `function tax(income){
+                                                if (income == undefined)
+                                                    throw 'no input';
+
+                                                if (income < 1000)
+                                                    return income * 0.1;
+                                                else if (income < 10000)
+                                                    return income * 0.2;
+                                                else
+                                                    return income * 0.4;
+                                            }`;
+    cosmosdb:UserDefinedFunction newUDF = {
+        id: udfId,
+        userDefinedFunction: userDefinedFunctionBody
+    };
+    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, newUDF);
+    log:print("Success!");
+}
+```
+
+### Replace User Defined Function
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string udfId = "my_udf";
+
+    log:print("Replacing a user defined function");
+    string newUserDefinedFunctionBody = string `function taxIncome(income){
+                                                    if (income == undefined)
+                                                        throw 'no input';
+                                                    if (income < 1000)
+                                                        return income * 0.1;
+                                                    else if (income < 10000)
+                                                        return income * 0.2;
+                                                    else
+                                                        return income * 0.4;
+                                                }`;
+    cosmosdb:UserDefinedFunction replacementUDF = {
+        id: udfId,
+        userDefinedFunction: newUserDefinedFunctionBody
+    };
+    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
+            replacementUDF);
+    log:print("Success!");
+}
+```
+
+### List User Defined Functions
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("List  user defined functions");
+    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
+    log:print("Success!");
+}
+```
+### Delete User Defined Function
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string udfId = "my_udf";
+    
+    log:print("Delete user defined function");
+    _ = checkpanic azureCosmosClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
+    log:print("Success!");
+}
+```
 - ## Triggers
 Trigger  is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers) creation, 
 deletion, and replacement of a document. They do not take any parameters.
+
+### Create Trigger
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string triggerId = "my_trigger";
+    
+    log:print("Creating a trigger");
+    string createTriggerBody = string `function updateMetadata() {
+                                            var context = getContext();
+                                            var collection = context.getCollection();
+                                            var response = context.getResponse();
+                                            var createdDocument = response.getBody();
+
+                                            // query for metadata document
+                                            var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
+                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+                                            if(!accept) throw "Unable to update metadata, abort";
+                                        }
+
+                                        function updateMetadataCallback(err, documents, responseOptions) {
+                                            if(err) throw new Error("Error" + err.message);
+                                            if(documents.length != 1) throw "Unable to find metadata document";
+                                            var metadataDocument = documents[0];
+                                            // update metadata
+                                            metadataDocument.createdDocuments += 1;
+                                            metadataDocument.createdNames += " " + createdDocument.id;
+                                            var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+                                                if(err) throw "Unable to update metadata, abort";
+                                            });
+
+                                            if(!accept) throw "Unable to update metadata, abort";
+                                            return;
+                                        }`;
+    string createTriggerOperationType = "All";
+    string createTriggerType = "Post";
+    cosmosdb:Trigger createTrigger = {
+        id: triggerId,
+        triggerFunction: createTriggerBody,
+        triggerOperation: createTriggerOperationType,
+        triggerType: createTriggerType
+    };
+    cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
+    log:print("Success!");
+}
+```
+
+### Replace Trigger
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string triggerId = "my_trigger";
+
+    log:print("Replacing a trigger");
+    string replaceTriggerBody = string `function replaceFunction() {
+                                            var context = getContext();
+                                            var collection = context.getCollection();
+                                            var response = context.getResponse();
+                                            var createdDocument = response.getBody();
+
+                                            // query for metadata document
+                                            var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
+                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+                                            if(!accept) throw "Unable to update metadata, abort";
+                                        }
+
+                                        function updateMetadataCallback(err, documents, responseOptions) {
+                                            if(err) throw new Error("Error" + err.message);
+                                            if(documents.length != 1) throw "Unable to find metadata document";
+                                            var metadataDocument = documents[0];
+                                            // update metadata
+                                            metadataDocument.createdDocuments += 1;
+                                            metadataDocument.createdNames += " " + createdDocument.id;
+                                            var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+                                                if(err) throw "Unable to update metadata, abort";
+                                            });
+
+                                            if(!accept) throw "Unable to update metadata, abort";
+                                            return;
+                                        }`;
+    string replaceTriggerOperation = "All";
+    string replaceTriggerType = "Post";
+    cosmosdb:Trigger replaceTrigger = {
+        id: triggerId,
+        triggerFunction: replaceTriggerBody,
+        triggerOperation: replaceTriggerOperation,
+        triggerType: replaceTriggerType
+    };
+    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
+    log:print("Success!");
+}
+```
+
+### List Triggers
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("List available triggers");
+    stream<cosmosdb:Trigger> result5 = checkpanic azureCosmosClient->listTriggers(databaseId, containerId);
+    log:print("Success!");
+}
+```
+
+### Delete Trigger
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string triggerId = "my_trigger";
+
+    log:print("Deleting trigger");
+    _ = checkpanic azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
+    log:print("Success!");
+}
+```
 
 # Building from the Source
 ## Setting Up the Prerequisites
