@@ -580,7 +580,7 @@ Permissions are related to the Users in the Cosmos DB. The person who possesses 
 account is capable of creating permissions to each user. By using this concept, a ballerina service which uses the 
 Cosmos DB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
 middle-tier service that serves as the authentication and authorization broker between a client and a back-end service). 
-This is granted by using `Resource Tokens`. 
+This is granted by using `Resource Token`. 
 
 Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
 attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database user is 
@@ -725,6 +725,216 @@ them. The operations on offers support replacing existing offers, listing and re
 Note: <br/>Operations on offers are not supported in Serverless accounts because they don’t specifically have a 
 predefined throughput level.
 
+## Data Plane operations
+- ## Documents
+Azure cosmos DB allows the execution of  CRUD operations on items separately. As we are using the Core API underneath 
+the connector, an item may refer to a document in the container. SQL API stores entities in JSON in a hierarchical 
+key-value document.  The max document size in Cosmos DB is 2 MB.
+
+### Create a Document
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
+    string containerId = "my_container";
+    string documentId = "my_document";
+
+    log:print("Create a new document");
+    json documentBody = {
+        "LastName": "keeeeeee",
+        "Parents": [{
+            "FamilyName": null,
+            "FirstName": "Thomas"
+        }, {
+            "FamilyName": null,
+            "FirstName": "Mary Kay"
+        }],
+        gender: 0
+    };
+    int partitionKeyValue = 0;
+
+    cosmosdb:Document document = {
+        id: documentId,
+        documentBody: documentBody
+    };
+
+    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, document, partitionKeyValue); 
+    log:print("Success!");
+}
+```
+### Replace Document
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
+    string containerId = "my_container";
+    string documentId = "my_document";
+    //We have to give  the currently existing partition key of this document we can't replace that
+    int partitionKeyValue = 0; 
+
+    log:print("Replacing document");
+    json newDocumentBody = {
+        "LastName": "Helena",
+        "Parents": [{
+            "FamilyName": null,
+            "FirstName": "Thomas"
+        }, {
+            "FamilyName": null,
+            "FirstName": "Mary Kay"
+        }],
+        gender: 0
+    };
+
+    cosmosdb:Document newDocument = {
+        id: documentId,
+        documentBody: newDocumentBody
+    };
+    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, newDocument, partitionKeyValue);
+    log:print("Success!");
+}
+```
+### Get one Document
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
+    string containerId = "my_container";
+    string documentId = "my_document";
+    int partitionKeyValue = 0;
+    
+    log:print("Read the  document by id");
+    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
+    log:print("Success!");
+}
+```
+### List Documents
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("Getting list of documents");
+    stream<cosmosdb:Document> documentList = checkpanic azureCosmosClient->getDocumentList(databaseId, containerId);
+    log:print("Success!");
+}
+```
+### Delete Document
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
+    string containerId = "my_container";
+    string documentId = "my_document";
+    int partitionKeyValue = 0;
+    
+    log:print("Deleting the document");
+    _ = checkpanic azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
+    log:print("Success!");
+}
+```
+### Querying  Documents
+When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
+optional parameters. As specified in the Cosmos DB documentation, SQL queries can be written in different ways for 
+querying Cosmos DB.
+Cosmos DB Ballerina connector allows the option to either to provide a query as a normal ballerina string or explicitly 
+specify the query parameters which matches with the SQL queries compatible with the REST API.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("Query1 - Select all from the container where gender 0");
+    string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
+    int partitionKeyValueMale = 0;
+    int maxItemCount = 10;
+    stream<json> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, [], 
+            maxItemCount, partitionKeyValueMale);
+    var document = queryResult.next();
+    log:print("Success!");
+}
+```
+## Javascript language integrated functions. 
+Cosmos DB Supports Javascript language integrated queries to execute because it has built in support for javascript 
+inside the database engine. It allows stored procedures and the triggers to execute in the same scope as the database 
+session. More information about Javascript language integrated functions can be found here:
+https://docs.microsoft.com/en-us/azure/cosmos-db/stored-procedures-triggers-udfs
+
+The ballerina connector supports the creation, modification , listing and deletion of Stored procedures, Triggers and 
+User Defined Functions.
+
+- ## Stored procedures
+A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
+collection as a single transaction.
+
+- ## User Defined functions
+User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
+extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
+refer to them when writing queries.
+
+- ## Triggers
+Trigger  is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers) creation, 
+deletion, and replacement of a document. They do not take any parameters.
 
 # Building from the Source
 ## Setting Up the Prerequisites
