@@ -132,12 +132,6 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted>url;
 }
 
-isolated function createRequest(http:Request request, Options? requestOptions) returns error? {
-    if (requestOptions != ()) {
-        check setRequestOptions(request, requestOptions);
-    }
-}
-
 //  Attach mandatory basic headers to call a REST endpoint.
 //  
 //  + request - http:Request to add headers to
@@ -149,22 +143,22 @@ isolated function createRequest(http:Request request, Options? requestOptions) r
 //  + requestPath - Request path of the request.
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setMandatoryHeaders(http:Request request, string host, string keyToken, string tokenType, 
-        string tokenVersion, string httpVerb, string requestPath) returns error? {
-    HeaderParameters params = mapParametersToHeaderType(httpVerb, requestPath);
-    request.setHeader(API_VERSION_HEADER, params.apiVersion);
+function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, string requestPath) 
+        returns error? {
+    request.setHeader(API_VERSION_HEADER, API_VERSION);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
     request.setHeader(http:CONNECTION, CONNECTION_KEEP_ALIVE);
-    string? date = check getTime();
-    if (date is string) {
-        request.setHeader(DATE_HEADER, date);
+    string tokenType = getTokenType(token);
+    string? dateTime = check getDateTime();
+    if (dateTime is string) {
+        request.setHeader(DATE_HEADER, dateTime);
         string? signature = ();
         if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
-            signature = check generateMasterTokenSignature(params.verb, params.resourceType, params.resourceId, keyToken, 
-                    tokenType, tokenVersion, date);
+            signature = check generateMasterTokenSignature(httpVerb, getResourceType(requestPath), 
+                    getResourceId(requestPath), token, tokenType, TOKEN_VERSION, dateTime);
         } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
-            signature = check encoding:encodeUriComponent(keyToken, UTF8_URL_ENCODING);
+            signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
         } else {
             return prepareUserError(NULL_RESOURCE_TYPE_ERROR);
         }
@@ -176,54 +170,6 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     } else {
         return prepareModuleError(NULL_DATE_ERROR);
     }
-}
-
-//  Maps the parameters which are needed for the creation of authorization signature to HeaderParameters type.
-// 
-//  + httpVerb - HTTP verb of the relevent request.
-//  + url - The endpoint to which the request call is made.
-//  + return - An instance of record type HeaderParameters.
-//
-isolated function mapParametersToHeaderType(string httpVerb, string url) returns HeaderParameters {
-    HeaderParameters parameters = {};
-    parameters.verb = httpVerb;
-    parameters.resourceType = getResourceType(url);
-    parameters.resourceId = getResourceId(url);
-    return parameters;
-}
-
-//  Get the current time in the specific format.
-//  
-//  + return - If successful, returns string representing UTC date and time 
-//          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
-//
-isolated function getTime() returns string?|error {
-    time:Time currentTime = time:currentTime();
-    time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
-    string timeString = check time:format(timeWithZone, TIME_ZONE_FORMAT);
-    return timeString; 
-}
-
-//  To construct the hashed token signature for a token to set  'Authorization' header.
-//  
-//  + verb - HTTP verb, such as GET, POST, or PUT
-//  + resourceType - identifies the type of resource that the request is for, Eg. "dbs", "colls", "docs"
-//  + resourceId -dentity property of the resource that the request is directed at
-//  + keyToken - master or resource token
-//  + tokenType - denotes the type of token: master or resource.
-//  + tokenVersion - denotes the version of the token, currently 1.0.
-//  + date - current GMT date and time
-//  + return - If successful, returns string which is the  hashed token signature. Else returns () or error.
-// 
-isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
-        string tokenType, string tokenVersion, string date) returns string?|error {
-    string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
-    date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
-    byte[] decodedArray = check array:fromBase64(keyToken); 
-    byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
-    string signature = array:toBase64(digest); 
-    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
-    return authorization;      
 }
 
 //  Set the optional header related to throughput options.
@@ -276,7 +222,7 @@ isolated function setHeadersForQuery(http:Request request) {
 //  + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setRequestOptions(http:Request request, Options? requestOptions) returns error? {
+isolated function setOptionalHeaders(http:Request request, Options? requestOptions) returns error? {
     if (requestOptions?.indexingDirective != ()) {
         if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
             request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
@@ -328,6 +274,40 @@ isolated function setExpiryHeader(http:Request request, int validationPeriod) re
     } else {
         return prepareUserError(VALIDITY_PERIOD_ERROR);
     }
+}
+
+//  Get the current time in the specific format.
+//  
+//  + return - If successful, returns string representing UTC date and time 
+//          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error.
+//
+isolated function getDateTime() returns string?|error {
+    time:Time currentTime = time:currentTime();
+    time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
+    string timeString = check time:format(timeWithZone, TIME_ZONE_FORMAT);
+    return timeString; 
+}
+
+//  To construct the hashed token signature for a token to set  'Authorization' header.
+//  
+//  + verb - HTTP verb, such as GET, POST, or PUT
+//  + resourceType - identifies the type of resource that the request is for, Eg. "dbs", "colls", "docs"
+//  + resourceId -dentity property of the resource that the request is directed at
+//  + keyToken - master or resource token
+//  + tokenType - denotes the type of token: master or resource.
+//  + tokenVersion - denotes the version of the token, currently 1.0.
+//  + date - current GMT date and time
+//  + return - If successful, returns string which is the  hashed token signature. Else returns () or error.
+// 
+isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
+        string tokenType, string tokenVersion, string date) returns string?|error {
+    string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
+    date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
+    byte[] decodedArray = check array:fromBase64(keyToken); 
+    byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
+    string signature = array:toBase64(digest); 
+    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
+    return authorization;      
 }
 
 //  Map the json payload and necessary header values returend from a response to a tuple.

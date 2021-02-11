@@ -23,15 +23,11 @@ public client class ManagementClient {
     private string baseUrl;
     private string masterOrResourceToken;
     private string host;
-    private string tokenType;
-    private string tokenVersion;
 
     public function init(AzureCosmosConfiguration azureConfig) {
         self.baseUrl = checkpanic validateBaseUrl(azureConfig.baseUrl);
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.tokenType = getTokenType(azureConfig.masterOrResourceToken);
-        self.tokenVersion = TOKEN_VERSION;
         self.httpClient = new (self.baseUrl);
     }
 
@@ -45,8 +41,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
         // Setting mandatory headers for the request
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
@@ -86,10 +81,9 @@ public client class ManagementClient {
     remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted 
             Database|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -104,8 +98,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -125,10 +118,9 @@ public client class ManagementClient {
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted 
             boolean|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         //return <boolean> check handleResponse(response);
@@ -152,8 +144,7 @@ public client class ManagementClient {
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         check setThroughputOrAutopilotHeader(request, throughputOption);
 
         json jsonPayload = {
@@ -203,10 +194,9 @@ public client class ManagementClient {
     remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) 
             returns @tainted Container|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -221,8 +211,7 @@ public client class ManagementClient {
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -242,10 +231,9 @@ public client class ManagementClient {
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) 
             returns @tainted boolean|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -266,8 +254,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_PK_RANGES]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
 
         PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
@@ -283,8 +270,7 @@ public client class ManagementClient {
     remote function createUser(string databaseId, string userId) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
 
         json reqBody = {id: userId};
         request.setJsonPayload(reqBody);
@@ -303,8 +289,7 @@ public client class ManagementClient {
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
 
         json reqBody = {id: newUserId};
         request.setJsonPayload(reqBody);
@@ -324,10 +309,9 @@ public client class ManagementClient {
     remote function getUser(string databaseId, string userId, ResourceReadOptions? requestOptions = ()) returns @tainted 
             User|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -344,13 +328,12 @@ public client class ManagementClient {
     remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
             returns @tainted stream<User>|error { 
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
+        check setOptionalHeaders(request, requestOptions);
 
         User[] newArray = [];
         stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request, newArray, 
@@ -368,10 +351,9 @@ public client class ManagementClient {
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? requestOptions = ()) 
             returns @tainted boolean|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -394,8 +376,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -424,8 +405,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permission.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
         if (validityPeriod is int) {
             check setExpiryHeader(request, validityPeriod);
         }
@@ -453,11 +433,10 @@ public client class ManagementClient {
     remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ()) 
             returns @tainted Permission|error { 
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -475,14 +454,13 @@ public client class ManagementClient {
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
             returns @tainted stream<Permission>|error { 
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
+        check setOptionalHeaders(request, requestOptions);
 
         Permission[] newArray = [];
         stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
@@ -500,11 +478,10 @@ public client class ManagementClient {
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
             returns @tainted boolean|error { 
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_DELETE, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -523,8 +500,7 @@ public client class ManagementClient {
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_PUT, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
 
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
@@ -553,10 +529,9 @@ public client class ManagementClient {
     # + return - If successful, returns a cosmosdb:Offer. Else returns error.
     remote function getOffer(string offerId, ResourceReadOptions? requestOptions = ()) returns @tainted Offer|error {
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -576,13 +551,12 @@ public client class ManagementClient {
     remote function listOffers(int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) returns @tainted 
             stream<Offer>|error { 
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_GET, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
+        check setOptionalHeaders(request, requestOptions);
 
         Offer[] newArray = [];
         stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray,
@@ -600,10 +574,9 @@ public client class ManagementClient {
     remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
             returns @tainted stream<json>|error { 
         http:Request request = new;
-        check createRequest(request, requestOptions);
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
-        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, self.tokenType, self.tokenVersion, 
-                http:HTTP_POST, requestPath);
+        check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
+        check setOptionalHeaders(request, requestOptions);
 
         request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);
