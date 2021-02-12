@@ -570,7 +570,7 @@ public function main() {
 
 ### Delete User
 The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
-connector supports this operation. For deleting a User the specific Database ID User is scoped to and the User ID must 
+connector supports this operation. For deleting a User the specific Database ID User is scoped to and the ID User of the User to delete must 
 be provided.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -659,7 +659,7 @@ you are creating. This will override the default validity period of the token. T
 ### Replace Permission
 This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
 existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
-properties have to have changes. These primary properties must be included inside record `Permission`
+properties have to have changes. These primary properties must be included inside record type `Permission`
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -692,8 +692,7 @@ public function main() {
 ```
 ### Get Permission
 From this sample you can get the basic information about a created Permission. For this, the the Database ID and the User 
-ID to which the permission belongs to should be specified. The Permission ID that, you want to get information about 
-should be provided.
+ID to which the permission belongs to and the Permission ID that, you want to get information about should be provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -717,7 +716,7 @@ public function main() {
 ```
 ### List Permission
 From this operation you can get a list of all the Permissions belong to a single User. Each record returned will 
-contain information about each Permission. Each result will be similar to a list of results returned from getPermission 
+contain information about each Permission. Each result will be similar to a list of results returned from `getPermission`
 operation. You have to provide the Database ID and the User ID as parameters
 ```ballerina
 import ballerinax/cosmosdb;
@@ -740,8 +739,8 @@ public function main() {
 }
 ```
 ### Delete Permission
-This Operation allows to delete a Permission in the database.For deleting a Permission, the specific Database ID, User 
-ID and the Permission ID to delete must be provided.
+This Operation allows to delete a Permission in the database. For deleting a Permission, the specific Database ID, User 
+ID and the ID of the Permission to delete must be provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -767,7 +766,7 @@ public function main() {
 Cosmos DB Containers have either user-defined performance levels or pre-defined performance levels defined for each of 
 them. The operations on offers support replacing existing offers, listing and reading them and querying offers.
 
-Note: <br/>Operations on offers are not supported in Serverless accounts because they don’t specifically have a 
+Note: <br/>Operations on offers are not supported in `Serverless` accounts because they don’t specifically have a 
 predefined throughput level.
 
 ## Data Plane operations
@@ -929,7 +928,7 @@ Users must set this level to the same or weaker level than the account’s confi
 about Cosmos DB consistancy levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
 
 ### List Documents
-From this sample you can get a list of all the Documents. Each record returned will contain a list of documents. Each 
+From this sample you can get a list of all the Documents.Each 
 result will be similar to a list of results returned from getDocument operation. You have to provide the Database ID 
 and Container ID as parameters.
 ```ballerina
@@ -967,7 +966,7 @@ found here: https://docs.microsoft.com/en-us/azure/cosmos-db/change-feed
 
 ### Delete Document
 This sample shows how to delete a Document which exists inside a Container. You have to specify the Database ID, 
-Container ID where the document exists and the Document ID you want to delete.
+Container ID where the document exists and the ID of Document you want to delete.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1132,6 +1131,8 @@ public function main() {
 }
 ```
 ### List Stored Procedures
+From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result will contain the JavaScript function and several other important information. You have to provide the Database ID 
+and Container ID as parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1153,6 +1154,8 @@ public function main() {
 }
 ```
 ### Delete Stored Procedure
+This sample shows how to delete a Stored Procedure which exists inside a Container. You have to specify the Database ID, 
+Container ID where the Stored Procedure exists and the ID of the Stored Procedure you want to delete.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1178,7 +1181,7 @@ public function main() {
 Stored Procedure is a piece of logic written in Javascript which can be executed via an API call. Cosmos DB connector 
 explicitly gives the capability to execute stored procedures. They can be used in Azure databases to execute CRUD 
 operations on documents and also to read from the request body and write to the response body. More information about 
-this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs
+this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs.
 This sample shows how to execute a Stored Procedure already existing inside a Container.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1206,10 +1209,8 @@ public function main() {
     log:print("Success!");
 }
 ```
-Note:
-If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as the value 
+Note: <br/> If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as the value 
 for parameter of `StoredProcedureOptions` record type argument of the function `executeStoredProcedure`. 
-- 
 For example, if only one parameter is passed, the argument must be an array with one element.
 
 - ## User Defined Functions
