@@ -1060,6 +1060,9 @@ A Stored procedure is a piece of application logic written in JavaScript that is
 collection as a single transaction.
 
 ### Create Stored Procedure
+This sample shows how to create a Stored Procedure inside a Container. This example Stored Procedure will return a 
+response appending the given value inside the function to the response body. For this a unique ID and a  JavaScript 
+function should be provided to the StoredProcedure record type. 
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1093,6 +1096,9 @@ public function main() {
 }
 ```
 ### Replace Stored Procedure
+This sample shows how to replace an existing Stored Procedure. The new function enhances the capabilities of the earlier 
+function by appending the function parameter passed through the request to a string inside the function and returning it 
+back to the caller. You can provide any JavaScript function as the new `storedProcedure`. 
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1111,7 +1117,7 @@ public function main() {
 
     // Replace stored procedure
     log:print("Replacing stored procedure");
-    string newStoredProcedureBody = string `function heloo(personToGreet){
+    string newStoredProcedureBody = string `function HelloFunction(personToGreet){
                                                 var context = getContext();
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
@@ -1168,6 +1174,44 @@ public function main() {
     log:print("Success!");
 }
 ```
+### Execute a Stored Procedure
+Stored Procedure is a piece of logic written in Javascript which can be executed via an API call. Cosmos DB connector 
+explicitly gives the capability to execute stored procedures. They can be used in Azure databases to execute CRUD 
+operations on documents and also to read from the request body and write to the response body. More information about 
+this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs
+This sample shows how to execute a Stored Procedure already existing inside a Container.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:AzureCosmosConfiguration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:CoreClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string storedProcedureId = "my_stored_procedure";
+
+    log:print("Executing stored procedure");
+    cosmosdb:StoredProcedureOptions options = {
+        parameters: ["Sachi"]
+    };
+
+    json result = checkpanic azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, 
+            options);
+    log:print("Success!");
+}
+```
+Note:
+If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as the value 
+for parameter of `StoredProcedureOptions` record type argument of the function `executeStoredProcedure`. 
+- 
+For example, if only one parameter is passed, the argument must be an array with one element.
+
 - ## User Defined Functions
 User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
 extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
