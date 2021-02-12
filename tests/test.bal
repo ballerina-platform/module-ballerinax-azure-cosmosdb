@@ -504,7 +504,7 @@ function test_queryDocuments() {
     int partitionKey = 1234;
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, [], 10, partitionKey);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, 10, partitionKey);
     if (result is stream<json>) {
         var document = result.next();
     } else {
@@ -525,7 +525,7 @@ function test_queryDocumentsWithRequestOptions() {
         //sessionToken: "tag", 
         enableCrossPartition: true};
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, (),(), (), options);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, (), (), options);
     if (result is stream<json>) {
         var document = result.next();
     } else {
@@ -1207,8 +1207,7 @@ function test_replaceOfferWithOptionalParameter() {
 }
 function test_queryOffer() {
     log:print("ACTION : queryOffer()");
-    Query offerQuery = {query: string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.
-        toString()}"`};
+    string offerQuery = string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
     if (result is stream<json>) {
         var offer = result.next();

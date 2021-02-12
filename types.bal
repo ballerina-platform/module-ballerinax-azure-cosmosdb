@@ -263,11 +263,11 @@ public type User record {|
 # 
 # + id - User generated unique ID for the permission.
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + permissionMode - Access mode for the resource, "All" or "Read".
+# + selfReference - Self reference (_self) unique addressable URI for the resource(permission).
+# + permissionMode - Access mode for the resource, Should be "All" or "Read".
 # + resourcePath - Full addressable path of the resource associated with the permission.
-# + validityPeriod - Optional. Validity period of the resource token.
-# + token - System generated resource token for the particular resource and user.
+# + validityPeriod - Optional. Validity period of the Resource Token.
+# + token - System generated "Resource Token" for the particular resource and user.
 # + responseHeaders - The important response headers.
 public type Permission record {|
     string id = "";

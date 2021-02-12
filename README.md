@@ -55,7 +55,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
         
         - Obtaining Resource Token
         
-        The person who possess the Master Key of the Cosmos DB account is capable of creating permissions to each user. 
+        The person who possess the Master Key of the Cosmos DB account is capable of creating Permissions to each User. 
         By using this concept, a ballerina service which uses the Cosmos DB connector can act as a token broker, which 
         issues tokens with specific access rights to users (involves a middle-tier service that serves as the 
         authentication and authorization broker between a client and a back-end service). This is handled by using 
@@ -167,9 +167,8 @@ cosmosdb:Document document = {
     documentBody: documentBody
 };
 
-cosmosdb:Result documentResult = check azureCosmosClient-> 
-        createDocument("my_database", "my_container", document,  
-                                            valueOfPartitionKey);
+cosmosdb:Result documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document,  
+        valueOfPartitionKey);
 ```
 Notes: <br/> As we have selected `/gender` as the partition key for `my_container`, the document we create should include that 
 path with a valid value.
@@ -179,9 +178,7 @@ For listing the existing documents inside this Cosmos Container you have to give
 parameters. Here, you will get a stream of json objects as the response. Using the ballerina Stream API you can access 
 the returned results.
 ```ballerina
-stream<cosmosdb:Document> documentList = check azureCosmosClient-> 
-                            getDocumentList("my_database", "my_container");
- 
+stream<cosmosdb:Document> documentList = check azureCosmosClient-> getDocumentList("my_database", "my_container");
 var document = documentList.next();
 log:print(document?.value);
 ```
@@ -192,13 +189,11 @@ When executing a SQL query using the connector, there are specific ways you can 
 optional parameters.More information on this can be found here: https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
 
 ```ballerina
-string selectAllQuery = string `SELECT * FROM ${containerId.toString()} 
-                                                    f WHERE f.gender = ${0}`;
+string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 int partitionKeyValueMale = 0;
 int maxItemCount = 10;
-stream<json> queryResult = check azureCosmosClient->    
-        queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery,  
-                                [], maxItemCount, partitionKeyValueMale);
+stream<json> queryResult = check azureCosmosClient-> queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
+        maxItemCount, partitionKeyValueMale);
 
 error? e =  resultStream.forEach(function (json document){
                 log:printInfo(document);
@@ -212,8 +207,7 @@ Finally, you can delete the document you have created. For this operation to be 
 you have to give `my_database` and `my_container` as parameters. Apart from that, the target document to delete
 `my_document` and `value of the partition key` of that document must be provided.
 ```ballerina
- _ = check azureCosmosClient->deleteDocument("my_database", "my_container" 
-                                 "my_document", valueOfPartitionKey);
+ _ = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", valueOfPartitionKey);
 ```
 # Samples
 ## Management Plane Operations
@@ -301,7 +295,7 @@ public function main() {
 ```
 ### List All Databases
 When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
-stream of Databases to the user each containing a record of type `Database`.  
+stream of Databases, each containing a record of type `Database`.  
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -463,15 +457,15 @@ public function main() {
 - ## Users
 User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
 A user acts as a namespace, scoping permissions on collections, documents, attachment, stored procedures, triggers, and 
-user-defined functions. The user construct lives under a Database resource and thus cannot cross the Database boundary 
-it is under. The ballerina connector implementation facilitates creating a new user, replacing user ID, get, list and 
-delete of users in a Cosmos DB account.
+user-defined functions. The User construct lives under a Database resource and thus cannot cross the Database boundary 
+it is under. The ballerina connector implementation facilitates creating a new User, replacing User ID, get, list and 
+delete of Users in a Cosmos DB account.
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
 
 ### Create User
-Users are stored within the context of the Database in Cosmos DB. Each user has a set of unique named permissions. So in 
-this operation an instance of User for a specific Database is created. The things you need to create a user in Cosmos DB 
-is  the Database ID and a unique ID for the user. Here `my_database` and `my_user` are given as parameters respectively.
+Users are stored within the context of the Database in Cosmos DB. Each User has a set of unique named permissions. So in 
+this operation an instance of User for a specific Database is created. The things you need to create a User in Cosmos DB 
+is  the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -494,10 +488,10 @@ public function main() {
 ```
 
 ### Replace User ID
-Here in this operation, the only replaceable property is the ID of a user created earlier. Although a user can have 
-permissions which are related to him, those will not be affected from this operation. For this, you have to provide the 
-Database ID where the user is scoped into, the user ID you want to replace and the new user ID which the older one is 
-to be replaced with.
+From this sample we can replace the ID of an existing User. The only replaceable property is the ID of a User created 
+earlier. Although a User can have Permissions which are related to him, those will not be affected from this operation. 
+For this, you have to provide the Database ID where the User is scoped into, the User ID you want to replace and the new 
+User ID which the older one is to be replaced with.
 ``` ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -520,9 +514,9 @@ public function main() {
 }
 ```
 ### Get User
-Here we can get the basic information about a created User. For this, the the Database ID where the user is scoped into 
-and the user ID you want to get information about should be provided. Referring to earlier samples, the Database ID will 
-be `my_database` and user ID will be `my_user` in this case.
+From this sample, we can get the basic information about a created User. For this, the the Database ID where the User is 
+scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
+Database ID will be `my_database` and User ID will be `my_user` in this case.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -545,7 +539,7 @@ public function main() {
 ```
 ### List Users
 From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
-contain information about each user. Each result will be similar to a list of results returned from getUser operation. 
+contain information about each User. Each result will be similar to a list of results returned from getUser operation. 
 You have to provide the Database ID which is `my_database` as a parameter.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -567,8 +561,8 @@ public function main() {
 }
 ```
 ### Delete User
-The Common User management operations of databases usually have the option to delete an existing user. The Cosmos DB 
-connector supports this operation. For deleting a user the specific Database ID user is scoped to and the User ID must 
+The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
+connector supports this operation. For deleting a User the specific Database ID User is scoped to and the User ID must 
 be provided.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -593,13 +587,13 @@ public function main() {
 
 - ## Permissions
 Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Token` of the Cosmos DB 
-account is capable of creating permissions to each user. By using this concept, a ballerina service which uses the 
+account is capable of creating permissions to each User. By using this concept, a ballerina service which uses the 
 Cosmos DB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
 middle-tier service that serves as the authentication and authorization broker between a client and a back-end service). 
 This is granted by using `Resource Token`. 
 
 Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
-attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database user is 
+attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database User is 
 granted permissions to a resource and re-generated in response to a request referencing that permission. By default, 
 they are valid for one hour, with the maximum timespan of five hours. As the use of Master Token should be limited to 
 scenarios that require full privileges to the content of an account, for more granular access, we should use Resource 
@@ -607,6 +601,18 @@ Tokens. More information on token types can be found here:
 https://docs.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data
 
 ### Create Permission
+Permissions in Cosmos DB have 3 primary properties:
+- `permissionId` - Id for the permission.
+- `permissionMode` - You only have two options here, `"Read"` or `"All"`, and like you would expect, limits the scope 
+    of what you are able to do with the data.
+- `permissionResource` - ResourceLink is really the meat of what this permission is allowing the User to access. In 
+    Cosmos DB, many things are resources such as `Databases`, `Containers`, `Documents`, and `Attachments`. Depending on 
+    the granularity, multiple permissions can be created and assigned to a User based on the data they should be able to 
+    have access to.
+
+When creating a Permission we should  provide values for them. Apart from that, as a Permission is explicitly made 
+referring to an existing User, User ID and the Database ID also should be specified. The created token is expired in one 
+hour.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -639,8 +645,14 @@ public function main() {
     log:print("Success!");
 }
 ```
-### Replace Permission
+Notes: <br/>
+A `validityPeriod` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
+we are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
 
+### Replace Permission
+This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
+existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
+properties have to have changes.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -672,7 +684,9 @@ public function main() {
 }
 ```
 ### Get Permission
-
+From this sample we can get the basic information about a created Permission. For this, the the Database ID and the User 
+ID to which the permission belongs to should be specified. The Permission ID that, you want to get information about 
+should be provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -695,6 +709,9 @@ public function main() {
 }
 ```
 ### List Permission
+From this operation you can get a list of all the Permissions belong to a single User. Each record returned will 
+contain information about each Permission. Each result will be similar to a list of results returned from getPermission 
+operation. You have to provide the Database ID and the User ID as parameters
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -716,6 +733,8 @@ public function main() {
 }
 ```
 ### Delete Permission
+This Operation allows to delete a Permission in the database.For deleting a Permission, the specific Database ID, User 
+ID and the Permission ID to delete must be provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -930,7 +949,7 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     int partitionKeyValueMale = 0;
     int maxItemCount = 10;
-    stream<json> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, [], 
+    stream<json> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
             maxItemCount, partitionKeyValueMale);
     var document = queryResult.next();
     log:print("Success!");

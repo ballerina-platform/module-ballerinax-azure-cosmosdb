@@ -160,14 +160,13 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container to query.     
-    # + sqlQuery - A cosmosdb:Query containing the SQL query and parameters.
+    # + sqlQuery - A string containing the SQL query.
     # + valueOfPartitionKey - Optional. The value of parition key field of the container.
     # + maxItemCount - Optional. Maximum number of results in the returning stream.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<json>. Else returns error.
-    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, QueryParameter[]? parameters = (),
-            int? maxItemCount = (), any? valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns 
-            @tainted stream<json>|error { 
+    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), any? 
+            valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
@@ -177,7 +176,7 @@ public client class CoreClient {
 
         json payload = {
             query: sqlQuery,
-            parameters: parameters != () ? check parameters.cloneWithType(json) : []
+            parameters:[]
         };
         request.setJsonPayload(<@untainted>payload);
 

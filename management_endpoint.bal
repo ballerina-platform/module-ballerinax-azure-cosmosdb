@@ -566,19 +566,19 @@ public client class ManagementClient {
 
     # Perform queries on Offer resources.
     # 
-    # + sqlQuery - SQL query.
+    # + sqlQuery - A string value containing SQL query.
     # + maxItemCount - Optional. Maximum number of records to obtain.
     # + requestOptions - Optional. The cosmosdb:ResourceQueryOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<json>. Else returns error.
-    remote function queryOffer(Query sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
+    remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
             returns @tainted stream<json>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setOptionalHeaders(request, requestOptions);
 
-        request.setJsonPayload(check sqlQuery.cloneWithType(json));
+        request.setJsonPayload({query: sqlQuery});
         setHeadersForQuery(request);
 
         stream<json> offerStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());

@@ -50,13 +50,11 @@ isolated function mapJsonToContainerType([json, ResponseHeaders?] jsonPayload) r
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
 //  + return - An instance of record type Document.
-isolated function mapTupleToResultType([boolean, ResponseHeaders?] jsonPayload) returns @tainted Result {
+isolated function mapTupleToResultType([boolean, ResponseHeaders] jsonPayload) returns @tainted Result {
     Result result = {};
     var [status, headers] = jsonPayload;
     result.success = status ? true : false;
-    if (headers is ResponseHeaders) {
-        result.responseHeaders = headers;
-    }
+    result.responseHeaders = headers;
     return result;
 }
 
