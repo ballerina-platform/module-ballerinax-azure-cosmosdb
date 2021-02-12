@@ -1,9 +1,10 @@
+
 # Represent the optional parameters which can be passed to the function when creating a document.
 # 
-# + isUpsertRequest - A boolean value which specify if the request is an upsert request.
 # + indexingDirective - The option whether to include the document in the index. Allowed values are "Include" or "Exclude".
+# + isUpsertRequest - A boolean value which specify if the request is an upsert request.
 public type DocumentCreateOptions record {|
-    string? indexingDirective = ();
+    boolean? indexingDirective = ();
     boolean isUpsertRequest = false;
 |};
 
@@ -14,7 +15,7 @@ public type DocumentCreateOptions record {|
 #       matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
 #       failure error will be returned.
 public type DocumentReplaceOptions record {|
-    string? indexingDirective = ();
+    boolean? indexingDirective = ();
     string? ifMatchEtag = ();
 |};
 
@@ -28,7 +29,7 @@ public type DocumentReplaceOptions record {|
 #       the etag of the resource.
 # + partitionKeyRangeId - The partition key range ID for reading data.
 public type DocumentListOptions record {|
-    string? consistancyLevel = ();
+    Consistancy? consistancyLevel = ();
     string? sessionToken = ();
     string? changeFeedOption = ();
     string? ifNoneMatchEtag = ();
@@ -49,7 +50,7 @@ public type StoredProcedureOptions record {|
 #       This is applicable only on GET. Makes operation conditional to only execute if the resource has changed. The 
 #       value should be the etag of the resource.
 public type ResourceReadOptions record {|
-    string? consistancyLevel = ();
+    Consistancy? consistancyLevel = ();
     string? sessionToken = ();
     string? ifNoneMatchEtag = ();
 |};
@@ -60,9 +61,9 @@ public type ResourceReadOptions record {|
 # + enableCrossPartition -  Boolean value specifying whether to allow cross partitioning.
 # + consistancyLevel - The consistancy level override. Allowed values are "Strong", "Bounded", "Sesssion" or "Eventual".
 public type ResourceQueryOptions record {|
+    Consistancy? consistancyLevel = ();
     string? sessionToken = ();
     boolean enableCrossPartition = false;
-    string? consistancyLevel = ();
 |};
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.

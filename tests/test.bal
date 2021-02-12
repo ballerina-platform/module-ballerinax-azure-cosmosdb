@@ -20,6 +20,7 @@ import ballerina/log;
 import ballerina/runtime;
 import ballerina/java;
 import ballerina/stringutils;
+import ballerina/io;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -312,6 +313,7 @@ function test_deleteContainer() {
     var result = azureCosmosManagementClient->deleteContainer(databaseId, containerId);
     if (result == true) {
         var output = "";
+        io:println(result);
     } else {
         if(result is error) {
             test:assertFail(msg = result.message());
@@ -377,7 +379,7 @@ function test_createDocumentWithRequestOptions() {
 
     DocumentCreateOptions options = {
         isUpsertRequest: true,
-        indexingDirective: "Include"
+        indexingDirective: true
     };
     int valueOfPartitionKey = 1234;
     string id = string `document_${uuid.toString()}`;
@@ -444,7 +446,7 @@ function test_getDocumentListWithRequestOptions() {
     log:print("ACTION : getDocumentListWithRequestOptions()");
 
     DocumentListOptions options = {
-        consistancyLevel: "Eventual",
+        consistancyLevel: EVENTUAL,
         // changeFeedOption : "Incremental feed", 
         sessionToken: "tag",
         ifNoneMatchEtag: "hhh",
@@ -484,7 +486,7 @@ function test_GetOneDocumentWithRequestOptions() {
     int valueOfPartitionKey = 1234;
 
     ResourceReadOptions options = {
-        consistancyLevel: "Eventual",
+        consistancyLevel: EVENTUAL,
         sessionToken: "tag",
         ifNoneMatchEtag: "hhh"
     };

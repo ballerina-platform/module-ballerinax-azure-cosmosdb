@@ -25,10 +25,10 @@ public client class ManagementClient {
     private string host;
 
     public function init(AzureCosmosConfiguration azureConfig) {
-        self.baseUrl = checkpanic validateBaseUrl(azureConfig.baseUrl);
+        self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.httpClient = new (self.baseUrl);
+        self.httpClient = new(self.baseUrl);
     }
 
     # Create a database inside an Azure Cosmos DB account.
@@ -83,7 +83,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -120,7 +120,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         //return <boolean> check handleResponse(response);
@@ -196,7 +196,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -233,7 +233,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -311,7 +311,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -333,7 +333,7 @@ public client class ManagementClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         User[] newArray = [];
         stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request, newArray, 
@@ -353,7 +353,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -436,7 +436,7 @@ public client class ManagementClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -460,7 +460,7 @@ public client class ManagementClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         Permission[] newArray = [];
         stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
@@ -481,7 +481,7 @@ public client class ManagementClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -531,7 +531,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -556,7 +556,7 @@ public client class ManagementClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         Offer[] newArray = [];
         stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray,
@@ -576,7 +576,7 @@ public client class ManagementClient {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         request.setJsonPayload(check sqlQuery.cloneWithType(json));
         setHeadersForQuery(request);

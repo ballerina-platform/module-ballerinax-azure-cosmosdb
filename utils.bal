@@ -21,17 +21,6 @@ import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
 
-// Validate if the base URL is an empty string
-// 
-//  + url - the URL from which we want to extract resource type
-//
-isolated function validateBaseUrl(string url) returns string|error {
-    if (url != "") {
-        return url;
-    }
-    return prepareUserError(EMPTY_BASE_URL_ERROR);
-}
-
 //  Extract the type of token used for accessing the Cosmos DB.
 // 
 //  + token - the token provided by the user to access Cosmos DB.
@@ -172,36 +161,13 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
     }
 }
 
-//  Set the optional header related to throughput options.
-//  
-//  + request - http:Request to set the header
-//  + throughputOption - Optional. Throughput parameter of type int or json.
-//  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
-//
-isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json)? throughputOption = ()) returns error? {
-    if (throughputOption is int) {
-        if (throughputOption >= MIN_REQUEST_UNITS) {
-            request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
-        } else {
-            return prepareUserError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
-        }
-    } else if (throughputOption != ()) {
-        request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
-    } else {
-        return;
-    }
-}
-
 //  Set the optional header related to partitionkey value.
 //  
 //  + request - http:Request to set the header
 //  + partitionKey - the array containing the value of the partition key
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setPartitionKeyHeader(http:Request request, any? partitionKeyValue) {
-    if (partitionKeyValue is ()) {
-        return;
-    }
+isolated function setPartitionKeyHeader(http:Request request, any partitionKeyValue) {
     any[] partitionKeyArray = [partitionKeyValue];
     request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
 }
@@ -216,28 +182,37 @@ isolated function setHeadersForQuery(http:Request request) {
     request.setHeader(ISQUERY_HEADER, true.toString());
 }
 
+//  Set the optional header related to throughput options.
+//  
+//  + request - http:Request to set the header
+//  + throughputOption - Optional. Throughput parameter of type int or json.
+//  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
+//
+isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json) throughputOption = ()) returns error? {
+    if (throughputOption is int) {
+        if (throughputOption >= MIN_REQUEST_UNITS) {
+            request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
+        } else {
+            return prepareUserError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+        }
+    } else {
+        request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
+    }
+}
+
 //  Set the optional headers to the HTTP request.
 //  
 //  + request - http:Request to set the header
 //  + requestOptions - object of type RequestHeaderOptions containing the values for optional headers
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
-isolated function setOptionalHeaders(http:Request request, Options? requestOptions) returns error? {
+isolated function setOptionalHeaders(http:Request request, Options? requestOptions) {
     if (requestOptions?.indexingDirective != ()) {
-        if (requestOptions?.indexingDirective == INDEXING_TYPE_INCLUDE || requestOptions?.indexingDirective == INDEXING_TYPE_EXCLUDE) {
-            request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
-        } else {
-            return prepareModuleError(INDEXING_DIRECTIVE_ERROR);
-        }
+        request.setHeader(INDEXING_DIRECTIVE_HEADER, <boolean>requestOptions?.indexingDirective ? INDEXING_TYPE_INCLUDE : 
+                INDEXING_TYPE_EXCLUDE);
     }
     if (requestOptions?.consistancyLevel != ()) {
-        if (requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_STRONG || requestOptions?.consistancyLevel == 
-        CONSISTANCY_LEVEL_BOUNDED || requestOptions?.consistancyLevel == CONSISTANCY_LEVEL_SESSION || requestOptions?.
-        consistancyLevel == CONSISTANCY_LEVEL_EVENTUAL) {
-            request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
-        } else {
-            return prepareModuleError(CONSISTANCY_LEVEL_ERROR);
-        }
+        request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
     }
     if (requestOptions?.sessionToken != ()) {
         request.setHeader(SESSION_TOKEN_HEADER, requestOptions?.sessionToken.toString());
@@ -310,6 +285,42 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
     return authorization;      
 }
 
+//  Handle sucess or error reponses to requests and extract the json payload.
+//  
+//  + httpResponse - http:Response or http:ClientError returned from an http:Request
+//  + return - If successful, returns json. Else returns error. 
+//
+isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
+    if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
+        //If status 204, then no response body. So returns empty json.
+        return {};
+    }
+    json jsonResponse = check httpResponse.getJsonPayload();
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+        //If status is 200 or 201, request is successful. Returns resulting payload.
+        return jsonResponse;
+    } else {
+        string message = jsonResponse.message.toString();
+        return prepareModuleError(message, (), httpResponse.statusCode);
+    }
+}
+
+//  Handle sucess or error reponses to requests and extract the json payload.
+//  
+//  + httpResponse - http:Response or http:ClientError returned from an http:Request
+//  + return - If successful, returns json. Else returns error. 
+//
+isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
+    json jsonResponse = check httpResponse.getJsonPayload();
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+        //If status is 200 or 201, request is successful returns true. Else Returns error.
+        return true;
+    } else {
+        string message = jsonResponse.message.toString();
+        return prepareModuleError(message, (), httpResponse.statusCode);
+    }
+}
+
 //  Map the json payload and necessary header values returend from a response to a tuple.
 //  
 //  + httpResponse - the http:Response or http:ClientError returned form the HTTP request
@@ -332,44 +343,6 @@ isolated function mapCreationResponseToTuple(http:Response httpResponse) returns
     boolean responseBody = check handleCreationResponse(httpResponse);
     ResponseHeaders responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
     return [responseBody, responseHeaders];
-}
-
-//  Handle sucess or error reponses to requests and extract the json payload.
-//  
-//  + httpResponse - http:Response or http:ClientError returned from an http:Request
-//  + return - If successful, returns json. Else returns error. 
-//
-isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
-    if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
-        //If status 204, then no response body. So returns empty json.
-        return {};
-    }
-    json jsonResponse = check httpResponse.getJsonPayload();
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-        //If status is 200 or 201, request is successful. Returns resulting payload.
-        return jsonResponse;
-        
-    } else {
-        string message = jsonResponse.message.toString();
-        return prepareModuleError(message, (), httpResponse.statusCode);
-    }
-}
-
-//  Handle sucess or error reponses to requests and extract the json payload.
-//  
-//  + httpResponse - http:Response or http:ClientError returned from an http:Request
-//  + return - If successful, returns json. Else returns error. 
-//
-isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
-    json jsonResponse = check httpResponse.getJsonPayload();
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-        //If status is 200 or 201, request is successful returns true. Else Returns resulting payload.
-        return true;
-        
-    } else {
-        string message = jsonResponse.message.toString();
-        return prepareModuleError(message, (), httpResponse.statusCode);
-    }
 }
 
 //  Get the http:Response and extract the headers to the record type ResponseHeaders

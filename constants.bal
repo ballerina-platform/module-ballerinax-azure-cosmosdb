@@ -17,23 +17,17 @@
 # Calls the service API V1
 public const string SERVICE_VERSION_V1 = "1.0";
 
-# Whether to include indexing directive
-public const string INDEXING_TYPE_INCLUDE = "Include";
+# The Consistancy Level Override
+enum Consistancy {
+    STRONG = "Strong",
+    BOUNDED = "Bounded",
+    SESSION = "Session",
+    EVENTUAL = "Eventual"
+}
 
-# Whether to exclude indexing directive
-public const string INDEXING_TYPE_EXCLUDE = "Exclude";
-
-# Strong consistancy level
-public const string CONSISTANCY_LEVEL_STRONG = "Strong";
-
-# Bounded consistancy level
-public const string CONSISTANCY_LEVEL_BOUNDED = "Bounded";
-
-# Session consistancy level
-public const string CONSISTANCY_LEVEL_SESSION = "Session";
-
-# Eventual consistancy level
-public const string CONSISTANCY_LEVEL_EVENTUAL = "Eventual";
+// Indexing Policy
+const string INDEXING_TYPE_INCLUDE = "Include";
+const string INDEXING_TYPE_EXCLUDE = "Exclude";
 
 // Request headers
 const string API_VERSION_HEADER = "x-ms-version";

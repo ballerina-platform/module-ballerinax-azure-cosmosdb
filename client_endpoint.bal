@@ -25,10 +25,10 @@ public client class CoreClient {
     private string host;
 
     public function init(AzureCosmosConfiguration azureConfig) {
-        self.baseUrl = checkpanic validateBaseUrl(azureConfig.baseUrl);
+        self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.httpClient = new (self.baseUrl);
+        self.httpClient = new(self.baseUrl);
     }
 
     # Create a Document inside a container.
@@ -46,7 +46,7 @@ public client class CoreClient {
                 RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         json jsonPayload = {id: newDocument.id};
         jsonPayload = check jsonPayload.mergeJson(newDocument.documentBody);
@@ -73,7 +73,7 @@ public client class CoreClient {
                 RESOURCE_TYPE_DOCUMENTS, newDocument.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         json jsonPayload = {id: newDocument.id};
         jsonPayload = check jsonPayload.mergeJson(newDocument.documentBody); 
@@ -99,7 +99,7 @@ public client class CoreClient {
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -122,7 +122,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         Document[] emptyArray = [];
         stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request, 
@@ -145,7 +145,7 @@ public client class CoreClient {
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -173,7 +173,7 @@ public client class CoreClient {
                 RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         json payload = {
             query: sqlQuery,
@@ -254,7 +254,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         StoredProcedure[] emptyArray = [];
         stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(self.httpClient, 
@@ -276,7 +276,7 @@ public client class CoreClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -376,7 +376,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         UserDefinedFunction[] emptyArray = [];
         stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retriveStream(
@@ -389,7 +389,8 @@ public client class CoreClient {
     # + databaseId - ID of the database which container is created.
     # + containerId - ID of the container which user defined function is created.    
     # + userDefinedFunctionid - Id of UDF to delete.
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns boolean specifying 'true' if delete is sucessful. Else returns error. 
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
             ResourceDeleteOptions? requestOptions = ()) returns @tainted boolean|error { 
@@ -397,7 +398,7 @@ public client class CoreClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunctionid]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -480,7 +481,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         Trigger[] emptyArray = [];
         stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request, 
@@ -502,7 +503,7 @@ public client class CoreClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, triggerId]);        
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        check setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
