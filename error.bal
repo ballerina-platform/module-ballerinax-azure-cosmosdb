@@ -18,7 +18,7 @@
 public type AzureError distinct error;
 public type UserError distinct error;
 
-isolated function prepareModuleError(string message, error? err = (), int? status = ()) returns error {
+isolated function prepareAzureError(string message, error? err = (), int? status = ()) returns error {
     error azureError;
     if (status is int) {
         azureError = AzureError(message, status = status);

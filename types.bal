@@ -40,15 +40,11 @@ type HeaderParameters record {|
 # 
 # + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read.
 # + sessionToken - Session token of the request.
-# + requestCharge - This is the number of normalized requests a.k.a. request units (RU) for the operation.
-# + resourceUsage - Current usage count of a resource in an account.  
 # + etag - Resource etag for the resource retrieved same as eTag in the response. 
 # + date - Date time of the response operation.
 public type ResponseHeaders record {|
     string? continuationHeader?;
     string sessionToken = "";
-    string requestCharge = "";
-    string resourceUsage = "";
     string etag = "";
     string date = "";
 |};

@@ -14,11 +14,13 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Calls the service API V1
-public const string SERVICE_VERSION_V1 = "1.0";
-
-# The Consistancy Level Override
-enum Consistancy {
+# Represents the Consistancy Level Override for document create and update
+# 
+# + STRONG - "Strong" consistancy level
+# + BOUNDED - "Bounded" consistancy level
+# + SESSION - "Session" consistancy level
+# + EVENTUAL - "Eventual" consistancy level
+public enum Consistancy {
     STRONG = "Strong",
     BOUNDED = "Bounded",
     SESSION = "Session",

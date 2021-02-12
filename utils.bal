@@ -154,10 +154,10 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
         if (signature is string) {
             request.setHeader(http:AUTH_HEADER, signature);
         } else {
-            return prepareModuleError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
+            return prepareAzureError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
         }
     } else {
-        return prepareModuleError(NULL_DATE_ERROR);
+        return prepareAzureError(NULL_DATE_ERROR);
     }
 }
 
@@ -301,7 +301,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
         return jsonResponse;
     } else {
         string message = jsonResponse.message.toString();
-        return prepareModuleError(message, (), httpResponse.statusCode);
+        return prepareAzureError(message, (), httpResponse.statusCode);
     }
 }
 
@@ -317,7 +317,7 @@ isolated function handleCreationResponse(http:Response httpResponse) returns @ta
         return true;
     } else {
         string message = jsonResponse.message.toString();
-        return prepareModuleError(message, (), httpResponse.statusCode);
+        return prepareAzureError(message, (), httpResponse.statusCode);
     }
 }
 
@@ -355,8 +355,6 @@ isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) 
     responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : 
             getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
-    responseHeaders.requestCharge = getHeaderIfExist(httpResponse, REQUEST_CHARGE_HEADER);
-    responseHeaders.resourceUsage = getHeaderIfExist(httpResponse, RESOURCE_USAGE_HEADER);
     responseHeaders.etag = getHeaderIfExist(httpResponse, http:ETAG);
     responseHeaders.date = getHeaderIfExist(httpResponse, http:DATE);
     return responseHeaders;
@@ -412,7 +410,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
         return offerStream;
     }
     else {
-        return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
 }
 
@@ -447,64 +445,64 @@ function createStream(http:Client azureCosmosClient, string path, http:Request r
         if (payload.Offers is json) {
             convertToOfferArray(<Offer[]>array, <json[]>payload.Offers);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Document[]>) {
         if (payload.Documents is json) {
             convertToDocumentArray(<Document[]>array, <json[]>payload.Documents);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Database[]>) {
         if (payload.Databases is json) {
             convertToDatabaseArray(<Database[]>array, <json[]>payload.Databases);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Container[]>) {
         if (payload.DocumentCollections is json) {
             convertToContainerArray(<Container[]>array, <json[]>payload.DocumentCollections);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<StoredProcedure[]>) {
         if (payload.StoredProcedures is json) {
             convertToStoredProcedureArray(<StoredProcedure[]>array, <json[]>payload.StoredProcedures);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }     
     } else if (arrayType is typedesc<UserDefinedFunction[]>) {
         if (payload.UserDefinedFunctions is json) {
             convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>array, <json[]>payload.UserDefinedFunctions);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Trigger[]>) {
         if (payload.Triggers is json) {
             convertToTriggerArray(<Trigger[]>array, <json[]>payload.Triggers);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<User[]>) {
         if (payload.Users is json) {
             convertToUserArray(<User[]>array, <json[]>payload.Users);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Permission[]>) {
         if (payload.Permissions is json) {
             convertToPermissionArray(<Permission[]>array, <json[]>payload.Permissions);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<PartitionKeyRange[]>) {
         if (payload.PartitionKeyRanges is json) {
             finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
         } else {
-            return prepareModuleError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else {
-        return prepareModuleError(INVALID_STREAM_TYPE);
+        return prepareAzureError(INVALID_STREAM_TYPE);
     }
 
     stream<record{}> newStream = (<@untainted>finalArray).toStream();

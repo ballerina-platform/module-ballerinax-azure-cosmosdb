@@ -24,7 +24,7 @@ Azure Document DB and is available in all Azure regions.
 # Connector Overview
 Azure Cosmos DB Ballerina connector is a connector for connecting to Azure Cosmos DB via Ballerina language easily. 
 It provides capability to connect to Azure Cosmos DB and to execute basic database operations like Create, Read, 
-Update and Delete databases and containers, Executing SQL queries to query containers etc. Apart from this it allows 
+Update and Delete Databases and Containers, Executing SQL queries to query Containers etc. Apart from this it allows 
 the special features provided by Cosmos DB like operations on javascript language integrated queries, management of users 
 and permissions. This connector promotes easy integration and access to Cosmos DB via ballerina by handling most of the 
 burden on ballerina developers  in configuring a new connection to the Cosmos DB from scratch. 
@@ -62,7 +62,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
         Resource Tokens. 
 
         Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
-        attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database 
+        attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a Database 
         user is granted permissions to a resource and re-generated in response to a request referencing that permission. 
         By default, they are valid for one hour, with the maximum timespan of five hours.
 
@@ -88,7 +88,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 
 # Limitations
 - Only data plane operations are supported from the connector. (Some Management plane operations are not supported)
-- Changing the type of throughput in databases (Auto Scaling -> Manual) is not allowed.
+- Changing the type of throughput in Databases (Auto Scaling -> Manual) is not allowed.
 - Only Core(SQL) API is supported.
 
 # Quickstart(s)
@@ -114,16 +114,16 @@ cosmosdb:ManagementClient managementClient = new(configuration);
 Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`  
 
 ### Step 4: Create new Database
-You have to create a database in Azure Account to create a document. For this you have to provide a unique database ID 
+You have to create a Database in Azure Account to create a document. For this you have to provide a unique Database ID 
 which does not already exist in the specific Cosmos DB account. The ID for this example will be `my_database`.  This 
 operation will return a record of type Result. This will contain the success as `true` if the operation is successful. 
 ```ballerina
 cosmosdb:Result result = managementClient->createDatabase("my_database");
 ```
 ### Step 5: Create new Container
-Then, you have to create a container inside the created database. As the REST api version which is used in this 
+Then, you have to create a Container inside the created Database. As the REST api version which is used in this 
 implementation of the connector strictly supports the partition key, it is a necessity to provide the partition key 
-definition in the creation of a container. For this container it will be created inside `my_database` and ID will 
+definition in the creation of a Container. For this Container it will be created inside `my_database` and ID will 
 be `my_container`. The path for partition key is `/gender`. We can set the version of the partition key to 1 or 2
 ```ballerina
 cosmosdb:PartitionKey partitionKeyDefinition = {
@@ -186,7 +186,7 @@ var document = documentList.next();
 log:print(document?.value);
 ```
 ### Step 9: Query Documents
-Querying documents is one of the main use-cases supported by a Database. For querying documents inside the database we 
+Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Database we 
 have created, you have to give `my_database` and `my_container` as parameters. The SQL query must be provided as a string. 
 When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
 optional parameters.More information on this can be found here: https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
@@ -208,7 +208,7 @@ Notes: <br/> As the Cosmos Containers are creating logical partitions with the p
 provide the value of partition key, if the querying must be done in that logical partition.
 
 ### Step 10: Delete a given Document
-Finally, you can delete the document you have created. For this operation to be done inside the container created, 
+Finally, you can delete the document you have created. For this operation to be done inside the Container created, 
 you have to give `my_database` and `my_container` as parameters. Apart from that, the target document to delete
 `my_document` and `value of the partition key` of that document must be provided.
 ```ballerina
@@ -218,14 +218,14 @@ you have to give `my_database` and `my_container` as parameters. Apart from that
 # Samples
 ## Management Plane Operations
 - ## Databases
-Management of databases is a common practice in every organization. It is a kind of task which is usually done with the 
-administrator privileges in normal cases. The databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
-management for containers. One Cosmos DB account can contain one or more Databases inside it. Using the Ballerina 
-connector itself, we can manage these databases. As database operations are more of management operation type, they are 
+Management of Databases is a common practice in every organization. It is a kind of task which is usually done with the 
+administrator privileges in normal cases. The Databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
+management for Containers. One Cosmos DB account can contain one or more Databases inside it. Using the Ballerina 
+connector itself, we can manage these Databases. As Database operations are more of management operation type, they are 
 included inside the management client of the connector.
 ### Creating a Database 
-Creation of databases is a common capability of every database. For creating a database in Azure we have to provide a 
-unique database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
+Creation of Databases is a common capability of every Database. For creating a Database in Azure we have to provide a 
+unique Database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
 of type Result. This will contain the success as true if the operation is successful.
 
 ```ballerina
@@ -247,7 +247,7 @@ public function main() {
     log:print("Success!");
 }
 ```
-Notes: <br/> For creation of a database we can configure a `throughputOption` which is an integer value or a json object. 
+Notes: <br/> For creation of a Database we can configure a `throughputOption` which is an integer value or a json object. 
 For example:
  
 ```ballerina
@@ -276,8 +276,8 @@ can be found here:
 https://docs.microsoft.com/en-us/azure/cosmos-db/serverless
 
 ### Get one Database
-This operation is related to reading information about a database which is already created inside the cosmos DB account. 
-It mainly returns the ID of the database with resourceId. We can use the results to refer to a database by it’s 
+This operation is related to reading information about a Database which is already created inside the cosmos DB account. 
+It mainly returns the ID of the Database with resourceId. We can use the results to refer to a Database by it’s 
 `resourceId` which will be useful in query operations and creating offers.
 
 ```ballerina
@@ -300,8 +300,8 @@ public function main() {
 }
 ```
 ### List All Databases
-When there is a need to list down all the databases available inside a Cosmos DB account. This operation will return a 
-stream of databases to the user each containing a record of type `Database`.  
+When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
+stream of Databases to the user each containing a record of type `Database`.  
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -321,7 +321,7 @@ public function main() {
 }
 ```
 ### Delete a Database
-This operation can be used for deleting a database inside an Azure Cosmos DB account. It returns true if the database is
+This operation can be used for deleting a Database inside an Azure Cosmos DB account. It returns true if the Database is
 deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
@@ -345,13 +345,13 @@ public function main() {
 ```
 
 - ## Containers
-A container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
+A Container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
 partitioned and distributed across multiple regions. This is done according to the partition key and the items added to 
-the container and the provisioned throughput is distributed across a set of logical partitions.  
+the Container and the provisioned throughput is distributed across a set of logical partitions.  
 ### Creating a Container
-A container can be created inside an existing database in the cosmos DB account. As the REST api version which is used 
+A Container can be created inside an existing Database in the cosmos DB account. As the REST api version which is used 
 in this implementation of the connector strictly supports the partition key, it is a necessity to provide the partition 
-key in the creation of a container. 
+key in the creation of a Container. 
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -385,8 +385,8 @@ the special optional parameter can be used.
 json object.
 
 ### Get one Container
-This operation is related to reading information about a container which is already created inside a database. It mainly 
-returns the ID of the container, The indexing policy and partition key along with the resourceId.
+This operation is related to reading information about a Container which is already created inside a Database. It mainly 
+returns the ID of the Container, The indexing policy and partition key along with the resourceId.
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -409,8 +409,8 @@ public function main() {
 }
 ```
 ### List all Containers
-When there is a need to list down all the containers available inside a database. This operation will return a stream of 
-containers to the user each containing a record of type Container.  
+When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
+Containers to the user each containing a record of type Container.  
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -437,7 +437,7 @@ This item count decides the number of items returned per page. If this is not sp
 100 records per page by default.
 
 ### Delete a Container
-This operation can be used for deleting a container inside a database. It returns true if the container is deleted 
+This operation can be used for deleting a Container inside a Database. It returns true if the Container is deleted 
 successfully or else returns an error in case there is a problem.
 
 ```ballerina
@@ -463,12 +463,15 @@ public function main() {
 - ## Users
 User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
 A user acts as a namespace, scoping permissions on collections, documents, attachment, stored procedures, triggers, and 
-user-defined functions. The user construct lives under a database resource and thus cannot cross the database boundary 
+user-defined functions. The user construct lives under a Database resource and thus cannot cross the Database boundary 
 it is under. The ballerina connector implementation facilitates creating a new user, replacing user ID, get, list and 
 delete of users in a Cosmos DB account.
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
 
 ### Create User
+Users are stored within the context of the Database in Cosmos DB. Each user has a set of unique named permissions. So in 
+this operation an instance of User for a specific Database is created. The things you need to create a user in Cosmos DB 
+is  the Database ID and a unique ID for the user. Here `my_database` and `my_user` are given as parameters respectively.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -491,6 +494,10 @@ public function main() {
 ```
 
 ### Replace User ID
+Here in this operation, the only replaceable property is the ID of a user created earlier. Although a user can have 
+permissions which are related to him, those will not be affected from this operation. For this, you have to provide the 
+Database ID where the user is scoped into, the user ID you want to replace and the new user ID which the older one is 
+to be replaced with.
 ``` ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -513,6 +520,9 @@ public function main() {
 }
 ```
 ### Get User
+Here we can get the basic information about a created User. For this, the the Database ID where the user is scoped into 
+and the user ID you want to get information about should be provided. Referring to earlier samples, the Database ID will 
+be `my_database` and user ID will be `my_user` in this case.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -534,6 +544,9 @@ public function main() {
 }
 ```
 ### List Users
+From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
+contain information about each user. Each result will be similar to a list of results returned from getUser operation. 
+You have to provide the Database ID which is `my_database` as a parameter.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -554,6 +567,9 @@ public function main() {
 }
 ```
 ### Delete User
+The Common User management operations of databases usually have the option to delete an existing user. The Cosmos DB 
+connector supports this operation. For deleting a user the specific Database ID user is scoped to and the User ID must 
+be provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -656,6 +672,7 @@ public function main() {
 }
 ```
 ### Get Permission
+
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -730,7 +747,7 @@ predefined throughput level.
 ## Data Plane operations
 - ## Documents
 Azure cosmos DB allows the execution of  CRUD operations on items separately. As we are using the Core API underneath 
-the connector, an item may refer to a document in the container. SQL API stores entities in JSON in a hierarchical 
+the connector, an item may refer to a document in the Container. SQL API stores entities in JSON in a hierarchical 
 key-value document.  The max document size in Cosmos DB is 2 MB.
 
 ### Create a Document

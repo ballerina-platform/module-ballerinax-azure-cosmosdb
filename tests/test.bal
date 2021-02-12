@@ -20,7 +20,6 @@ import ballerina/log;
 import ballerina/runtime;
 import ballerina/java;
 import ballerina/stringutils;
-import ballerina/io;
 
 AzureCosmosConfiguration config = {
     baseUrl: config:getAsString("BASE_URL"),
@@ -311,14 +310,10 @@ function test_deleteContainer() {
     log:print("ACTION : deleteContainer()");
 
     var result = azureCosmosManagementClient->deleteContainer(databaseId, containerId);
-    if (result == true) {
+    if (result is boolean) {
         var output = "";
-        io:println(result);
     } else {
-        if(result is error) {
-            test:assertFail(msg = result.message());
-        }
-        test:assertFail(msg = "false value");
+        test:assertFail(result.message());
     }
 }
 
