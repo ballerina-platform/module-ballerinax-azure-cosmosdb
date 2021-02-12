@@ -1,7 +1,7 @@
 Ballerina Connector For Azure Cosmos DB
 ===================
 
-[![Build](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/workflows/CI/badge.svg)](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/workflows/CI/badge.svg)](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/actions?query=workflow%3ACI)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/sachinira/module-ballerinax-azure-cosmosdb/feature7)](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/commits/feature7)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
@@ -134,7 +134,7 @@ cosmosdb:Result containerResult = check managementClient->
             createContainer("my_database", "my_container", partitionKeyDefinition);
 ```
 Notes: <br/> For this operation, you have to have an understanding on how to select a suitable partition key according 
-to the nature of documents stored inside. The guide to select a better partition key can be found here. 
+to the nature of documents stored inside. The guide to select a better partition key can be found here: 
 https://docs.microsoft.com/en-us/azure/cosmos-db/partitioning-overview#choose-partitionkey
 
 
@@ -170,8 +170,8 @@ cosmosdb:Document document = {
 cosmosdb:Result documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document,  
         valueOfPartitionKey);
 ```
-Notes: <br/> As we have selected `/gender` as the partition key for `my_container`, the document we create should include that 
-path with a valid value.
+Notes: <br/> As this container have selected `/gender` as the partition key for `my_container`, the document you create 
+should include that path with a valid value.
 
 ### Step 8: List the Documents
 For listing the existing documents inside this Cosmos Container you have to give `my_database` and `my_container` as 
@@ -183,10 +183,11 @@ var document = documentList.next();
 log:print(document?.value);
 ```
 ### Step 9: Query Documents
-Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Database we 
+Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Database you 
 have created, you have to give `my_database` and `my_container` as parameters. The SQL query must be provided as a string. 
 When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
-optional parameters.More information on this can be found here: https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
+optional parameters.More information on this can be found here: 
+https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
 
 ```ballerina
 string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
@@ -199,7 +200,7 @@ error? e =  resultStream.forEach(function (json document){
                 log:printInfo(document);
             });
 ```
-Notes: <br/> As the Cosmos Containers are creating logical partitions with the partition key we provide, we have to 
+Notes: <br/> As the Cosmos Containers are creating logical partitions with the partition key provided, you have to 
 provide the value of partition key, if the querying must be done in that logical partition.
 
 ### Step 10: Delete a given Document
@@ -209,16 +210,17 @@ you have to give `my_database` and `my_container` as parameters. Apart from that
 ```ballerina
  _ = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", valueOfPartitionKey);
 ```
+
 # Samples
 ## Management Plane Operations
 - ## Databases
 Management of Databases is a common practice in every organization. It is a kind of task which is usually done with the 
 administrator privileges in normal cases. The Databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
 management for Containers. One Cosmos DB account can contain one or more Databases inside it. Using the Ballerina 
-connector itself, we can manage these Databases. As Database operations are more of management operation type, they are 
+connector itself, you can manage these Databases. As Database operations are more of management operation type, they are 
 included inside the management client of the connector.
 ### Creating a Database 
-Creation of Databases is a common capability of every Database. For creating a Database in Azure we have to provide a 
+Creation of Databases is a common capability of every Database. For creating a Database in Azure, you have to provide a 
 unique Database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
 of type Result. This will contain the success as true if the operation is successful.
 
@@ -241,7 +243,7 @@ public function main() {
     log:print("Success!");
 }
 ```
-Notes: <br/> For creation of a Database we can configure a `throughputOption` which is an integer value or a json object. 
+Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a json object. 
 For example:
  
 ```ballerina
@@ -263,11 +265,10 @@ public function main() {
     cosmosdb:Result databaseResult = check managementClient->createDatabase(databaseId, maxThroughput);
 }
 ```
-These options for throughput are only allowed in the Cosmos DB account type known as `provisioned throughput` accounts. 
-For the account type which is called `serverless(preview)` we cannot specify any throughput because it is not providing 
-support for provisioned throughput for containers or databases inside it. More information about serverless accounts 
-can be found here:
-https://docs.microsoft.com/en-us/azure/cosmos-db/serverless
+Notes: <br/> These options for throughput are only allowed in the Cosmos DB account type known as `provisioned throughput` 
+accounts. For the account type which is called `serverless(preview)` you cannot specify any throughput because it is not 
+providing support for provisioned throughput for containers or databases inside it. More information about serverless 
+accounts can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/serverless
 
 ### Get one Database
 This operation is related to reading information about a Database which is already created inside the cosmos DB account. 
@@ -293,6 +294,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 ### List All Databases
 When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
 stream of Databases, each containing a record of type `Database`.  
@@ -314,6 +316,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 ### Delete a Database
 This operation can be used for deleting a Database inside an Azure Cosmos DB account. It returns true if the Database is
 deleted successfully or else returns an error in case there is a problem.
@@ -373,7 +376,7 @@ public function main() {
 ```
 Notes: <br/> Apart from this the creation of containers allows several optional parameters to provide more specialized 
 characteristics to the container which is created.  
-- `IndexingPolicy` - can be used in creating a container, if we want to enable an Indexing policy for a specified path,
+- `IndexingPolicy` - can be used in creating a container, if you want to enable an Indexing policy for a specified path,
 the special optional parameter can be used. 
 - `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
 json object.
@@ -402,6 +405,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 ### List all Containers
 When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
 Containers to the user each containing a record of type Container.  
@@ -454,12 +458,13 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 - ## Users
 User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
 A user acts as a namespace, scoping permissions on collections, documents, attachment, stored procedures, triggers, and 
 user-defined functions. The User construct lives under a Database resource and thus cannot cross the Database boundary 
 it is under. The ballerina connector implementation facilitates creating a new User, replacing User ID, get, list and 
-delete of Users in a Cosmos DB account.
+delete of Users in a Cosmos DB account. More information about users can be found here: 
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
 
 ### Create User
@@ -488,7 +493,7 @@ public function main() {
 ```
 
 ### Replace User ID
-From this sample we can replace the ID of an existing User. The only replaceable property is the ID of a User created 
+From this sample you can replace the ID of an existing User. The only replaceable property is the ID of a User created 
 earlier. Although a User can have Permissions which are related to him, those will not be affected from this operation. 
 For this, you have to provide the Database ID where the User is scoped into, the User ID you want to replace and the new 
 User ID which the older one is to be replaced with.
@@ -513,8 +518,9 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 ### Get User
-From this sample, we can get the basic information about a created User. For this, the the Database ID where the User is 
+From this sample, you can get the basic information about a created User. For this, the the Database ID where the User is 
 scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
 Database ID will be `my_database` and User ID will be `my_user` in this case.
 ```ballerina
@@ -537,6 +543,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 ### List Users
 From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
 contain information about each User. Each result will be similar to a list of results returned from getUser operation. 
@@ -560,6 +567,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 ### Delete User
 The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
 connector supports this operation. For deleting a User the specific Database ID User is scoped to and the User ID must 
@@ -584,7 +592,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 - ## Permissions
 Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Token` of the Cosmos DB 
 account is capable of creating permissions to each User. By using this concept, a ballerina service which uses the 
@@ -596,7 +603,7 @@ Resource tokens provide user-based permissions to individual account resources, 
 attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database User is 
 granted permissions to a resource and re-generated in response to a request referencing that permission. By default, 
 they are valid for one hour, with the maximum timespan of five hours. As the use of Master Token should be limited to 
-scenarios that require full privileges to the content of an account, for more granular access, we should use Resource 
+scenarios that require full privileges to the content of an account, for more granular access, you should use Resource 
 Tokens. More information on token types can be found here: 
 https://docs.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data
 
@@ -609,9 +616,9 @@ Permissions in Cosmos DB have 3 primary properties:
     Cosmos DB, many things are resources such as `Databases`, `Containers`, `Documents`, and `Attachments`. Depending on 
     the granularity, multiple permissions can be created and assigned to a User based on the data they should be able to 
     have access to.
-
-When creating a Permission we should  provide values for them. Apart from that, as a Permission is explicitly made 
-referring to an existing User, User ID and the Database ID also should be specified. The created token is expired in one 
+When creating a Permission you should  provide values for the above properties. Apart from that, as a Permission is 
+explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
+properties must be included inside record `Permission`. The created token is expired in one 
 hour.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -647,12 +654,12 @@ public function main() {
 ```
 Notes: <br/>
 A `validityPeriod` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
-we are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
+you are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
 
 ### Replace Permission
 This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
 existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
-properties have to have changes.
+properties have to have changes. These primary properties must be included inside record `Permission`
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -684,7 +691,7 @@ public function main() {
 }
 ```
 ### Get Permission
-From this sample we can get the basic information about a created Permission. For this, the the Database ID and the User 
+From this sample you can get the basic information about a created Permission. For this, the the Database ID and the User 
 ID to which the permission belongs to should be specified. The Permission ID that, you want to get information about 
 should be provided.
 ```ballerina
@@ -765,11 +772,17 @@ predefined throughput level.
 
 ## Data Plane operations
 - ## Documents
-Azure cosmos DB allows the execution of  CRUD operations on items separately. As we are using the Core API underneath 
-the connector, an item may refer to a document in the Container. SQL API stores entities in JSON in a hierarchical 
+Azure cosmos DB allows the execution of  CRUD operations on items separately. As this connector is using the Core API 
+underneath, an item may refer to a document in the Container. SQL API stores entities in JSON in a hierarchical 
 key-value document.  The max document size in Cosmos DB is 2 MB.
 
 ### Create a Document
+This sample shows how to create a new Document inside a Container. The document contains information about a person's 
+family and his gender. The Container in which the document will be created has a partition key which has the path 
+"/gender". So, the document you create should contain a value for that path. Here, you have to provide 
+Database ID, Container ID where the document will be created. Apart from that a record of type `Document` should be 
+passed. As the partition key is mandatory for the Container, the value for that also should be passed.
+
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -789,13 +802,14 @@ public function main() {
 
     log:print("Create a new document");
     json documentBody = {
-        "LastName": "keeeeeee",
+        "FirstName": "Alan",
+        "FamilyName": "Turing",
         "Parents": [{
-            "FamilyName": null,
-            "FirstName": "Thomas"
+            "FamilyName": "Turing",
+            "FirstName": "Julius"
         }, {
-            "FamilyName": null,
-            "FirstName": "Mary Kay"
+            "FamilyName": Stoney,
+            "FirstName": "Ethel"
         }],
         gender: 0
     };
@@ -811,7 +825,19 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> Several Optional Parameters are supported in the creation of documents. These options can be specified in 
+`DocumentCreateOptions` record type in the connector.
+- `indexingDirective` - This option is to specify whether the document is included in any predefined indexing policy for 
+the container. This is provided by giving `true` or `false`.
+- `isUpsertRequest` - You can convert the creation of a new document into an upsert request by using this parameter. 
+Must be a boolean value.
+
 ### Replace Document
+This sample shows how to replace an existing Document inside a Container. Similar to document creation but, it replaces 
+an existing document. An important thing about this operation is that you `cannot` replace the existing partition key value 
+for a document. It should be the same value as the old document. Refer more about replacing partition key values here: 
+https://github.com/Azure/azure-sdk-for-js/issues/6324
+
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -828,18 +854,19 @@ public function main() {
     // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
-    //We have to give  the currently existing partition key of this document we can't replace that
+    //You have to give  the currently existing partition key of this document you can't replace that
     int partitionKeyValue = 0; 
 
     log:print("Replacing document");
     json newDocumentBody = {
-        "LastName": "Helena",
+        "FirstName": "Alan",
+        "FamilyName": "Turing",
         "Parents": [{
-            "FamilyName": null,
-            "FirstName": "Thomas"
+            "FamilyName": "Turing",
+            "FirstName": "Julius"
         }, {
-            "FamilyName": null,
-            "FirstName": "Mary Kay"
+            "FamilyName": Turing,
+            "FirstName": "Ethel"
         }],
         gender: 0
     };
@@ -853,7 +880,19 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> Several Optional Parameters are supported in the replacement of documents. These options can be specified 
+in `DocumentReplaceOptions` record type in the connector.
+- `indexingDirective` - This option is to specify whether the document is included in any predefined indexing policy for 
+the container. This is provided by giving `true` or `false`.
+- `ifMatchEtag` - check if the resource's ETag value matches the ETag value provided in the Condition property. 
+Replacement is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will 
+reject the operation and it will return an HTTP 412 Precondition failure response code.vert the creation of a new 
+document into an upsert request by using this parameter.
+
 ### Get one Document
+This sample shows how to get a document by it's ID. It returns the Document along with some other parameters. As the 
+partition key is mandatory in the Container, for getDocument operation you need to provide the specific value for the 
+partition key.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -878,7 +917,21 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> For document read operations several optional parameters can be provided using `DocumentReadOptions` These 
+are related to maintaining the consistency and handling concurrency of the data. 
+- `sessionToken` - the client will use a session token internally with each read/query request to ensure that the set 
+consistency level is maintained.
+- `ifNoneMatchEtag` - Use to check if the resource's ETag value does not match the ETag value provided in the Condition 
+property. This is applicable only on GET operations. If the AccessCondition is not satisfied during a request then 
+Cosmos will reject the operation and it will return an HTTP 412 Precondition failure response code.
+- `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or Eventual. 
+Users must set this level to the same or weaker level than the account’s configured consistency level. More information 
+about Cosmos DB consistancy levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
+
 ### List Documents
+From this sample you can get a list of all the Documents. Each record returned will contain a list of documents. Each 
+result will be similar to a list of results returned from getDocument operation. You have to provide the Database ID 
+and Container ID as parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -899,7 +952,22 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> For document list operations several optional parameters can be provided using `DocumentListOptions` record 
+type in the connector. These are related to maintaining the consistency and handling concurrency of the data. 
+- `sessionToken` - the client will use a session token internally with each read/query request to ensure that the set 
+consistency level is maintained.
+- `ifNoneMatchEtag` - Use to check if the resource's ETag value does not match the ETag value provided in the Condition 
+property. This is applicable only on GET operations. If the AccessCondition is not satisfied during a request then 
+Cosmos will reject the operation and it will return an HTTP 412 Precondition failure response code.
+- `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or Eventual.
+Users must set this level to the same or weaker level than the account’s configured consistency level.
+- `changeFeedOption` - Must be set to Incremental feed, or omitted otherwise. More information about change feed can be 
+found here: https://docs.microsoft.com/en-us/azure/cosmos-db/change-feed
+- `partitionKeyRangeId` - The partition key range ID for reading data.
+
 ### Delete Document
+This sample shows how to delete a Document which exists inside a Container. You have to specify the Database ID, 
+Container ID where the document exists and the Document ID you want to delete.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -923,6 +991,14 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> For delete operations optional parameters can be provided using `ResourceDeleteOptions` record type in the 
+connector. They are related to maintaining the consistency and handling concurrency of the data. 
+- `sessionToken` - the client will use a session token internally with each read/query request to ensure that the set 
+consistency level is maintained.
+- `ifMatchEtag` - check if the resource's ETag value matches the ETag value provided in the Condition property. Deletion 
+is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will reject the 
+operation and it will return an HTTP 412 Precondition failure response code.
+
 ### Querying  Documents
 When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
 optional parameters. As specified in the Cosmos DB documentation, SQL queries can be written in different ways for 
@@ -955,6 +1031,21 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> 
+- The optional `maxItemCount` parameter specifies the maximum number of results returned per page. SO in the connector,
+the user can either get the items in one page or get all the results related to each query.
+- The optional `valueOfPartitionKey` parameter can be specified so that, it only returns the documents which have it’s
+`partition key value` equals to specific value
+- The optional record type `ResourceQueryOptions` can be used to provide several options for executing the qury.
+    - `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or 
+    Eventual. Users must set this level to the same or weaker level than the account’s configured consistency level.    
+    - `sessionToken` - the client will use a session token internally with each read/query request to ensure that the 
+    set consistency level is maintained.    
+    - `enableCrossPartition` - Use to provide whether to ignore the partition keys and query across partitions. This can 
+    be done using a boolean value. When cross-partitioning is enabled, providing `valueOfPartitionKey` will not do anything.
+    The querying will still be done across partitions.
+
+
 ## Javascript language integrated functions. 
 Cosmos DB Supports Javascript language integrated queries to execute because it has built in support for javascript 
 inside the database engine. It allows stored procedures and the triggers to execute in the same scope as the database 
@@ -1034,7 +1125,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### List Stored Procedures
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1056,7 +1146,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### Delete Stored Procedure
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1079,7 +1168,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 - ## User Defined Functions
 User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
 extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
@@ -1122,7 +1210,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### Replace User Defined Function
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1160,7 +1247,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### List User Defined Functions
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1264,7 +1350,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### Replace Trigger
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1321,7 +1406,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### List Triggers
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1343,7 +1427,6 @@ public function main() {
     log:print("Success!");
 }
 ```
-
 ### Delete Trigger
 ```ballerina
 import ballerinax/cosmosdb;
