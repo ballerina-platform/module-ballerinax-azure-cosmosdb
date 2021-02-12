@@ -10,7 +10,7 @@
 // Unless required by applicable law or agreed to in writing,
 // software distributed under the License is distributed on an
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-// KIND, either express or implied.  See the License for the
+// KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations
 // under the License.
 
@@ -29,18 +29,19 @@ public function main() {
     // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
-    //We have to give  the currently existing partition key of this document we can't replace that
+    //We have to give the currently existing partition key of this document we can't replace that
     int partitionKeyValue = 0; 
 
     log:print("Replacing document");
     json newDocumentBody = {
-        "LastName": "Helena",
+        "FirstName": "Alan",
+        "FamilyName": "Turing",
         "Parents": [{
-            "FamilyName": null,
-            "FirstName": "Thomas"
+            "FamilyName": "Turing",
+            "FirstName": "Julius"
         }, {
-            "FamilyName": null,
-            "FirstName": "Mary Kay"
+            "FamilyName": "Turing",
+            "FirstName": "Ethel"
         }],
         gender: 0
     };

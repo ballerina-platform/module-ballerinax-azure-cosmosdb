@@ -6,8 +6,8 @@ Ballerina Connector For Azure Cosmos DB
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 # What is Azure Cosmos DB
-The Azure Cosmos DB is Microsoft’s highly scalable NOSQL  database in Azure technology stack. It is called a globally 
-distributed multi-model database which  is used for managing data across the world. Key purposes of the Azure CosmosDB 
+The Azure Cosmos DB is Microsoft’s highly scalable NOSQL database in Azure technology stack. It is called a globally 
+distributed multi-model database which is used for managing data across the world. Key purposes of the Azure CosmosDB 
 is to achieve low latency and high availability while maintaining a flexible scalability. Cosmos DB is a superset of 
 Azure Document DB and is available in all Azure regions.
 
@@ -27,7 +27,7 @@ It provides capability to connect to Azure Cosmos DB and to execute basic databa
 Update and Delete Databases and Containers, Executing SQL queries to query Containers etc. Apart from this it allows 
 the special features provided by Cosmos DB like operations on javascript language integrated queries, management of users 
 and permissions. This connector promotes easy integration and access to Cosmos DB via ballerina by handling most of the 
-burden on ballerina developers  in configuring a new connection to the Cosmos DB from scratch. 
+burden on ballerina developers in configuring a new connection to the Cosmos DB from scratch. 
 
 Ballerina Cosmos DB connector uses the SQL(Core) API which has the full support for all the operations and where used 
 extensively by the existing developer community. The reason for the use of SQL API is to provide a developer a better 
@@ -49,7 +49,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
     
         - Obtaining Primary Token
 
-        When the Azure Cosmos DB account is created, it automatically creates the Primary Key  credentials. Using the 
+        When the Azure Cosmos DB account is created, it automatically creates the Primary Key credentials. Using the 
         portal you can obtain them easily. <br/>
         https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys
         
@@ -101,7 +101,7 @@ First, import the ballerinax/azure.cosmosdb module into the Ballerina project.
 import ballerinax/azure.cosmosdb as cosmosdb;
 ```
 ### Step 2: Initialize the cosmos DB Management Plane Client
-You can now make the connection configuration using the Master Token or Resource Token,  and the resource URI to the 
+You can now make the connection configuration using the Master Token or Resource Token, and the resource URI to the 
 Cosmos DB Account. For executing management plane opeartions, the `ManagementClient` should be configured.
 ```ballerina
 cosmosdb:AzureCosmosConfiguration configuration = {
@@ -111,11 +111,11 @@ cosmosdb:AzureCosmosConfiguration configuration = {
 
 cosmosdb:ManagementClient managementClient = new(configuration);
 ```
-Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`  
+Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`
 
 ### Step 4: Create new Database
 You have to create a Database in Azure Account to create a document. For this you have to provide a unique Database ID 
-which does not already exist in the specific Cosmos DB account. The ID for this example will be `my_database`.  This 
+which does not already exist in the specific Cosmos DB account. The ID for this example will be `my_database`. This 
 operation will return a record of type Result. This will contain the success as `true` if the operation is successful. 
 ```ballerina
 cosmosdb:Result result = managementClient->createDatabase("my_database");
@@ -130,8 +130,7 @@ cosmosdb:PartitionKey partitionKeyDefinition = {
     paths: ["/gender"],
     keyVersion: 2
 };
-cosmosdb:Result containerResult = check managementClient->    
-            createContainer("my_database", "my_container", partitionKeyDefinition);
+cosmosdb:Result containerResult = check managementClient-> createContainer("my_database", "my_container", partitionKeyDefinition);
 ```
 Notes: <br/> For this operation, you have to have an understanding on how to select a suitable partition key according 
 to the nature of documents stored inside. The guide to select a better partition key can be found here: 
@@ -150,13 +149,14 @@ to store and query JSON-like documents, the document you intend to store must be
 have a unique ID to identify it. In this case the document ID will be `my_document`
 ```ballerina
 json documentBody = {
-    "LastName": "keeeeeee",
+    "FirstName": "Alan",
+    "FamilyName": "Turing",
     "Parents": [{
-        "FamilyName": null,
-        "FirstName": "Thomas"
+        "FamilyName": "Turing",
+        "FirstName": "Julius"
     }, {
-        "FamilyName": null,
-        "FirstName": "Mary Kay"
+        "FamilyName": Turing,
+        "FirstName": "Ethel"
     }],
     gender: 0
 };
@@ -297,7 +297,7 @@ public function main() {
 
 ### List All Databases
 When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
-stream of Databases, each containing a record of type `Database`.  
+stream of Databases, each containing a record of type `Database`.
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -344,7 +344,7 @@ public function main() {
 - ## Containers
 A Container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
 partitioned and distributed across multiple regions. This is done according to the partition key and the items added to 
-the Container and the provisioned throughput is distributed across a set of logical partitions.  
+the Container and the provisioned throughput is distributed across a set of logical partitions.
 ### Creating a Container
 A Container can be created inside an existing Database in the cosmos DB account. As the REST api version which is used 
 in this implementation of the connector strictly supports the partition key, it is a necessity to provide the partition 
@@ -375,7 +375,7 @@ public function main() {
 }
 ```
 Notes: <br/> Apart from this the creation of containers allows several optional parameters to provide more specialized 
-characteristics to the container which is created.  
+characteristics to the container which is created.
 - `IndexingPolicy` - can be used in creating a container, if you want to enable an Indexing policy for a specified path,
 the special optional parameter can be used. 
 - `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
@@ -408,7 +408,7 @@ public function main() {
 
 ### List all Containers
 When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
-Containers to the user each containing a record of type Container.  
+Containers to the user each containing a record of type Container.
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -470,7 +470,7 @@ https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
 ### Create User
 Users are stored within the context of the Database in Cosmos DB. Each User has a set of unique named permissions. So in 
 this operation an instance of User for a specific Database is created. The things you need to create a User in Cosmos DB 
-is  the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
+is the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -539,7 +539,7 @@ public function main() {
     string userId = "my_user";
 
     log:print("Get user information");
-    cosmosdb:User user  = checkpanic managementClient->getUser(databaseId, userId);
+    cosmosdb:User user = checkpanic managementClient->getUser(databaseId, userId);
     log:print("Success!");
 }
 ```
@@ -570,8 +570,8 @@ public function main() {
 
 ### Delete User
 The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
-connector supports this operation. For deleting a User the specific Database ID User is scoped to and the ID User of the User to delete must 
-be provided.
+connector supports this operation. For deleting a User the specific Database ID User is scoped to and the ID User of the 
+User to delete must be provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -588,7 +588,7 @@ public function main() {
     string userId = "my_user";
     
     log:print("Delete user");
-    _ = checkpanic  managementClient->deleteUser(databaseId, userId);
+    _ = checkpanic managementClient->deleteUser(databaseId, userId);
     log:print("Success!");
 }
 ```
@@ -616,7 +616,7 @@ Permissions in Cosmos DB have 3 primary properties:
     Cosmos DB, many things are resources such as `Databases`, `Containers`, `Documents`, and `Attachments`. Depending on 
     the granularity, multiple permissions can be created and assigned to a User based on the data they should be able to 
     have access to.
-When creating a Permission you should  provide values for the above properties. Apart from that, as a Permission is 
+When creating a Permission you should provide values for the above properties. Apart from that, as a Permission is 
 explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
 properties must be included inside record `Permission`. The created token is expired in one 
 hour.
@@ -771,9 +771,9 @@ predefined throughput level.
 
 ## Data Plane operations
 - ## Documents
-Azure cosmos DB allows the execution of  CRUD operations on items separately. As this connector is using the Core API 
+Azure cosmos DB allows the execution of CRUD operations on items separately. As this connector is using the Core API 
 underneath, an item may refer to a document in the Container. SQL API stores entities in JSON in a hierarchical 
-key-value document.  The max document size in Cosmos DB is 2 MB.
+key-value document. The max document size in Cosmos DB is 2 MB.
 
 ### Create a Document
 This sample shows how to create a new Document inside a Container. The document contains information about a person's 
@@ -853,7 +853,7 @@ public function main() {
     // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
-    //You have to give  the currently existing partition key of this document you can't replace that
+    //You have to give the currently existing partition key of this document you can't replace that
     int partitionKeyValue = 0; 
 
     log:print("Replacing document");
@@ -910,7 +910,7 @@ public function main() {
     string documentId = "my_document";
     int partitionKeyValue = 0;
     
-    log:print("Read the  document by id");
+    log:print("Read the document by id");
     cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
             partitionKeyValue);
     log:print("Success!");
@@ -998,7 +998,7 @@ consistency level is maintained.
 is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will reject the 
 operation and it will return an HTTP 412 Precondition failure response code.
 
-### Querying  Documents
+### Querying Documents
 When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
 optional parameters. As specified in the Cosmos DB documentation, SQL queries can be written in different ways for 
 querying Cosmos DB.
@@ -1037,15 +1037,15 @@ the user can either get the items in one page or get all the results related to 
 `partition key value` equals to specific value
 - The optional record type `ResourceQueryOptions` can be used to provide several options for executing the qury.
     - `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or 
-    Eventual. Users must set this level to the same or weaker level than the account’s configured consistency level.    
+    Eventual. Users must set this level to the same or weaker level than the account’s configured consistency level.
     - `sessionToken` - the client will use a session token internally with each read/query request to ensure that the 
-    set consistency level is maintained.    
+    set consistency level is maintained.
     - `enableCrossPartition` - Use to provide whether to ignore the partition keys and query across partitions. This can 
     be done using a boolean value. When cross-partitioning is enabled, providing `valueOfPartitionKey` will not do anything.
     The querying will still be done across partitions.
 
 
-## Javascript language integrated functions. 
+## Server-Side programming in Cosmos DB
 Cosmos DB Supports Javascript language integrated queries to execute because it has built in support for javascript 
 inside the database engine. It allows stored procedures and the triggers to execute in the same scope as the database 
 session. More information about Javascript language integrated functions can be found here:
@@ -1056,12 +1056,14 @@ User Defined Functions.
 
 - ## Stored procedures
 A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
-collection as a single transaction.
+collection as a single transaction. You can use Stored Procedures to manipulate one or more documents within a Container 
+in Cosmos DB.
 
 ### Create Stored Procedure
 This sample shows how to create a Stored Procedure inside a Container. This example Stored Procedure will return a 
-response appending the given value inside the function to the response body. For this a unique ID and a  JavaScript 
-function should be provided to the StoredProcedure record type. 
+response appending the given value inside the function to the response body. For this operation, a unique ID for Stored 
+Procedure and a JavaScript function should be provided to the `StoredProcedure` record type. Apart from that, you have 
+to provide the Database ID and the Container ID where the Stored Procedure is saved in.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1082,7 +1084,7 @@ public function main() {
     string storedProcedureBody = string `function (){
                                             var context = getContext();
                                             var response = context.getResponse();
-                                            response.setBody("Hello,  World");
+                                            response.setBody("Hello, World");
                                         }`;
     cosmosdb:StoredProcedure storedProcedureRecord = {
         id: storedProcedureId,
@@ -1131,8 +1133,9 @@ public function main() {
 }
 ```
 ### List Stored Procedures
-From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result will contain the JavaScript function and several other important information. You have to provide the Database ID 
-and Container ID as parameters.
+From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
+contain a `StoredProcedure` and several other important information. You have to provide the Database ID and Container 
+ID as other mandatory parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1178,7 +1181,7 @@ public function main() {
 }
 ```
 ### Execute a Stored Procedure
-Stored Procedure is a piece of logic written in Javascript which can be executed via an API call. Cosmos DB connector 
+Stored Procedure is a piece of logic written in JavaScript which can be executed via an API call. Cosmos DB connector 
 explicitly gives the capability to execute stored procedures. They can be used in Azure databases to execute CRUD 
 operations on documents and also to read from the request body and write to the response body. More information about 
 this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs.
@@ -1209,16 +1212,21 @@ public function main() {
     log:print("Success!");
 }
 ```
-Note: <br/> If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as the value 
-for parameter of `StoredProcedureOptions` record type argument of the function `executeStoredProcedure`. 
+Note: <br/> If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as 
+the value for parameter of `StoredProcedureOptions` record type argument of the function `executeStoredProcedure`. 
 For example, if only one parameter is passed, the argument must be an array with one element.
 
 - ## User Defined Functions
 User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
 extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
-refer to them when writing queries.
+refer to them when writing queries. User-defined functions provide “compute-only” processing of information within a 
+single document in Cosmos DB without any side-effects.
 
 ### Create User Defined Function
+This sample shows how to create a User Defined Function which will compute the tax amount for a given income amount. 
+For this operation, a unique ID for User Defined Function and a JavaScript function should be provided to the 
+`UserDefinedFunction` record type. Apart from that, you have to provide the Database ID and the Container ID where the 
+User Defined Function is saved in.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1256,6 +1264,10 @@ public function main() {
 }
 ```
 ### Replace User Defined Function
+This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User Defined
+Function is updated to a new one. When replacing, you should pass a record type `UserDefinedFunction` with all the values
+filled correctly. The id should be the ID of the User Defined Function to be replaced.
+
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1273,7 +1285,7 @@ public function main() {
     string udfId = "my_udf";
 
     log:print("Replacing a user defined function");
-    string newUserDefinedFunctionBody = string `function taxIncome(income){
+    string newUserDefinedFunctionBody = string `function taxFromIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
                                                     if (income < 1000)
@@ -1293,6 +1305,9 @@ public function main() {
 }
 ```
 ### List User Defined Functions
+From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
+contain a `UserDefinedFunction` and several other important information. You have to provide the Database ID and Container 
+ID as other mandatory parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1308,12 +1323,14 @@ public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List  user defined functions");
+    log:print("List user defined functions");
     stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
     log:print("Success!");
 }
 ```
 ### Delete User Defined Function
+This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the Database ID, 
+Container ID where the User Defined Function exists and the ID of the User Defined Function you want to delete.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1336,10 +1353,15 @@ public function main() {
 }
 ```
 - ## Triggers
-Trigger  is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers) creation, 
-deletion, and replacement of a document. They do not take any parameters.
+Trigger is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers). You can 
+use Triggers to validate and/or modify data when a document is added, modified, or deleted within a Container. The 
+Triggers does not accept any parameters or does not return any result set.
 
 ### Create Trigger
+In this sample shows how to create a Trigger which will update a Document with ID "_metadata" after creation of a new 
+Document in the Container.For this operation, a unique ID for Trigger and a JavaScript function should be provided to the 
+`Trigger` record type. Apart from that, you have to provide the Database ID and the Container ID where the Trigger is 
+saved in.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1383,7 +1405,7 @@ public function main() {
                                             if(!accept) throw "Unable to update metadata, abort";
                                             return;
                                         }`;
-    string createTriggerOperationType = "All";
+    string createTriggerOperationType = "Create";
     string createTriggerType = "Post";
     cosmosdb:Trigger createTrigger = {
         id: triggerId,
@@ -1395,7 +1417,17 @@ public function main() {
     log:print("Success!");
 }
 ```
+Notes: <br/> The record type `Trigger` contains all the required parameters we have to pass when we create a new Trigger.
+- `id` - A unique ID for the new created Trigger
+- `triggerOperation` - The type of operation in which trigger will be invoked from. The acceptable values are `All`, 
+`Create`, `Replace`, and `Delete`.
+- `triggerType` - Specifies when the trigger will be fired, `Pre` or `Post`.
+- `triggerFunction` - The function which will be fired when the trigger is executed.
+
 ### Replace Trigger
+This sample shows how you can replace an existing Trigger with a new one. Here, the name of the Trigger is updated to a 
+new one. When replacing, you should pass a record type `Trigger` with all the values filled correctly. The id should be 
+the ID of the Trigger to be replaced.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1413,7 +1445,7 @@ public function main() {
     string triggerId = "my_trigger";
 
     log:print("Replacing a trigger");
-    string replaceTriggerBody = string `function replaceFunction() {
+    string replaceTriggerBody = string `function metadataDocument() {
                                             var context = getContext();
                                             var collection = context.getCollection();
                                             var response = context.getResponse();
@@ -1452,6 +1484,9 @@ public function main() {
 }
 ```
 ### List Triggers
+From this sample you can get a list of all the Triggers inside a Container. Each record in the result list will 
+contain a `Trigger` and several other important information. You have to provide the Database ID and Container ID as 
+other mandatory parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1473,6 +1508,8 @@ public function main() {
 }
 ```
 ### Delete Trigger
+This sample shows how to delete a Trigger which exists inside a Container. You have to specify the Database ID, 
+Container ID where the Trigger exists and the ID of the Trigger you want to delete.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;

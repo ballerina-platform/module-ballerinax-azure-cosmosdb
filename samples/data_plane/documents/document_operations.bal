@@ -72,7 +72,7 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 1    
+        gender: 1
     };
     partitionKeyValue = 1;
 
@@ -137,11 +137,11 @@ public function main() {
     cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, newDocument2, partitionKeyValue);
 
 
-    log:print("Read the  document by id");
+    log:print("Read the document by id");
     cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
 
     // Read document with request options create this one for each
-    log:print("Read the  document with request options");
+    log:print("Read the document with request options");
     // cosmosdb:DocumentGetOptions options = {
     //     consistancyLevel: "Eventual",
     //     sessionToken: sessionToken,
