@@ -310,7 +310,7 @@ function test_deleteContainer() {
     log:print("ACTION : deleteContainer()");
 
     var result = azureCosmosManagementClient->deleteContainer(databaseId, containerId);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(result.message());
@@ -350,12 +350,7 @@ function test_createDocument() {
         "AccountNumber": 1234
     };
 
-    Document newDocument = {
-        id: documentId,
-        documentBody: documentBody
-    };
-
-    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKeyN);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKeyN);
     if (result is Result) {
 
     } else {
@@ -403,12 +398,8 @@ function test_createDocumentWithRequestOptions() {
         "IsRegistered": true,
         "AccountNumber": 1234
     };
-    Document newDocument = {
-        id: id,
-        documentBody: documentBody
-    };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, newDocument, valueOfPartitionKey, options);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, options);
     if (result is Result) {
 
     } else {
@@ -548,7 +539,7 @@ function test_deleteDocument() {
     log:print("ACTION : deleteDocument()");
 
     var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -567,12 +558,8 @@ function test_createStoredProcedure() {
                                             var response = context.getResponse();
                                             response.setBody("Hello,  World");
                                         }`;
-    StoredProcedure sp = {
-        id: sprocId,
-        storedProcedure: createSprocBody
-    };
 
-    var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sp);
+    var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, createSprocBody);
     if (result is Result) {
         //storedPrcedure = <@untainted>result;
     } else {
@@ -592,11 +579,8 @@ function test_replaceStoredProcedure() {
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                     }`;
-    StoredProcedure sp = {
-        id: sprocId,
-        storedProcedure: replaceSprocBody
-    };
-    var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sp);
+
+    var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sprocId, replaceSprocBody);
     if (result is Result) {
         //storedPrcedure = <@untainted>result;
     } else {
@@ -651,7 +635,7 @@ function test_deleteOneStoredProcedure() {
     log:print("ACTION : deleteOneStoredProcedure()");
 
     var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, sprocId);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -677,12 +661,8 @@ function test_createUDF() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    UserDefinedFunction createUdf = {
-        id: udfId,
-        userDefinedFunction: createUDFBody
-    };
 
-    var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, createUdf);
+    var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId, createUDFBody);
     if (result is Result) {
         //udf = <@untainted>result;
     } else {
@@ -707,12 +687,8 @@ function test_replaceUDF() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    UserDefinedFunction replacementUdf = {
-        id: udfId,
-        userDefinedFunction: replaceUDFBody
-    };
 
-    var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, replacementUdf);
+    var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replaceUDFBody);
     if (result is Result) {
         //udf = <@untainted>result;
     } else {
@@ -743,7 +719,7 @@ function test_deleteUDF() {
     log:print("ACTION : deleteUDF()");
 
     var result = azureCosmosClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -785,14 +761,9 @@ function test_createTrigger() {
                                         }`;
     string createTriggerOperation = "All";
     string createTriggerType = "Post";
-    Trigger createTrigger = {
-        id: triggerId,
-        triggerFunction: createTriggerBody,
-        triggerOperation: createTriggerOperation,
-        triggerType: createTriggerType
-    };
 
-    var result = azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
+    var result = azureCosmosClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
+            createTriggerOperation, createTriggerType);
     if (result is Result) {
         //trigger = <@untainted>result;
     } else {
@@ -835,14 +806,9 @@ function test_replaceTrigger() {
                                         }`;
     string replaceTriggerOperation = "All";
     string replaceTriggerType = "Post";
-    Trigger replaceTrigger = {
-        id: triggerId,
-        triggerFunction: replaceTriggerBody,
-        triggerOperation: replaceTriggerOperation,
-        triggerType: replaceTriggerType
-    };
 
-    var result = azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
+    var result = azureCosmosClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
+            replaceTriggerOperation, replaceTriggerType);
     if (result is Result) {
         //trigger = <@untainted>result;
     } else {
@@ -873,7 +839,7 @@ function test_deleteTrigger() {
     log:print("ACTION : deleteTrigger()");
 
     var result = azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -970,7 +936,7 @@ function test_deleteUser() {
     log:print("ACTION : deleteUser()");
 
     var result = azureCosmosManagementClient->deleteUser(databaseId, newUserId);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -989,13 +955,9 @@ function test_createPermission() {
 
     string permissionMode = "All";
     string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
-    Permission createPermission = {
-        id: permissionId,
-        permissionMode: permissionMode,
-        resourcePath: permissionResource
-    };
 
-    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission);
+    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
+            permissionResource);
     if (result is Result) {
         //permission = <@untainted>result;
     } else {
@@ -1018,13 +980,9 @@ function test_createPermissionWithTTL() {
     string permissionMode = "Read";
     string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
     int validityPeriod = 9000;
-    Permission createPermission = {
-        id: newPermissionId,
-        permissionMode: permissionMode,
-        resourcePath: permissionResource
-    };
 
-    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, createPermission, validityPeriod);
+    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode, 
+            permissionResource, validityPeriod);
     if (result is Result) {
         //permission = <@untainted>result;
     } else {
@@ -1041,13 +999,9 @@ function test_replacePermission() {
 
     string permissionMode = "All";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
-    Permission replacePermission = {
-        id: permissionId,
-        permissionMode: permissionMode,
-        resourcePath: permissionResource
-    };
 
-    var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, replacePermission);
+    var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
+            permissionResource);
     if (result is Result) {
         //permission = <@untainted>result;
     } else {
@@ -1097,7 +1051,7 @@ function test_deletePermission() {
     log:print("ACTION : deletePermission()");
 
     var result = azureCosmosManagementClient->deletePermission(databaseId, newUserId, permissionId);
-    if (result is boolean) {
+    if (result is Result) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -1257,10 +1211,14 @@ function test_getCollection_Resource_Token() {
 function afterFunc() {
     log:print("ACTION : deleteDatabases()");
     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
-    var result4 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
+    var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
 
-    if (result1 == true && result4 == true) {
-        var output = "";
+    if (result1 is Result && result2 is Result) {
+        if(result1.success == true && result2.success == true) {
+            var output = "";
+        } else {
+            test:assertFail(msg = "Failed to delete one of the databases");
+        }
     } else {
         test:assertFail(msg = "Failed to delete one of the databases");
     }

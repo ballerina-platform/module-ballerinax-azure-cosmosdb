@@ -291,10 +291,6 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 //  + return - If successful, returns json. Else returns error. 
 //
 isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
-    if (httpResponse.statusCode == http:STATUS_NO_CONTENT) {
-        //If status 204, then no response body. So returns empty json.
-        return {};
-    }
     json jsonResponse = check httpResponse.getJsonPayload();
     if (httpResponse.statusCode == http:STATUS_OK) {
         //If status is 200, request is successful. Returns resulting payload.
@@ -311,12 +307,13 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 //  + return - If successful, returns json. Else returns error. 
 //
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
-    json jsonResponse = check httpResponse.getJsonPayload();
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED || 
+            httpResponse.statusCode == http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
         // Else Returns error.
         return true;
     } else {
+        json jsonResponse = check httpResponse.getJsonPayload();
         string message = jsonResponse.message.toString();
         return prepareAzureError(message, (), httpResponse.statusCode);
     }
