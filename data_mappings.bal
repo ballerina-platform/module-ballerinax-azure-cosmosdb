@@ -14,6 +14,19 @@
 // specific language governing permissions and limitations
 // under the License. 
 
+//  Maps the json response returned from the request into record type of Document.
+// 
+//  + jsonPayload - A tuple which contains headers and json object returned from request.
+//  + return - An instance of record type Document.
+isolated function mapTupleToResultType([boolean, ResponseHeaders] jsonPayload) returns @tainted Result {
+    Result result = {};
+    var [status, headers] = jsonPayload;
+    result.success = status ? true : false;
+    result.eTag = headers.eTag.toString();
+    result.sessionToken = headers.sessionToken.toString();
+    return result;
+}
+
 //  Maps the json response returned from the request into record type of Database.
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
@@ -23,9 +36,9 @@ isolated function mapJsonToDatabaseType([json, ResponseHeaders?] jsonPayload) re
     var [payload, headers] = jsonPayload;
     database.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     database.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
-    if (headers is ResponseHeaders) {
-        database.responseHeaders = headers;
-    }
+    database.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
+    database.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    database.sessionToken = headers?.sessionToken.toString();
     return database;
 }
 
@@ -38,24 +51,12 @@ isolated function mapJsonToContainerType([json, ResponseHeaders?] jsonPayload) r
     var [payload, headers] = jsonPayload;
     container.id = payload.id.toString();
     container.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    container.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     container.indexingPolicy = mapJsonToIndexingPolicy(<json>payload.indexingPolicy);
     container.partitionKey = convertJsonToPartitionKeyType(<json>payload.partitionKey);
-    // if (headers is ResponseHeaders) {
-    //     container.responseHeaders = headers;
-    // }
+    container.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    container.sessionToken = headers?.sessionToken.toString();
     return container;
-}
-
-//  Maps the json response returned from the request into record type of Document.
-// 
-//  + jsonPayload - A tuple which contains headers and json object returned from request.
-//  + return - An instance of record type Document.
-isolated function mapTupleToResultType([boolean, ResponseHeaders] jsonPayload) returns @tainted Result {
-    Result result = {};
-    var [status, headers] = jsonPayload;
-    result.success = status ? true : false;
-    result.responseHeaders = headers;
-    return result;
 }
 
 //  Maps the json response returned from the request into record type of Document.
@@ -72,9 +73,8 @@ isolated function mapJsonToDocumentType([json, ResponseHeaders?] jsonPayload) re
     if (documentBodyJson is map<json>) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
     }
-    // if (headers is ResponseHeaders) {
-    //     document.responseHeaders = headers;
-    // }
+    document.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    document.sessionToken = headers?.sessionToken.toString();
     return document;
 }
 
@@ -128,9 +128,8 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayloa
     partitionKeyRange.minInclusive = payload.minInclusive != () ? payload.minInclusive.toString() : EMPTY_STRING;
     partitionKeyRange.maxExclusive = payload.maxExclusive != () ? payload.maxExclusive.toString() : EMPTY_STRING;
     partitionKeyRange.status = payload.status != () ? payload.status.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     partitionKeyRange.responseHeaders = headers;
-    // }
+    partitionKeyRange.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    partitionKeyRange.sessionToken = headers?.sessionToken.toString();
     return partitionKeyRange;
 }
 
@@ -155,7 +154,7 @@ isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted 
 //  + return - An instance of record type Index.
 isolated function mapJsonToIndexType(json jsonPayload) returns Index {
     Index index = {};
-    index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
+    //index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
     index.dataType = jsonPayload.dataType.toString();
     index.precision = convertToInt(jsonPayload.precision);
     return index;
@@ -168,12 +167,12 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 isolated function mapJsonToStoredProcedure([json, ResponseHeaders?] jsonPayload) returns @tainted StoredProcedure {
     StoredProcedure storedProcedureResponse = {};
     var [payload, headers] = jsonPayload;
-    storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     storedProcedureResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    storedProcedureResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    storedProcedureResponse.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     storedProcedureResponse.storedProcedure = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     storedProcedureResponse.responseHeaders = headers;
-    // }
+    storedProcedureResponse.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    storedProcedureResponse.sessionToken = headers?.sessionToken.toString();
     return storedProcedureResponse;
 }
 
@@ -185,12 +184,12 @@ isolated function mapJsonToUserDefinedFunction([json, ResponseHeaders?] jsonPayl
 UserDefinedFunction {
     UserDefinedFunction userDefinedFunctionResponse = {};
     var [payload, headers] = jsonPayload;
-    userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    userDefinedFunctionResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    userDefinedFunctionResponse.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     userDefinedFunctionResponse.userDefinedFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     userDefinedFunctionResponse.responseHeaders = headers;
-    // }
+    userDefinedFunctionResponse.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    userDefinedFunctionResponse.sessionToken = headers?.sessionToken.toString();
     return userDefinedFunctionResponse;
 }
 
@@ -201,14 +200,14 @@ UserDefinedFunction {
 isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns @tainted Trigger {
     Trigger triggerResponse = {};
     var [payload, headers] = jsonPayload;
-    triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     triggerResponse.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    triggerResponse.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
     triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
     triggerResponse.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     triggerResponse.responseHeaders = headers;
-    // }
+    triggerResponse.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    triggerResponse.sessionToken = headers?.sessionToken.toString();
     return triggerResponse;
 }
 
@@ -219,11 +218,12 @@ isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns
 isolated function mapJsonToUserType([json, ResponseHeaders?] jsonPayload) returns @tainted User {
     User user = {};
     var [payload, headers] = jsonPayload;
-    user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     user.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     user.responseHeaders = headers;
-    // }
+    user.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    user.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
+    user.selfReference = payload._permissions != () ? payload._permissions.toString() : EMPTY_STRING;
+    user.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    user.sessionToken = headers?.sessionToken.toString();
     return user;
 }
 
@@ -236,12 +236,12 @@ isolated function mapJsonToPermissionType([json, ResponseHeaders?] jsonPayload) 
     var [payload, headers] = jsonPayload;
     permission.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     permission.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    permission.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     permission.token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
     permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
     permission.resourcePath = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     permission.responseHeaders = headers;
-    // }
+    permission.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    permission.sessionToken = headers?.sessionToken.toString();
     return permission;
 }
 
@@ -252,16 +252,16 @@ isolated function mapJsonToPermissionType([json, ResponseHeaders?] jsonPayload) 
 isolated function mapJsonToOfferType([json, ResponseHeaders?] jsonPayload) returns @tainted Offer {
     Offer offer = {};
     var [payload, headers] = jsonPayload;
-    offer.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     offer.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
+    offer.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
+    offer.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     offer.offerVersion = payload.offerVersion != () ? payload.offerVersion.toString() : EMPTY_STRING;
     offer.offerType = payload.offerType != () ? payload.offerType.toString() : EMPTY_STRING;
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
-    // if (headers is ResponseHeaders) {
-    //     offer.responseHeaders = headers;
-    // }
+    offer.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
+    offer.sessionToken = headers?.sessionToken.toString();
     return offer;
 }
 

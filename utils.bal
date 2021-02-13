@@ -178,7 +178,7 @@ isolated function setPartitionKeyHeader(http:Request request, any partitionKeyVa
 //  + return - If successful, returns same http:Request with newly appended headers. Else returns error.
 //
 isolated function setHeadersForQuery(http:Request request) {
-    var header = request.setContentType(CONTENT_TYPE_QUERY);
+    var req = request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, true.toString());
 }
 
@@ -296,8 +296,8 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
         return {};
     }
     json jsonResponse = check httpResponse.getJsonPayload();
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-        //If status is 200 or 201, request is successful. Returns resulting payload.
+    if (httpResponse.statusCode == http:STATUS_OK) {
+        //If status is 200, request is successful. Returns resulting payload.
         return jsonResponse;
     } else {
         string message = jsonResponse.message.toString();
@@ -313,7 +313,8 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
     json jsonResponse = check httpResponse.getJsonPayload();
     if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-        //If status is 200 or 201, request is successful returns true. Else Returns error.
+        //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
+        // Else Returns error.
         return true;
     } else {
         string message = jsonResponse.message.toString();
@@ -355,8 +356,7 @@ isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) 
     responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : 
             getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
-    responseHeaders.etag = getHeaderIfExist(httpResponse, http:ETAG);
-    responseHeaders.date = getHeaderIfExist(httpResponse, http:DATE);
+    responseHeaders.eTag = getHeaderIfExist(httpResponse, http:ETAG);
     return responseHeaders;
 }
 
@@ -430,7 +430,6 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
 
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
-
     stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, array, payload, 
             headers?.continuationHeader, maxItemCount);
     return finalStream;

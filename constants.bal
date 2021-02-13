@@ -27,9 +27,21 @@ public enum Consistancy {
     EVENTUAL = "Eventual"
 }
 
+# Represents the type of an Index
+# 
+# + HASH - "Hash" indexes are useful for equality comparisons
+# + RANGE - "Range" indexes are useful for equality, range comparisons and sorting.
+# + SPATIAL - "Spatial" indexes are useful for spatial queries.
+public enum IndexType {
+    HASH = "Hash",
+    RANGE = "Range",
+    SPATIAL = "Spatial"
+}
+
 // Indexing Policy
 const string INDEXING_TYPE_INCLUDE = "Include";
 const string INDEXING_TYPE_EXCLUDE = "Exclude";
+const int MAX_PRECISION = -1;
 
 // Request headers
 const string API_VERSION_HEADER = "x-ms-version";
@@ -145,7 +157,7 @@ const int MAX_TIME_TO_LIVE = 18000;
 
 // Algorithm Used for partitioning
 const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
-
+const int DEFAULT_PARTITION_KEY_VERSION = 1;
 // String constants
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";
