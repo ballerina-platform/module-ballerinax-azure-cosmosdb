@@ -26,7 +26,7 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() { 
     string databaseId = "my_database";
-    string userId = "my_user";
+    string userId = "my_new_user";
     
     log:print("Delete user");
     _ = checkpanic  managementClient->deleteUser(databaseId, userId);

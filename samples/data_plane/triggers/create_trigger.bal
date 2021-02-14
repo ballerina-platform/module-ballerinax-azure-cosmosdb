@@ -58,13 +58,8 @@ public function main() {
                                         }`;
     string createTriggerOperationType = "All";
     string createTriggerType = "Post";
-    cosmosdb:Trigger createTrigger = {
-        id: triggerId,
-        triggerFunction: createTriggerBody,
-        triggerOperation: createTriggerOperationType,
-        triggerType: createTriggerType
-    };
+
     cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
-            createTrigger);
+            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
     log:print("Success!");
 }

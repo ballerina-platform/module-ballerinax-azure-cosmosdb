@@ -30,7 +30,7 @@ public function main() {
 
     log:print("Creating container");
     cosmosdb:PartitionKey partitionKey = {
-        paths: ["/id"],
+        paths: ["/gender"],
         keyVersion: 2
     };
     cosmosdb:Result containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);

@@ -61,6 +61,43 @@ isolated function mapJsonToContainerType([json, ResponseHeaders?] jsonPayload) r
     return container;
 }
 
+//  Maps the json response returned from the request into record type of IndexingPolicy.
+// 
+//  + jsonPayload - The json object returned from request.
+//  + return - An instance of record type IndexingPolicy.
+isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
+    IndexingPolicy indexingPolicy = {};
+    indexingPolicy.indexingMode = jsonPayload.indexingMode != () ? jsonPayload.indexingMode.toString() : EMPTY_STRING;
+    indexingPolicy.automatic = convertToBoolean(jsonPayload.automatic);
+    indexingPolicy.includedPaths = convertToIncludedPathsArray(<json[]>jsonPayload.includedPaths);
+    indexingPolicy.excludedPaths = convertToExcludedPathsArray(<json[]>jsonPayload.excludedPaths);
+    return indexingPolicy;
+}
+
+//  Maps the json response returned from the request into record type of IncludedPath.
+// 
+//  + jsonPayload - The json object returned from request.
+//  + return - An instance of record type IncludedPath.
+isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted IncludedPath {
+    IncludedPath includedPath = {};
+    includedPath.path = jsonPayload.path != () ? jsonPayload.path.toString() : EMPTY_STRING;
+    if (jsonPayload.indexes is error) {
+        return includedPath;
+    }
+    includedPath.indexes = jsonPayload.indexes != () ? convertToIndexArray(<json[]>jsonPayload.indexes) : [];
+    return includedPath;
+}
+
+//  Maps the json response returned from the request into record type of ExcludedPath.
+// 
+//  + jsonPayload - The json object returned from request.
+//  + return - An instance of record type IncludedPath.
+isolated function mapJsonToExcludedPathsType(json jsonPayload) returns @tainted ExcludedPath {
+    ExcludedPath excludedPath = {};
+    excludedPath.path = jsonPayload.path != () ? jsonPayload.path.toString() : EMPTY_STRING;
+    return excludedPath;
+}
+
 //  Maps the json response returned from the request into record type of Document.
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
@@ -95,19 +132,6 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
     return reponsePayload;
 }
 
-//  Maps the json response returned from the request into record type of IndexingPolicy.
-// 
-//  + jsonPayload - The json object returned from request.
-//  + return - An instance of record type IndexingPolicy.
-isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
-    IndexingPolicy indexingPolicy = {};
-    indexingPolicy.indexingMode = jsonPayload.indexingMode != () ? jsonPayload.indexingMode.toString() : EMPTY_STRING;
-    indexingPolicy.automatic = convertToBoolean(jsonPayload.automatic);
-    indexingPolicy.includedPaths = convertToIncludedPathsArray(<json[]>jsonPayload.includedPaths);
-    indexingPolicy.excludedPaths = convertToExcludedPathsArray(<json[]>jsonPayload.excludedPaths);
-    return indexingPolicy;
-}
-
 //  Maps the json response returned from the request into record type of PartitionKey.
 // 
 //  + jsonPayload - The json object returned from request.
@@ -133,31 +157,6 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayloa
     partitionKeyRange.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
     partitionKeyRange.sessionToken = headers?.sessionToken.toString();
     return partitionKeyRange;
-}
-
-//  Maps the json response returned from the request into record type of IncludedPath.
-// 
-//  + jsonPayload - The json object returned from request.
-//  + return - An instance of record type IncludedPath.
-isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted IncludedPath {
-    IncludedPath includedPath = {};
-    includedPath.path = jsonPayload.path.toString();
-    if (jsonPayload.indexes is error) {
-        return includedPath;
-    } else {
-        includedPath.indexes = convertToIndexArray(<json[]>jsonPayload.indexes);
-    }
-    return includedPath;
-}
-
-//  Maps the json response returned from the request into record type of ExcludedPath.
-// 
-//  + jsonPayload - The json object returned from request.
-//  + return - An instance of record type IncludedPath.
-isolated function mapJsonToExcludedPathsType(json jsonPayload) returns @tainted ExcludedPath {
-    ExcludedPath excludedPath = {};
-    excludedPath.path = jsonPayload.path.toString();
-    return excludedPath;
 }
 
 //  Maps the json response returned from the request into record type of Index.
@@ -410,7 +409,7 @@ isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] {
     IncludedPath[] includedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {
-        IncludedPath includedPath = mapJsonToIncludedPathsType([jsonPathObject, ()]);
+        IncludedPath includedPath = mapJsonToIncludedPathsType(jsonPathObject);
         array:push(includedPaths, includedPath);
     }
     return includedPaths;
@@ -423,7 +422,7 @@ isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) 
 isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted ExcludedPath[] {
     ExcludedPath[] excludedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {
-        ExcludedPath excludedPath = mapJsonToExcludedPathsType([jsonPathObject, ()]);
+        ExcludedPath excludedPath = mapJsonToExcludedPathsType(jsonPathObject);
         array:push(excludedPaths, excludedPath);
     }
     return excludedPaths;

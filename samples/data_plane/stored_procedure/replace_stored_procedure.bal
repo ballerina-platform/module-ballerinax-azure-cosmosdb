@@ -11,7 +11,7 @@ cosmosdb:CoreClient azureCosmosClient = new (configuration);
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
-    string existingStoredProcedureId = "my_stored_procedure"
+    string existingStoredProcedureId = "my_stored_procedure";
 
     // Replace stored procedure
     log:print("Replacing stored procedure");
@@ -20,11 +20,8 @@ public function main() {
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
-    cosmosdb:StoredProcedure newStoredProcedure = {
-        id: existingStoredProcedureId,
-        storedProcedure: newStoredProcedureBody
-    };
+
     cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
-            containerId, newStoredProcedure);
+            containerId, existingStoredProcedureId, newStoredProcedureBody);
     log:print("Success!");
 }

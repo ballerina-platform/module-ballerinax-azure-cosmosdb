@@ -62,13 +62,8 @@ public function main() {
                                         }`;
     string createTriggerOperationType = "All";
     string createTriggerType = "Post";
-    cosmosdb:Trigger createTrigger = {
-        id: triggerId,
-        triggerFunction: createTriggerBody,
-        triggerOperation: createTriggerOperationType,
-        triggerType: createTriggerType
-    };
-    cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
+    cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
+            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
 
     // Replace trigger
     log:print("Replacing a trigger");
@@ -100,13 +95,9 @@ public function main() {
                                         }`;
     string replaceTriggerOperation = "All";
     string replaceTriggerType = "Post";
-    cosmosdb:Trigger replaceTrigger = {
-        id: triggerId,
-        triggerFunction: replaceTriggerBody,
-        triggerOperation: replaceTriggerOperation,
-        triggerType: replaceTriggerType
-    };
-    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
+
+    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
+            triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
 
     // List triggers
     log:print("List available triggers");

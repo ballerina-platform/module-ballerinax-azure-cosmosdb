@@ -99,8 +99,8 @@ public function main() {
     // Read container info
     log:print("Reading container info");
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    string? etag = container.responseHeaders?.etag;
-    string? sessiontoken = container.responseHeaders?.sessionToken;
+    string? etag = container.eTag;
+    string? sessiontoken = container.sessionToken;
 
     // Read container info with options   
     log:print("Reading container info with request options");

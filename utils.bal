@@ -421,7 +421,7 @@ function retriveStream(http:Client azureCosmosClient, string path, http:Request 
     return finalStream;
 }
 
-function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload) 
+isolated function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload) 
         returns @tainted stream<record{}>|error {
     record{}[] finalArray = [];
     if (payload.Databases is json) {

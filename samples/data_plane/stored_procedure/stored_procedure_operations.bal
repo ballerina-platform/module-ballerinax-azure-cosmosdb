@@ -39,12 +39,9 @@ public function main() {
                                             var response = context.getResponse();
                                             response.setBody("Hello,  World");
                                         }`;
-    cosmosdb:StoredProcedure storedProcedureRecord = {
-        id: storedProcedureId,
-        storedProcedure: storedProcedureBody
-    };
     
-    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, containerId, storedProcedureRecord);
+    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
+            containerId, storedProcedureId, storedProcedureBody);
 
     // Replace stored procedure
     log:print("Replacing stored procedure");
@@ -53,11 +50,9 @@ public function main() {
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
-    cosmosdb:StoredProcedure newStoredProcedure = {
-        id: storedProcedureId,
-        storedProcedure: newStoredProcedureBody
-    };
-    cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, containerId, newStoredProcedure);
+
+    cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
+            containerId, storedProcedureId, newStoredProcedureBody);
 
     // Get a list of stored procedures
     log:print("List stored procedure");
