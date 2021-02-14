@@ -25,8 +25,8 @@ operations
     };
     cosmosdb:CoreClient coreClient = new(configuration);
    ```
-2. **cosmosdb:ManagementClient** - This connects to the running CosmosDB databases and containers to execute management-plane 
-operations 
+2. **cosmosdb:ManagementClient** - This connects to the running CosmosDB databases and containers to execute 
+management-plane operations 
 
    ```ballerina
     cosmosdb:AzureCosmosConfiguration configuration = {

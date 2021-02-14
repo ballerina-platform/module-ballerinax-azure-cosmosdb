@@ -29,6 +29,7 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List  user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
+    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, 
+            containerId);
     log:print("Success!");
 }

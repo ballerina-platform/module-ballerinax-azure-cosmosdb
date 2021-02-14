@@ -130,7 +130,8 @@ cosmosdb:PartitionKey partitionKeyDefinition = {
     paths: ["/gender"],
     keyVersion: 2
 };
-cosmosdb:Result containerResult = check managementClient-> createContainer("my_database", "my_container", partitionKeyDefinition);
+cosmosdb:Result containerResult = check managementClient-> createContainer("my_database", "my_container", 
+        partitionKeyDefinition);
 ```
 Notes: <br/> For this operation, you have to have an understanding on how to select a suitable partition key according 
 to the nature of documents stored inside. The guide to select a better partition key can be found here: 
@@ -515,8 +516,8 @@ public function main() {
 ```
 
 ### Get User
-From this sample, you can get the basic information about a created User. For this, the the Database ID where the User is 
-scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
+From this sample, you can get the basic information about a created User. For this, the the Database ID where the User 
+is scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
 Database ID will be `my_database` and User ID will be `my_user` in this case.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -865,8 +866,8 @@ reject the operation and it will return an HTTP 412 Precondition failure respons
 document into an upsert request by using this parameter.
 
 ### Get one Document
-This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As the 
-partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for that 
+This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As 
+the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for that 
 partition key.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1017,8 +1018,8 @@ the user can either get the items in one page or get all the results related to 
     - `sessionToken` - the client will use a session token internally with each read/query request to ensure that the 
     set consistency level is maintained.
     - `enableCrossPartition` - Use to provide whether to ignore the partition keys and query across partitions. This can 
-    be done using a boolean value. When cross-partitioning is enabled, providing `valueOfPartitionKey` will not do anything.
-    The querying will still be done across partitions.
+    be done using a boolean value. When cross-partitioning is enabled, providing `valueOfPartitionKey` will not do 
+    anything. The querying will still be done across partitions.
 
 
 ## Server-Side programming in Cosmos DB
@@ -1222,15 +1223,15 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId,
-            userDefinedFunctionBody);
+    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, 
+            udfId, userDefinedFunctionBody);
     log:print("Success!");
 }
 ```
 ### Replace User Defined Function
-This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User Defined
-Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where the 
-User Defined Function is saved in and you should pass the ID of the User Defined Function to be replaced and the 
+This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User 
+Defined Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where 
+the User Defined Function is saved in and you should pass the ID of the User Defined Function to be replaced and the 
 JavaScript function which will replace the existing User Defined Function. 
 
 ```ballerina
@@ -1285,13 +1286,15 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
+    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, 
+            containerId);
     log:print("Success!");
 }
 ```
 ### Delete User Defined Function
-This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the Database ID, 
-Container ID where the User Defined Function exists and the ID of the User Defined Function you want to delete.
+This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the 
+Database ID, Container ID where the User Defined Function exists and the ID of the User Defined Function you want to 
+delete.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1348,7 +1351,8 @@ public function main() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery,
+                                                    updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
 
@@ -1359,7 +1363,8 @@ public function main() {
                                             // update metadata
                                             metadataDocument.createdDocuments += 1;
                                             metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+                                            var accept = collection.replaceDocument(metadataDocument._self, 
+                                                    metadataDocument, function(err, docReplaced) {
                                                 if(err) throw "Unable to update metadata, abort";
                                             });
 
@@ -1411,7 +1416,8 @@ public function main() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, 
+                                                    updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
 
@@ -1422,7 +1428,8 @@ public function main() {
                                             // update metadata
                                             metadataDocument.createdDocuments += 1;
                                             metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+                                            var accept = collection.replaceDocument(metadataDocument._self, 
+                                                    metadataDocument, function(err, docReplaced) {
                                                 if(err) throw "Unable to update metadata, abort";
                                             });
 
@@ -1431,8 +1438,8 @@ public function main() {
                                         }`;
     string replaceTriggerOperation = "All";
     string replaceTriggerType = "Post";
-    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, triggerId, 
-            replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
+    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
+            triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
     log:print("Success!");
 }
 ```

@@ -50,7 +50,8 @@ public function main() {
             offerVersion: "V2",
             offerType: "Invalid",
             content: {"offerThroughput": 1000},
-            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`, /// not found in the result
+            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`, 
+            /// not found in the result
             resourceResourceId: string `${container?.resourceId.toString()}`,
             id: offerId,
             resourceId: resourceId

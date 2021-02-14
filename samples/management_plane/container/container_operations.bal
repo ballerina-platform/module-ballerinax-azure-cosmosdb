@@ -65,7 +65,8 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerWithIndexingId, partitionKeyWithIndexing, indexingPolicy);
+    containerResult = checkpanic managementClient->createContainer(databaseId, containerWithIndexingId, 
+            partitionKeyWithIndexing, indexingPolicy);
 
     //Create container with manual throughput policy
     log:print("Creating container with manual throughput policy");
@@ -75,7 +76,8 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerManualId, partitionKeyManual, (), throughput);
+    containerResult = checkpanic managementClient->createContainer(databaseId, containerManualId, partitionKeyManual, (), 
+            throughput);
 
     //Create container with autoscaling throughput policy
     log:print("Creating container with autoscaling throughput policy");
@@ -85,7 +87,8 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerAutoscalingId, partitionKeyAutoscaling, (), maxThroughput);
+    containerResult = checkpanic managementClient->createContainer(databaseId, containerAutoscalingId, 
+            partitionKeyAutoscaling, (), maxThroughput);
 
     //Create container if not exist
     log:print("Creating container if not exist");
@@ -94,7 +97,8 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    cosmosdb:Result? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, containerIfnotExistId, partitionKey5);
+    cosmosdb:Result? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
+            containerIfnotExistId, partitionKey5);
 
     // Read container info
     log:print("Reading container info");

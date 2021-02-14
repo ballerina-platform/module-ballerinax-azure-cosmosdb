@@ -56,7 +56,8 @@ public function main() {
 
     // Get a list of stored procedures
     log:print("List stored procedure");
-    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, 
+            containerId);
 
     // Execute stored procedure
     log:print("Executing stored procedure");

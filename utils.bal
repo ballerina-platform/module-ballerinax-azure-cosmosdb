@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import ballerina/time;
 import ballerina/http;
 import ballerina/crypto;
@@ -277,12 +278,13 @@ isolated function getDateTime() returns string?|error {
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string keyToken, 
         string tokenType, string tokenVersion, string date) returns string?|error {
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
-    date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
+            date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
     byte[] decodedArray = check array:fromBase64(keyToken); 
     byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
-    string signature = array:toBase64(digest); 
-    string? authorization = check encoding:encodeUriComponent(string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`, "UTF-8");
-    return authorization;      
+    string signature = array:toBase64(digest);
+    string authorizationString = string `type=${tokenType}&ver=${tokenVersion}&sig=${signature}`;
+    string? encodedAuthorizationString = check encoding:encodeUriComponent(authorizationString, "UTF-8");
+    return encodedAuthorizationString;      
 }
 
 //  Handle sucess or error reponses to requests and extract the json payload.
@@ -390,19 +392,21 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     if (payload.Documents is json) {
         json[] array =  <json[]>payload.Documents;
         stream<json> documentStream = (<@untainted>array).toStream();
-        // This part of the code is for recursively calling the request when another page exits in the result and user wants
-        // to get those too.
+        // This part of the code is for recursively calling the request when another page exits in the result and user 
+        // wants to get those too.
         // if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
-        //     documentStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
+        //     documentStream = check getQueryResults(azureCosmosClient, path, request, array, (), 
+        //      responseHeaders?.continuationHeader);
         // }
         return documentStream;
     } else if (payload.Offers is json) {
         json[] array = <json[]>payload.Offers;
         stream<json> offerStream = (<@untainted>array).toStream();
-        // This part of the code is for recursively calling the request when another page exits in the result and user wants
-        // to get those too.
+        // This part of the code is for recursively calling the request when another page exits in the result and user 
+        // wants to get those too.
         // if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
-        //     offerStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
+        //     offerStream = check getQueryResults(azureCosmosClient, path, request, array, (), 
+        //          responseHeaders?.continuationHeader);
         // }
         return offerStream;
     }
@@ -411,7 +415,8 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     }
 }
 
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted stream<record{}>|error {
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
+        stream<record{}>|error {
     // if (continuationHeader is string) {
     //     request.setHeader(CONTINUATION_HEADER, continuationHeader);
     // }
@@ -452,7 +457,8 @@ isolated function createStream(http:Client azureCosmosClient, string path, http:
     // This part of the code is for recursively calling the request when another page exits in the result and user wants
     // to get those too.
     // if (continuationHeader != () && maxItemCount is ()) {
-    //     newStream = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), continuationHeader);
+    //     newStream = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), 
+    //      continuationHeader);
     // }
     return newStream;
 }

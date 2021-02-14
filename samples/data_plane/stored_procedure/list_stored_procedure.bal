@@ -29,6 +29,7 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List stored procedure");
-    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, 
+            containerId);
     log:print("Success!");
 }

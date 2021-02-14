@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -215,7 +215,8 @@ isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns
     triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     triggerResponse.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : EMPTY_STRING;
+    triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : 
+            EMPTY_STRING;
     triggerResponse.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
     triggerResponse.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
     triggerResponse.sessionToken = headers?.sessionToken.toString();
@@ -270,7 +271,8 @@ isolated function mapJsonToOfferType([json, ResponseHeaders?] jsonPayload) retur
     offer.offerType = payload.offerType != () ? payload.offerType.toString() : EMPTY_STRING;
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
-    offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : EMPTY_STRING;
+    offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : 
+            EMPTY_STRING;
     offer.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
     offer.sessionToken = headers?.sessionToken.toString();
     return offer;

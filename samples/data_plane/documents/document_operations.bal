@@ -122,7 +122,8 @@ public function main() {
             newDocumentBody, partitionKeyValue);
 
     log:print("Read the document by id");
-    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
+    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
+            partitionKeyValue);
 
     // Read document with request options create this one for each
     log:print("Read the document with request options");
@@ -131,7 +132,8 @@ public function main() {
     //     sessionToken: sessionToken,
     //     ifNoneMatchEtag: etag
     // };
-    // cosmosdb:Document document3 = checkpanic azureCosmosClient->getDocument(databaseId, containerId, document.id, [document.id], options);
+    // cosmosdb:Document document3 = checkpanic azureCosmosClient->getDocument(databaseId, containerId, document.id, 
+    // [document.id], options);
 
     // Delete a document
     log:print("Deleting the document");

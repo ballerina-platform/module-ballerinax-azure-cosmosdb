@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import ballerina/test;
 import ballerina/config;
 import ballerina/system;
@@ -350,7 +351,8 @@ function test_createDocument() {
         "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKeyN);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, 
+            valueOfPartitionKeyN);
     if (result is Result) {
 
     } else {
@@ -399,7 +401,8 @@ function test_createDocumentWithRequestOptions() {
         "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, options);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, 
+            options);
     if (result is Result) {
 
     } else {
@@ -741,7 +744,8 @@ function test_createTrigger() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, 
+                                                    updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
 
@@ -752,7 +756,8 @@ function test_createTrigger() {
                                             // update metadata
                                             metadataDocument.createdDocuments += 1;
                                             metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+                                            var accept = collection.replaceDocument(metadataDocument._self, 
+                                                    metadataDocument, function(err, docReplaced) {
                                                 if(err) throw "Unable to update metadata, abort";
                                             });
 
@@ -786,7 +791,8 @@ function test_replaceTrigger() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, 
+                                                    updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
 
@@ -797,7 +803,8 @@ function test_replaceTrigger() {
                                             // update metadata
                                             metadataDocument.createdDocuments += 1;
                                             metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+                                            var accept = collection.replaceDocument(metadataDocument._self, 
+                                                    metadataDocument, function(err, docReplaced) {
                                                 if(err) throw "Unable to update metadata, abort";
                                             });
 

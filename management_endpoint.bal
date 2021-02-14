@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import ballerina/http;
 
 # Azure Cosmos DB Client Object for management operations.
@@ -76,7 +77,8 @@ public client class ManagementClient {
     # Retrive information of a given database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to retrieve information. 
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
     remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted 
             Database|error {
@@ -121,7 +123,6 @@ public client class ManagementClient {
         setOptionalHeaders(request, requestOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        //return <boolean> check handleResponse(response);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);
     }
@@ -183,7 +184,8 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container to retrive infromation.  
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns cosmosdb:Container. Else returns error.  
     remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) 
             returns @tainted Container|error {
@@ -210,7 +212,8 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request);
+        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, 
+                request);
         return containerStream;
     }
 
@@ -218,7 +221,8 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container to delete.
-    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) 
             returns @tainted Result|error {
@@ -415,8 +419,8 @@ public client class ManagementClient {
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a cosmosdb:Permission. Else returns error.
-    remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? requestOptions = ()) 
-            returns @tainted Permission|error { 
+    remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? 
+            requestOptions = ()) returns @tainted Permission|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
@@ -436,8 +440,8 @@ public client class ManagementClient {
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:Permission>. Else returns error.
-    remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
-            returns @tainted stream<Permission>|error { 
+    remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? 
+            requestOptions = ()) returns @tainted stream<Permission>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
@@ -447,7 +451,8 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, request);
+        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
+                request);
         return permissionStream;
     }
 
@@ -456,10 +461,11 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of user which the permission belongs to.
     # + permissionId - ID of the permission to delete.
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
-    remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? requestOptions = ()) 
-            returns @tainted Result|error { 
+    remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? 
+            requestOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);

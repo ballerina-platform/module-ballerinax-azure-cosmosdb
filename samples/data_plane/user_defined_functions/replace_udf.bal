@@ -44,6 +44,7 @@ public function main() {
         id: udfId,
         userDefinedFunction: newUserDefinedFunctionBody
     };
-    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, udfId, newUserDefinedFunctionBody);
+    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
+            udfId, newUserDefinedFunctionBody);
     log:print("Success!");
 }

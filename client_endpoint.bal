@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -13,6 +13,7 @@
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
 // under the License.
+
 import ballerina/http;
 
 # Azure Cosmos DB Client Object for data plane operations.
@@ -38,7 +39,8 @@ public client class CoreClient {
     # + documentId - A unique ID for the document to save in the Database.
     # + document -  A JSON document to be saved in the Database.
     # + valueOfPartitionKey - The value of parition key field of the Container. 
-    # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDocument(string databaseId, string containerId, string documentId, json document, 
             any valueOfPartitionKey, DocumentCreateOptions? requestOptions = ()) returns @tainted Result|error { 
@@ -67,7 +69,8 @@ public client class CoreClient {
     # + documentId - The ID of the Document to be replaced.
     # + document -  A JSON document saved in the Database.    
     # + valueOfPartitionKey - The value of parition key field of the Container. 
-    # + requestOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceDocument(string databaseId, string containerId, string documentId, json document, 
             any valueOfPartitionKey, DocumentReplaceOptions? requestOptions = ()) returns @tainted Result|error {
@@ -93,7 +96,8 @@ public client class CoreClient {
     # + containerId - ID of the Container which Document belongs to.
     # + documentId - Id of the Document to retrieve. 
     # + valueOfPartitionKey - The value of parition key field of the Container.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns cosmosdb:Document. Else returns error.  
     remote function getDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
             ResourceReadOptions? requestOptions = ()) returns @tainted Document|error { 
@@ -114,7 +118,8 @@ public client class CoreClient {
     # + databaseId - ID of the Database which Container belongs to.
     # + containerId - ID of the Container which Document belongs to.
     # + maxItemCount - Optional. Maximum number of Document records in one returning page.
-    # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns stream<cosmosdb:Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
             DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
@@ -137,7 +142,8 @@ public client class CoreClient {
     # + containerId - ID of the Container which Document belongs to.   
     # + documentId - ID of the document to delete. 
     # + valueOfPartitionKey - The value of parition key field of the container.
-    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function deleteDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
             ResourceDeleteOptions? requestOptions = ()) returns @tainted Result|error { 
@@ -160,7 +166,8 @@ public client class CoreClient {
     # + sqlQuery - A string containing the SQL query.
     # + valueOfPartitionKey - Optional. The value of parition key field of the container.
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
-    # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns a stream<json>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), any? 
             valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
@@ -194,8 +201,8 @@ public client class CoreClient {
     # + storedProcedureId - A unique ID for the newly created Stored Procedure.    
     # + storedProcedure - A JavaScript function.
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
-    remote function createStoredProcedure(string databaseId, string containerId, string storedProcedureId, string storedProcedure) 
-            returns @tainted Result|error {
+    remote function createStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
+            string storedProcedure) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES]);
@@ -219,8 +226,8 @@ public client class CoreClient {
     # + storedProcedureId - The ID of the Stored Procedure to be replaced.    
     # + storedProcedure - A JavaScript function.    
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
-    remote function replaceStoredProcedure(string databaseId, string containerId, string storedProcedureId, string storedProcedure) 
-            returns @tainted Result|error { 
+    remote function replaceStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
+            string storedProcedure) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
@@ -242,7 +249,8 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which contain the stored procedures.    
     # + maxItemCount - Optional. Maximum number of Stored Procedure records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns a stream<cosmosdb:StoredProcedure>. Else returns error. 
     remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? requestOptions = ()) returns @tainted stream<StoredProcedure>|error { 
@@ -467,7 +475,8 @@ public client class CoreClient {
     # + databaseId - ID of the database where the container is created.
     # + containerId - ID of the container where the triggers are created.     
     # + maxItemCount - Optional. Maximum number of Trigger records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
+    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    #       request.
     # + return - If successful, returns a stream<cosmosdb:Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? requestOptions = ()) returns @tainted stream<Trigger>|error { 

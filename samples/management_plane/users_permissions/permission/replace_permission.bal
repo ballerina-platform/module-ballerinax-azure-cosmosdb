@@ -34,6 +34,7 @@ public function main() {
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
     log:print("Replace permission");
-    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, permissionId, permissionModeReplace, permissionResourceReplace);
+    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
+            permissionId, permissionModeReplace, permissionResourceReplace);
     log:print("Success!");
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+// Copyright (c) 2021 WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 //
 // WSO2 Inc. licenses this file to you under the Apache License,
 // Version 2.0 (the "License"); you may not use this file except
@@ -48,7 +48,8 @@ public type Result record {|
 # Represents the elements representing information about a database.
 # 
 # + id - User generated unique ID for the database. 
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + eTag - Resource etag for the resource retrieved same as eTag in the response.
 # + sessionToken - Session token of the request. 
@@ -63,7 +64,8 @@ public type Database record {|
 # Represents the elements representing information about a collection.
 # 
 # + id - User generated unique ID for the container.
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + indexingPolicy - Object of type IndexingPolicy. 
 # + partitionKey - Object of type PartitionKey.
@@ -82,7 +84,8 @@ public type Container record {|
 # Represent the parameters representing information about a document in Cosmos DB.
 # 
 # + id - User generated unique ID for the document. 
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + documentBody - JSON document.
 # + eTag - Resource etag for the resource retrieved same as eTag in the response.
@@ -153,7 +156,8 @@ public type PartitionKey record {|
 # Represent the record type with necessary parameters to represent a stored procedure.
 # 
 # + id - User generated unique ID for the stored procedure.
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource. 
 # + storedProcedure - Javasctipt function.
 # + eTag - Resource etag for the resource retrieved same as eTag in the response.
@@ -179,7 +183,8 @@ public type UserDefinedFunction record {|
 # Represent the record type with necessary parameters to represent a trigger.
 # 
 # + id - User generated unique ID for the trigger.
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + triggerFunction - Javasctipt function.
 # + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
@@ -204,7 +209,8 @@ type JsonMap map<json>;
 # Reprsent the record type with necessary paramaters to create partition key range.
 # 
 # + id - ID for the partition key range.
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + minInclusive - Minimum partition key hash value for the partition key range. 
 # + maxExclusive - Maximum partition key hash value for the partition key range. 
@@ -225,7 +231,8 @@ public type PartitionKeyRange record {|
 # Represent the record type with necessary parameters to represent a user.
 # 
 # + id - User generated unique ID for the user. 
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + eTag - Resource etag for the resource retrieved same as eTag in the response.
 # + permissions - A system generated property that specifies the addressable path of the permissions resource
@@ -243,7 +250,8 @@ public type User record {|
 # Represent the record type with necessary parameters to represent a permission.
 # 
 # + id - User generated unique ID for the permission.
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource(permission).
 # + permissionMode - Access mode for the resource, Should be "All" or "Read".
 # + resourcePath - Full addressable path of the resource associated with the permission.
@@ -266,7 +274,8 @@ public type Permission record {|
 # Represent the record type with necessary parameters to represent an offer.
 # 
 # + id - User generated unique ID for the offer.
-# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the resource.
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource.
 # + selfReference - Self reference (_self) unique addressable URI for the resource.
 # + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined 
 #       throughput levels.
