@@ -80,7 +80,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
     Ballerina Swan Lake Preview Version 8 is required.
 
 # Supported Versions
-|                           |    Version                  |
+|                           | Version                     |
 |:-------------------------:|:---------------------------:|
 | Cosmos DB API Version     | 2018-12-31                  |
 | Ballerina Language        | Swan-Lake-Preview8          |
@@ -124,7 +124,7 @@ cosmosdb:Result result = managementClient->createDatabase("my_database");
 Then, you have to create a Container inside the created Database. As the REST api version which is used in this 
 implementation of the connector strictly supports the partition key, it is a necessity to provide the partition key 
 definition in the creation of a Container. For this Container it will be created inside `my_database` and ID will 
-be `my_container`. The path for partition key is `/gender`. We can set the version of the partition key to 1 or 2
+be `my_container`. The path for partition key is `/gender`. We can set the version of the partition key to 1 or 2.
 ```ballerina
 cosmosdb:PartitionKey partitionKeyDefinition = {
     paths: ["/gender"],
@@ -162,13 +162,8 @@ json documentBody = {
 };
 int valueOfPartitionKey = 0;
 
-cosmosdb:Document document = {
-    id: my_document,
-    documentBody: documentBody
-};
-
-cosmosdb:Result documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document,  
-        valueOfPartitionKey);
+cosmosdb:Result documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", "my_document", 
+        documentBody, valueOfPartitionKey);
 ```
 Notes: <br/> As this container have selected `/gender` as the partition key for `my_container`, the document you create 
 should include that path with a valid value.
@@ -618,8 +613,7 @@ Permissions in Cosmos DB have 3 primary properties:
     have access to.
 When creating a Permission you should provide values for the above properties. Apart from that, as a Permission is 
 explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
-properties must be included inside record `Permission`. The created token is expired in one 
-hour.
+properties must be provided as parameters to the function. The created token is expired in one hour.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -639,16 +633,10 @@ public function main() {
     string permissionId = "my_permission";
     string permissionMode = "All";
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
-    
-    cosmosdb:Permission newPermission = {
-        id: permissionId,
-        permissionMode: permissionMode,
-        resourcePath: permissionResource
-    };
         
     log:print("Create permission for a user");
     cosmosdb:Result createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
-            <@untainted>newPermission);
+            permissionId, permissionMode, permissionResource);
     log:print("Success!");
 }
 ```
@@ -659,7 +647,7 @@ you are creating. This will override the default validity period of the token. T
 ### Replace Permission
 This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
 existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
-properties have to have changes. These primary properties must be included inside record type `Permission`
+properties have to have changes. These primary properties are provided as function parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -679,14 +667,10 @@ public function main() {
 
     string permissionModeReplace = "Read";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
-    cosmosdb:Permission replacedPermission = {
-        id: permissionId,
-        permissionMode: permissionModeReplace,
-        resourcePath: permissionResourceReplace
-    };
+
     log:print("Replace permission");
     cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
-            replacedPermission);
+            permissionId, permissionModeReplace, permissionResourceReplace);
     log:print("Success!");
 }
 ```
@@ -777,10 +761,11 @@ key-value document. The max document size in Cosmos DB is 2 MB.
 
 ### Create a Document
 This sample shows how to create a new Document inside a Container. The document contains information about a person's 
-family and his gender. The Container in which the document will be created has a partition key which has the path 
+family and his/her gender. The Container in which the document will be created has a partition key which has the path 
 "/gender". So, the document you create should contain a value for that path. Here, you have to provide 
-Database ID, Container ID where the document will be created. Apart from that a record of type `Document` should be 
-passed. As the partition key is mandatory for the Container, the value for that also should be passed.
+Database ID, Container ID where the document will be created, A unique ID for the new Document and JSON object which 
+represent the Document. As the partition key is made mandatory for the Container, the value for that also should be 
+passed as a parameter.
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -814,13 +799,8 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document document = {
-        id: documentId,
-        documentBody: documentBody
-    };
-
-    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, document, 
-            partitionKeyValue); 
+    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
+            documentBody partitionKeyValue); 
     log:print("Success!");
 }
 ```
@@ -833,9 +813,9 @@ Must be a boolean value.
 
 ### Replace Document
 This sample shows how to replace an existing Document inside a Container. Similar to document creation but, it replaces 
-an existing document. An important thing about this operation is that you `cannot` replace the existing partition key value 
-for a document. It should be the same value as the old document. Refer more about replacing partition key values here: 
-https://github.com/Azure/azure-sdk-for-js/issues/6324
+an existing document. An important thing about this operation is that you `cannot` replace the existing partition key 
+value for a Document. It should be the same value as the old Document. Refer more about replacing partition key values 
+here: https://github.com/Azure/azure-sdk-for-js/issues/6324
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -870,12 +850,8 @@ public function main() {
         gender: 0
     };
 
-    cosmosdb:Document newDocument = {
-        id: documentId,
-        documentBody: newDocumentBody
-    };
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, newDocument, 
-            partitionKeyValue);
+    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, documentId, 
+            newDocumentBody, partitionKeyValue);
     log:print("Success!");
 }
 ```
@@ -889,8 +865,8 @@ reject the operation and it will return an HTTP 412 Precondition failure respons
 document into an upsert request by using this parameter.
 
 ### Get one Document
-This sample shows how to get a document by it's ID. It returns the Document along with some other parameters. As the 
-partition key is mandatory in the Container, for getDocument operation you need to provide the specific value for the 
+This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As the 
+partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for that 
 partition key.
 ```ballerina
 import ballerinax/cosmosdb;
@@ -928,9 +904,8 @@ Users must set this level to the same or weaker level than the account’s confi
 about Cosmos DB consistancy levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
 
 ### List Documents
-From this sample you can get a list of all the Documents.Each 
-result will be similar to a list of results returned from getDocument operation. You have to provide the Database ID 
-and Container ID as parameters.
+This sample shows how you can get a list of all the Documents.Each result will be similar to a list of results returned 
+from getDocument operation. You have to provide the Database ID and Container ID as parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -966,7 +941,8 @@ found here: https://docs.microsoft.com/en-us/azure/cosmos-db/change-feed
 
 ### Delete Document
 This sample shows how to delete a Document which exists inside a Container. You have to specify the Database ID, 
-Container ID where the document exists and the ID of Document you want to delete.
+Container ID where the Document exists and the ID of Document ID of the Document you want to delete. The value of the 
+partition key for that specific document should also passed to it.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1060,10 +1036,10 @@ collection as a single transaction. You can use Stored Procedures to manipulate 
 in Cosmos DB.
 
 ### Create Stored Procedure
-This sample shows how to create a Stored Procedure inside a Container. This example Stored Procedure will return a 
-response appending the given value inside the function to the response body. For this operation, a unique ID for Stored 
-Procedure and a JavaScript function should be provided to the `StoredProcedure` record type. Apart from that, you have 
-to provide the Database ID and the Container ID where the Stored Procedure is saved in.
+This sample shows how to create a Stored Procedure inside a Container. This Stored Procedure will return a 
+response appending the given value inside the function to the response body. For this, you have 
+to provide the Database ID and the Container ID where the Stored Procedure is saved in. Apart from that, a unique ID 
+for Stored Procedure and a JavaScript function which represents the Stored Procedure should be provided as parameters. 
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1086,20 +1062,16 @@ public function main() {
                                             var response = context.getResponse();
                                             response.setBody("Hello, World");
                                         }`;
-    cosmosdb:StoredProcedure storedProcedureRecord = {
-        id: storedProcedureId,
-        storedProcedure: storedProcedureBody
-    };
 
     cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
-            containerId, storedProcedureRecord);
+            containerId, storedProcedureId, storedProcedureBody);
     log:print("Success!");
 }
 ```
 ### Replace Stored Procedure
-This sample shows how to replace an existing Stored Procedure. The new function enhances the capabilities of the earlier 
-function by appending the function parameter passed through the request to a string inside the function and returning it 
-back to the caller. You can provide any JavaScript function as the new `storedProcedure`. 
+This sample shows how to replace an existing Stored Procedure. This new Stored Procedure enhances the capabilities of 
+the earlier Stored Procedure by appending the function parameter passed through the request to a string inside the 
+function and returning it back to the caller. You can provide any JavaScript function as the new `storedProcedure`. 
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1123,12 +1095,8 @@ public function main() {
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
-    cosmosdb:StoredProcedure newStoredProcedure = {
-        id: existingStoredProcedureId,
-        storedProcedure: newStoredProcedureBody
-    };
     cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
-            containerId, newStoredProcedure);
+            containerId, existingStoredProcedureId, newStoredProcedureBody);
     log:print("Success!");
 }
 ```
@@ -1223,10 +1191,9 @@ refer to them when writing queries. User-defined functions provide “compute-on
 single document in Cosmos DB without any side-effects.
 
 ### Create User Defined Function
-This sample shows how to create a User Defined Function which will compute the tax amount for a given income amount. 
-For this operation, a unique ID for User Defined Function and a JavaScript function should be provided to the 
-`UserDefinedFunction` record type. Apart from that, you have to provide the Database ID and the Container ID where the 
-User Defined Function is saved in.
+This sample shows how to create a User Defined Function which will compute the tax amount for a given income amount. For 
+this operation, you have to provide the Database ID and the Container ID where the User Defined Function is saved in. 
+Apart from that, a unique ID for User Defined Function and a JavaScript function should be provided as parameters.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -1255,18 +1222,16 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:UserDefinedFunction newUDF = {
-        id: udfId,
-        userDefinedFunction: userDefinedFunctionBody
-    };
-    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, newUDF);
+    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId,
+            userDefinedFunctionBody);
     log:print("Success!");
 }
 ```
 ### Replace User Defined Function
 This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User Defined
-Function is updated to a new one. When replacing, you should pass a record type `UserDefinedFunction` with all the values
-filled correctly. The id should be the ID of the User Defined Function to be replaced.
+Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where the 
+User Defined Function is saved in and you should pass the ID of the User Defined Function to be replaced and the 
+JavaScript function which will replace the existing User Defined Function. 
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -1285,7 +1250,7 @@ public function main() {
     string udfId = "my_udf";
 
     log:print("Replacing a user defined function");
-    string newUserDefinedFunctionBody = string `function taxFromIncome(income){
+    string replacementUDF = string `function taxFromIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
                                                     if (income < 1000)
@@ -1295,12 +1260,8 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:UserDefinedFunction replacementUDF = {
-        id: udfId,
-        userDefinedFunction: newUserDefinedFunctionBody
-    };
     cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
-            replacementUDF);
+            udfId, replacementUDF);
     log:print("Success!");
 }
 ```
@@ -1359,9 +1320,9 @@ Triggers does not accept any parameters or does not return any result set.
 
 ### Create Trigger
 In this sample shows how to create a Trigger which will update a Document with ID "_metadata" after creation of a new 
-Document in the Container.For this operation, a unique ID for Trigger and a JavaScript function should be provided to the 
-`Trigger` record type. Apart from that, you have to provide the Database ID and the Container ID where the Trigger is 
-saved in.
+Document in the Container. For this operation, you have to provide the Database ID and the Container ID where the Trigger 
+is saved in. A unique ID for Trigger and a JavaScript function should be provided to the `triggerFunction`record type. 
+Apart from that, you have to provide the `triggerOperation`, `triggerType`.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1407,18 +1368,14 @@ public function main() {
                                         }`;
     string createTriggerOperationType = "Create";
     string createTriggerType = "Post";
-    cosmosdb:Trigger createTrigger = {
-        id: triggerId,
-        triggerFunction: createTriggerBody,
-        triggerOperation: createTriggerOperationType,
-        triggerType: createTriggerType
-    };
-    cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, createTrigger);
+
+    cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, triggerId, 
+            createTriggerBody, createTriggerOperationType, createTriggerType);
     log:print("Success!");
 }
 ```
-Notes: <br/> The record type `Trigger` contains all the required parameters we have to pass when we create a new Trigger.
-- `id` - A unique ID for the new created Trigger
+Notes: <br/> When creating a Trigger, there are several required parameters we have to pass as parameters.
+- `triggerId` - A unique ID for the newly created Trigger
 - `triggerOperation` - The type of operation in which trigger will be invoked from. The acceptable values are `All`, 
 `Create`, `Replace`, and `Delete`.
 - `triggerType` - Specifies when the trigger will be fired, `Pre` or `Post`.
@@ -1426,8 +1383,9 @@ Notes: <br/> The record type `Trigger` contains all the required parameters we h
 
 ### Replace Trigger
 This sample shows how you can replace an existing Trigger with a new one. Here, the name of the Trigger is updated to a 
-new one. When replacing, you should pass a record type `Trigger` with all the values filled correctly. The id should be 
-the ID of the Trigger to be replaced.
+new one. When replacing, you should pass all mandatory parameters `triggerId`, `triggerOperation`, `triggerType` and 
+`triggerFunction`, with all the values filled correctly. (It is not mandatory to replace all parameters with a new value 
+but all the values should be passed). The `triggerId` should be the ID of the Trigger to be replaced.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
@@ -1473,13 +1431,8 @@ public function main() {
                                         }`;
     string replaceTriggerOperation = "All";
     string replaceTriggerType = "Post";
-    cosmosdb:Trigger replaceTrigger = {
-        id: triggerId,
-        triggerFunction: replaceTriggerBody,
-        triggerOperation: replaceTriggerOperation,
-        triggerType: replaceTriggerType
-    };
-    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, replaceTrigger);
+    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, triggerId, 
+            replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
     log:print("Success!");
 }
 ```
