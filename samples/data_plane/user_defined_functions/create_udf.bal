@@ -41,10 +41,7 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:UserDefinedFunction newUDF = {
-        id: udfId,
-        userDefinedFunction: userDefinedFunctionBody
-    };
-    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, newUDF);
+
+    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId, userDefinedFunctionBody);
     log:print("Success!");
 }

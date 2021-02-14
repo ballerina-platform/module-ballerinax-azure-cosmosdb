@@ -49,11 +49,8 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:UserDefinedFunction newUDF = {
-        id: udfId,
-        userDefinedFunction: userDefinedFunctionBody
-    };
-    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, newUDF);
+
+    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId, userDefinedFunctionBody);
     
 
     // Replace User Defined Function
@@ -68,11 +65,7 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:UserDefinedFunction replacementUdf = {
-        id: udfId,
-        userDefinedFunction: newUserDefinedFunctionBody
-    };
-    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, replacementUdf);
+    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, udfId, newUserDefinedFunctionBody);
 
 
     // List all User defined Functions
