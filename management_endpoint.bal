@@ -356,16 +356,16 @@ public client class ManagementClient {
     # + permissionId - A unique ID for the newly created Permission
     # + permissionMode - The mode to which the Permission is scoped
     # + resourcePath - The resource this permission is allowing the User to access
-    # + validityPeriod - Optional. Validity period of the permission.
+    # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function createPermission(string databaseId, string userId, string permissionId, string permissionMode, 
-            string resourcePath, int? validityPeriod = ()) returns @tainted Result|error {
+            string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        if (validityPeriod is int) {
-            check setExpiryHeader(request, validityPeriod);
+        if (validityPeriodInSeconds is int) {
+            check setExpiryHeader(request, validityPeriodInSeconds);
         }
 
         json jsonPayload = {
@@ -387,16 +387,16 @@ public client class ManagementClient {
     # + permissionId - The ID of the Permission to be replaced
     # + permissionMode - The mode to which the Permission is scoped
     # + resourcePath - The resource this permission is allowing the User to access
-    # + validityPeriod - Optional. Validity period of the permission.
+    # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a cosmosdb:Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, string permissionId, string permissionMode, 
-            string resourcePath, int? validityPeriod = ()) returns @tainted Result|error { 
+            string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
-        if (validityPeriod is int) {
-            check setExpiryHeader(request, validityPeriod);
+        if (validityPeriodInSeconds is int) {
+            check setExpiryHeader(request, validityPeriodInSeconds);
         }
 
         json jsonPayload = {
