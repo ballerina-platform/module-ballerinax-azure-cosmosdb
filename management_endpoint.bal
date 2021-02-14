@@ -92,7 +92,7 @@ public client class ManagementClient {
 
     # List information of all databases in an Azure Cosmos DB account.
     # 
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Database records in one returning page.
     # + return - If successful, returns stream<cosmosdb:Database>. else returns error. 
     remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
         http:Request request = new;
@@ -103,9 +103,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Database[] emptyArray = [];
-        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request, 
-                emptyArray, maxItemCount);
+        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request);
         return databaseStream;
     }
 
@@ -202,7 +200,7 @@ public client class ManagementClient {
     # List information of all containers in a database
     # 
     # + databaseId - ID of the database where the containers belong to.
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Container records in one returning page.
     # + return - If successful, returns stream<cosmosdb:Container>. Else returns error.  
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
         http:Request request = new;
@@ -212,9 +210,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        Container[] emptyArray = [];
-        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request, 
-                emptyArray, maxItemCount);
+        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, request);
         return containerStream;
     }
 
@@ -248,9 +244,8 @@ public client class ManagementClient {
                 RESOURCE_TYPE_PK_RANGES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
 
-        PartitionKeyRange[] newArray = [];
         stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
-                requestPath, request, newArray);
+                requestPath, request);
         return partitionKeyStream;
     }
 
@@ -313,7 +308,7 @@ public client class ManagementClient {
     # Lists users in a database account.
     # 
     # + databaseId - ID of the database where users is created.
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of User records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:User>. Else returns error.
@@ -327,9 +322,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        User[] newArray = [];
-        stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request, newArray, 
-                maxItemCount);
+        stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request);
         return userStream;
     }
 
@@ -439,7 +432,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of user where the the permissions is created.
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Permission records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:Permission>. Else returns error.
@@ -454,9 +447,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        Permission[] newArray = [];
-        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
-                request, newArray, maxItemCount);
+        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, request);
         return permissionStream;
     }
 
@@ -533,7 +524,7 @@ public client class ManagementClient {
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 
     # 
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Offer records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:Offer> Else returns error.
@@ -547,16 +538,14 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        Offer[] newArray = [];
-        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request, newArray,
-                maxItemCount);
+        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request);
         return offerStream;
     }
 
     # Perform queries on Offer resources.
     # 
     # + sqlQuery - A string value containing SQL query.
-    # + maxItemCount - Optional. Maximum number of documents in one returning page..
+    # + maxItemCount - Optional. Maximum number of offers in one returning page..
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<json>. Else returns error.
@@ -566,11 +555,14 @@ public client class ManagementClient {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setOptionalHeaders(request, requestOptions);
+        if (maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        }
 
         request.setJsonPayload({query: sqlQuery});
         setHeadersForQuery(request);
 
-        stream<json> offerStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
+        stream<json> offerStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request);
         return offerStream;
     }
 }

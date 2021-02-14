@@ -14,6 +14,8 @@
 // specific language governing permissions and limitations
 // under the License. 
 
+import ballerina/lang.array as array;
+
 //  Maps the json response returned from the request into record type of Document.
 // 
 //  + jsonPayload - A tuple which contains headers and json object returned from request.
@@ -102,7 +104,7 @@ isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted Ind
     indexingPolicy.indexingMode = jsonPayload.indexingMode != () ? jsonPayload.indexingMode.toString() : EMPTY_STRING;
     indexingPolicy.automatic = convertToBoolean(jsonPayload.automatic);
     indexingPolicy.includedPaths = convertToIncludedPathsArray(<json[]>jsonPayload.includedPaths);
-    indexingPolicy.excludedPaths = convertToIncludedPathsArray(<json[]>jsonPayload.excludedPaths);
+    indexingPolicy.excludedPaths = convertToExcludedPathsArray(<json[]>jsonPayload.excludedPaths);
     return indexingPolicy;
 }
 
@@ -146,6 +148,16 @@ isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted 
         includedPath.indexes = convertToIndexArray(<json[]>jsonPayload.indexes);
     }
     return includedPath;
+}
+
+//  Maps the json response returned from the request into record type of ExcludedPath.
+// 
+//  + jsonPayload - The json object returned from request.
+//  + return - An instance of record type IncludedPath.
+isolated function mapJsonToExcludedPathsType(json jsonPayload) returns @tainted ExcludedPath {
+    ExcludedPath excludedPath = {};
+    excludedPath.path = jsonPayload.path.toString();
+    return excludedPath;
 }
 
 //  Maps the json response returned from the request into record type of Index.
@@ -270,12 +282,13 @@ isolated function mapJsonToOfferType([json, ResponseHeaders?] jsonPayload) retur
 //  + databases - An existing array of type Database.
 //  + sourceDatabaseArrayJsonObject - Json object which contain the array of database information.
 //  + return - An array of type Database.
-isolated function convertToDatabaseArray(@tainted Database[] databases, json[] sourceDatabaseArrayJsonObject) {
-    int i = databases.length();
-    foreach json jsonDatabase in sourceDatabaseArrayJsonObject {
-        databases[i] = mapJsonToDatabaseType([jsonDatabase, ()]);
-        i = i + 1;
+isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns Database[] {
+    Database[] databases = [];
+    foreach json databaseObject in sourceDatabaseArrayJsonObject {
+        Database database = mapJsonToDatabaseType([databaseObject, ()]);
+        array:push(databases, database);
     }
+    return databases;
 }
 
 //  Convert json array of container information in to an array of type Container.
@@ -283,12 +296,13 @@ isolated function convertToDatabaseArray(@tainted Database[] databases, json[] s
 //  + containers - An existing array of type Container.
 //  + sourceContainerArrayJsonObject - Json object which contain the array of container information.
 //  + return - An array of type Container.
-isolated function convertToContainerArray(@tainted Container[] containers, json[] sourceContainerArrayJsonObject) {
-    int i = containers.length();
+isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject) returns Container[] {
+    Container[] containers = [];  
     foreach json jsonCollection in sourceContainerArrayJsonObject {
-        containers[i] = mapJsonToContainerType([jsonCollection, ()]);
-        i = i + 1;
+        Container container = mapJsonToContainerType([jsonCollection, ()]);
+        array:push(containers, container);
     }
+    return containers;
 }
 
 //  Convert json array of document information in to an array of type Document.
@@ -296,12 +310,13 @@ isolated function convertToContainerArray(@tainted Container[] containers, json[
 //  + documents - An existing array of type Document.
 //  + sourceDocumentArrayJsonObject - Json object which contain the array of document information.
 //  + return - An array of type Document.
-isolated function convertToDocumentArray(@tainted Document[] documents, json[] sourceDocumentArrayJsonObject) {
-    int i = documents.length();
-    foreach json document in sourceDocumentArrayJsonObject {
-        documents[i] = mapJsonToDocumentType([document, ()]);
-        i = i + 1;
+isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns Document[] {
+    Document[] documents = [];
+    foreach json documentObject in sourceDocumentArrayJsonObject {
+        Document document = mapJsonToDocumentType([documentObject, ()]);
+        array:push(documents, document);
     }
+    return documents;
 }
 
 //  Convert json array of stored procedure information in to an array of type StoredProcedure.
@@ -309,13 +324,13 @@ isolated function convertToDocumentArray(@tainted Document[] documents, json[] s
 //  + storedProcedures - An existing array of type StoredProcedure.
 //  + sourceStoredProcedureArrayJsonObject - Json object which contain the array of stored procedure information.
 //  + return - An array of type StoredProcedure.
-isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] storedProcedures, 
-        json[] sourceStoredProcedureArrayJsonObject) {
-    int i = storedProcedures.length();
-    foreach json storedProcedure in sourceStoredProcedureArrayJsonObject {
-        storedProcedures[i] = mapJsonToStoredProcedure([storedProcedure, ()]);
-        i = i + 1;
+isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArrayJsonObject) returns StoredProcedure[] {
+    StoredProcedure[] storedProcedures = [];
+    foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
+        StoredProcedure storedProcedure = mapJsonToStoredProcedure([storedProcedureObject, ()]);
+        array:push(storedProcedures, storedProcedure);
     }
+    return storedProcedures;
 }
 
 //  Convert json array of user defined function information in to an array of type UserDefinedFunction.
@@ -323,13 +338,13 @@ isolated function convertToStoredProcedureArray(@tainted StoredProcedure[] store
 //  + userDefinedFunctions - An existing array of type UserDefinedFunction.
 //  + sourceUdfArrayJsonObject - Json object which contain the array of user defined function information.
 //  + return - An array of type UserDefinedFunction.
-isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunction[] userDefinedFunctions, 
-        json[] sourceUdfArrayJsonObject) {
-    int i = userDefinedFunctions.length();
-    foreach json userDefinedFunction in sourceUdfArrayJsonObject {
-        userDefinedFunctions[i] = mapJsonToUserDefinedFunction([userDefinedFunction, ()]);
-        i = i + 1;
+isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns UserDefinedFunction[] {
+    UserDefinedFunction[] userDefinedFunctions = [];
+    foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
+        UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction([userDefinedFunctionObject, ()]);
+        array:push(userDefinedFunctions, userDefinedFunction);
     }
+    return userDefinedFunctions;
 }
 
 //  Convert json array of trigger information in to an array of type Trigger.
@@ -337,12 +352,13 @@ isolated function convertsToUserDefinedFunctionArray(@tainted UserDefinedFunctio
 //  + triggers - An existing array of type Trigger.
 //  + sourceTriggerArrayJsonObject - Json object which contain the array of trigger information.
 //  + return - An array of type Trigger.
-isolated function convertToTriggerArray(@tainted Trigger[] triggers, json[] sourceTriggerArrayJsonObject) {
-    int i = triggers.length();
-    foreach json trigger in sourceTriggerArrayJsonObject {
-        triggers[i] = mapJsonToTrigger([trigger, ()]);
-        i = i + 1;
+isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns Trigger[] {
+    Trigger[] triggers = [];
+    foreach json triggerObject in sourceTriggerArrayJsonObject {
+        Trigger trigger = mapJsonToTrigger([triggerObject, ()]);
+        array:push(triggers, trigger);
     }
+    return triggers;
 }
 
 //  Convert json array of user information in to an array of type User.
@@ -350,12 +366,13 @@ isolated function convertToTriggerArray(@tainted Trigger[] triggers, json[] sour
 //  + users - An existing array of type User.
 //  + sourceUserArrayJsonObject - Json object which contain the array of user information.
 //  + return - An array of type User.
-isolated function convertToUserArray(@tainted User[] users, json[] sourceUserArrayJsonObject) {
-    int i = users.length();
-    foreach json user in sourceUserArrayJsonObject {
-        users[i] = mapJsonToUserType([user, ()]);
-        i = i + 1;
+isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns User[] {
+    User[] users = [];
+    foreach json userObject in sourceUserArrayJsonObject {
+        User user = mapJsonToUserType([userObject, ()]);
+        array:push(users, user);
     }
+    return users;
 }
 
 //  Convert json array of permission information in to an array of type Permission.
@@ -363,12 +380,13 @@ isolated function convertToUserArray(@tainted User[] users, json[] sourceUserArr
 //  + permissions - An existing array of type Permission.
 //  + sourcePermissionArrayJsonObject - Json object which contain the array of permission information.
 //  + return - An array of type Permission.
-isolated function convertToPermissionArray(@tainted Permission[] permissions, json[] sourcePermissionArrayJsonObject) {
-    int i = permissions.length();
-    foreach json permission in sourcePermissionArrayJsonObject {
-        permissions[i] = mapJsonToPermissionType([permission, ()]);
-        i = i + 1;
+isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns Permission[] {
+    Permission[] permissions = [];
+    foreach json permissionObject in sourcePermissionArrayJsonObject {
+        Permission permission = mapJsonToPermissionType([permissionObject, ()]);
+        array:push(permissions, permission);
     }
+    return permissions;
 }
 
 //  Convert json array of offer infromation in to an array of type Offer.
@@ -376,12 +394,13 @@ isolated function convertToPermissionArray(@tainted Permission[] permissions, js
 //  + offers - An existing array of type Offer
 //  + sourceOfferArrayJsonObject - Json object which contain the array of offer information.
 //  + return - An array of type Offer.
-isolated function convertToOfferArray(@tainted Offer[] offers, json[] sourceOfferArrayJsonObject) {
-    int i = offers.length();
-    foreach json offer in sourceOfferArrayJsonObject {
-        offers[i] = mapJsonToOfferType([offer, ()]);
-        i = i + 1;
+isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns Offer[] {
+    Offer[] offers = [];
+    foreach json offerObject in sourceOfferArrayJsonObject {
+        Offer offer = mapJsonToOfferType([offerObject, ()]);
+        array:push(offers, offer);
     }
+    return offers;
 }
 
 //  Convert json array of included path information in to an array of type IncludedPath.
@@ -390,12 +409,24 @@ isolated function convertToOfferArray(@tainted Offer[] offers, json[] sourceOffe
 //  + return - An array of type IncludedPath.
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] {
     IncludedPath[] includedPaths = [];
-    int i = 0;
-    foreach json jsonPath in sourcePathArrayJsonObject {
-        includedPaths[i] = <IncludedPath>mapJsonToIncludedPathsType(jsonPath);
-        i = i + 1;
+    foreach json jsonPathObject in sourcePathArrayJsonObject {
+        IncludedPath includedPath = mapJsonToIncludedPathsType([jsonPathObject, ()]);
+        array:push(includedPaths, includedPath);
     }
     return includedPaths;
+}
+
+//  Convert json array of included path information in to an array of type IncludedPath.
+// 
+//  + sourcePathArrayJsonObject - Json object which contain the array of included path information.
+//  + return - An array of type IncludedPath.
+isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted ExcludedPath[] {
+    ExcludedPath[] excludedPaths = [];
+    foreach json jsonPathObject in sourcePathArrayJsonObject {
+        ExcludedPath excludedPath = mapJsonToExcludedPathsType([jsonPathObject, ()]);
+        array:push(excludedPaths, excludedPath);
+    }
+    return excludedPaths;
 }
 
 //  Convert json array of partition key ranges in to an array of type PartitionKeyRange.
@@ -422,10 +453,9 @@ PartitionKeyRange[] {
 //  + return - An array of type Index.
 isolated function convertToIndexArray(json[] sourceIndexArrayJsonObject) returns @tainted Index[] {
     Index[] indexes = [];
-    int i = 0;
-    foreach json index in sourceIndexArrayJsonObject {
-        indexes[i] = mapJsonToIndexType(index);
-        i = i + 1;
+    foreach json indexObject in sourceIndexArrayJsonObject {
+        Index index = mapJsonToIndexType([indexObject, ()]);
+        array:push(indexes, index);
     }
     return indexes;
 }
@@ -436,10 +466,8 @@ isolated function convertToIndexArray(json[] sourceIndexArrayJsonObject) returns
 //  + return - An array of type string.
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {
     string[] strings = [];
-    int i = 0;
-    foreach json str in sourceArrayJsonObject {
-        strings[i] = str.toString();
-        i = i + 1;
+    foreach json stringObject in sourceArrayJsonObject {
+        array:push(strings, stringObject.toString());
     }
     return strings;
 }

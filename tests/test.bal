@@ -1186,22 +1186,20 @@ function test_getCollection_Resource_Token() {
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
-        if (result?.token is string) {
-            AzureCosmosConfiguration configdb = {
-                baseUrl: getConfigValue("BASE_URL"),
-                masterOrResourceToken: result?.token.toString()
-            };
+        AzureCosmosConfiguration configdb = {
+            baseUrl: getConfigValue("BASE_URL"),
+            masterOrResourceToken: result?.token.toString()
+        };
 
-            ManagementClient managementClient = new (configdb);
+        ManagementClient managementClient = new (configdb);
 
-            string containerId = container.id;
+        string containerId = container.id;
 
-            var resultdb = managementClient->getContainer(databaseId, containerId);
-            if (resultdb is error) {
-                test:assertFail(msg = resultdb.message());
-            } else {
-                var output = "";
-            }
+        var resultdb = managementClient->getContainer(databaseId, containerId);
+        if (resultdb is error) {
+            test:assertFail(msg = resultdb.message());
+        } else {
+            var output = "";
         }
     }
 }

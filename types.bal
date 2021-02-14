@@ -29,7 +29,7 @@ public type AzureCosmosConfiguration record {|
 # + sessionToken - Session token of the request.
 # + eTag - Resource etag for the resource retrieved same as eTag in the response. 
 public type ResponseHeaders record {|
-    string? continuationHeader?;
+    string? continuationHeader = ();
     string sessionToken = "";
     string eTag = "";
 |};
@@ -104,9 +104,9 @@ public type Document record {|
 # + excludedPaths - Array of type IncludedPath representing excluded paths.
 public type IndexingPolicy record {|
     string indexingMode = "";
-    boolean automatic?;
+    boolean automatic = true;
     IncludedPath[] includedPaths?;
-    IncludedPath[] excludedPaths?;
+    ExcludedPath[] excludedPaths?;
 |};
 
 # Represent the necessary parameters of included path type.
@@ -115,14 +115,14 @@ public type IndexingPolicy record {|
 # + indexes - Array of type Index representing index values.
 public type IncludedPath record {|
     string path = "";
-    Index[] indexes?;
+    Index[] indexes = [];
 |};
 
 # Represent the necessary parameters of excluded path type.
 # 
 # + path - Path that is excluded from indexing. 
 public type ExcludedPath record {|
-    string path?;
+    string path = "";
 |};
 
 # Represent the record type with necessary parameters to represent an index. 
@@ -199,24 +199,6 @@ public type Trigger record {|
 
 type JsonMap map<json>;
 
-# Represents the record type which contain necessary elements for a query.
-# 
-# + query - The SQL query represented as string.
-# + parameters - Parameters of the query if exists.
-public type Query record {|
-    string query = "";
-    QueryParameter[]? parameters = [];
-|};
-
-# Represents the paramaters related to query.
-# 
-# + name - Name of the parameter.
-# + value - Value of the parameter.
-public type QueryParameter record {|
-    string name = "";
-    string|int|boolean value = "";
-|};
-
 // ---------------------------------------------Managment Plane---------------------------------------------------------
 
 # Reprsent the record type with necessary paramaters to create partition key range.
@@ -275,8 +257,8 @@ public type Permission record {|
     string selfReference = "";
     string permissionMode = "";
     string resourcePath = "";
-    int validityPeriod?;
-    string token?;
+    int validityPeriod = MIN_TIME_TO_LIVE;
+    string token = "";
     string eTag = "";
     string sessionToken = "";
 |};

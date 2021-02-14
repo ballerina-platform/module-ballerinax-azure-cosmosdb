@@ -350,8 +350,7 @@ isolated function mapCreationResponseToTuple(http:Response httpResponse) returns
 //
 isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseHeaders|error {
     ResponseHeaders responseHeaders = {};
-    responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER) == "" ? () : 
-            getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
+    responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
     responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
     responseHeaders.eTag = getHeaderIfExist(httpResponse, http:ETAG);
     return responseHeaders;
@@ -380,30 +379,31 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 //  + maxItemCount - maximum item count per one page value 
 //  + continuationHeader - the continuation header which points to the next page
 // 
-function getQueryResults(http:Client azureCosmosClient, string path, http:Request request, @tainted json[] array, 
-        int? maxItemCount = (), string? continuationHeader = ()) returns @tainted stream<json>|error {
-    if (continuationHeader is string) {
-        request.setHeader(CONTINUATION_HEADER, continuationHeader);
-    }
-    if (maxItemCount is int) {
-        request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
-    }
+function getQueryResults(http:Client azureCosmosClient, string path, http:Request request, int? maxItemCount = ()) 
+        returns @tainted stream<json>|error {
+    // if (continuationHeader is string) {
+    //     request.setHeader(CONTINUATION_HEADER, continuationHeader);
+    // }
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     var [payload, responseHeaders] = check mapResponseToTuple(response);
 
     if (payload.Documents is json) {
-        appendNewJsonArray(array, <json[]>payload.Documents);
+        json[] array =  <json[]>payload.Documents;
         stream<json> documentStream = (<@untainted>array).toStream();
-        if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
-            documentStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
-        }
+        // This part of the code is for recursively calling the request when another page exits in the result and user wants
+        // to get those too.
+        // if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
+        //     documentStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
+        // }
         return documentStream;
     } else if (payload.Offers is json) {
-        appendNewJsonArray(array, <json[]>payload.Offers);
+        json[] array = <json[]>payload.Offers;
         stream<json> offerStream = (<@untainted>array).toStream();
-        if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
-            offerStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
-        }
+        // This part of the code is for recursively calling the request when another page exits in the result and user wants
+        // to get those too.
+        // if (responseHeaders?.continuationHeader != () && maxItemCount is ()) {
+        //     offerStream = check getQueryResults(azureCosmosClient, path, request, array, (), responseHeaders?.continuationHeader);
+        // }
         return offerStream;
     }
     else {
@@ -411,100 +411,49 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     }
 }
 
-isolated function appendNewJsonArray(json[] array, json[] newArray) {
-    int i = array.length();
-    foreach json element in newArray {
-        array[i] = element;
-        i = i + 1;
-    }
-}
-
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
-        int? maxItemCount = (), @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
-    if (continuationHeader is string) {
-        request.setHeader(CONTINUATION_HEADER, continuationHeader);
-    }
-
+function retriveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted stream<record{}>|error {
+    // if (continuationHeader is string) {
+    //     request.setHeader(CONTINUATION_HEADER, continuationHeader);
+    // }
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
-    stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, array, payload, 
-            headers?.continuationHeader, maxItemCount);
+    stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, payload);
     return finalStream;
 }
 
-function createStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
-        json payload, @tainted string? continuationHeader = (), int? maxItemCount = ()) returns @tainted stream<record{}>|error {
-    var arrayType = typeof array;
-    record{}[] finalArray = array;
-
-    if (arrayType is typedesc<Offer[]>) {
-        if (payload.Offers is json) {
-            convertToOfferArray(<Offer[]>array, <json[]>payload.Offers);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Document[]>) {
-        if (payload.Documents is json) {
-            convertToDocumentArray(<Document[]>array, <json[]>payload.Documents);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Database[]>) {
-        if (payload.Databases is json) {
-            convertToDatabaseArray(<Database[]>array, <json[]>payload.Databases);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Container[]>) {
-        if (payload.DocumentCollections is json) {
-            convertToContainerArray(<Container[]>array, <json[]>payload.DocumentCollections);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<StoredProcedure[]>) {
-        if (payload.StoredProcedures is json) {
-            convertToStoredProcedureArray(<StoredProcedure[]>array, <json[]>payload.StoredProcedures);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }     
-    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
-        if (payload.UserDefinedFunctions is json) {
-            convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>array, <json[]>payload.UserDefinedFunctions);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Trigger[]>) {
-        if (payload.Triggers is json) {
-            convertToTriggerArray(<Trigger[]>array, <json[]>payload.Triggers);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<User[]>) {
-        if (payload.Users is json) {
-            convertToUserArray(<User[]>array, <json[]>payload.Users);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Permission[]>) {
-        if (payload.Permissions is json) {
-            convertToPermissionArray(<Permission[]>array, <json[]>payload.Permissions);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
-        if (payload.PartitionKeyRanges is json) {
-            finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-        } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
+function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload) 
+        returns @tainted stream<record{}>|error {
+    record{}[] finalArray = [];
+    if (payload.Databases is json) {
+        finalArray = convertToDatabaseArray(<json[]>payload.Databases);
+    } else if (payload.DocumentCollections is json) {
+        finalArray = convertToContainerArray(<json[]>payload.DocumentCollections);
+    } else if (payload.Documents is json) {
+        finalArray = convertToDocumentArray(<json[]>payload.Documents);
+    } else if (payload.StoredProcedures is json) {
+        finalArray = convertToStoredProcedureArray( <json[]>payload.StoredProcedures);
+    } else if (payload.UserDefinedFunctions is json) {
+        finalArray = convertsToUserDefinedFunctionArray(<json[]>payload.UserDefinedFunctions);
+    } else if (payload.Triggers is json) {
+        finalArray = convertToTriggerArray(<json[]>payload.Triggers);
+    } else if (payload.Users is json) {
+        finalArray = convertToUserArray(<json[]>payload.Users);
+    } else if (payload.Permissions is json) {
+        finalArray = convertToPermissionArray(<json[]>payload.Permissions);
+    } else if (payload.PartitionKeyRanges is json) {
+        finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
+    } else if (payload.Offers is json) {
+        finalArray = convertToOfferArray(<json[]>payload.Offers);
     } else {
-        return prepareAzureError(INVALID_STREAM_TYPE);
+        return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
 
     stream<record{}> newStream = (<@untainted>finalArray).toStream();
-    if (continuationHeader != () && maxItemCount is ()) {
-        newStream = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), continuationHeader);
-    }
+    // This part of the code is for recursively calling the request when another page exits in the result and user wants
+    // to get those too.
+    // if (continuationHeader != () && maxItemCount is ()) {
+    //     newStream = check retriveStream(azureCosmosClient, path, request, <@untainted>finalArray, (), continuationHeader);
+    // }
     return newStream;
 }
 

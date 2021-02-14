@@ -113,7 +113,7 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the Database which Container belongs to.
     # + containerId - ID of the Container which Document belongs to.
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Document records in one returning page.
     # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns stream<cosmosdb:Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
@@ -127,9 +127,7 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        Document[] emptyArray = [];
-        stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request, 
-                emptyArray, maxItemCount);
+        stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request);
         return documentStream;
     }
 
@@ -172,7 +170,9 @@ public client class CoreClient {
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, valueOfPartitionKey);
         setOptionalHeaders(request, requestOptions);
-
+        if (maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        }
         json payload = {
             query: sqlQuery,
             parameters:[]
@@ -180,7 +180,7 @@ public client class CoreClient {
         request.setJsonPayload(<@untainted>payload);
 
         setHeadersForQuery(request);
-        stream<json> documentStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request, [], maxItemCount, ());
+        stream<json> documentStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request);
         return documentStream;
     }
 
@@ -241,7 +241,7 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which container belongs to.
     # + containerId - ID of the container which contain the stored procedures.    
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Stored Procedure records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:StoredProcedure>. Else returns error. 
     remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
@@ -256,9 +256,8 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        StoredProcedure[] emptyArray = [];
         stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(self.httpClient, 
-                requestPath, request, emptyArray, maxItemCount);
+                requestPath, request);
         return storedProcedureStream;
     }
 
@@ -361,7 +360,7 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database which user belongs to.
     # + containerId - ID of the container which user defined functions belongs to.    
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of User Defined Function records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:UserDefinedFunction>. Else returns error. 
@@ -376,9 +375,8 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        UserDefinedFunction[] emptyArray = [];
         stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retriveStream(
-        self.httpClient, requestPath, request, emptyArray, maxItemCount);
+        self.httpClient, requestPath, request);
         return userDefinedFunctionStream;
     }
 
@@ -468,7 +466,7 @@ public client class CoreClient {
     # 
     # + databaseId - ID of the database where the container is created.
     # + containerId - ID of the container where the triggers are created.     
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + maxItemCount - Optional. Maximum number of Trigger records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the request.
     # + return - If successful, returns a stream<cosmosdb:Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
@@ -482,9 +480,7 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, requestOptions);
 
-        Trigger[] emptyArray = [];
-        stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request, 
-                emptyArray, maxItemCount);
+        stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request);
         return triggerStream;
     }
 
