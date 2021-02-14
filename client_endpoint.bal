@@ -34,11 +34,11 @@ public client class CoreClient {
 
     # Create a Document inside a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which Document belongs to.
-    # + documentId - A unique ID for the document to save in the Database.
-    # + document -  A JSON document to be saved in the Database.
-    # + valueOfPartitionKey - The value of parition key field of the Container. 
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which Document belongs to
+    # + documentId - A unique ID for the document to save in the Database
+    # + document -  A JSON document to be saved in the Database
+    # + valueOfPartitionKey - The value of parition key field of the Container 
     # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -64,11 +64,11 @@ public client class CoreClient {
 
     # Replace a document inside a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which Document belongs to.
-    # + documentId - The ID of the Document to be replaced.
-    # + document -  A JSON document saved in the Database.    
-    # + valueOfPartitionKey - The value of parition key field of the Container. 
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which Document belongs to
+    # + documentId - The ID of the Document to be replaced
+    # + document -  A JSON document saved in the Database    
+    # + valueOfPartitionKey - The value of parition key field of the Container 
     # + requestOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
@@ -92,10 +92,10 @@ public client class CoreClient {
 
     # Get information about one document in a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which Document belongs to.
-    # + documentId - Id of the Document to retrieve. 
-    # + valueOfPartitionKey - The value of parition key field of the Container.
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which Document belongs to
+    # + documentId - Id of the Document to retrieve 
+    # + valueOfPartitionKey - The value of parition key field of the Container
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Document. Else returns error.  
@@ -115,8 +115,8 @@ public client class CoreClient {
 
     # List information of all the documents in a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which Document belongs to.
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which Document belongs to
     # + maxItemCount - Optional. Maximum number of Document records in one returning page.
     # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
     #       request.
@@ -138,10 +138,10 @@ public client class CoreClient {
 
     # Delete a document in a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which Document belongs to.   
-    # + documentId - ID of the document to delete. 
-    # + valueOfPartitionKey - The value of parition key field of the container.
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which Document belongs to   
+    # + documentId - ID of the document to delete
+    # + valueOfPartitionKey - The value of parition key field of the container
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -161,9 +161,9 @@ public client class CoreClient {
 
     # Query a container.
     # 
-    # + databaseId - ID of the database which Container belongs to.
-    # + containerId - ID of the Container to query.     
-    # + sqlQuery - A string containing the SQL query.
+    # + databaseId - ID of the database which Container belongs to
+    # + containerId - ID of the Container to query     
+    # + sqlQuery - A string containing the SQL query
     # + valueOfPartitionKey - Optional. The value of parition key field of the container.
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
@@ -196,10 +196,10 @@ public client class CoreClient {
     # A stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
     # collection as a single transaction.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which Stored Procedure will be created. 
-    # + storedProcedureId - A unique ID for the newly created Stored Procedure.    
-    # + storedProcedure - A JavaScript function.
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which Stored Procedure will be created 
+    # + storedProcedureId - A unique ID for the newly created Stored Procedure    
+    # + storedProcedure - A JavaScript function
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             string storedProcedure) returns @tainted Result|error {
@@ -221,10 +221,10 @@ public client class CoreClient {
 
     # Replace a stored procedure in a container with new one.
     # 
-    # + databaseId - ID of the Database which Container belongs to.
-    # + containerId - ID of the Container which existing Stored Procedure belongs to. 
-    # + storedProcedureId - The ID of the Stored Procedure to be replaced.    
-    # + storedProcedure - A JavaScript function.    
+    # + databaseId - ID of the Database which Container belongs to
+    # + containerId - ID of the Container which existing Stored Procedure belongs to
+    # + storedProcedureId - The ID of the Stored Procedure to be replaced   
+    # + storedProcedure - A JavaScript function    
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             string storedProcedure) returns @tainted Result|error { 
@@ -246,8 +246,8 @@ public client class CoreClient {
 
     # List information of all stored procedures in a container.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container which contain the stored procedures.    
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which contain the stored procedures    
     # + maxItemCount - Optional. Maximum number of Stored Procedure records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
@@ -271,9 +271,9 @@ public client class CoreClient {
 
     # Delete a stored procedure in a container.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container which contain the stored procedure.     
-    # + storedProcedureId - ID of the stored procedure to delete.
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which contain the stored procedure    
+    # + storedProcedureId - ID of the stored procedure to delete
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities 
     #       to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -292,11 +292,11 @@ public client class CoreClient {
 
     # Execute a stored procedure in a container.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container which contain the stored procedure.
-    # + storedProcedureId - ID of the stored procedure to execute.
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which contain the stored procedure
+    # + storedProcedureId - ID of the stored procedure to execute
     # + options - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
-    # + return - If successful, returns json with the output from the executed funxtion. Else returns error. 
+    # + return - If successful, returns json with the output from the executed function. Else returns error. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             StoredProcedureOptions? options = ()) returns @tainted json|error { 
         http:Request request = new;
@@ -316,10 +316,10 @@ public client class CoreClient {
     # 
     # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container which user defined will be created.  
-    # + userDefinedFunctionId - A unique ID for the newly created User Defined Function.
-    # + userDefinedFunction - A JavaScript function.
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which user defined will be created  
+    # + userDefinedFunctionId - A unique ID for the newly created User Defined Function
+    # + userDefinedFunction - A JavaScript function
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
             string userDefinedFunction) returns @tainted Result|error { 
@@ -341,10 +341,10 @@ public client class CoreClient {
 
     # Replace an existing user defined function in a collection.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container in which user defined function is created.    
-    # + userDefinedFunctionId - The ID of the User Defined Function to replace.
-    # + userDefinedFunction - A JavaScript function.    
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container in which user defined function is created    
+    # + userDefinedFunctionId - The ID of the User Defined Function to replace
+    # + userDefinedFunction - A JavaScript function    
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
             string userDefinedFunction) returns @tainted Result|error { 
@@ -366,8 +366,8 @@ public client class CoreClient {
 
     # Get a list of existing user defined functions inside a collection.
     # 
-    # + databaseId - ID of the database which user belongs to.
-    # + containerId - ID of the container which user defined functions belongs to.    
+    # + databaseId - ID of the database which user belongs to
+    # + containerId - ID of the container which user defined functions belongs to    
     # + maxItemCount - Optional. Maximum number of User Defined Function records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
@@ -390,9 +390,9 @@ public client class CoreClient {
 
     # Delete an existing user defined function inside a collection.
     # 
-    # + databaseId - ID of the database which container is created.
-    # + containerId - ID of the container which user defined function is created.    
-    # + userDefinedFunctionid - Id of UDF to delete.
+    # + databaseId - ID of the database which container is created
+    # + containerId - ID of the container which user defined function is created   
+    # + userDefinedFunctionid - Id of UDF to delete
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -414,12 +414,12 @@ public client class CoreClient {
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript.
     #  
-    # + databaseId - ID of the database where container is created.
-    # + containerId - ID of the container where trigger is created.   
-    # + triggerId - A unique ID for the newly created Trigger.
-    # + trigger - A JavaScript function.
-    # + triggerOperation - The sepcific operation in which trigger will be executed.
-    # + triggerType - The instance in which trigger will be executed "Pre" or "Post".
+    # + databaseId - ID of the database where container is created
+    # + containerId - ID of the container where trigger is created   
+    # + triggerId - A unique ID for the newly created Trigger
+    # + trigger - A JavaScript function
+    # + triggerOperation - The sepcific operation in which trigger will be executed
+    # + triggerType - The instance in which trigger will be executed "Pre" or "Post"
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
             string triggerOperation, string triggerType) returns @tainted Result|error { 
@@ -443,12 +443,12 @@ public client class CoreClient {
 
     # Replace an existing trigger inside a collection.
     # 
-    # + databaseId - ID of the database where container is created.
-    # + containerId - ID of the container where trigger is created.     
-    # + triggerId - The of the Trigger to be replaced.
-    # + trigger - A JavaScript function.
-    # + triggerOperation - The sepcific operation in which trigger will be executed.
-    # + triggerType - The instance in which trigger will be executed "Pre" or "Post".    
+    # + databaseId - ID of the database where container is created
+    # + containerId - ID of the container where trigger is created    
+    # + triggerId - The of the Trigger to be replaced
+    # + trigger - A JavaScript function
+    # + triggerOperation - The sepcific operation in which trigger will be executed
+    # + triggerType - The instance in which trigger will be executed "Pre" or "Post"    
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, string triggerId, string trigger, 
             string triggerOperation, string triggerType) returns @tainted Result|error {
@@ -472,8 +472,8 @@ public client class CoreClient {
 
     # List existing triggers inside a collection.
     # 
-    # + databaseId - ID of the database where the container is created.
-    # + containerId - ID of the container where the triggers are created.     
+    # + databaseId - ID of the database where the container is created
+    # + containerId - ID of the container where the triggers are created     
     # + maxItemCount - Optional. Maximum number of Trigger records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
@@ -495,9 +495,9 @@ public client class CoreClient {
 
     # Delete an existing trigger inside a collection.
     # 
-    # + databaseId - ID of the database where the container is created.
-    # + containerId - ID of the container where the trigger is created. 
-    # + triggerId - ID of the trigger to be deleted.
+    # + databaseId - ID of the database where the container is created
+    # + containerId - ID of the container where the trigger is created 
+    # + triggerId - ID of the trigger to be deleted
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities 
     #       to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  

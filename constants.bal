@@ -14,12 +14,15 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Represents the Consistancy Level Override for document create and update
+# Represents the Consistancy Level Override for document create and update.
 # 
-# + STRONG - "Strong" consistancy level
-# + BOUNDED - "Bounded" consistancy level
-# + SESSION - "Session" consistancy level
-# + EVENTUAL - "Eventual" consistancy level
+# + STRONG - `Strong` consistancy level where Users are always guaranteed to read the latest committed write
+# + BOUNDED - `Bounded` consistancy level where Reads might lag behind writes behind at most K updates of an item or by 
+#       T time interval
+# + SESSION - `Session` consistancy level  where in a single client session reads are guaranteed to honor the 
+#       consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads guarantees
+# + EVENTUAL - `Eventual` consistancy level where there's no ordering guarantee for reads. In the absence of any further 
+#       writes, the replicas eventually converge.
 public enum Consistancy {
     STRONG = "Strong",
     BOUNDED = "Bounded",
@@ -27,11 +30,11 @@ public enum Consistancy {
     EVENTUAL = "Eventual"
 }
 
-# Represents the type of an Index
+# Represents the type of an Index.
 # 
-# + HASH - "Hash" indexes are useful for equality comparisons
-# + RANGE - "Range" indexes are useful for equality, range comparisons and sorting.
-# + SPATIAL - "Spatial" indexes are useful for spatial queries.
+# + HASH - `Hash` indexes are useful for equality comparisons
+# + RANGE - `Range` indexes are useful for equality, range comparisons and sorting
+# + SPATIAL - `Spatial` indexes are useful for spatial queries
 public enum IndexType {
     HASH = "Hash",
     RANGE = "Range",

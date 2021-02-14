@@ -266,6 +266,8 @@ accounts. For the account type which is called `serverless(preview)` you cannot 
 providing support for provisioned throughput for containers or databases inside it. More information about serverless 
 accounts can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/serverless
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/database/create_database.bal
+
 ### Get one Database
 This operation is related to reading information about a Database which is already created inside the cosmos DB account. 
 It mainly returns the ID of the Database with resourceId. We can use the results to refer to a Database by it’s 
@@ -290,6 +292,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/database/get_a_database.bal
 
 ### List All Databases
 When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
@@ -312,6 +315,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/database/list_databases.bal
 
 ### Delete a Database
 This operation can be used for deleting a Database inside an Azure Cosmos DB account. It returns true if the Database is
@@ -336,6 +340,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/database/delete_database.bal
 
 - ## Containers
 A Container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
@@ -370,6 +375,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+
 Notes: <br/> Apart from this the creation of containers allows several optional parameters to provide more specialized 
 characteristics to the container which is created.
 - `IndexingPolicy` - can be used in creating a container, if you want to enable an Indexing policy for a specified path,
@@ -377,6 +383,7 @@ the special optional parameter can be used.
 - `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
 json object.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/create_container.bal
 ### Get one Container
 This operation is related to reading information about a Container which is already created inside a Database. It mainly 
 returns the ID of the Container, The indexing policy and partition key along with the resourceId.
@@ -401,6 +408,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/get_container.bal
 
 ### List all Containers
 When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
@@ -430,6 +438,8 @@ Notes: <br/> The optional parameter `maxItemCount` can be provided as an int to 
 This item count decides the number of items returned per page. If this is not specified the number to return will be 
 100 records per page by default.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/list_containers.bal
+
 ### Delete a Container
 This operation can be used for deleting a Container inside a Database. It returns true if the Container is deleted 
 successfully or else returns an error in case there is a problem.
@@ -454,6 +464,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/delete_container.bal
 
 - ## Users
 User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
@@ -487,6 +499,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/user/create_user.bal
 
 ### Replace User ID
 From this sample you can replace the ID of an existing User. The only replaceable property is the ID of a User created 
@@ -514,6 +527,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/user/replace_user_id.bal
 
 ### Get User
 From this sample, you can get the basic information about a created User. For this, the the Database ID where the User 
@@ -539,6 +553,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/user/get_user.bal
 
 ### List Users
 From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
@@ -563,6 +578,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/user/list_users.bal
 
 ### Delete User
 The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
@@ -588,6 +604,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/user/delete_user.bal
+
 - ## Permissions
 Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Token` of the Cosmos DB 
 account is capable of creating permissions to each User. By using this concept, a ballerina service which uses the 
@@ -645,6 +663,8 @@ Notes: <br/>
 A `validityPeriod` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
 you are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/create_permission.bal
+
 ### Replace Permission
 This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
 existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
@@ -675,6 +695,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/replace_permission.bal
+
 ### Get Permission
 From this sample you can get the basic information about a created Permission. For this, the the Database ID and the User 
 ID to which the permission belongs to and the Permission ID that, you want to get information about should be provided.
@@ -699,6 +721,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/get_permission.bal
+
 ### List Permission
 From this operation you can get a list of all the Permissions belong to a single User. Each record returned will 
 contain information about each Permission. Each result will be similar to a list of results returned from `getPermission`
@@ -723,6 +747,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/list_permissions.bal
+
 ### Delete Permission
 This Operation allows to delete a Permission in the database. For deleting a Permission, the specific Database ID, User 
 ID and the ID of the Permission to delete must be provided.
@@ -747,12 +773,17 @@ public function main() {
     log:print("Success!");
 }
 ```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/delete_permission.bal
+
 - ## Offers
 Cosmos DB Containers have either user-defined performance levels or pre-defined performance levels defined for each of 
 them. The operations on offers support replacing existing offers, listing and reading them and querying offers.
 
 Note: <br/>Operations on offers are not supported in `Serverless` accounts because they don’t specifically have a 
 predefined throughput level.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/offers/offer_operations.bal
 
 ## Data Plane operations
 - ## Documents
@@ -812,6 +843,8 @@ the container. This is provided by giving `true` or `false`.
 - `isUpsertRequest` - You can convert the creation of a new document into an upsert request by using this parameter. 
 Must be a boolean value.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/create_document.bal
+
 ### Replace Document
 This sample shows how to replace an existing Document inside a Container. Similar to document creation but, it replaces 
 an existing document. An important thing about this operation is that you `cannot` replace the existing partition key 
@@ -865,6 +898,8 @@ Replacement is done only if the Etags match. If the AccessCondition is not satis
 reject the operation and it will return an HTTP 412 Precondition failure response code.vert the creation of a new 
 document into an upsert request by using this parameter.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/replace_document.bal
+
 ### Get one Document
 This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As 
 the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for that 
@@ -904,6 +939,8 @@ Cosmos will reject the operation and it will return an HTTP 412 Precondition fai
 Users must set this level to the same or weaker level than the account’s configured consistency level. More information 
 about Cosmos DB consistancy levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/get_document.bal
+
 ### List Documents
 This sample shows how you can get a list of all the Documents.Each result will be similar to a list of results returned 
 from getDocument operation. You have to provide the Database ID and Container ID as parameters.
@@ -940,6 +977,8 @@ Users must set this level to the same or weaker level than the account’s confi
 found here: https://docs.microsoft.com/en-us/azure/cosmos-db/change-feed
 - `partitionKeyRangeId` - The partition key range ID for reading data.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/list_documents.bal
+
 ### Delete Document
 This sample shows how to delete a Document which exists inside a Container. You have to specify the Database ID, 
 Container ID where the Document exists and the ID of Document ID of the Document you want to delete. The value of the 
@@ -974,6 +1013,8 @@ consistency level is maintained.
 - `ifMatchEtag` - check if the resource's ETag value matches the ETag value provided in the Condition property. Deletion 
 is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will reject the 
 operation and it will return an HTTP 412 Precondition failure response code.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/delete_document.bal
 
 ### Querying Documents
 When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
@@ -1021,6 +1062,7 @@ the user can either get the items in one page or get all the results related to 
     be done using a boolean value. When cross-partitioning is enabled, providing `valueOfPartitionKey` will not do 
     anything. The querying will still be done across partitions.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/query_container.bal
 
 ## Server-Side programming in Cosmos DB
 Cosmos DB Supports Javascript language integrated queries to execute because it has built in support for javascript 
@@ -1069,6 +1111,9 @@ public function main() {
     log:print("Success!");
 }
 ```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/stored_procedure/create_stored_procedure.bal
+
 ### Replace Stored Procedure
 This sample shows how to replace an existing Stored Procedure. This new Stored Procedure enhances the capabilities of 
 the earlier Stored Procedure by appending the function parameter passed through the request to a string inside the 
@@ -1101,6 +1146,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/stored_procedure/replace_stored_procedure.bal
+
 ### List Stored Procedures
 From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
 contain a `StoredProcedure` and several other important information. You have to provide the Database ID and Container 
@@ -1125,6 +1172,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/stored_procedure/list_stored_procedure.bal
+
 ### Delete Stored Procedure
 This sample shows how to delete a Stored Procedure which exists inside a Container. You have to specify the Database ID, 
 Container ID where the Stored Procedure exists and the ID of the Stored Procedure you want to delete.
@@ -1149,6 +1198,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/stored_procedure/delete_stored_procedure.bal
+
 ### Execute a Stored Procedure
 Stored Procedure is a piece of logic written in JavaScript which can be executed via an API call. Cosmos DB connector 
 explicitly gives the capability to execute stored procedures. They can be used in Azure databases to execute CRUD 
@@ -1184,6 +1235,8 @@ public function main() {
 Note: <br/> If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as 
 the value for parameter of `StoredProcedureOptions` record type argument of the function `executeStoredProcedure`. 
 For example, if only one parameter is passed, the argument must be an array with one element.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/stored_procedure/execute_stored_procedure.bal
 
 - ## User Defined Functions
 User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
@@ -1228,6 +1281,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/user_defined_functions/create_udf.bal
+
 ### Replace User Defined Function
 This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User 
 Defined Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where 
@@ -1266,6 +1321,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/user_defined_functions/replace_udf.bal
+
 ### List User Defined Functions
 From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
 contain a `UserDefinedFunction` and several other important information. You have to provide the Database ID and Container 
@@ -1291,6 +1348,9 @@ public function main() {
     log:print("Success!");
 }
 ```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/user_defined_functions/list_udf.bal
+
 ### Delete User Defined Function
 This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the 
 Database ID, Container ID where the User Defined Function exists and the ID of the User Defined Function you want to 
@@ -1316,6 +1376,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/user_defined_functions/delete_udf.bal
+
 - ## Triggers
 Trigger is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers). You can 
 use Triggers to validate and/or modify data when a document is added, modified, or deleted within a Container. The 
@@ -1386,6 +1448,8 @@ Notes: <br/> When creating a Trigger, there are several required parameters we h
 - `triggerType` - Specifies when the trigger will be fired, `Pre` or `Post`.
 - `triggerFunction` - The function which will be fired when the trigger is executed.
 
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/triggers/create_trigger.bal
+
 ### Replace Trigger
 This sample shows how you can replace an existing Trigger with a new one. Here, the name of the Trigger is updated to a 
 new one. When replacing, you should pass all mandatory parameters `triggerId`, `triggerOperation`, `triggerType` and 
@@ -1443,6 +1507,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/triggers/replace_trigger.bal
+
 ### List Triggers
 From this sample you can get a list of all the Triggers inside a Container. Each record in the result list will 
 contain a `Trigger` and several other important information. You have to provide the Database ID and Container ID as 
@@ -1467,6 +1533,8 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/triggers/list_trigger.bal
+
 ### Delete Trigger
 This sample shows how to delete a Trigger which exists inside a Container. You have to specify the Database ID, 
 Container ID where the Trigger exists and the ID of the Trigger you want to delete.
@@ -1491,6 +1559,7 @@ public function main() {
     log:print("Success!");
 }
 ```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/triggers/delete_trigger.bal
 
 # Building from the Source
 ## Setting Up the Prerequisites

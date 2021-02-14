@@ -69,7 +69,7 @@ isolated function getResourceType(string url) returns string {
     return resourceType;
 }
 
-//  Extract the resource type related to cosmos db from a given url
+//  Extract the resource ID related to cosmos db from a given url
 // 
 //  + url - the URL from which we want to extract resource type
 //  + return - string representing the resource id

@@ -60,7 +60,7 @@ public client class ManagementClient {
 
     # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
     # 
-    # + databaseId - ID of the new database.
+    # + databaseId - ID of the new database
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
@@ -76,7 +76,7 @@ public client class ManagementClient {
 
     # Retrive information of a given database in an Azure Cosmos DB account.
     # 
-    # + databaseId - ID of the database to retrieve information. 
+    # + databaseId - ID of the database to retrieve information 
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
@@ -111,7 +111,7 @@ public client class ManagementClient {
 
     # Delete a given database in an Azure Cosmos DB account.
     # 
-    # + databaseId - ID of the database to delete.
+    # + databaseId - ID of the database to delete
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities 
     #       to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -129,9 +129,9 @@ public client class ManagementClient {
 
     # Create a container in the given database.
     # 
-    # + databaseId - ID of the database the container belongs to.
-    # + containerId - ID of the new container container.
-    # + partitionKey - A cosmosdb:PartitionKey.
+    # + databaseId - ID of the database the container belongs to
+    # + containerId - ID of the new container container
+    # + partitionKey - A cosmosdb:PartitionKey record
     # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -162,9 +162,9 @@ public client class ManagementClient {
 
     # Create a container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
     # 
-    # + databaseId - ID of the database the container belongs to.
-    # + containerId - ID of the new container.    
-    # + partitionKey - A cosmosdb:PartitionKey.
+    # + databaseId - ID of the database the container belongs to
+    # + containerId - ID of the new container   
+    # + partitionKey - A cosmosdb:PartitionKey record
     # + indexingPolicy - Optional. A cosmosdb:IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns cosmosdb:Result if a new container is created or () if container already exists. 
@@ -182,8 +182,8 @@ public client class ManagementClient {
 
     # Retrive information about a container in a database.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container to retrive infromation.  
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container to retrive infromation  
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Container. Else returns error.  
@@ -201,7 +201,7 @@ public client class ManagementClient {
 
     # List information of all containers in a database
     # 
-    # + databaseId - ID of the database where the containers belong to.
+    # + databaseId - ID of the database where the containers belong to
     # + maxItemCount - Optional. Maximum number of Container records in one returning page.
     # + return - If successful, returns stream<cosmosdb:Container>. Else returns error.  
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
@@ -219,8 +219,8 @@ public client class ManagementClient {
 
     # Delete a given container in a database.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container to delete.
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container to delete
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -238,8 +238,8 @@ public client class ManagementClient {
 
     # Retrieve a list of partition key ranges for the container.
     # 
-    # + databaseId - ID of the database which container belongs to.
-    # + containerId - ID of the container where the partition key ranges are related to.    
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container where the partition key ranges are related to    
     # + return - If successful, returns stream<cosmosdb:PartitionKeyRange>. Else returns error.  
     remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted 
             stream<PartitionKeyRange>|error {
@@ -256,7 +256,7 @@ public client class ManagementClient {
     # Create a user in a database.
     # 
     # + databaseId - ID of the database where the user is created.
-    # + userId - ID of the new user.
+    # + userId - ID of the new user
     # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function createUser(string databaseId, string userId) returns @tainted Result|error {
         http:Request request = new;
@@ -273,9 +273,9 @@ public client class ManagementClient {
 
     # Replace the id of an existing user for a database.
     # 
-    # + databaseId - ID of the database where the user is created.
-    # + userId - Old ID of the user.
-    # + newUserId - New ID for the user.
+    # + databaseId - ID of the database where the user is created
+    # + userId - Old ID of the user
+    # + newUserId - New ID for the user
     # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted Result|error {
         http:Request request = new;
@@ -292,8 +292,8 @@ public client class ManagementClient {
 
     # To get information of a user from a database.
     # 
-    # + databaseId - ID of the database where the user is created.
-    # + userId - ID of user to get.
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user to get
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a cosmosdb:User. Else returns error.
@@ -311,7 +311,7 @@ public client class ManagementClient {
 
     # Lists users in a database account.
     # 
-    # + databaseId - ID of the database where users is created.
+    # + databaseId - ID of the database where users is created
     # + maxItemCount - Optional. Maximum number of User records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
@@ -332,8 +332,8 @@ public client class ManagementClient {
 
     # Delete a user from a database account.
     # 
-    # + databaseId - ID of the database where user is created.
-    # + userId - ID of user to delete.
+    # + databaseId - ID of the database where user is created
+    # + userId - ID of user to delete
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -351,11 +351,11 @@ public client class ManagementClient {
 
     # Create a permission for a user. 
     # 
-    # + databaseId - ID of the database where user is created.
-    # + userId - ID of user to which the permission belongs.
-    # + permissionId - A unique ID for the newly created Permission.
-    # + permissionMode - The mode to which the Permission is scoped.
-    # + resourcePath - The resource this permission is allowing the User to access.
+    # + databaseId - ID of the database where user is created
+    # + userId - ID of user to which the permission belongs
+    # + permissionId - A unique ID for the newly created Permission
+    # + permissionMode - The mode to which the Permission is scoped
+    # + resourcePath - The resource this permission is allowing the User to access
     # + validityPeriod - Optional. Validity period of the permission.
     # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function createPermission(string databaseId, string userId, string permissionId, string permissionMode, 
@@ -382,12 +382,12 @@ public client class ManagementClient {
 
     # Replace an existing permission.
     # 
-    # + databaseId - ID of the database where the user is created.
-    # + userId - ID of user where the the permission is created.
-    # + permissionId - The ID of the Permission to be replaced.
-    # + permissionMode - The mode to which the Permission is scoped.
-    # + resourcePath - The resource this permission is allowing the User to access.
-    # + validityPeriod - Optional. Validity period of the permission
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user where the the permission is created
+    # + permissionId - The ID of the Permission to be replaced
+    # + permissionMode - The mode to which the Permission is scoped
+    # + resourcePath - The resource this permission is allowing the User to access
+    # + validityPeriod - Optional. Validity period of the permission.
     # + return - If successful, returns a cosmosdb:Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, string permissionId, string permissionMode, 
             string resourcePath, int? validityPeriod = ()) returns @tainted Result|error { 
@@ -413,9 +413,9 @@ public client class ManagementClient {
 
     # To get information of a permission belongs to a user.
     # 
-    # + databaseId - ID of the database where the user is created.
-    # + userId - ID of user where the the permission belongs to.
-    # + permissionId - ID of the permission to get information.
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user where the the permission belongs to
+    # + permissionId - ID of the permission to get information
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a cosmosdb:Permission. Else returns error.
@@ -434,8 +434,8 @@ public client class ManagementClient {
 
     # Lists permissions belong to a user.
     # 
-    # + databaseId - ID of the database where the user is created.
-    # + userId - ID of user where the the permissions is created.
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user where the the permissions is created
     # + maxItemCount - Optional. Maximum number of Permission records in one returning page.
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
@@ -458,9 +458,9 @@ public client class ManagementClient {
 
     # Deletes a permission belongs to a user.
     # 
-    # + databaseId - ID of the database where the user is created.
-    # + userId - ID of user which the permission belongs to.
-    # + permissionId - ID of the permission to delete.
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user which the permission belongs to
+    # + permissionId - ID of the permission to delete
     # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
@@ -480,7 +480,7 @@ public client class ManagementClient {
 
     # Replace an existing offer.
     # 
-    # + offer - A cosmosdb:Offer.
+    # + offer - A cosmosdb:Offer record
     # + offerType - Optional. Type of the offer.
     # + return - If successful, returns a cosmosdb:Result. Else returns error.
     remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Result|error {
@@ -509,7 +509,7 @@ public client class ManagementClient {
 
     # Get information about an offer.
     # 
-    # + offerId - The ID of the offer.
+    # + offerId - The ID of the offer
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a cosmosdb:Offer. Else returns error.
@@ -525,7 +525,6 @@ public client class ManagementClient {
     }
 
     # Gets information of offers inside database account.
-    # 
     # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 
@@ -550,8 +549,8 @@ public client class ManagementClient {
 
     # Perform queries on Offer resources.
     # 
-    # + sqlQuery - A string value containing SQL query.
-    # + maxItemCount - Optional. Maximum number of offers in one returning page..
+    # + sqlQuery - A string value containing SQL query
+    # + maxItemCount - Optional. Maximum number of offers in one returning page.
     # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<json>. Else returns error.

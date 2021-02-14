@@ -16,8 +16,8 @@
 
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
-# + baseUrl - Base URL of the Azure Cosmos DB account.
-# + masterOrResourceToken - The token used to make the request call.
+# + baseUrl - Base URL of the Azure Cosmos DB account
+# + masterOrResourceToken - The token used to make the request call
 public type AzureCosmosConfiguration record {|
     string baseUrl;
     string masterOrResourceToken;
@@ -25,9 +25,9 @@ public type AzureCosmosConfiguration record {|
 
 # Represents the response headers which is returned.
 # 
-# + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read.
-# + sessionToken - Session token of the request.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response. 
+# + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read
+# + sessionToken - Session token of the request
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
 public type ResponseHeaders record {|
     string? continuationHeader = ();
     string sessionToken = "";
@@ -36,9 +36,9 @@ public type ResponseHeaders record {|
 
 # Represents information about the status of the relevent create or update request.
 # 
-# + success - A boolean representing the success status of the request.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+# + success - A boolean representing the success status of the request
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request
 public type Result record {|
     boolean success = false;
     string eTag = "";
@@ -47,11 +47,11 @@ public type Result record {|
 
 # Represents the elements representing information about a database.
 # 
-# + id - User generated unique ID for the database. 
+# + id - User generated unique ID for the database 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
 # + sessionToken - Session token of the request. 
 public type Database record {|
     string id = "";
@@ -63,14 +63,14 @@ public type Database record {|
 
 # Represents the elements representing information about a collection.
 # 
-# + id - User generated unique ID for the container.
+# + id - User generated unique ID for the container
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + indexingPolicy - Object of type IndexingPolicy. 
-# + partitionKey - Object of type PartitionKey.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource
+# + indexingPolicy - Record of type IndexingPolicy
+# + partitionKey - Record of type PartitionKey
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request 
 public type Container record {|
     string id = "";
     string resourceId = "";
@@ -83,13 +83,13 @@ public type Container record {|
 
 # Represent the parameters representing information about a document in Cosmos DB.
 # 
-# + id - User generated unique ID for the document. 
+# + id - User generated unique ID for the document 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + documentBody - JSON document.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request.
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource
+# + documentBody - JSON document
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request
 public type Document record {|
     string id = "";
     string resourceId = "";
@@ -101,10 +101,10 @@ public type Document record {|
 
 # Represent the parameters necessary to create an indexing policy when creating a container.
 # 
-# + indexingMode - Mode of indexing.
-# + automatic - Whether indexing is automatic.
-# + includedPaths - Array of type IncludedPath representing included paths.
-# + excludedPaths - Array of type IncludedPath representing excluded paths.
+# + indexingMode - Mode of indexing
+# + automatic - Whether indexing is automatic or not
+# + includedPaths - Array of type IncludedPath representing included paths
+# + excludedPaths - Array of type IncludedPath representing excluded paths
 public type IndexingPolicy record {|
     string indexingMode = "";
     boolean automatic = true;
@@ -114,8 +114,8 @@ public type IndexingPolicy record {|
 
 # Represent the necessary parameters of included path type.
 # 
-# + path - Path for which the indexing behavior applies to.
-# + indexes - Array of type Index representing index values.
+# + path - Path for which the indexing behavior applies to
+# + indexes - Array of type Index representing index values
 public type IncludedPath record {|
     string path = "";
     Index[] indexes = [];
@@ -130,11 +130,11 @@ public type ExcludedPath record {|
 
 # Represent the record type with necessary parameters to represent an index. 
 # 
-# + kind - Type of index. Can be "Hash", "Range" or "Spatial" 
+# + kind - Type of index. Can be `HASH`, `RANGE` or `SPATIAL`
 # + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
 #        or "LineString"
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
-#        and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1
+#        and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1.
 public type Index record {|
     IndexType kind = HASH;
     string dataType = "";
@@ -146,7 +146,7 @@ public type Index record {|
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
 #               single value.
 # + kind - Algorithm used for partitioning. Only Hash is supported.
-# + keyVersion - Version of partition key.
+# + keyVersion - Version of partition key
 public type PartitionKey record {|
     string[] paths = [];
     readonly string kind = PARTITIONING_ALGORITHM_TYPE_HASH;
@@ -157,11 +157,11 @@ public type PartitionKey record {|
 # 
 # + id - User generated unique ID for the stored procedure.
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource. 
-# + storedProcedure - Javasctipt function.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource 
+# + storedProcedure - JavaSctipt function
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request 
 public type StoredProcedure record {|
     string id = "";
     string resourceId = "";
@@ -171,6 +171,15 @@ public type StoredProcedure record {|
     string sessionToken = "";
 |};
 
+# Represent the record type with necessary parameters to represent a stored procedure.
+# 
+# + id - User generated unique ID for the stored procedure
+# + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource 
+# + userDefinedFunction - JavaSctipt function
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request 
 public type UserDefinedFunction record {|
     string id = "";
     string resourceId = "";
@@ -182,15 +191,15 @@ public type UserDefinedFunction record {|
 
 # Represent the record type with necessary parameters to represent a trigger.
 # 
-# + id - User generated unique ID for the trigger.
+# + id - User generated unique ID for the trigger
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + triggerFunction - Javasctipt function.
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource
+# + triggerFunction - Javasctipt function
 # + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
-# + triggerType - When the trigger is fired, "Pre" or "Post".
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+# + triggerType - When the trigger is fired, "Pre" or "Post"
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request
 public type Trigger record {|
     string id = "";
     string resourceId = "";
@@ -208,35 +217,33 @@ type JsonMap map<json>;
 
 # Reprsent the record type with necessary paramaters to create partition key range.
 # 
-# + id - ID for the partition key range.
+# + id - ID for the partition key range
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + minInclusive - Minimum partition key hash value for the partition key range. 
-# + maxExclusive - Maximum partition key hash value for the partition key range. 
-# + status - 
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource
+# + minInclusive - Minimum partition key hash value for the partition key range 
+# + maxExclusive - Maximum partition key hash value for the partition key range
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request 
 public type PartitionKeyRange record {|
     string id = "";
     string resourceId = "";
     string selfReference = "";
     string minInclusive = "";
     string maxExclusive = "";
-    string status = "";
     string eTag = "";
     string sessionToken = "";
 |};
 
 # Represent the record type with necessary parameters to represent a user.
 # 
-# + id - User generated unique ID for the user. 
+# + id - User generated unique ID for the user 
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
+#       resource
+# + selfReference - Self reference (_self) - A unique addressable URI for the resource
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
 # + permissions - A system generated property that specifies the addressable path of the permissions resource
-# + sessionToken - Session token of the request. 
+# + sessionToken - Session token of the request
 public type User record {|
     string id = "";
     string resourceId = "";
@@ -249,16 +256,16 @@ public type User record {|
 
 # Represent the record type with necessary parameters to represent a permission.
 # 
-# + id - User generated unique ID for the permission.
+# + id - User generated unique ID for the permission
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource(permission).
-# + permissionMode - Access mode for the resource, Should be "All" or "Read".
-# + resourcePath - Full addressable path of the resource associated with the permission.
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource(permission)
+# + permissionMode - Access mode for the resource, Should be "All" or "Read"
+# + resourcePath - Full addressable path of the resource associated with the permission
 # + validityPeriod - Optional. Validity period of the Resource Token.
-# + token - System generated "Resource Token" for the particular resource and user.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+# + token - System generated "Resource Token" for the particular resource and user
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request 
 public type Permission record {|
     string id = "";
     string resourceId = "";
@@ -273,18 +280,18 @@ public type Permission record {|
 
 # Represent the record type with necessary parameters to represent an offer.
 # 
-# + id - User generated unique ID for the offer.
+# + id - User generated unique ID for the offer
 # + resourceId - Resource id (_rid), a unique identifier which is used internally for placement and navigation of the 
-#       resource.
-# + selfReference - Self reference (_self) unique addressable URI for the resource.
+#       resource
+# + selfReference - Self reference (_self) unique addressable URI for the resource
 # + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined 
-#       throughput levels.
+#       throughput levels
 # + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
-# + content - Information about the offer.
-# + resourceResourceId - The resource id(_rid) of the collection.
-# + resourceSelfLink - The self-link of the collection.
-# + eTag - Resource etag for the resource retrieved same as eTag in the response.
-# + sessionToken - Session token of the request. 
+# + content - Information about the offer
+# + resourceResourceId - The resource id(_rid) of the collection
+# + resourceSelfLink - The self-link of the collection
+# + eTag - Resource etag for the resource retrieved same as eTag in the response
+# + sessionToken - Session token of the request
 public type Offer record {|
     string id = "";
     string resourceId = "";
