@@ -41,6 +41,43 @@ public enum IndexType {
     SPATIAL = "Spatial"
 }
 
+# The datatype for which the indexing behavior is applied to.
+# 
+# + STRING -
+# + NUMBER -
+# + POINT -
+# + POLYGON -
+# + LINESTRING -
+public enum IndexDataType {
+    STRING = "String",
+    NUMBER = "Number",
+    POINT = "Point"
+    POLYGON = "Polygon",
+    LINESTRING = "LineString"
+}
+
+# Type of operation that invokes the trigger.
+# 
+# + ALL - 
+# + CREATE - 
+# + REPLACE - 
+# + DELETE - 
+public enum TriggerOperation {
+    ALL = "All",
+    CREATE = "Create",
+    REPLACE = "Replace",
+    DELETE = "Delete"
+}
+
+# When is the trigger is fired.
+# 
+# + PRE - "Pre"
+# + POST - "Post"
+public enum TriggerType {
+    PRE - "Pre"
+    POST - "Post"
+}
+
 // Indexing Policy
 const string INDEXING_TYPE_INCLUDE = "Include";
 const string INDEXING_TYPE_EXCLUDE = "Exclude";

@@ -167,13 +167,13 @@ public type UserDefinedFunction record {|
 # 
 # + id - User generated unique ID for the trigger
 # + triggerFunction - Javasctipt function
-# + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete".
+# + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete". 
 # + triggerType - When the trigger is fired, "Pre" or "Post"
 public type Trigger record {|
     string id = "";
     *Commons;
     string triggerFunction = "";
-    string triggerOperation = "";
+    string triggerOperation = ""; 
     string triggerType = "";
 |};
 

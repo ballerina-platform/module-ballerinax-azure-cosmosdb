@@ -32,7 +32,7 @@ public client class CoreClient {
         self.httpClient = new(self.baseUrl);
     }
 
-    # Create a Document inside a container.
+    # Create a Document inside a Container.
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
@@ -62,7 +62,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Replace a document inside a container.
+    # Replace a Document inside a Container.
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
@@ -90,7 +90,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Get information about one document in a container.
+    # Get information about one Document in a Container.
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
@@ -113,7 +113,7 @@ public client class CoreClient {
         return mapJsonToDocumentType(jsonResponse);
     }
 
-    # List information of all the documents in a container.
+    # List information of all the Documents in a Container.
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
@@ -136,7 +136,7 @@ public client class CoreClient {
         return documentStream;
     }
 
-    # Delete a document in a container.
+    # Delete a Document in a Container.
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to   
@@ -159,7 +159,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Query a container.
+    # Query a Container.
     # 
     # + databaseId - ID of the database which Container belongs to
     # + containerId - ID of the Container to query     
@@ -191,8 +191,7 @@ public client class CoreClient {
         return documentStream;
     }
 
-    # Create a new stored procedure inside a container.
-    # 
+    # Create a new Stored Procedure inside a Container.
     # A stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
     # collection as a single transaction.
     # 
@@ -219,7 +218,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Replace a stored procedure in a container with new one.
+    # Replace a Stored Procedure in a Container with new one.
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which existing Stored Procedure belongs to
@@ -244,7 +243,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # List information of all stored procedures in a container.
+    # List information of all Stored Procedures in a Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedures    
@@ -269,7 +268,7 @@ public client class CoreClient {
         return storedProcedureStream;
     }
 
-    # Delete a stored procedure in a container.
+    # Delete a Stored Procedure in a Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure    
@@ -290,7 +289,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Execute a stored procedure in a container.
+    # Execute a Stored Procedure in a Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure
@@ -312,8 +311,7 @@ public client class CoreClient {
         return jsonResponse;
     }
 
-    # Create a new user defined function inside a collection.
-    # 
+    # Create a new User Defined Function inside a Container.
     # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
     # 
     # + databaseId - ID of the database which container belongs to
@@ -339,7 +337,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Replace an existing user defined function in a collection.
+    # Replace an existing User Defined Function in a Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container in which user defined function is created    
@@ -364,7 +362,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Get a list of existing user defined functions inside a collection.
+    # Get a list of existing User Defined Functions inside a Container.
     # 
     # + databaseId - ID of the database which user belongs to
     # + containerId - ID of the container which user defined functions belongs to    
@@ -388,7 +386,7 @@ public client class CoreClient {
         return userDefinedFunctionStream;
     }
 
-    # Delete an existing user defined function inside a collection.
+    # Delete an existing User Defined Function inside a Container.
     # 
     # + databaseId - ID of the database which container is created
     # + containerId - ID of the container which user defined function is created   
@@ -409,8 +407,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Create a trigger inside a collection.
-    # 
+    # Create a Trigger inside a Container. 
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript.
     #  
@@ -441,7 +438,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Replace an existing trigger inside a collection.
+    # Replace an existing Trigger inside a Container.
     # 
     # + databaseId - ID of the database where container is created
     # + containerId - ID of the container where trigger is created    
@@ -470,7 +467,7 @@ public client class CoreClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # List existing triggers inside a collection.
+    # List existing Triggers inside a Container.
     # 
     # + databaseId - ID of the database where the container is created
     # + containerId - ID of the container where the triggers are created     
@@ -493,7 +490,7 @@ public client class CoreClient {
         return triggerStream;
     }
 
-    # Delete an existing trigger inside a collection.
+    # Delete an existing Trigger inside a Container.
     # 
     # + databaseId - ID of the database where the container is created
     # + containerId - ID of the container where the trigger is created 

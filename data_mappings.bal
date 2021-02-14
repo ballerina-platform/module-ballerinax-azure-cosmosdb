@@ -108,7 +108,7 @@ isolated function mapJsonToDocumentType([json, ResponseHeaders?] jsonPayload) re
     document.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     document.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     document.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
-    map<json>|error documentBodyJson = payload.cloneWithType(JsonMap); /// Why this does not work with map<json>??
+    map<json>|error documentBodyJson = payload.cloneWithType(JsonMap);
     if (documentBodyJson is map<json>) {
         document.documentBody = mapJsonToDocumentBody(documentBodyJson);
     }
@@ -164,7 +164,7 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayloa
 //  + return - An instance of record type Index
 isolated function mapJsonToIndexType(json jsonPayload) returns Index {
     Index index = {};
-    //index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
+    index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
     index.dataType = jsonPayload.dataType.toString();
     index.precision = convertToInt(jsonPayload.precision);
     return index;

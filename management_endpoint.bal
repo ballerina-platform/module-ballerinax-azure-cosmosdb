@@ -32,7 +32,7 @@ public client class ManagementClient {
         self.httpClient = new(self.baseUrl);
     }
 
-    # Create a database inside an Azure Cosmos DB account.
+    # Create a Database inside an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the new database. Must be unique.
     # + throughputOption - Optional. Throughput parameter of type int or json.
@@ -58,7 +58,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
+    # Create a Database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
     # 
     # + databaseId - ID of the new database
     # + throughputOption - Optional. Throughput parameter of type int OR json.
@@ -74,7 +74,7 @@ public client class ManagementClient {
         return result;
     }
 
-    # Retrive information of a given database in an Azure Cosmos DB account.
+    # Retrive information of a given Database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to retrieve information 
     # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
@@ -92,7 +92,7 @@ public client class ManagementClient {
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # List information of all databases in an Azure Cosmos DB account.
+    # List information of all Databases in an Azure Cosmos DB account.
     # 
     # + maxItemCount - Optional. Maximum number of Database records in one returning page.
     # + return - If successful, returns stream<cosmosdb:Database>. else returns error. 
@@ -109,7 +109,7 @@ public client class ManagementClient {
         return databaseStream;
     }
 
-    # Delete a given database in an Azure Cosmos DB account.
+    # Delete a given Database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to delete
     # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities 
@@ -127,7 +127,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Create a container in the given database.
+    # Create a Container inside the given Database.
     # 
     # + databaseId - ID of the database the container belongs to
     # + containerId - ID of the new container container
@@ -160,7 +160,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Create a container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
+    # Create a Container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
     # 
     # + databaseId - ID of the database the container belongs to
     # + containerId - ID of the new container   
@@ -180,7 +180,7 @@ public client class ManagementClient {
         return result;
     }
 
-    # Retrive information about a container in a database.
+    # Retrive information about a Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container to retrive infromation  
@@ -199,7 +199,7 @@ public client class ManagementClient {
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # List information of all containers in a database
+    # List information of all Containers.
     # 
     # + databaseId - ID of the database where the containers belong to
     # + maxItemCount - Optional. Maximum number of Container records in one returning page.
@@ -217,7 +217,7 @@ public client class ManagementClient {
         return containerStream;
     }
 
-    # Delete a given container in a database.
+    # Delete a given Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container to delete
@@ -236,7 +236,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Retrieve a list of partition key ranges for the container.
+    # Retrieve a list of partition key ranges for the Container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container where the partition key ranges are related to    
@@ -253,7 +253,7 @@ public client class ManagementClient {
         return partitionKeyStream;
     }
 
-    # Create a user in a database.
+    # Create a User for a given Database.
     # 
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of the new user
@@ -271,7 +271,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Replace the id of an existing user for a database.
+    # Replace the ID of an existing User.
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - Old ID of the user
@@ -290,7 +290,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # To get information of a user from a database.
+    # To get information of a User.
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to get
@@ -309,7 +309,7 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # Lists users in a database account.
+    # Lists Users in a specific Database.
     # 
     # + databaseId - ID of the database where users is created
     # + maxItemCount - Optional. Maximum number of User records in one returning page.
@@ -330,7 +330,7 @@ public client class ManagementClient {
         return userStream;
     }
 
-    # Delete a user from a database account.
+    # Delete a User.
     # 
     # + databaseId - ID of the database where user is created
     # + userId - ID of user to delete
@@ -349,7 +349,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);  
     }
 
-    # Create a permission for a user. 
+    # Create a Permission for a User. 
     # 
     # + databaseId - ID of the database where user is created
     # + userId - ID of user to which the permission belongs
@@ -380,7 +380,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Replace an existing permission.
+    # Replace an existing Permission.
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user where the the permission is created
@@ -411,7 +411,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # To get information of a permission belongs to a user.
+    # To get information of a Permission.
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user where the the permission belongs to
@@ -432,7 +432,7 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Lists permissions belong to a user.
+    # Lists Permissions belong to a User.
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user where the the permissions is created
@@ -456,7 +456,7 @@ public client class ManagementClient {
         return permissionStream;
     }
 
-    # Deletes a permission belongs to a user.
+    # Deletes a Permission belongs to a User.
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user which the permission belongs to
@@ -478,7 +478,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);   
     }
 
-    # Replace an existing offer.
+    # Replace an existing Offer.
     # 
     # + offer - A cosmosdb:Offer record
     # + offerType - Optional. Type of the offer.
@@ -507,7 +507,7 @@ public client class ManagementClient {
         return mapTupleToResultType(jsonResponse);
     }
 
-    # Get information about an offer.
+    # Get information about an Offer.
     # 
     # + offerId - The ID of the offer
     # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
@@ -524,7 +524,7 @@ public client class ManagementClient {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # Gets information of offers inside database account.
+    # Gets information of Offers inside Azure Cosmos DB account.
     # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 
