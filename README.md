@@ -110,7 +110,7 @@ import ballerinax/azure.cosmosdb as cosmosdb;
 You can now make the connection configuration using the Master Key Token or Resource Token, and the resource URI to the 
 Cosmos DB Account. For executing management plane operations, the `ManagementClient` should be configured.
 ```ballerina
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: <BASE_URL>,
     masterOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
 };
@@ -231,7 +231,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -249,7 +249,7 @@ Notes: <br/> For creation of a Database you can configure a `throughputOption` w
 For example:
  
 ```ballerina
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -284,7 +284,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -309,7 +309,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -332,7 +332,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -362,7 +362,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -400,7 +400,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -426,7 +426,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -456,7 +456,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -491,7 +491,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -518,7 +518,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -545,7 +545,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -571,7 +571,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -596,7 +596,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -645,7 +645,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -681,7 +681,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -712,7 +712,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -739,7 +739,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -764,7 +764,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -811,7 +811,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -863,7 +863,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -916,7 +916,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -956,7 +956,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -995,7 +995,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1035,7 +1035,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1095,7 +1095,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1130,7 +1130,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1164,7 +1164,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1189,7 +1189,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1218,7 +1218,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1260,7 +1260,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1301,7 +1301,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1339,7 +1339,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1367,7 +1367,7 @@ import ballerinax/cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1400,7 +1400,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1466,7 +1466,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1524,7 +1524,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -1549,7 +1549,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };

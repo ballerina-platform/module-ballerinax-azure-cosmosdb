@@ -22,7 +22,7 @@ import ballerina/runtime;
 import ballerina/java;
 import ballerina/stringutils;
 
-AzureCosmosConfiguration config = {
+Configuration config = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
@@ -857,8 +857,7 @@ function test_deleteTrigger() {
 
 @test:Config {
     groups: ["partitionKey"],
-    dependsOn: ["test_createContainer"],
-    enable: false
+    dependsOn: ["test_createContainer"]
 }
 function test_GetPartitionKeyRanges() {
     log:print("ACTION : GetPartitionKeyRanges()");
@@ -1193,7 +1192,7 @@ function test_getCollection_Resource_Token() {
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
-        AzureCosmosConfiguration configdb = {
+        Configuration configdb = {
             baseUrl: getConfigValue("BASE_URL"),
             masterOrResourceToken: result?.token.toString()
         };

@@ -20,7 +20,7 @@ There are two clients provided by Ballerina to interact with CosmosDB.
 operations 
 
    ```ballerina
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
         masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
@@ -30,7 +30,7 @@ operations
 management-plane operations 
 
    ```ballerina
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
         masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
@@ -48,7 +48,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
@@ -68,7 +68,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
@@ -93,7 +93,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
@@ -116,7 +116,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
@@ -132,7 +132,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
@@ -150,7 +150,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
@@ -174,7 +174,7 @@ import ballerina/log;
 import ballerinax/azure.cosmosdb as cosmosdb;
 
 public function main() {
-    cosmosdb:AzureCosmosConfiguration configuration = {
+    cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };

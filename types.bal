@@ -18,7 +18,7 @@
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account
 # + masterOrResourceToken - The token used to make the request call authorized
-public type AzureCosmosConfiguration record {|
+public type Configuration record {|
     string baseUrl;
     string masterOrResourceToken;
 |};

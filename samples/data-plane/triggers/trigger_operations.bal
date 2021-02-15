@@ -20,7 +20,7 @@ import ballerina/log;
 import ballerina/java;
 import ballerina/stringutils;
 
-cosmosdb:AzureCosmosConfiguration configuration = {
+cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };

@@ -18,7 +18,7 @@ import ballerinax/cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
-cosmosdb:AzureCosmosConfiguration managementConfig = {
+cosmosdb:Configuration managementConfig = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };

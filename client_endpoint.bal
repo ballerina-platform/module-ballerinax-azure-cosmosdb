@@ -25,7 +25,7 @@ public client class CoreClient {
     private string masterOrResourceToken;
     private string host;
 
-    public function init(AzureCosmosConfiguration azureConfig) {
+    public function init(Configuration azureConfig) {
         self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
