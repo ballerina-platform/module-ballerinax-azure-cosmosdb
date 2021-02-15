@@ -58,9 +58,9 @@ function test_createDatabase() {
     log:print("ACTION : createDatabase()");
 
     var result = azureCosmosManagementClient->createDatabase(databaseId);
-    if (result is Result && result.success == true) {
+    if (result is Database) {
     } else {
-        test:assertFail("Failed creating database");
+        test:assertFail(msg = result.message());
     }
 }
 
@@ -72,7 +72,7 @@ function test_createDatabaseUsingInvalidId() {
 
     string createDatabaseId = "";
     var result = azureCosmosManagementClient->createDatabase(createDatabaseId);
-    if (result is Result) {
+    if (result is Database) {
         test:assertFail(msg = "Database created with  '' id value");
     } else {
         var output = "";
@@ -86,10 +86,10 @@ function test_createDatabaseIfNotExist() {
     log:print("ACTION : createDatabaseIfNotExist()");
 
     var result = azureCosmosManagementClient->createDatabaseIfNotExist(createDatabaseExistId);
-    if (result is Result && result.success == true) {
+    if (result is Database?) {
   
     } else {
-        test:assertFail("Failed creating database");
+        test:assertFail(msg = result.message());
     }
 }
 
@@ -100,7 +100,7 @@ function test_createDatabaseIfExist() {
     log:print("ACTION : createDatabaseIfExist()");
 
     var result = azureCosmosManagementClient->createDatabaseIfNotExist(databaseId);
-    if (result is Result && result.success == true) {
+    if (result is Database) {
         test:assertFail(msg = "Database with non unique id is created");
     } else {
         var output = "";
@@ -116,9 +116,9 @@ function test_createDatabaseWithManualThroughput() {
     int throughput = 1000;
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseManualId, throughput);
-    if (result is Result && result.success == true) {
+    if (result is Database) {
     } else {
-        test:assertFail("Failed creating database");
+        test:assertFail(msg = result.message());
     }
 }
 
@@ -131,7 +131,7 @@ function test_createDatabaseWithInvalidManualThroughput() {
     int throughput = 40;
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseManualId, throughput);
-    if (result is Result && result.success == true) {
+    if (result is Database) {
         test:assertFail(msg = "Database created without validating user input");
     } else {
         var output = "";
@@ -148,9 +148,9 @@ function test_createDBWithAutoscalingThroughput() {
     json maxThroughput = {"maxThroughput": 4000};
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseAutoId, maxThroughput);
-    if (result is Result && result.success == true) {
+    if (result is Database) {
     } else {
-        test:assertFail("Failed creating database");
+        test:assertFail(msg = result.message());
     }
 }
 
@@ -193,9 +193,9 @@ function test_createContainer() {
         keyVersion: 2
     };
     var result = azureCosmosManagementClient->createContainer(databaseId, containerId, pk);
-    if (result is Result && result.success == true) {
+    if (result is Container) {
     } else {
-        test:assertFail("Unable to create Container");
+        test:assertFail(msg = result.message());
     }
 }
 
@@ -226,7 +226,7 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
     };
 
     var result = azureCosmosManagementClient->createContainer(databaseId, containerWithOptionsId, pk, ip);
-    if (result is Result && result.success == true) {
+    if (result is Container) {
         var output = "";
     } else {
         test:assertFail("SUccessfully created");
@@ -247,7 +247,7 @@ function test_createContainerIfNotExist() {
     };
 
     var result = azureCosmosManagementClient->createContainerIfNotExist(databaseId, containerIfNotExistId, pk);
-    if (result is Result?) {
+    if (result is Container?) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -353,7 +353,7 @@ function test_createDocument() {
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, 
             valueOfPartitionKeyN);
-    if (result is Result) {
+    if (result is Document) {
 
     } else {
         test:assertFail(msg = result.message());
@@ -371,7 +371,7 @@ function test_createDocumentWithRequestOptions() {
 
     DocumentCreateOptions options = {
         isUpsertRequest: true,
-        indexingDirective: true
+        indexingDirective: "Include"
     };
     int valueOfPartitionKey = 1234;
     string id = string `document_${uuid.toString()}`;
@@ -403,7 +403,7 @@ function test_createDocumentWithRequestOptions() {
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, 
             options);
-    if (result is Result) {
+    if (result is Document) {
 
     } else {
         test:assertFail(msg = result.message());
@@ -563,7 +563,7 @@ function test_createStoredProcedure() {
                                         }`;
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, createSprocBody);
-    if (result is Result) {
+    if (result is StoredProcedure) {
         //storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -666,7 +666,7 @@ function test_createUDF() {
                                             }`;
 
     var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId, createUDFBody);
-    if (result is Result) {
+    if (result is UserDefinedFunction) {
         //udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -769,7 +769,7 @@ function test_createTrigger() {
 
     var result = azureCosmosClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
             createTriggerOperation, createTriggerType);
-    if (result is Result) {
+    if (result is Trigger) {
         //trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -878,7 +878,7 @@ function test_createUser() {
     log:print("ACTION : createUser()");
 
     var result = azureCosmosManagementClient->createUser(databaseId, userId);
-    if (result is Result) {
+    if (result is User) {
         //test_user = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -965,7 +965,7 @@ function test_createPermission() {
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
             permissionResource);
-    if (result is Result) {
+    if (result is Permission) {
         //permission = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -990,7 +990,7 @@ function test_createPermissionWithTTL() {
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode, 
             permissionResource, validityPeriod);
-    if (result is Result) {
+    if (result is Permission) {
         //permission = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());

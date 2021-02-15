@@ -197,8 +197,7 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 // + return - If successful, request will be appended with headers
 isolated function setOptionalHeaders(http:Request request, Options? requestOptions) {
     if (requestOptions?.indexingDirective != ()) {
-        request.setHeader(INDEXING_DIRECTIVE_HEADER, <boolean>requestOptions?.indexingDirective ? INDEXING_TYPE_INCLUDE : 
-                INDEXING_TYPE_EXCLUDE);
+        request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
     }
     if (requestOptions?.consistancyLevel != ()) {
         request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
@@ -277,7 +276,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 // + return - If successful, returns json. Else returns error. 
 isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
     json jsonResponse = check httpResponse.getJsonPayload();
-    if (httpResponse.statusCode == http:STATUS_OK) {
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
         //If status is 200, request is successful. Returns resulting payload.
         return jsonResponse;
     } else {
@@ -291,8 +290,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 // + httpResponse - The http:Response returned from an HTTP request
 // + return - If successful, returns true. Else returns error or false. 
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED || 
-            httpResponse.statusCode == http:STATUS_NO_CONTENT) {
+    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
         // Else Returns error.
         return true;
@@ -528,10 +526,10 @@ isolated function getTriggerType(string triggerType) returns TriggerType {
 isolated function getPermisssionMode(string permissionMode) returns PermisssionMode {
     match permissionMode {
         "Read" => {
-            return READ;
+            return READ_PERMISSION;
         }
     }
-    return ALL_PERMISSIONS;
+    return ALL_PERMISSION;
 }
 
 // Get the enum value for a given string which represent the offer version of a specific offer.

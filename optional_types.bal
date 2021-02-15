@@ -20,7 +20,7 @@
 #       `Exclude`.
 # + isUpsertRequest - A boolean value which specify if the request is an upsert request
 public type DocumentCreateOptions record {|
-    boolean? indexingDirective = ();
+    string? indexingDirective = ();
     boolean isUpsertRequest = false;
 |};
 

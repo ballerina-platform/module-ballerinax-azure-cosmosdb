@@ -37,7 +37,7 @@ public client class ManagementClient {
     # + databaseId - ID of the new Database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns Result. Else returns error.
-    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Result|error {
+    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Database|error {
         // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
@@ -53,9 +53,9 @@ public client class ManagementClient {
         // Get the response
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         // Map the payload and headers, of the request to a tuple 
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
         // Map the reponse payload and the headers to a record type
-        return mapTupleToResultType(jsonResponse);
+        return mapJsonToDatabaseType(jsonResponse);
     }
 
     # Create a Database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
@@ -64,7 +64,7 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns Result. Else returns error.
     remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
-           Result?|error {
+           Database?|error {
         var result = self->createDatabase(databaseId);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
@@ -136,7 +136,7 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Result. Else returns error.
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result|error { 
+            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
@@ -156,8 +156,8 @@ public client class ManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToContainerType(jsonResponse);
     }
 
     # Create a Container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
@@ -170,7 +170,7 @@ public client class ManagementClient {
     # + return - If successful, returns Result if a new container is created or () if container already exists. 
     #       Else returns error.
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Result?|error { 
+            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
         var result = self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
@@ -221,8 +221,8 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container to delete
-    # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
-    #       request.
+    # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
             returns @tainted Result|error {
@@ -258,7 +258,7 @@ public client class ManagementClient {
     # + databaseId - ID of the Database where the User is created.
     # + userId - ID of the new User. Must be a unique value.
     # + return - If successful, returns a Result. Else returns error.
-    remote function createUser(string databaseId, string userId) returns @tainted Result|error {
+    remote function createUser(string databaseId, string userId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
@@ -267,8 +267,8 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserType(jsonResponse);
     }
 
     # Replace the ID of an existing User.
@@ -359,7 +359,7 @@ public client class ManagementClient {
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a Result. Else returns error.
     remote function createPermission(string databaseId, string userId, string permissionId, string permissionMode, 
-            string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error {
+            string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
@@ -376,8 +376,8 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToPermissionType(jsonResponse);
     }
 
     # Replace an existing Permission.
@@ -496,7 +496,7 @@ public client class ManagementClient {
             id: offer.id,
             _rid: offer?.resourceId
         };
-        if (offerType is string && offer.offerVersion == OFFER_VERSION_1) {
+        if (offerType is string && offer.offerVersion == PRE_DEFINED) {
             json selectedType = {offerType: offerType};
             jsonPaylod = checkpanic jsonPaylod.mergeJson(selectedType);
         }

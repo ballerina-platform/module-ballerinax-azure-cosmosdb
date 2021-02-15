@@ -79,11 +79,11 @@ public enum TriggerType {
 }
 
 # The access mode for the resource.
-# + ALL - `All` provides read, write, and delete access to a resource
-# + READ - `Read` restricts the user to read access on the resource
+# + ALL_PERMISSION - `All` provides read, write, and delete access to a resource
+# + READ_PERMISSION - `Read` restricts the user to read access on the resource
 public enum PermisssionMode {
-    ALL_PERMISSIONS = "All",
-    READ = "Read"
+    ALL_PERMISSION = "All",
+    READ_PERMISSION = "Read"
 }
 
 # The specific version for a given offer.
@@ -226,10 +226,10 @@ const int MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
 // Algorithm Used for partitioning
 const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
 const int DEFAULT_PARTITION_KEY_VERSION = 1;
+
 // String constants
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";
-const string OFFER_VERSION_1 = "V1";
 const string FORWARD_SLASH = "/";
 const string EMPTY_STRING = "";
 const string NEW_LINE = "\n";

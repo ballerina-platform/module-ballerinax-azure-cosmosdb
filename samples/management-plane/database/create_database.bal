@@ -28,6 +28,6 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Creating database");
-    cosmosdb:Result databaseResult = checkpanic managementClient->createDatabase(databaseId);
+    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
     log:print("Success!");
 }

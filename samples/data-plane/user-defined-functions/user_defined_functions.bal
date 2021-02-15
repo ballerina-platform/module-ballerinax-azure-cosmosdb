@@ -50,10 +50,9 @@ public function main() {
                                                     return income * 0.4;
                                             }`;
 
-    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, 
-            udfId, userDefinedFunctionBody);
+    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, 
+            containerId, udfId, userDefinedFunctionBody);
     
-
     // Replace User Defined Function
     log:print("Replacing a user defined function");
     string newUserDefinedFunctionBody = string `function taxIncome(income){

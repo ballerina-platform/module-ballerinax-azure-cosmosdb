@@ -34,7 +34,7 @@ public function main() {
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
     log:print("Create permission for a user");
-    cosmosdb:Result createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
+    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
             permissionId, permissionMode, <@untainted>permissionResource);
     log:print("Success!");
 }

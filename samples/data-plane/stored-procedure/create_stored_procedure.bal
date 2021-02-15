@@ -36,7 +36,7 @@ public function main() {
                                             response.setBody("Hello,  World");
                                         }`;
 
-    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
+    cosmosdb:StoredProcedure storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
             containerId, storedProcedureId, storedProcedureBody);
     log:print("Success!");
 }

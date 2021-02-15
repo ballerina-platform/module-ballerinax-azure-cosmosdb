@@ -214,7 +214,7 @@ public type User record {|
 public type Permission record {|
     string id = "";
     *Commons;
-    PermisssionMode permissionMode = ALL_PERMISSIONS;
+    PermisssionMode permissionMode = ALL_PERMISSION;
     string resourcePath = "";
     int validityPeriodInSeconds = MIN_TIME_TO_LIVE_IN_SECONDS;
     string token = "";

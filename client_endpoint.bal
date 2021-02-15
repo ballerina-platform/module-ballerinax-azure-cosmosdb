@@ -43,7 +43,7 @@ public client class CoreClient {
     #       the request.
     # + return - If successful, returns Result. Else returns error.
     remote function createDocument(string databaseId, string containerId, string documentId, json document, 
-            any partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted Result|error { 
+            any partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
@@ -58,8 +58,8 @@ public client class CoreClient {
         request.setJsonPayload(payload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToDocumentType(jsonResponse);
     }
 
     # Replace a Document inside a Container.
@@ -201,7 +201,7 @@ public client class CoreClient {
     # + storedProcedure - A JavaScript function
     # + return - If successful, returns a Result. Else returns error. 
     remote function createStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-            string storedProcedure) returns @tainted Result|error {
+            string storedProcedure) returns @tainted StoredProcedure|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES]);
@@ -214,8 +214,8 @@ public client class CoreClient {
         request.setJsonPayload(payload); 
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToStoredProcedure(jsonResponse);
     }
 
     # Replace a Stored Procedure in a Container with new one.
@@ -320,7 +320,7 @@ public client class CoreClient {
     # + userDefinedFunction - A JavaScript function
     # + return - If successful, returns a Result. Else returns error. 
     remote function createUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
-            string userDefinedFunction) returns @tainted Result|error { 
+            string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF]);
@@ -333,8 +333,8 @@ public client class CoreClient {
         request.setJsonPayload(payload); 
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToUserDefinedFunction(jsonResponse);
     }
 
     # Replace an existing User Defined Function in a Container.
@@ -419,7 +419,7 @@ public client class CoreClient {
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a Result. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
-            string triggerOperation, string triggerType) returns @tainted Result|error { 
+            string triggerOperation, string triggerType) returns @tainted Trigger|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER]);
@@ -434,8 +434,8 @@ public client class CoreClient {
         request.setJsonPayload(payload); 
         
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        return mapJsonToTrigger(jsonResponse);
     }
 
     # Replace an existing Trigger inside a Container.

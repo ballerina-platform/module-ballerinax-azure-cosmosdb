@@ -36,11 +36,11 @@ public function main() {
     string databaseAutoScalingId = string `databasea_${uuid.toString()}`;
 
     log:print("Creating database");
-    cosmosdb:Result databaseResult = checkpanic managementClient->createDatabase(databaseId);
+    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
 
     // Create database only if it does not exist
     log:print("Creating database if it does not exist");
-    cosmosdb:Result? database2 = checkpanic managementClient->createDatabaseIfNotExist(databaseIfNotExist);
+    cosmosdb:Database? database2 = checkpanic managementClient->createDatabaseIfNotExist(databaseIfNotExist);
 
     // Create database with manual throughput
     log:print("Creating database with manual throughput");
@@ -57,8 +57,8 @@ public function main() {
     // Database read
     log:print("Reading database by id");
     cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    string? etag = database.responseHeaders?.etag;
-    string? sessiontoken = database.responseHeaders?.sessionToken;
+    string? etag = database.eTag;
+    string? sessiontoken = database.sessionToken;
   
     // Database read with session level consistancy
     log:print("Reading database with options");

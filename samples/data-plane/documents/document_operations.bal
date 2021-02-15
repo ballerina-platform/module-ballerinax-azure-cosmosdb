@@ -52,9 +52,9 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
             documentBody, partitionKeyValue); 
-    etag = documentResult.responseHeaders?.etag;
+    etag = documentResult.eTag;
 
     //Create document specifying whether to include it in the indexing.
     log:print("Creating a new document allowing to include it in the indexing.");
@@ -76,12 +76,13 @@ public function main() {
         indexingDirective: "Include"
     };
 
-    cosmosdb:Result documentCreateResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
+    cosmosdb:Document documentCreateResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
             documentIndexingId, documentBody2, partitionKeyValue, indexingOptions);
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an error.
     // Achieve session level consistancy when creating document
     log:print("Upserting the document");
+    string upsertDocumentId = string `documentu_${uuid.toString()}`;
     json documentBody3 = {
         "LastName": "Ranasinghe",
         "Parents": [{
@@ -99,8 +100,8 @@ public function main() {
         isUpsertRequest: true
     };
     
-    cosmosdb:Result documentUpsertResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            documentId, documentBody3, partitionKeyValue, upsertOptions);
+    cosmosdb:Document documentUpsertResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
+            upsertDocumentId, documentBody3, partitionKeyValue, upsertOptions);
 
     // Replace document
     log:print("Replacing document");
@@ -118,7 +119,7 @@ public function main() {
 
     partitionKeyValue = 0;
 
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, documentId, 
+    cosmosdb:Result replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, documentId, 
             newDocumentBody, partitionKeyValue);
 
     log:print("Read the document by id");
@@ -149,15 +150,10 @@ public function main() {
         int k = 0;
         foreach var item in list {
             string id = string `document_${uuid.toString()}${k}`; 
-            cosmosdb:Document newDocument = {
-                id: id,
-                documentBody: item
-            }; 
-
             int partitionKeyVal = <int>item.gender;
 
-            cosmosdb:Result result = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-                    <@untainted>newDocument, partitionKeyVal);
+            cosmosdb:Document result = checkpanic azureCosmosClient->createDocument(databaseId, containerId, id, item, 
+                    partitionKeyVal);
             k += 1;
         }
     }

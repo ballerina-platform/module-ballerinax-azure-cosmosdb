@@ -124,7 +124,7 @@ You have to create a Database in Azure Account to create a document. For this yo
 which does not already exist in the specific Cosmos DB account. The ID for this example will be `my_database`. This 
 operation will return a record of type Result. This will contain the success as `true` if the operation is successful. 
 ```ballerina
-cosmosdb:Result result = managementClient->createDatabase("my_database");
+cosmosdb:Database result = managementClient->createDatabase("my_database");
 ```
 ### Step 5: Create new Container
 Then, you have to create a Container inside the created Database. As the REST api version which is used in this 
@@ -136,7 +136,7 @@ cosmosdb:PartitionKey partitionKeyDefinition = {
     paths: ["/gender"],
     keyVersion: 2
 };
-cosmosdb:Result containerResult = check managementClient-> createContainer("my_database", "my_container", 
+cosmosdb:Container containerResult = check managementClient-> createContainer("my_database", "my_container", 
         partitionKeyDefinition);
 ```
 Notes: <br/> For this operation, you have to have an understanding on how to select a suitable partition key according 
@@ -169,7 +169,7 @@ json documentBody = {
 };
 int valueOfPartitionKey = 0;
 
-cosmosdb:Result documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", "my_document", 
+cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", "my_document", 
         documentBody, valueOfPartitionKey);
 ```
 Notes: <br/> As this container have selected `/gender` as the partition key for `my_container`, the document you create 
@@ -224,7 +224,7 @@ included inside the management client of the connector.
 ### Creating a Database 
 Creation of Databases is a common capability of every Database. For creating a Database in Azure, you have to provide a 
 unique Database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
-of type Result. This will contain the success as true if the operation is successful.
+of type Database. This will contain the success as true if the operation is successful.
 
 ```ballerina
 import ballerinax/cosmosdb;
@@ -241,7 +241,7 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Creating database");
-    cosmosdb:Result databaseResult = checkpanic managementClient->createDatabase(databaseId);
+    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
     log:print("Success!");
 }
 ```
@@ -259,12 +259,12 @@ public function main() {
     string databaseId = "my_database";
 
     int throughput = 600;
-    cosmosdb:Result databaseResult = check managementClient-> createDatabase(databaseId, throughput);
+    cosmosdb:Database databaseResult = check managementClient-> createDatabase(databaseId, throughput);
 
     // or
 
     json maxThroughput = {"maxThroughput": 4000};
-    cosmosdb:Result databaseResult = check managementClient->createDatabase(databaseId, maxThroughput);
+    cosmosdb:Database databaseResult = check managementClient->createDatabase(databaseId, maxThroughput);
 }
 ```
 Notes: <br/> These options for throughput are only allowed in the Cosmos DB account type known as `provisioned throughput` 
@@ -377,7 +377,7 @@ public function main() {
         paths: ["/id"],
         keyVersion: 2
     };
-    cosmosdb:Result containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
+    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
     log:print("Success!");
 }
 ```
@@ -502,7 +502,7 @@ public function main() {
     string userId = "my_user";
 
     log:print("Creating user");
-    cosmosdb:Result userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
+    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
     log:print("Success!");
 }
 ```
@@ -661,7 +661,7 @@ public function main() {
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
     log:print("Create permission for a user");
-    cosmosdb:Result createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
+    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
             permissionId, permissionMode, permissionResource);
     log:print("Success!");
 }
@@ -838,7 +838,7 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
             documentBody partitionKeyValue); 
     log:print("Success!");
 }
@@ -846,7 +846,7 @@ public function main() {
 Notes: <br/> Several Optional Parameters are supported in the creation of documents. These options can be specified in 
 `DocumentCreateOptions` record type in the connector.
 - `indexingDirective` - This option is to specify whether the document is included in any predefined indexing policy for 
-the container. This is provided by giving `true` or `false`.
+the container. This is provided by giving `Include` or `Exclude`.
 - `isUpsertRequest` - You can convert the creation of a new document into an upsert request by using this parameter. 
 Must be a boolean value.
 
@@ -1113,7 +1113,7 @@ public function main() {
                                             response.setBody("Hello, World");
                                         }`;
 
-    cosmosdb:Result storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
+    cosmosdb:StoredProcedure storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
             containerId, storedProcedureId, storedProcedureBody);
     log:print("Success!");
 }
@@ -1283,7 +1283,7 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:Result udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, 
+    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, 
             udfId, userDefinedFunctionBody);
     log:print("Success!");
 }
@@ -1443,8 +1443,8 @@ public function main() {
     string createTriggerOperationType = "Create";
     string createTriggerType = "Post";
 
-    cosmosdb:Result triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, triggerId, 
-            createTriggerBody, createTriggerOperationType, createTriggerType);
+    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
+            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
     log:print("Success!");
 }
 ```

@@ -45,7 +45,7 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Result documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
             documentBody, partitionKeyValue); 
     log:print("Success!");
 }

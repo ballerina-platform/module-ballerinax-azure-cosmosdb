@@ -38,7 +38,7 @@ public function main() {
 
     log:print("Creating user");
     string userId = string `user_${uuid.toString()}`;
-    cosmosdb:Result userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
+    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
 
     log:print("Replace user id");
     string newReplaceId = string `user_${uuid.toString()}`;
@@ -61,7 +61,7 @@ public function main() {
         permissionMode: permissionMode,
         resourcePath: permissionResource
     };
-    cosmosdb:Result createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, <@untainted>createPermission);
+    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, <@untainted>createPermission);
 
     // Create permission with time to live
     // string newPermissionMode = "Read";

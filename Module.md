@@ -54,7 +54,7 @@ public function main() {
     };
     cosmosdb:ManagementClient managementClient = new(configuration);
 
-    cosmosdb:Result databaseResult = checkpanic managementClient->createDatabase(<DATABASE_ID>);
+    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(<DATABASE_ID>);
 }
 ```
 
@@ -79,7 +79,7 @@ public function main() {
         kind :"Hash",
         'version: 2
     };
-    cosmosdb:Result containerResult = checkpanic managementClient->createContainer(<DATABASE_ID>, <CONTAINER_ID>, 
+    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(<DATABASE_ID>, <CONTAINER_ID>, 
             partitionKey);
 }
 ```
@@ -99,9 +99,11 @@ public function main() {
     };
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    cosmosdb:Document document = { id: "documentid1", documentBody :{ "LastName": "Sheldon", accountNumber: 001234222 }
-    cosmosdb:Result documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, document.id, 
-            document.documentBody, <VALUE_OF_PARTITIONKEY>); 
+    string id =  "documentid1";
+    string documentBody = { "LastName": "Sheldon", accountNumber: 001234222 };
+
+    cosmosdb:Document documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, id, 
+            documentBody, <VALUE_OF_PARTITIONKEY>); 
 }
 ```
 ### List Documents

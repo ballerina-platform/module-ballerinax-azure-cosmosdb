@@ -44,7 +44,7 @@ public function main() {
         paths: ["/id"],
         keyVersion: 2
     };
-    cosmosdb:Result containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
+    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
 
     // Create container with indexing policy
     log:print("Creating container with indexing policy");   
