@@ -661,7 +661,7 @@ public function main() {
 }
 ```
 Notes: <br/>
-A `validityPeriod` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
+A `validityPeriodInSeconds` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
 you are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/create_permission.bal
@@ -1052,7 +1052,7 @@ public function main() {
 Notes: <br/> 
 - The optional `maxItemCount` parameter specifies the maximum number of results returned per page. SO in the connector,
 the user can either get the items in one page or get all the results related to each query.
-- The optional `valueOfPartitionKey` parameter can be specified so that, it only returns the documents which have it’s
+- The optional `partitionKey` parameter can be specified so that, it only returns the documents which have it’s
 `partition key value` equals to specific value
 - The optional record type `ResourceQueryOptions` can be used to provide several options for executing the qury.
     - `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or 
@@ -1060,7 +1060,7 @@ the user can either get the items in one page or get all the results related to 
     - `sessionToken` - the client will use a session token internally with each read/query request to ensure that the 
     set consistency level is maintained.
     - `enableCrossPartition` - Use to provide whether to ignore the partition keys and query across partitions. This can 
-    be done using a boolean value. When cross-partitioning is enabled, providing `valueOfPartitionKey` will not do 
+    be done using a boolean value. When cross-partitioning is enabled, providing `partitionKey` will not do 
     anything. The querying will still be done across partitions.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/query_container.bal

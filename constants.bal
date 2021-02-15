@@ -86,6 +86,26 @@ public enum PermisssionMode {
     READ = "Read"
 }
 
+# The specific version for a given offer.
+# + PRE_DEFINED - `V1` represents pre-defined throughput levels
+# + USER_DEFINED - `V2` represents user-defined throughput levels
+public enum OfferVersion {
+    PRE_DEFINED = "V1",
+    USER_DEFINED = "V2"
+}
+
+# The performance levels for a specific throughput level.
+# + LEVEL_S1 - `S1` represents performance level for pre-defined throughput level 
+# + LEVEL_S2 - `S2` represents performance level for pre-defined throughput level
+# + LEVEL_S3 - `S3` represents performance level for pre-defined throughput level
+# + INVALID - The performance level is set `Invalid` for `V2` user-defined throughput levels
+public enum OfferType {
+    LEVEL_S1 = "S1",
+    LEVEL_S2 = "S2",
+    LEVEL_S3 = "S3",
+    INVALID = "Invalid"
+}
+
 // Indexing Policy
 const string INDEXING_TYPE_INCLUDE = "Include";
 const string INDEXING_TYPE_EXCLUDE = "Exclude";

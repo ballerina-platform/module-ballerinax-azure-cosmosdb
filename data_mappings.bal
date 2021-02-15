@@ -160,12 +160,12 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayloa
 
 //  Maps the JSON response returned from the request into record type of Index.
 // 
-//  + jsonPayload - The JSON object returned from request
+//  + jsonPayload - A JSON object returned from request
 //  + return - An instance of record type Index
 isolated function mapJsonToIndexType(json jsonPayload) returns Index {
     Index index = {};
-    //index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
-    index.dataType = jsonPayload.dataType.toString();
+    index.kind = getIndexType(jsonPayload.kind.toString());
+    index.dataType = getIndexDataType(jsonPayload.dataType.toString());
     index.precision = convertToInt(jsonPayload.precision);
     return index;
 }
@@ -214,9 +214,8 @@ isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns
     triggerResponse.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     triggerResponse.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     triggerResponse.triggerFunction = payload.body != () ? payload.body.toString() : EMPTY_STRING;
-    triggerResponse.triggerOperation = payload.triggerOperation != () ? payload.triggerOperation.toString() : 
-            EMPTY_STRING;
-    triggerResponse.triggerType = payload.triggerType != () ? payload.triggerType.toString() : EMPTY_STRING;
+    triggerResponse.triggerOperation = getTriggerOperation(payload.triggerOperation.toString());
+    triggerResponse.triggerType = getTriggerType(payload.triggerType.toString());
     triggerResponse.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
     triggerResponse.sessionToken = headers?.sessionToken.toString();
     return triggerResponse;
@@ -249,7 +248,7 @@ isolated function mapJsonToPermissionType([json, ResponseHeaders?] jsonPayload) 
     permission.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     permission.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
     permission.token = payload._token != () ? payload._token.toString() : EMPTY_STRING;
-    permission.permissionMode = payload.permissionMode != () ? payload.permissionMode.toString() : EMPTY_STRING;
+    permission.permissionMode = getPermisssionMode(payload.permissionMode.toString());
     permission.resourcePath = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     permission.eTag = payload._etag != () ? payload._etag.toString() : EMPTY_STRING;
     permission.sessionToken = headers?.sessionToken.toString();
@@ -266,8 +265,8 @@ isolated function mapJsonToOfferType([json, ResponseHeaders?] jsonPayload) retur
     offer.id = payload.id != () ? payload.id.toString() : EMPTY_STRING;
     offer.resourceId = payload._rid != () ? payload._rid.toString() : EMPTY_STRING;
     offer.selfReference = payload._self != () ? payload._self.toString() : EMPTY_STRING;
-    offer.offerVersion = payload.offerVersion != () ? payload.offerVersion.toString() : EMPTY_STRING;
-    offer.offerType = payload.offerType != () ? payload.offerType.toString() : EMPTY_STRING;
+    offer.offerVersion = getOfferVersion(payload.offerVersion.toString());
+    offer.offerType = getOfferType(payload.offerType.toString());
     offer.content = payload.content != () ? payload.content.toString() : EMPTY_STRING;
     offer.resourceSelfLink = payload.'resource != () ? payload.'resource.toString() : EMPTY_STRING;
     offer.resourceResourceId = payload.offerResourceId != () ? payload.offerResourceId.toString() : 

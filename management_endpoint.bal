@@ -105,7 +105,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        stream<Database> databaseStream = <stream<Database>> check retriveStream(self.httpClient, requestPath, request);
+        stream<Database> databaseStream = <stream<Database>> check retrieveStream(self.httpClient, requestPath, request);
         return databaseStream;
     }
 
@@ -212,7 +212,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        stream<Container> containerStream = <stream<Container>> check retriveStream(self.httpClient, requestPath, 
+        stream<Container> containerStream = <stream<Container>> check retrieveStream(self.httpClient, requestPath, 
                 request);
         return containerStream;
     }
@@ -248,7 +248,7 @@ public client class ManagementClient {
                 RESOURCE_TYPE_PK_RANGES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
 
-        stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retriveStream(self.httpClient, 
+        stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, 
                 requestPath, request);
         return partitionKeyStream;
     }
@@ -326,7 +326,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request);
+        stream<User> userStream = <stream<User>> check retrieveStream(self.httpClient, requestPath, request);
         return userStream;
     }
 
@@ -451,7 +451,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
+        stream<Permission> permissionStream = <stream<Permission>> check retrieveStream(self.httpClient, requestPath, 
                 request);
         return permissionStream;
     }
@@ -543,7 +543,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request);
+        stream<Offer> offerStream = <stream<Offer>> check retrieveStream(self.httpClient, requestPath, request);
         return offerStream;
     }
 

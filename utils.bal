@@ -375,7 +375,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     }
 }
 
-function retriveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
+function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
         stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
@@ -439,4 +439,112 @@ isolated function convertToInt(json|error value) returns int {
         }
     }
     return 0;
+}
+
+// Get the enum value for a given string which represents the type of index.
+// + kind - The index type
+// + return - An enum value of IndexType 
+isolated function getIndexType(string kind) returns IndexType {
+    match kind {
+        "Range" => {
+            return RANGE;
+        }
+        "Spatial" => {
+            return SPATIAL;
+        }
+    }
+    return HASH;
+}
+
+// Get the enum value for a given string which represents the data type index is applied to.
+// + dataType - The string representing the data type index have applied to
+// + return - An enum value of IndexDataType 
+isolated function getIndexDataType(string dataType) returns IndexDataType {
+    match dataType {
+        "Number" => {
+            return NUMBER;
+        }
+        "Point" => {
+            return POINT;
+        }
+        "Polygon" => {
+            return POLYGON;
+        }
+        "LineString" => {
+            return LINESTRING;
+        }
+    }
+    return STRING;
+}
+
+// Get the enum value for a given string which represent the operation a trigger is applied to.
+// + triggerOperation - The string representing the operation which is capable of firing the trigger
+// + return - An enum value of TriggerOperation 
+isolated function getTriggerOperation(string triggerOperation) returns TriggerOperation {
+    match triggerOperation {
+        "Create" => {
+            return CREATE;
+        }
+        "Replace" => {
+            return REPLACE;
+        }
+        "Delete" => {
+            return DELETE;
+        }
+    }
+    return ALL;
+}
+
+// Get the enum value for a given string which represent when  the trigger is fired.
+// + triggerType - The string representing when the trigger will be fired
+// + return - An enum value of TriggerType
+isolated function getTriggerType(string triggerType) returns TriggerType {
+    match triggerType {
+        "Post" => {
+            return POST;
+        }
+    }
+    return PRE;
+}
+
+// Get the enum value for a given string which represent the access rights for the specific permission.
+// + permissionMode - The string representing the permisssionMode
+// + return - An enum value of PermisssionMode
+isolated function getPermisssionMode(string permissionMode) returns PermisssionMode {
+    match permissionMode {
+        "Read" => {
+            return READ;
+        }
+    }
+    return ALL_PERMISSIONS;
+}
+
+// Get the enum value for a given string which represent the offer version of a specific offer.
+// + offerVersion - The string representing the offer version
+// + return - An enum value of PermisssionMode
+isolated function getOfferVersion(string offerVersion) returns OfferVersion {
+    match offerVersion {
+        "V1" => {
+            return PRE_DEFINED;
+        }
+    }
+    return USER_DEFINED;
+}
+
+// Get the enum value for a given string which represent the offer type of a specific version.
+// + offerType - The string representing the offer type
+// + return - An enum value of OfferType
+isolated function getOfferType(string offerType) returns OfferType {
+    match offerType {
+        "S1" => {
+            return LEVEL_S1;
+        }
+        "S2" => {
+            return LEVEL_S2;
+        }
+        "S3" => {
+            return LEVEL_S3;
+        }
+    }
+    return INVALID;
 }

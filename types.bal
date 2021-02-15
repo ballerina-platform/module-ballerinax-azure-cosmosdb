@@ -121,13 +121,13 @@ public type ExcludedPath record {|
 # Represent the record type with necessary parameters to represent an index. 
 # 
 # + kind - Type of index. Can be `HASH`, `RANGE` or `SPATIAL`
-# + dataType - Datatype for which the indexing behavior is applied to. Can be "String", "Number", "Point", "Polygon" 
-#        or "LineString"
+# + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon` 
+#        or `LineString`
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
 #        and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1.
 public type Index record {|
     IndexType kind = HASH;
-    string dataType = "";
+    IndexDataType dataType = STRING;
     int precision = MAX_PRECISION;
 |};
 
@@ -167,14 +167,14 @@ public type UserDefinedFunction record {|
 # 
 # + id - User generated unique ID for the trigger
 # + triggerFunction - Javasctipt function
-# + triggerOperation - Type of operation that invokes the trigger. Can be "All", "Create", "Replace" or "Delete". 
-# + triggerType - When the trigger is fired, "Pre" or "Post"
+# + triggerOperation - Type of operation that invokes the trigger. Can be `All`, `Create`, `Replace` or `Delete`. 
+# + triggerType - When the trigger is fired, `Pre` or `Post`
 public type Trigger record {|
     string id = "";
     *Commons;
     string triggerFunction = "";
-    string triggerOperation = ""; 
-    string triggerType = "";
+    TriggerOperation triggerOperation = ALL; 
+    TriggerType triggerType = PRE;
 |};
 
 type JsonMap map<json>;
@@ -207,14 +207,14 @@ public type User record {|
 # Represent the record type with necessary parameters to represent a permission.
 # 
 # + id - User generated unique ID for the permission
-# + permissionMode - Access mode for the resource, Should be "All" or "Read"
+# + permissionMode - Access mode for the resource, Should be `All` or `Read`
 # + resourcePath - Full addressable path of the resource associated with the permission
 # + validityPeriodInSeconds - Optional. Validity period of the Resource Token.
-# + token - System generated "Resource Token" for the particular resource and user
+# + token - System generated `Resource Token` for the particular resource and user
 public type Permission record {|
     string id = "";
     *Commons;
-    string permissionMode = "";
+    PermisssionMode permissionMode = ALL_PERMISSIONS;
     string resourcePath = "";
     int validityPeriodInSeconds = MIN_TIME_TO_LIVE_IN_SECONDS;
     string token = "";
@@ -223,17 +223,17 @@ public type Permission record {|
 # Represent the record type with necessary parameters to represent an offer.
 # 
 # + id - User generated unique ID for the offer
-# + offerVersion - Offer version, This value can be V1 for pre-defined throughput levels and V2 for user-defined 
+# + offerVersion - Offer version, This value can be `V1` for pre-defined throughput levels and `V2` for user-defined 
 #       throughput levels
-# + offerType - Optional. Performance level for V1 offer version, allows S1,S2 and S3.
+# + offerType - Optional. Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
 # + content - Information about the offer
 # + resourceResourceId - The resource id(_rid) of the collection
 # + resourceSelfLink - The self-link of the collection
 public type Offer record {|
     string id = "";
     *Commons;
-    string offerVersion = "";
-    string? offerType?;
+    OfferVersion offerVersion = USER_DEFINED;
+    string offerType = INVALID;
     json content = {};
     string resourceResourceId = "";
     string resourceSelfLink = "";

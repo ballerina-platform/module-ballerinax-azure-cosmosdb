@@ -132,7 +132,7 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, documentListOptions);
 
-        stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request);
+        stream<Document> documentStream = <stream<Document>> check retrieveStream(self.httpClient, requestPath, request);
         return documentStream;
     }
 
@@ -263,7 +263,7 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(self.httpClient, 
+        stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retrieveStream(self.httpClient, 
                 requestPath, request);
         return storedProcedureStream;
     }
@@ -381,7 +381,7 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retriveStream(
+        stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retrieveStream(
         self.httpClient, requestPath, request);
         return userDefinedFunctionStream;
     }
@@ -486,7 +486,7 @@ public client class CoreClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request);
+        stream<Trigger> triggerStream = <stream<Trigger>> check retrieveStream(self.httpClient, requestPath, request);
         return triggerStream;
     }
 
