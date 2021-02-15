@@ -899,7 +899,7 @@ public function main() {
 Notes: <br/> Several Optional Parameters are supported in the replacement of documents. These options can be specified 
 in `DocumentReplaceOptions` record type in the connector.
 - `indexingDirective` - This option is to specify whether the document is included in any predefined indexing policy for 
-the container. This is provided by giving `true` or `false`.
+the container. This is provided by giving `Include` or `Exclude`.
 - `ifMatchEtag` - check if the resource's ETag value matches the ETag value provided in the Condition property. 
 Replacement is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will 
 reject the operation and it will return an HTTP 412 Precondition failure response code. You can convert the creation of a new 
@@ -1061,8 +1061,8 @@ the user can either get the items in one page or get all the results related to 
 - The optional `partitionKey` parameter can be specified so that, it only returns the documents which have it’s
 `partition key value` equals to specific value
 - The optional record type `ResourceQueryOptions` can be used to provide several options for executing the qury.
-    - `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or 
-    Eventual. Users must set this level to the same or weaker level than the account’s configured consistency level.
+    - `consistancyLevel` - It is the consistency level override. The valid values are: `Strong`, `Bounded`, `Session`, or 
+    `Eventual`. Users must set this level to the same or weaker level than the account’s configured consistency level.
     - `sessionToken` - the client will use a session token internally with each read/query request to ensure that the 
     set consistency level is maintained.
     - `enableCrossPartition` - Use to provide whether to ignore the partition keys and query across partitions. This can 

@@ -36,7 +36,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the new Database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
-    # + return - If successful, returns Result. Else returns error.
+    # + return - If successful, returns Database. Else returns error.
     remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Database|error {
         // Creating a new request
         http:Request request = new;
@@ -62,7 +62,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the new Database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
-    # + return - If successful, returns Result. Else returns error.
+    # + return - If successful, returns Database nil if database already exists. Else returns error.
     remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
            Database?|error {
         var result = self->createDatabase(databaseId);
@@ -134,7 +134,7 @@ public client class ManagementClient {
     # + partitionKey - A record of type PartitionKey
     # + indexingPolicy - Optional. A record of type IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Result. Else returns error.
+    # + return - If successful, returns Container. Else returns error.
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
         http:Request request = new;
@@ -167,7 +167,7 @@ public client class ManagementClient {
     # + partitionKey - A record of type PartitionKey
     # + indexingPolicy - Optional. A record of type IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
-    # + return - If successful, returns Result if a new container is created or () if container already exists. 
+    # + return - If successful, returns Container if a new container is created or nil if container already exists. 
     #       Else returns error.
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
             IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
@@ -257,7 +257,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the Database where the User is created.
     # + userId - ID of the new User. Must be a unique value.
-    # + return - If successful, returns a Result. Else returns error.
+    # + return - If successful, returns a User. Else returns error.
     remote function createUser(string databaseId, string userId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
@@ -357,7 +357,7 @@ public client class ManagementClient {
     # + permissionMode - The mode to which the Permission is scoped
     # + resourcePath - The resource this permission is allowing the User to access
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
-    # + return - If successful, returns a Result. Else returns error.
+    # + return - If successful, returns a Permission. Else returns error.
     remote function createPermission(string databaseId, string userId, string permissionId, PermisssionMode permissionMode, 
             string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Permission|error {
         http:Request request = new;

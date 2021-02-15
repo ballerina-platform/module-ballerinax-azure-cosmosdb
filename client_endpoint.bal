@@ -41,7 +41,7 @@ public client class CoreClient {
     # + partitionKey - The value of partition key field of the Container 
     # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
     #       the request.
-    # + return - If successful, returns Result. Else returns error.
+    # + return - If successful, returns Document. Else returns error.
     remote function createDocument(string databaseId, string containerId, string documentId, json document, 
             any partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
@@ -199,7 +199,7 @@ public client class CoreClient {
     # + containerId - ID of the Container which Stored Procedure will be created 
     # + storedProcedureId - A unique ID for the newly created Stored Procedure
     # + storedProcedure - A JavaScript function
-    # + return - If successful, returns a Result. Else returns error. 
+    # + return - If successful, returns a StoredProcedure. Else returns error. 
     remote function createStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             string storedProcedure) returns @tainted StoredProcedure|error {
         http:Request request = new;
@@ -318,7 +318,7 @@ public client class CoreClient {
     # + containerId - ID of the container which user defined will be created
     # + userDefinedFunctionId - A unique ID for the newly created User Defined Function
     # + userDefinedFunction - A JavaScript function
-    # + return - If successful, returns a Result. Else returns error. 
+    # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     remote function createUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
             string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
         http:Request request = new;
@@ -418,7 +418,7 @@ public client class CoreClient {
     # + triggerOperation - The specific operation in which trigger will be executed can be `All`, `Create`, `Replace` or 
     #       `Delete`
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
-    # + return - If successful, returns a Result. Else returns error. 
+    # + return - If successful, returns a Trigger. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
             TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Trigger|error { 
         http:Request request = new;
