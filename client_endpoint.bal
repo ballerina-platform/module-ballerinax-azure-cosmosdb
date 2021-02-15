@@ -415,11 +415,12 @@ public client class CoreClient {
     # + containerId - ID of the Container where Trigger is created
     # + triggerId - A unique ID for the newly created Trigger
     # + trigger - A JavaScript function
-    # + triggerOperation - The specific operation in which trigger will be executed
+    # + triggerOperation - The specific operation in which trigger will be executed can be `All`, `Create`, `Replace` or 
+    #       `Delete`
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a Result. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
-            string triggerOperation, string triggerType) returns @tainted Trigger|error { 
+            TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Trigger|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER]);
@@ -448,7 +449,7 @@ public client class CoreClient {
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a Result. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, string triggerId, string trigger, 
-            string triggerOperation, string triggerType) returns @tainted Result|error {
+            TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, triggerId]);

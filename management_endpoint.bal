@@ -358,7 +358,7 @@ public client class ManagementClient {
     # + resourcePath - The resource this permission is allowing the User to access
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a Result. Else returns error.
-    remote function createPermission(string databaseId, string userId, string permissionId, string permissionMode, 
+    remote function createPermission(string databaseId, string userId, string permissionId, PermisssionMode permissionMode, 
             string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
@@ -389,7 +389,7 @@ public client class ManagementClient {
     # + resourcePath - The resource this permission is allowing the User to access
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
-    remote function replacePermission(string databaseId, string userId, string permissionId, string permissionMode, 
+    remote function replacePermission(string databaseId, string userId, string permissionId, PermisssionMode permissionMode, 
             string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 

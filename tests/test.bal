@@ -212,7 +212,7 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
         includedPaths: [{
             path: "/*",
             indexes: [{
-                dataType: "String",
+                dataType: STRING,
                 precision: -1,
                 kind: "Range"
             }]
@@ -764,8 +764,8 @@ function test_createTrigger() {
                                             if(!accept) throw "Unable to update metadata, abort";
                                             return;
                                         }`;
-    string createTriggerOperation = "All";
-    string createTriggerType = "Post";
+    TriggerOperation createTriggerOperation = "All";
+    TriggerType createTriggerType = "Post";
 
     var result = azureCosmosClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
             createTriggerOperation, createTriggerType);
@@ -811,8 +811,8 @@ function test_replaceTrigger() {
                                             if(!accept) throw "Unable to update metadata, abort";
                                             return;
                                         }`;
-    string replaceTriggerOperation = "All";
-    string replaceTriggerType = "Post";
+    TriggerOperation replaceTriggerOperation = "All";
+    TriggerType replaceTriggerType = "Post";
 
     var result = azureCosmosClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
             replaceTriggerOperation, replaceTriggerType);
@@ -960,7 +960,7 @@ function test_deleteUser() {
 function test_createPermission() {
     log:print("ACTION : createPermission()");
 
-    string permissionMode = "All";
+    PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
@@ -984,7 +984,7 @@ function test_createPermissionWithTTL() {
 
     var uuid = createRandomUUIDWithoutHyphens();
     string newPermissionId = string `permission_${uuid.toString()}`;
-    string permissionMode = "Read";
+    PermisssionMode permissionMode = "Read";
     string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
     int validityPeriod = 9000;
 
@@ -1004,7 +1004,7 @@ function test_createPermissionWithTTL() {
 function test_replacePermission() {
     log:print("ACTION : replacePermission()");
 
-    string permissionMode = "All";
+    PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
     var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
@@ -1219,11 +1219,7 @@ function afterFunc() {
     var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
 
     if (result1 is Result && result2 is Result) {
-        if(result1.success == true && result2.success == true) {
-            var output = "";
-        } else {
-            test:assertFail(msg = "Failed to delete one of the databases");
-        }
+        var output = "";
     } else {
         test:assertFail(msg = "Failed to delete one of the databases");
     }

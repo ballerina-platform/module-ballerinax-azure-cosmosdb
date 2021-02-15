@@ -36,11 +36,9 @@ public type ResponseHeaders record {|
 
 # Represents information about the status of the relevent create, update or delete request.
 # 
-# + success - A boolean representing the success status of the request
 # + eTag - Resource etag for the resource
 # + sessionToken - Session token of the request
 public type Result record {|
-    boolean success = false;
     string eTag = "";
     string sessionToken = "";
 |};

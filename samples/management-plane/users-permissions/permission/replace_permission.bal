@@ -30,7 +30,7 @@ public function main() {
     string userId = "my_user";
     string permissionId = "my_permission";
 
-    string permissionModeReplace = "Read";
+    cosmosdb:PermisssionMode permissionModeReplace = "Read";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
     log:print("Replace permission");

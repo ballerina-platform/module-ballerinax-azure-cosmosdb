@@ -657,12 +657,12 @@ public function main() {
     string userId = "my_user";
 
     string permissionId = "my_permission";
-    string permissionMode = "All";
+    cosmosdb:PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
     log:print("Create permission for a user");
     cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
-            permissionId, permissionMode, permissionResource);
+            permissionId, permissionMode, <@untainted>permissionResource);
     log:print("Success!");
 }
 ```
@@ -693,7 +693,7 @@ public function main() {
     string userId = "my_user";
     string permissionId = "my_permission";
 
-    string permissionModeReplace = "Read";
+    cosmosdb:PermisssionMode permissionModeReplace = "Read";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
     log:print("Replace permission");
@@ -1412,36 +1412,35 @@ public function main() {
     string triggerId = "my_trigger";
     
     log:print("Creating a trigger");
-    string createTriggerBody = string `function updateMetadata() {
-                                            var context = getContext();
-                                            var collection = context.getCollection();
-                                            var response = context.getResponse();
-                                            var createdDocument = response.getBody();
+    string createTriggerBody = 
+    string `function updateMetadata() {
+        var context = getContext();
+        var collection = context.getCollection();
+        var response = context.getResponse();
+        var createdDocument = response.getBody();
 
-                                            // query for metadata document
-                                            var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery,
-                                                    updateMetadataCallback);
-                                            if(!accept) throw "Unable to update metadata, abort";
-                                        }
+        // query for metadata document
+        var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
+        var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+        if(!accept) throw "Unable to update metadata, abort";
+    }
 
-                                        function updateMetadataCallback(err, documents, responseOptions) {
-                                            if(err) throw new Error("Error" + err.message);
-                                            if(documents.length != 1) throw "Unable to find metadata document";
-                                            var metadataDocument = documents[0];
-                                            // update metadata
-                                            metadataDocument.createdDocuments += 1;
-                                            metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, 
-                                                    metadataDocument, function(err, docReplaced) {
-                                                if(err) throw "Unable to update metadata, abort";
-                                            });
+    function updateMetadataCallback(err, documents, responseOptions) {
+        if(err) throw new Error("Error" + err.message);
+        if(documents.length != 1) throw "Unable to find metadata document";
+        var metadataDocument = documents[0];
+        // update metadata
+        metadataDocument.createdDocuments += 1;
+        metadataDocument.createdNames += " " + createdDocument.id;
+        var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+            if(err) throw "Unable to update metadata, abort";
+        });
 
-                                            if(!accept) throw "Unable to update metadata, abort";
-                                            return;
-                                        }`;
-    string createTriggerOperationType = "Create";
-    string createTriggerType = "Post";
+        if(!accept) throw "Unable to update metadata, abort";
+        return;
+    }`;
+    cosmosdb:TriggerOperation createTriggerOperationType = "All";
+    cosmosdb:TriggerType createTriggerType = "Post";
 
     cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
             triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
@@ -1476,41 +1475,41 @@ cosmosdb:CoreClient azureCosmosClient = new (configuration);
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
-    string triggerId = "my_trigger";
+    string existingTriggerId = "my_trigger";
 
     log:print("Replacing a trigger");
-    string replaceTriggerBody = string `function metadataDocument() {
-                                            var context = getContext();
-                                            var collection = context.getCollection();
-                                            var response = context.getResponse();
-                                            var createdDocument = response.getBody();
+    string replaceTriggerBody = 
+    string `function replaceFunction() {
+        var context = getContext();
+        var collection = context.getCollection();
+        var response = context.getResponse();
+        var createdDocument = response.getBody();
 
-                                            // query for metadata document
-                                            var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, 
-                                                    updateMetadataCallback);
-                                            if(!accept) throw "Unable to update metadata, abort";
-                                        }
+        // query for metadata document
+        var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
+        var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+        if(!accept) throw "Unable to update metadata, abort";
+    }
 
-                                        function updateMetadataCallback(err, documents, responseOptions) {
-                                            if(err) throw new Error("Error" + err.message);
-                                            if(documents.length != 1) throw "Unable to find metadata document";
-                                            var metadataDocument = documents[0];
-                                            // update metadata
-                                            metadataDocument.createdDocuments += 1;
-                                            metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, 
-                                                    metadataDocument, function(err, docReplaced) {
-                                                if(err) throw "Unable to update metadata, abort";
-                                            });
+    function updateMetadataCallback(err, documents, responseOptions) {
+        if(err) throw new Error("Error" + err.message);
+        if(documents.length != 1) throw "Unable to find metadata document";
+        var metadataDocument = documents[0];
+        // update metadata
+        metadataDocument.createdDocuments += 1;
+        metadataDocument.createdNames += " " + createdDocument.id;
+        var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+            if(err) throw "Unable to update metadata, abort";
+        });
 
-                                            if(!accept) throw "Unable to update metadata, abort";
-                                            return;
-                                        }`;
-    string replaceTriggerOperation = "All";
-    string replaceTriggerType = "Post";
+        if(!accept) throw "Unable to update metadata, abort";
+        return;
+    }`;
+    cosmosdb:TriggerOperation replaceTriggerOperation = "All";
+    cosmosdb:TriggerType replaceTriggerType = "Post";
+    
     cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
-            triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
+            existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
     log:print("Success!");
 }
 ```

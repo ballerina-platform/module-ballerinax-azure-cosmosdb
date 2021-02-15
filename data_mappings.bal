@@ -23,7 +23,6 @@ import ballerina/lang.array as array;
 isolated function mapTupleToResultType([boolean, ResponseHeaders] jsonPayload) returns @tainted Result {
     Result result = {};
     var [status, headers] = jsonPayload;
-    result.success = status ? true : false;
     result.eTag = headers.eTag.toString();
     result.sessionToken = headers.sessionToken.toString();
     return result;

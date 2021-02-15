@@ -61,8 +61,8 @@ public function main() {
         if(!accept) throw "Unable to update metadata, abort";
         return;
     }`;
-    string createTriggerOperationType = "All";
-    string createTriggerType = "Post";
+    cosmosdb:TriggerOperation createTriggerOperationType = "All";
+    cosmosdb:TriggerType createTriggerType = "Post";
     cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
             triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
 
@@ -95,8 +95,8 @@ public function main() {
         if(!accept) throw "Unable to update metadata, abort";
         return;
     }`;
-    string replaceTriggerOperation = "All";
-    string replaceTriggerType = "Post";
+    cosmosdb:TriggerOperation replaceTriggerOperation = "All";
+    cosmosdb:TriggerType replaceTriggerType = "Post";
 
     cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
             triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);

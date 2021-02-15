@@ -30,7 +30,7 @@ public function main() {
     string userId = "my_user";
 
     string permissionId = "my_permission";
-    string permissionMode = "All";
+    cosmosdb:PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
     log:print("Create permission for a user");
