@@ -375,8 +375,8 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     }
 }
 
-// Make a request call to the azure endpoint to get a list of resources
-
+// Make a request call to the azure endpoint to get a list of resources.
+// 
 // + azureCosmosClient - Client which calls the azure endpoint
 // + path - Path to which API call is made
 // + request - HTTP request object 
@@ -385,17 +385,16 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
         stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
-    stream<record{}> finalStream = check createStream(path, request, payload);
+    stream<record{}> finalStream = check createStream(path, payload);
     return finalStream;
 }
 
-// Create a stream from the array obtained from the request call
+// Create a stream from the array obtained from the request call.
+// 
 // + path - Path to which API call is made
-// + request - HTTP request object 
 // + payload - json payload returned from the response
 // + returns - A stream<record{}> or error
-isolated function createStream(string path, http:Request request, json payload) 
-        returns @tainted stream<record{}>|error {
+isolated function createStream(string path, json payload) returns @tainted stream<record{}>|error {
     record{}[] finalArray = [];
     if (payload.Databases is json) {
         finalArray = convertToDatabaseArray(<json[]>payload.Databases);
