@@ -22,7 +22,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";

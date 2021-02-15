@@ -27,7 +27,7 @@ Configuration config = {
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
 
-CoreClient azureCosmosClient = new(config);
+DataPlaneClient azureCosmosClient = new(config);
 ManagementClient azureCosmosManagementClient = new(config);
 
 var randomString = createRandomUUIDWithoutHyphens();

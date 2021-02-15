@@ -19,7 +19,7 @@ import ballerina/http;
 # Azure Cosmos DB Client Object for data plane operations.
 # 
 # + httpClient - the HTTP Client
-public client class CoreClient {
+public client class DataPlaneClient {
     private http:Client httpClient;
     private string baseUrl;
     private string masterOrResourceToken;

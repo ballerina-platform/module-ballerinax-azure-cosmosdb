@@ -148,7 +148,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/partitioning-overview#choose-pa
 For continuing with the data plane operations in Cosmos DB you have to make use of the Data Plane client provided by the 
 ballerina connector. For this, the same connection configuration as the `ManagementClient` can be used.
 ```ballerina
-cosmosdb:CoreClient azureCosmosClient = new(configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
 ```
 ### Step 7: Create a Document
 Now, with all the above steps followed you can create a new document inside Cosmos Container. As Cosmos DB is designed 
@@ -815,7 +815,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -867,7 +867,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -920,7 +920,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -960,7 +960,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -999,7 +999,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1039,7 +1039,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1099,7 +1099,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1134,7 +1134,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1168,7 +1168,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1193,7 +1193,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1222,7 +1222,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1264,7 +1264,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1305,7 +1305,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1343,7 +1343,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1371,7 +1371,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1404,7 +1404,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1470,7 +1470,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1528,7 +1528,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -1553,7 +1553,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:CoreClient azureCosmosClient = new (configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";

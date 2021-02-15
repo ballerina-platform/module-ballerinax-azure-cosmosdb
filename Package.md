@@ -16,7 +16,7 @@ operations such as `find`, `create`, `read`, `update`, and `delete` operations o
 
 There are two clients provided by Ballerina to interact with CosmosDB.
 
-1. **cosmosdb:CoreClient** - This connects to the running CosmosDB databases and containers to execute data-plane 
+1. **cosmosdb:DataPlaneClient** - This connects to the running CosmosDB databases and containers to execute data-plane 
 operations 
 
    ```ballerina
@@ -24,7 +24,7 @@ operations
         baseUrl : <BASE_URL>,
         masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:CoreClient coreClient = new(configuration);
+    cosmosdb:DataPlaneClient coreClient = new(configuration);
    ```
 2. **cosmosdb:ManagementClient** - This connects to the running CosmosDB databases and containers to execute 
 management-plane operations 
@@ -97,7 +97,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:CoreClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient coreClient = new (configuration);
 
     string id =  "documentid1";
     string documentBody = { "LastName": "Sheldon", accountNumber: 001234222 };
@@ -120,7 +120,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:CoreClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient coreClient = new (configuration);
 
     stream<cosmosdb:Document> documentList = checkpanic coreClient->getDocumentList(<DATABASE_ID>, <CONTAINER_ID>);
 }
@@ -136,7 +136,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:CoreClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient coreClient = new (configuration);
 
     cosmosdb:Document returnedDocument = checkpanic coreClient->getDocument(<DATABASE_ID>, <CONTAINER_ID>, 
             <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
@@ -154,7 +154,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:CoreClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient coreClient = new (configuration);
 
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
@@ -178,7 +178,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:CoreClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient coreClient = new (configuration);
 
     _ = checkpanic coreClient->deleteDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
 
