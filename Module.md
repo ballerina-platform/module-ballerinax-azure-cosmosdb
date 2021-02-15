@@ -13,6 +13,7 @@ operations such as `find`, `create`, `read`, `update`, and `delete` operations o
 | Cosmos DB API Version     | 2018-12-31                  |
 
 ## CosmosDB Clients
+
 There are two clients provided by Ballerina to interact with CosmosDB.
 
 1. **cosmosdb:CoreClient** - This connects to the running CosmosDB databases and containers to execute data-plane 
@@ -98,9 +99,9 @@ public function main() {
     };
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", accountNumber: 001234222 }
-    cosmosdb:Result documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, document1, 
-            <VALUE_OF_PARTITIONKEY>); 
+    cosmosdb:Document document = { id: "documentid1", documentBody :{ "LastName": "Sheldon", accountNumber: 001234222 }
+    cosmosdb:Result documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, document.id, 
+            document.documentBody, <VALUE_OF_PARTITIONKEY>); 
 }
 ```
 ### List Documents
@@ -156,7 +157,7 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
     stream<json> resultStream = checkpanic coreClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-            [], <MAX_ITEM_COUNT>, <VALUE_OF_PARTITIONKEY>);
+            <MAX_ITEM_COUNT>, <VALUE_OF_PARTITIONKEY>);
 
     error? e = resultStream.forEach(function (json document){
                     log:printInfo(document);
@@ -164,7 +165,6 @@ public function main() {
 
 }
 ```
-
 ### Delete Document
 
 ```ballerina

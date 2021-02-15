@@ -43,25 +43,25 @@ public enum IndexType {
 
 # The datatype for which the indexing behavior is applied to.
 # 
-# + STRING -
-# + NUMBER -
-# + POINT -
-# + POLYGON -
-# + LINESTRING -
+# + STRING - Represents a string data type
+# + NUMBER - Represents a numeric data type
+# + POINT - Represents a point data type
+# + POLYGON - Represents a polygon data type
+# + LINESTRING - Represents a line string data type
 public enum IndexDataType {
     STRING = "String",
     NUMBER = "Number",
-    POINT = "Point"
+    POINT = "Point",
     POLYGON = "Polygon",
     LINESTRING = "LineString"
 }
 
 # Type of operation that invokes the trigger.
 # 
-# + ALL - 
-# + CREATE - 
-# + REPLACE - 
-# + DELETE - 
+# + ALL - `All` where trigger fires in all create, replace and delete operations
+# + CREATE - `Create` trigger fires only in a create operations
+# + REPLACE - `Replace` trigger fires only in a replace operations
+# + DELETE - `Delete` trigger fires only in a delete operations
 public enum TriggerOperation {
     ALL = "All",
     CREATE = "Create",
@@ -71,11 +71,19 @@ public enum TriggerOperation {
 
 # When is the trigger is fired.
 # 
-# + PRE - "Pre"
-# + POST - "Post"
+# + PRE - `Pre` triggers fire before an operation 
+# + POST - `Post` triggers fires after an operation
 public enum TriggerType {
-    PRE - "Pre"
-    POST - "Post"
+    PRE = "Pre",
+    POST = "Post"
+}
+
+# The access mode for the resource.
+# + ALL - `All` provides read, write, and delete access to a resource
+# + READ - `Read` restricts the user to read access on the resource
+public enum PermisssionMode {
+    ALL_PERMISSIONS = "All",
+    READ = "Read"
 }
 
 // Indexing Policy
@@ -192,8 +200,8 @@ const string STATUS_NOT_FOUND_STRING = "404";
 
 // Numeric constants
 const int MIN_REQUEST_UNITS = 400;
-const int MIN_TIME_TO_LIVE = 3600;
-const int MAX_TIME_TO_LIVE = 18000;
+const int MIN_TIME_TO_LIVE_IN_SECONDS = 3600;
+const int MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
 
 // Algorithm Used for partitioning
 const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";

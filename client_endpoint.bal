@@ -38,18 +38,18 @@ public client class CoreClient {
     # + containerId - ID of the Container which Document belongs to
     # + documentId - A unique ID for the document to save in the Database
     # + document -  A JSON document to be saved in the Database
-    # + valueOfPartitionKey - The value of parition key field of the Container 
-    # + requestOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to the 
-    #       request.
+    # + partitionKey - The value of parition key field of the Container 
+    # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function createDocument(string databaseId, string containerId, string documentId, json document, 
-            any valueOfPartitionKey, DocumentCreateOptions? requestOptions = ()) returns @tainted Result|error { 
+            any partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        setPartitionKeyHeader(request, valueOfPartitionKey);
-        setOptionalHeaders(request, requestOptions);
+        setPartitionKeyHeader(request, partitionKey);
+        setOptionalHeaders(request, documentCreateOptions);
 
         json payload = {
             id: documentId
@@ -68,18 +68,18 @@ public client class CoreClient {
     # + containerId - ID of the Container which Document belongs to
     # + documentId - The ID of the Document to be replaced
     # + document -  A JSON document saved in the Database    
-    # + valueOfPartitionKey - The value of parition key field of the Container 
-    # + requestOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to the 
-    #       request.
+    # + partitionKey - The value of parition key field of the Container 
+    # + documentReplaceOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceDocument(string databaseId, string containerId, string documentId, json document, 
-            any valueOfPartitionKey, DocumentReplaceOptions? requestOptions = ()) returns @tainted Result|error {
+            any partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
-        setPartitionKeyHeader(request, valueOfPartitionKey);
-        setOptionalHeaders(request, requestOptions);
+        setPartitionKeyHeader(request, partitionKey);
+        setOptionalHeaders(request, documentReplaceOptions);
 
         json payload = {id: documentId};
         _ = check payload.mergeJson(document);
@@ -95,18 +95,18 @@ public client class CoreClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
     # + documentId - Id of the Document to retrieve 
-    # + valueOfPartitionKey - The value of parition key field of the Container
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    # + partitionKey - The value of parition key field of the Container
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Document. Else returns error.  
-    remote function getDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
-            ResourceReadOptions? requestOptions = ()) returns @tainted Document|error { 
+    remote function getDocument(string databaseId, string containerId, string documentId, any partitionKey, 
+            ResourceReadOptions? resourceReadOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        setPartitionKeyHeader(request, valueOfPartitionKey);
-        setOptionalHeaders(request, requestOptions);
+        setPartitionKeyHeader(request, partitionKey);
+        setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -118,11 +118,11 @@ public client class CoreClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
     # + maxItemCount - Optional. Maximum number of Document records in one returning page.
-    # + requestOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
+    # + documentListOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns stream<cosmosdb:Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
-            DocumentListOptions? requestOptions = ()) returns @tainted stream<Document>|error { 
+            DocumentListOptions? documentListOptions = ()) returns @tainted stream<Document>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
@@ -130,7 +130,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, documentListOptions);
 
         stream<Document> documentStream = <stream<Document>> check retriveStream(self.httpClient, requestPath, request);
         return documentStream;
@@ -141,18 +141,18 @@ public client class CoreClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to   
     # + documentId - ID of the document to delete
-    # + valueOfPartitionKey - The value of parition key field of the container
-    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
-    #       request.
+    # + partitionKey - The value of parition key field of the container
+    # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to 
+    #       the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
-    remote function deleteDocument(string databaseId, string containerId, string documentId, any valueOfPartitionKey, 
-            ResourceDeleteOptions? requestOptions = ()) returns @tainted Result|error { 
+    remote function deleteDocument(string databaseId, string containerId, string documentId, any partitionKey, 
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setPartitionKeyHeader(request, valueOfPartitionKey);
-        setOptionalHeaders(request, requestOptions);
+        setPartitionKeyHeader(request, partitionKey);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -164,19 +164,19 @@ public client class CoreClient {
     # + databaseId - ID of the database which Container belongs to
     # + containerId - ID of the Container to query     
     # + sqlQuery - A string containing the SQL query
-    # + valueOfPartitionKey - Optional. The value of parition key field of the container.
+    # + partitionKey - Optional. The value of parition key field of the container.
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
-    # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
+    # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a stream<json>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), any? 
-            valueOfPartitionKey = (), ResourceQueryOptions? requestOptions = ()) returns @tainted stream<json>|error { 
+            partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns @tainted stream<json>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        setPartitionKeyHeader(request, valueOfPartitionKey);
-        setOptionalHeaders(request, requestOptions);
+        setPartitionKeyHeader(request, partitionKey);
+        setOptionalHeaders(request, resourceQueryOptions);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
@@ -248,11 +248,11 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedures    
     # + maxItemCount - Optional. Maximum number of Stored Procedure records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a stream<cosmosdb:StoredProcedure>. Else returns error. 
     remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
-            ResourceReadOptions? requestOptions = ()) returns @tainted stream<StoredProcedure>|error { 
+            ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<StoredProcedure>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES]);
@@ -261,7 +261,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retriveStream(self.httpClient, 
                 requestPath, request);
@@ -273,16 +273,16 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure    
     # + storedProcedureId - ID of the stored procedure to delete
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities 
-    #       to the request.
+    # + resourceDeleteOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional 
+    #       capabilities to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-            ResourceDeleteOptions? requestOptions = ()) returns @tainted Result|error { 
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -294,17 +294,17 @@ public client class CoreClient {
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure
     # + storedProcedureId - ID of the stored procedure to execute
-    # + options - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
+    # + storedProcedureOptions - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
     # + return - If successful, returns json with the output from the executed function. Else returns error. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-            StoredProcedureOptions? options = ()) returns @tainted json|error { 
+            StoredProcedureOptions? storedProcedureOptions = ()) returns @tainted json|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        setPartitionKeyHeader(request, options?.valueOfPartitionKey);
+        setPartitionKeyHeader(request, storedProcedureOptions?.partitionKey);
 
-        request.setTextPayload(options?.parameters.toString());
+        request.setTextPayload(storedProcedureOptions?.parameters.toString());
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
@@ -367,11 +367,11 @@ public client class CoreClient {
     # + databaseId - ID of the database which user belongs to
     # + containerId - ID of the container which user defined functions belongs to    
     # + maxItemCount - Optional. Maximum number of User Defined Function records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:UserDefinedFunction>. Else returns error. 
     remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
-            ResourceReadOptions? requestOptions = ()) returns @tainted stream<UserDefinedFunction>|error { 
+            ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<UserDefinedFunction>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF]);
@@ -379,7 +379,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retriveStream(
         self.httpClient, requestPath, request);
@@ -391,16 +391,16 @@ public client class CoreClient {
     # + databaseId - ID of the database which container is created
     # + containerId - ID of the container which user defined function is created   
     # + userDefinedFunctionid - Id of UDF to delete
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
-    #       the request.
+    # + resourceDeleteOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional 
+    #       capabilities to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
-            ResourceDeleteOptions? requestOptions = ()) returns @tainted Result|error { 
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunctionid]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -416,7 +416,7 @@ public client class CoreClient {
     # + triggerId - A unique ID for the newly created Trigger
     # + trigger - A JavaScript function
     # + triggerOperation - The sepcific operation in which trigger will be executed
-    # + triggerType - The instance in which trigger will be executed "Pre" or "Post"
+    # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
             string triggerOperation, string triggerType) returns @tainted Result|error { 
@@ -445,7 +445,7 @@ public client class CoreClient {
     # + triggerId - The of the Trigger to be replaced
     # + trigger - A JavaScript function
     # + triggerOperation - The sepcific operation in which trigger will be executed
-    # + triggerType - The instance in which trigger will be executed "Pre" or "Post"    
+    # + triggerType - The instance in which trigger will be executed `Pre` or `Post`    
     # + return - If successful, returns a cosmosdb:Result. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, string triggerId, string trigger, 
             string triggerOperation, string triggerType) returns @tainted Result|error {
@@ -472,11 +472,11 @@ public client class CoreClient {
     # + databaseId - ID of the database where the container is created
     # + containerId - ID of the container where the triggers are created     
     # + maxItemCount - Optional. Maximum number of Trigger records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a stream<cosmosdb:Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
-            ResourceReadOptions? requestOptions = ()) returns @tainted stream<Trigger>|error { 
+            ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<Trigger>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER]);
@@ -484,7 +484,7 @@ public client class CoreClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         stream<Trigger> triggerStream = <stream<Trigger>> check retriveStream(self.httpClient, requestPath, request);
         return triggerStream;
@@ -495,16 +495,16 @@ public client class CoreClient {
     # + databaseId - ID of the database where the container is created
     # + containerId - ID of the container where the trigger is created 
     # + triggerId - ID of the trigger to be deleted
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities 
-    #       to the request.
+    # + resourceDeleteOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional 
+    #       capabilities to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-            ResourceDeleteOptions? requestOptions = ()) returns @tainted Result|error {
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, triggerId]);        
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleCreationResponse(response); 

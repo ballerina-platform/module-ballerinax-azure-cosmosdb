@@ -181,10 +181,9 @@ type JsonMap map<json>;
 
 // ---------------------------------------------Managment Plane---------------------------------------------------------
 
-# Reprsent the record type with necessary paramaters to create partition key range.
+# Represent the record type with necessary paramaters to create partition key range.
 # 
 # + id - ID for the partition key range
-# + selfReference - Self reference (_self) - A unique addressable URI for the resource
 # + minInclusive - Minimum partition key hash value for the partition key range 
 # + maxExclusive - Maximum partition key hash value for the partition key range
 public type PartitionKeyRange record {|
@@ -210,14 +209,14 @@ public type User record {|
 # + id - User generated unique ID for the permission
 # + permissionMode - Access mode for the resource, Should be "All" or "Read"
 # + resourcePath - Full addressable path of the resource associated with the permission
-# + validityPeriod - Optional. Validity period of the Resource Token.
+# + validityPeriodInSeconds - Optional. Validity period of the Resource Token.
 # + token - System generated "Resource Token" for the particular resource and user
 public type Permission record {|
     string id = "";
     *Commons;
     string permissionMode = "";
     string resourcePath = "";
-    int validityPeriod = MIN_TIME_TO_LIVE;
+    int validityPeriodInSeconds = MIN_TIME_TO_LIVE_IN_SECONDS;
     string token = "";
 |};
 

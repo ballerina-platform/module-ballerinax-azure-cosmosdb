@@ -77,15 +77,15 @@ public client class ManagementClient {
     # Retrive information of a given Database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to retrieve information 
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Database. Else returns error.  
-    remote function getDatabase(string databaseId, ResourceReadOptions? requestOptions = ()) returns @tainted 
+    remote function getDatabase(string databaseId, ResourceReadOptions? resourceReadOptions = ()) returns @tainted 
             Database|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -112,15 +112,15 @@ public client class ManagementClient {
     # Delete a given Database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to delete
-    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities 
+    # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities 
     #       to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
-    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? requestOptions = ()) returns @tainted 
+    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted 
             Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -184,15 +184,15 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container to retrive infromation  
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Container. Else returns error.  
-    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? requestOptions = ()) 
+    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? resourceReadOptions = ()) 
             returns @tainted Container|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -221,15 +221,15 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container to delete
-    # + requestOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
+    # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
-    remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? requestOptions = ()) 
+    remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
             returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -294,15 +294,15 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to get
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    # + resourceReadOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities 
+    #       to the request.
     # + return - If successful, returns a cosmosdb:User. Else returns error.
-    remote function getUser(string databaseId, string userId, ResourceReadOptions? requestOptions = ()) returns @tainted 
-            User|error {
+    remote function getUser(string databaseId, string userId, ResourceReadOptions? resourceReadOptions = ()) returns 
+            @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -313,10 +313,10 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database where users is created
     # + maxItemCount - Optional. Maximum number of User records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:User>. Else returns error.
-    remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) 
+    remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) 
             returns @tainted stream<User>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
@@ -324,7 +324,7 @@ public client class ManagementClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         stream<User> userStream = <stream<User>> check retriveStream(self.httpClient, requestPath, request);
         return userStream;
@@ -334,15 +334,15 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database where user is created
     # + userId - ID of user to delete
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
-    #       the request.
+    # + resourceDeleteOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional 
+    #       capabilities to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
-    remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? requestOptions = ()) 
+    remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
             returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -416,16 +416,16 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user where the the permission belongs to
     # + permissionId - ID of the permission to get information
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    # + resourceReadOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities 
+    #       to the request.
     # + return - If successful, returns a cosmosdb:Permission. Else returns error.
     remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? 
-            requestOptions = ()) returns @tainted Permission|error { 
+            resourceReadOptions = ()) returns @tainted Permission|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -437,11 +437,11 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user where the the permissions is created
     # + maxItemCount - Optional. Maximum number of Permission records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:Permission>. Else returns error.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? 
-            requestOptions = ()) returns @tainted stream<Permission>|error { 
+            resourceReadOptions = ()) returns @tainted stream<Permission>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
@@ -449,7 +449,7 @@ public client class ManagementClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         stream<Permission> permissionStream = <stream<Permission>> check retriveStream(self.httpClient, requestPath, 
                 request);
@@ -461,16 +461,16 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user which the permission belongs to
     # + permissionId - ID of the permission to delete
-    # + requestOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional capabilities to 
-    #       the request.
+    # + resourceDeleteOptions - Optional. The cosmosdb:ResourceDeleteOptions which can be used to add addtional 
+    #       capabilities to the request.
     # + return - If successful, returns cosmosdb:Result. Else returns error.  
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? 
-            requestOptions = ()) returns @tainted Result|error { 
+            resourceDeleteOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
@@ -510,14 +510,14 @@ public client class ManagementClient {
     # Get information about an Offer.
     # 
     # + offerId - The ID of the offer
-    # + requestOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    # + resourceReadOptions - Optional. The cosmosdb:ResourceReadOptions which can be used to add addtional capabilities 
+    #       to the request.
     # + return - If successful, returns a cosmosdb:Offer. Else returns error.
-    remote function getOffer(string offerId, ResourceReadOptions? requestOptions = ()) returns @tainted Offer|error {
+    remote function getOffer(string offerId, ResourceReadOptions? resourceReadOptions = ()) returns @tainted Offer|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -530,10 +530,10 @@ public client class ManagementClient {
     # levels and pre-defined performance levels. 
     # 
     # + maxItemCount - Optional. Maximum number of Offer records in one returning page.
-    # + requestOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<cosmosdb:Offer> Else returns error.
-    remote function listOffers(int? maxItemCount = (), ResourceReadOptions? requestOptions = ()) returns @tainted 
+    remote function listOffers(int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) returns @tainted 
             stream<Offer>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
@@ -541,7 +541,7 @@ public client class ManagementClient {
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceReadOptions);
 
         stream<Offer> offerStream = <stream<Offer>> check retriveStream(self.httpClient, requestPath, request);
         return offerStream;
@@ -551,15 +551,15 @@ public client class ManagementClient {
     # 
     # + sqlQuery - A string value containing SQL query
     # + maxItemCount - Optional. Maximum number of offers in one returning page.
-    # + requestOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to 
+    # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a stream<json>. Else returns error.
-    remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? requestOptions = ()) 
+    remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? resourceQueryOptions = ()) 
             returns @tainted stream<json>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        setOptionalHeaders(request, requestOptions);
+        setOptionalHeaders(request, resourceQueryOptions);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }

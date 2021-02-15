@@ -99,9 +99,9 @@ public function main() {
     };
     cosmosdb:CoreClient coreClient = new (configuration);
 
-    cosmosdb:Document document1 = { id: "documentid1", documentBody :{ "LastName": "Sheldon", accountNumber: 001234222 }
-    cosmosdb:Result documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, document1, 
-            <VALUE_OF_PARTITIONKEY>); 
+    cosmosdb:Document document = { id: "documentid1", documentBody :{ "LastName": "Sheldon", accountNumber: 001234222 }
+    cosmosdb:Result documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, document.id, 
+            document.documentBody, <VALUE_OF_PARTITIONKEY>); 
 }
 ```
 ### List Documents
@@ -157,7 +157,7 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
     stream<json> resultStream = checkpanic coreClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-            [], <MAX_ITEM_COUNT>, <VALUE_OF_PARTITIONKEY>);
+            <MAX_ITEM_COUNT>, <VALUE_OF_PARTITIONKEY>);
 
     error? e = resultStream.forEach(function (json document){
                     log:printInfo(document);

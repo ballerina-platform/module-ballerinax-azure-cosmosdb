@@ -380,6 +380,7 @@ Notes: <br/> Apart from this the creation of containers allows several optional 
 characteristics to the container which is created.
 - `IndexingPolicy` - can be used in creating a container, if you want to enable an Indexing policy for a specified path,
 the special optional parameter can be used. 
+More information about indexing can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/index-policy
 - `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
 json object.
 

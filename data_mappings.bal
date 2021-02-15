@@ -164,7 +164,7 @@ isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayloa
 //  + return - An instance of record type Index
 isolated function mapJsonToIndexType(json jsonPayload) returns Index {
     Index index = {};
-    index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
+    //index.kind = jsonPayload.kind != () ? jsonPayload.kind.toString() : EMPTY_STRING;
     index.dataType = jsonPayload.dataType.toString();
     index.precision = convertToInt(jsonPayload.precision);
     return index;

@@ -232,7 +232,7 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 //  + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
 //  + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
-    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE && validityPeriodInSeconds <= MAX_TIME_TO_LIVE) {
+    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
         return prepareUserError(VALIDITY_PERIOD_ERROR);
@@ -242,7 +242,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 //  Get the current time(GMT) in the specific format.
 //  
 //  + return - If successful, returns string representing UTC date and time 
-//          (in "HTTP-date" format as defined by RFC 7231 Date/Time Formats). Else returns error or nil.
+//          (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error or nil.
 isolated function getDateTime() returns string?|error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
@@ -253,7 +253,7 @@ isolated function getDateTime() returns string?|error {
 //  To construct the hashed token signature for a token to set  'Authorization' header.
 //  
 //  + verb - HTTP verb, such as GET, POST, or PUT
-//  + resourceType - Identifies the type of resource that the request is for, Eg. "dbs", "colls", "docs"
+//  + resourceType - Identifies the type of resource that the request is for, Eg. `dbs`, `colls`, `docs`
 //  + resourceId - Identity property of the resource that the request is directed at
 //  + token - master or resource token
 //  + tokenType - denotes the type of token: master or resource
