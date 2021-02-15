@@ -5,11 +5,13 @@ Ballerina Connector For Azure Cosmos DB
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/sachinira/module-ballerinax-azure-cosmosdb/feature7)](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/commits/feature7)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-# What is Azure Cosmos DB
-The Azure Cosmos DB is Microsoft’s highly scalable NOSQL database in Azure technology stack. It is called a globally 
-distributed multi-model database which is used for managing data across the world. Key purposes of the Azure CosmosDB 
-is to achieve low latency and high availability while maintaining a flexible scalability. Cosmos DB is a superset of 
-Azure Document DB and is available in all Azure regions.
+Connects to Microsoft Azure Cosmos DB using Ballerina.
+
+# What is Azure Cosmos DB?
+[Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/) is Microsoft’s highly scalable NOSQL database in 
+Azure technology stack. It is called a globally distributed multi-model database which is used for managing data across 
+the world. Key purposes of the Azure CosmosDB is to achieve low latency and high availability while maintaining a 
+flexible scalability. Cosmos DB is a super-set of Azure Document DB and is available in all Azure regions.
 
 # Key features of Azure Cosmos DB 
 - Has a guaranteed low latency that is backed by a comprehensive set of Service Level Agreements (SLAs).
@@ -25,7 +27,7 @@ Azure Document DB and is available in all Azure regions.
 Azure Cosmos DB Ballerina connector is a connector for connecting to Azure Cosmos DB via Ballerina language easily. 
 It provides capability to connect to Azure Cosmos DB and to execute basic database operations like Create, Read, 
 Update and Delete Databases and Containers, Executing SQL queries to query Containers etc. Apart from this it allows 
-the special features provided by Cosmos DB like operations on javascript language integrated queries, management of users 
+the special features provided by Cosmos DB like operations on JavaScript language integrated queries, management of users 
 and permissions. This connector promotes easy integration and access to Cosmos DB via ballerina by handling most of the 
 burden on ballerina developers in configuring a new connection to the Cosmos DB from scratch. 
 
@@ -45,13 +47,13 @@ https://docs.microsoft.com/en-us/learn/modules/create-an-azure-account/
 https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 
 - Azure Cosmos DB Credentials. <br/>
-    - Primary Key or Resource Token
+    - Master Key Token or Resource Token
     
-        - Obtaining Primary Token
+        - Obtaining Master Key Token
 
-        When the Azure Cosmos DB account is created, it automatically creates the Primary Key credentials. Using the 
-        portal you can obtain them easily. <br/>
-        https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys
+        When the Azure Cosmos DB account is created, it automatically creates the Master Key credentials. Using the 
+        portal you can obtain them easily. There are two sets of master keys, the primary key and the secondary key. 
+        The administrator of the account can then exercise key rotation using the secondary key.<br/>
         
         - Obtaining Resource Token
         
@@ -64,13 +66,17 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
         Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
         attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a Database 
         user is granted permissions to a resource and re-generated in response to a request referencing that permission. 
-        By default, they are valid for one hour, with the maximum timespan of five hours.
+        By default, they are valid for one hour, with the maximum time-span of five hours.
 
+        More information about tokens can be found here: <br/>
+        https://docs.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources <br/>
         Sample for obtaining the Resource Token can be found here: <br/>
-
+        https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/permission/create_permission.bal
         
     - Base URI
-
+    When the Azure Cosmos DB account is created, it automatically creates the Connection Strings and URI. Using the 
+    portal you can obtain them easily. <br/>
+    
         ![Obtaining Credentials](resources/cred.png)
 
 - Java 11 installed. <br/>
@@ -101,8 +107,8 @@ First, import the ballerinax/azure.cosmosdb module into the Ballerina project.
 import ballerinax/azure.cosmosdb as cosmosdb;
 ```
 ### Step 2: Initialize the cosmos DB Management Plane Client
-You can now make the connection configuration using the Master Token or Resource Token, and the resource URI to the 
-Cosmos DB Account. For executing management plane opeartions, the `ManagementClient` should be configured.
+You can now make the connection configuration using the Master Key Token or Resource Token, and the resource URI to the 
+Cosmos DB Account. For executing management plane operations, the `ManagementClient` should be configured.
 ```ballerina
 cosmosdb:AzureCosmosConfiguration configuration = {
     baseUrl: <BASE_URL>,
@@ -608,7 +614,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/users_permissions/user/delete_user.bal
 
 - ## Permissions
-Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Token` of the Cosmos DB 
+Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Key Token` of the Cosmos DB 
 account is capable of creating permissions to each User. By using this concept, a ballerina service which uses the 
 Cosmos DB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
 middle-tier service that serves as the authentication and authorization broker between a client and a back-end service). 
@@ -617,7 +623,7 @@ This is granted by using `Resource Token`.
 Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
 attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database User is 
 granted permissions to a resource and re-generated in response to a request referencing that permission. By default, 
-they are valid for one hour, with the maximum timespan of five hours. As the use of Master Token should be limited to 
+they are valid for one hour, with the maximum time-span of five hours. As the use of Master Key Token should be limited to 
 scenarios that require full privileges to the content of an account, for more granular access, you should use Resource 
 Tokens. More information on token types can be found here: 
 https://docs.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data
@@ -896,7 +902,7 @@ in `DocumentReplaceOptions` record type in the connector.
 the container. This is provided by giving `true` or `false`.
 - `ifMatchEtag` - check if the resource's ETag value matches the ETag value provided in the Condition property. 
 Replacement is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will 
-reject the operation and it will return an HTTP 412 Precondition failure response code.vert the creation of a new 
+reject the operation and it will return an HTTP 412 Precondition failure response code. You can convert the creation of a new 
 document into an upsert request by using this parameter.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/replace_document.bal
@@ -938,7 +944,7 @@ property. This is applicable only on GET operations. If the AccessCondition is n
 Cosmos will reject the operation and it will return an HTTP 412 Precondition failure response code.
 - `consistancyLevel` - It is the consistency level override. The valid values are: Strong, Bounded, Session, or Eventual. 
 Users must set this level to the same or weaker level than the account’s configured consistency level. More information 
-about Cosmos DB consistancy levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
+about Cosmos DB consistency levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data_plane/documents/get_document.bal
 
@@ -1066,9 +1072,9 @@ the user can either get the items in one page or get all the results related to 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management_plane/container/query_container.bal
 
 ## Server-Side programming in Cosmos DB
-Cosmos DB Supports Javascript language integrated queries to execute because it has built in support for javascript 
+Cosmos DB Supports JavaScript language integrated queries to execute because it has built in support for JavaScript 
 inside the database engine. It allows stored procedures and the triggers to execute in the same scope as the database 
-session. More information about Javascript language integrated functions can be found here:
+session. More information about JavaScript language integrated functions can be found here:
 https://docs.microsoft.com/en-us/azure/cosmos-db/stored-procedures-triggers-udfs
 
 The ballerina connector supports the creation, modification , listing and deletion of Stored procedures, Triggers and 

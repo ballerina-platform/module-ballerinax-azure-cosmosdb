@@ -22,9 +22,9 @@ import ballerina/stringutils;
 import ballerina/lang.'string as str;
 import ballerina/lang.array as array;
 
-//  Extract the type of token used for accessing the Cosmos DB.
+// Extract the type of token used for accessing the Cosmos DB.
 // 
-//  + token - The token provided by the user to access Cosmos DB
+// + token - The token provided by the user to access Cosmos DB
 function getTokenType(string token) returns string {
     boolean ifContain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
     if (ifContain) {
@@ -34,10 +34,10 @@ function getTokenType(string token) returns string {
     }
 }
 
-//  Extract the host of the cosmos db from the base URL.
+// Extract the host of the cosmos db from the base URL.
 // 
-//  + url - The Base URL given by the user from which we want to extract host
-//  + return - String representing the resource id
+// + url - The Base URL given by the user from which we want to extract host
+// + return - String representing the resource id
 isolated function getHost(string url) returns string {
     string replacedString = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
     int? lastIndex = str:lastIndexOf(replacedString, FORWARD_SLASH);
@@ -47,10 +47,10 @@ isolated function getHost(string url) returns string {
     return replacedString;
 }
 
-//  Extract the resource type related to cosmos db from a given URL.
+// Extract the resource type related to cosmos db from a given URL.
 // 
-//  + url - The URL from which we want to extract resource type
-//  + return - String representing the resource type
+// + url - The URL from which we want to extract resource type
+// + return - String representing the resource type
 isolated function getResourceType(string url) returns string {
     string resourceType = EMPTY_STRING;
     string[] urlParts = stringutils:split(url, FORWARD_SLASH);
@@ -66,10 +66,10 @@ isolated function getResourceType(string url) returns string {
     return resourceType;
 }
 
-//  Extract the resource ID related to cosmos db from a given URL.
+// Extract the resource ID related to cosmos db from a given URL.
 // 
-//  + url - The URL from which we want to extract resource type
-//  + return - String representing the resource id
+// + url - The URL from which we want to extract resource type
+// + return - String representing the resource id
 isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
     string[] urlParts = stringutils:split(url, FORWARD_SLASH);
@@ -100,10 +100,10 @@ isolated function getResourceId(string url) returns string {
     }
 }
 
-//  Prepare the complete URL out of a given string array. 
+// Prepare the complete URL out of a given string array. 
 // 
-//  + paths - Array of strings with parts of the URL
-//  + return - String representing the complete URL
+// + paths - Array of strings with parts of the URL
+// + return - String representing the complete URL
 isolated function prepareUrl(string[] paths) returns string {
     string url = EMPTY_STRING;
     if (paths.length() > 0) {
@@ -117,14 +117,14 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted>url;
 }
 
-//  Attach mandatory basic headers to call a REST endpoint.
-//  
-//  + request - The http:Request to add headers to
-//  + host - The host to which the request is sent
-//  + token - Master or resource token
-//  + httpVerb - The HTTP verb of the request the headers are set to
-//  + requestPath - Request path for the request
-//  + return - If successful, request will be appended with headers. Else returns error or nil.
+// Attach mandatory basic headers to call a REST endpoint.
+// 
+// + request - The http:Request to add headers to
+// + host - The host to which the request is sent
+// + token - Master or resource token
+// + httpVerb - The HTTP verb of the request the headers are set to
+// + requestPath - Request path for the request
+// + return - If successful, request will be appended with headers. Else returns error or nil.
 function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, string requestPath) 
         returns error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
@@ -154,30 +154,30 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
     }
 }
 
-//  Set the optional header related to partitionkey value.
-//  
-//  + request - The http:Request to set the header
-//  + partitionKeyValue - The value of the partition key
-//  + return - If successful, request will be appended with headers
+// Set the optional header related to partitionkey value.
+//
+// + request - The http:Request to set the header
+// + partitionKeyValue - The value of the partition key
+// + return - If successful, request will be appended with headers
 isolated function setPartitionKeyHeader(http:Request request, any partitionKeyValue) {
     any[] partitionKeyArray = [partitionKeyValue];
     request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
 }
 
-//  Set the required headers related to query operations.
-//  
-//  + request - The http:Request to set the header
-//  + return - If successful, request will be appended with headers
+// Set the required headers related to query operations.
+//
+// + request - The http:Request to set the header
+// + return - If successful, request will be appended with headers
 isolated function setHeadersForQuery(http:Request request) {
     var req = request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, true.toString());
 }
 
-//  Set the optional header related to throughput options.
-//  
-//  + request - The http:Request to set the header
-//  + throughputOption - Throughput parameter of type int or json
-//  + return - If successful, request will be appended with headers. Else returns error or nil.
+// Set the optional header related to throughput options.
+//
+// + request - The http:Request to set the header
+// + throughputOption - Throughput parameter of type int or json
+// + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json) throughputOption = ()) returns error? {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
@@ -190,11 +190,11 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
     }
 }
 
-//  Set the optional headers to the HTTP request.
-//  
-//  + request - The http:Request to set the header
-//  + requestOptions - Record of type Options containing the values for optional headers
-//  + return - If successful, request will be appended with headers
+// Set the optional headers to the HTTP request.
+//
+// + request - The http:Request to set the header
+// + requestOptions - Record of type Options containing the values for optional headers
+// + return - If successful, request will be appended with headers
 isolated function setOptionalHeaders(http:Request request, Options? requestOptions) {
     if (requestOptions?.indexingDirective != ()) {
         request.setHeader(INDEXING_DIRECTIVE_HEADER, <boolean>requestOptions?.indexingDirective ? INDEXING_TYPE_INCLUDE : 
@@ -226,11 +226,11 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
     }
 }
 
-//  Set the optional header specifying Time To Live for token.
-//  
-//  + request - The http:Request to set the header
-//  + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
-//  + return - If successful, request will be appended with headers. Else returns error or nil.
+// Set the optional header specifying Time To Live for token.
+//
+// + request - The http:Request to set the header
+// + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
+// + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
     if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
@@ -239,9 +239,9 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
     }
 }
 
-//  Get the current time(GMT) in the specific format.
-//  
-//  + return - If successful, returns string representing UTC date and time 
+// Get the current time(GMT) in the specific format.
+//
+// + return - If successful, returns string representing UTC date and time 
 //          (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error or nil.
 isolated function getDateTime() returns string?|error {
     time:Time currentTime = time:currentTime();
@@ -250,15 +250,15 @@ isolated function getDateTime() returns string?|error {
     return timeString; 
 }
 
-//  To construct the hashed token signature for a token to set  'Authorization' header.
-//  
-//  + verb - HTTP verb, such as GET, POST, or PUT
-//  + resourceType - Identifies the type of resource that the request is for, Eg. `dbs`, `colls`, `docs`
-//  + resourceId - Identity property of the resource that the request is directed at
-//  + token - master or resource token
-//  + tokenType - denotes the type of token: master or resource
-//  + date - current GMT date and time
-//  + return - If successful, returns string which is the  hashed token signature. Else returns nil or error.
+// To construct the hashed token signature for a token to set 'Authorization' header.
+// 
+// + verb - HTTP verb, such as GET, POST, or PUT
+// + resourceType - Identifies the type of resource that the request is for, Eg. `dbs`, `colls`, `docs`
+// + resourceId - Identity property of the resource that the request is directed at
+// + token - master or resource token
+// + tokenType - denotes the type of token: master or resource
+// + date - current GMT date and time
+// + return - If successful, returns string which is the hashed token signature. Else returns nil or error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
         string tokenType, string date) returns string?|error {
     string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
@@ -268,13 +268,13 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
     string signature = array:toBase64(digest);
     string authorizationString = string `type=${tokenType}&ver=${TOKEN_VERSION}&sig=${signature}`;
     string? encodedAuthorizationString = check encoding:encodeUriComponent(authorizationString, "UTF-8");
-    return encodedAuthorizationString;      
+    return encodedAuthorizationString;
 }
 
-//  Handle success or error reponses to requests and extract the json payload.
-//  
-//  + httpResponse - The http:Response returned from an HTTP request
-//  + return - If successful, returns json. Else returns error. 
+// Handle success or error responses to requests and extract the json payload.
+//
+// + httpResponse - The http:Response returned from an HTTP request
+// + return - If successful, returns json. Else returns error. 
 isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
     json jsonResponse = check httpResponse.getJsonPayload();
     if (httpResponse.statusCode == http:STATUS_OK) {
@@ -286,10 +286,10 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
     }
 }
 
-//  Handle success or error reponses to requests and extract the sucess status.
-//  
-//  + httpResponse - The http:Response returned from an HTTP request
-//  + return - If successful, returns true. Else returns error or false. 
+// Handle success or error responses to requests and extract the sucess status.
+// 
+// + httpResponse - The http:Response returned from an HTTP request
+// + return - If successful, returns true. Else returns error or false. 
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
     if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED || 
             httpResponse.statusCode == http:STATUS_NO_CONTENT) {
@@ -303,10 +303,10 @@ isolated function handleCreationResponse(http:Response httpResponse) returns @ta
     }
 }
 
-//  Map the json payload and necessary header values returend from a response to a tuple.
-//  
-//  + httpResponse - The http:Response returned form the HTTP request
-//  + return - returns a tuple of type [json, ResponseHeaders] if sucessful. Else, returns error.
+// Map the json payload and necessary header values returned from a response to a tuple.
+// 
+// + httpResponse - The http:Response returned form the HTTP request
+// + return - returns a tuple of type [json, ResponseHeaders] if sucessful. Else, returns error.
 isolated function mapResponseToTuple(http:Response httpResponse) returns @tainted [json, 
         ResponseHeaders]|error {
     json responseBody = check handleResponse(httpResponse);
@@ -314,10 +314,10 @@ isolated function mapResponseToTuple(http:Response httpResponse) returns @tainte
     return [responseBody, responseHeaders];
 }
 
-//  Map the json payload and necessary header values returend from a response to a tuple.
-//  
-//  + httpResponse - The http:Response returned form the HTTP request
-//  + return - Returns a tuple of type [boolean, ResponseHeaders] if sucessful. Else, returns error.
+// Map the json payload and necessary header values returned from a response to a tuple.
+//
+// + httpResponse - The http:Response returned form the HTTP request
+// + return - Returns a tuple of type [boolean, ResponseHeaders] if sucessful. Else, returns error.
 isolated function mapCreationResponseToTuple(http:Response httpResponse) returns @tainted [boolean, 
         ResponseHeaders]|error {
     boolean responseBody = check handleCreationResponse(httpResponse);
@@ -325,10 +325,10 @@ isolated function mapCreationResponseToTuple(http:Response httpResponse) returns
     return [responseBody, responseHeaders];
 }
 
-//  Get the http:Response and extract the headers to the record type ResponseHeaders.
-//  
-//  + httpResponse - The http:Response returned from an HTTP request
-//  + return - If successful, returns record type ResponseHeaders. Else returns error.
+// Get the http:Response and extract the headers to the record type ResponseHeaders.
+// 
+// + httpResponse - The http:Response returned from an HTTP request
+// + return - If successful, returns record type ResponseHeaders. Else returns error.
 isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseHeaders|error {
     ResponseHeaders responseHeaders = {};
     responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
@@ -337,11 +337,11 @@ isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) 
     return responseHeaders;
 }
 
-//  Get the value of an HTTP header if it exists.
-//  
-//  + httpResponse - The http:Response returned from an HTTP request
-//  + headerName - Name of the header
-//  + return - String value of specific header
+// Get the value of an HTTP header if it exists.
+// 
+// + httpResponse - The http:Response returned from an HTTP request
+// + headerName - Name of the header
+// + return - String value of specific header
 isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string {
     string headerValue = "";
     if (httpResponse.hasHeader(headerName)) {
@@ -350,19 +350,19 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
     return headerValue;
 } 
 
-//  Get a stream of json documents which is returned as query results.
-//  
-//  + azureCosmosClient - Client which calls the azure endpoint
-//  + path - Path to which API call is made
-//  + request - HTTP request object 
-//  + maxItemCount - Maximum item count per one page value 
-function getQueryResults(http:Client azureCosmosClient, string path, http:Request request, int? maxItemCount = ()) 
-        returns @tainted stream<json>|error {
+// Get a stream of json documents which is returned as query results.
+// 
+// + azureCosmosClient - Client which calls the azure endpoint
+// + path - Path to which API call is made
+// + request - HTTP request object 
+// +returns - A stream<json>
+function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
+        stream<json>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     var [payload, responseHeaders] = check mapResponseToTuple(response);
 
     if (payload.Documents is json) {
-        json[] array =  <json[]>payload.Documents;
+        json[] array = <json[]>payload.Documents;
         stream<json> documentStream = (<@untainted>array).toStream();
         return documentStream;
     } else if (payload.Offers is json) {
@@ -375,15 +375,26 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     }
 }
 
+// Make a request call to the azure endpoint to get a list of resources
+
+// + azureCosmosClient - Client which calls the azure endpoint
+// + path - Path to which API call is made
+// + request - HTTP request object 
+// + returns - A stream<record{}>
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
         stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     var [payload, headers] = check mapResponseToTuple(response);
-    stream<record{}> finalStream = check createStream(azureCosmosClient, path, request, payload);
+    stream<record{}> finalStream = check createStream(path, request, payload);
     return finalStream;
 }
 
-isolated function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload) 
+// Create a stream from the array obtained from the request call
+// + path - Path to which API call is made
+// + request - HTTP request object 
+// + payload - json payload returned from the response
+// + returns - A stream<record{}> or error
+isolated function createStream(string path, http:Request request, json payload) 
         returns @tainted stream<record{}>|error {
     record{}[] finalArray = [];
     if (payload.Databases is json) {
@@ -413,10 +424,10 @@ isolated function createStream(http:Client azureCosmosClient, string path, http:
     return newStream;
 }
 
-//  Convert json string values to boolean.
-//  
-//  + value - json value which has reprsents boolean value
-//  + return - boolean value of specified json
+// Convert json string values to boolean.
+//
+// + value - json value which has reprsents boolean value
+// + return - boolean value of specified json
 isolated function convertToBoolean(json|error value) returns boolean {
     if (value is json) {
         boolean|error result = 'boolean:fromString(value.toString());
@@ -427,10 +438,10 @@ isolated function convertToBoolean(json|error value) returns boolean {
     return false;
 }
 
-//  Convert json string values to int
-//  
-//  + value - json value which has reprsents int value
-//  + return - int value of specified json
+// Convert json string values to int
+//
+// + value - json value which has reprsents int value
+// + return - int value of specified json
 isolated function convertToInt(json|error value) returns int {
     if (value is json) {
         int|error result = 'int:fromString(value.toString());
@@ -442,6 +453,7 @@ isolated function convertToInt(json|error value) returns int {
 }
 
 // Get the enum value for a given string which represents the type of index.
+//
 // + kind - The index type
 // + return - An enum value of IndexType 
 isolated function getIndexType(string kind) returns IndexType {
@@ -457,6 +469,7 @@ isolated function getIndexType(string kind) returns IndexType {
 }
 
 // Get the enum value for a given string which represents the data type index is applied to.
+//
 // + dataType - The string representing the data type index have applied to
 // + return - An enum value of IndexDataType 
 isolated function getIndexDataType(string dataType) returns IndexDataType {
@@ -478,6 +491,7 @@ isolated function getIndexDataType(string dataType) returns IndexDataType {
 }
 
 // Get the enum value for a given string which represent the operation a trigger is applied to.
+//
 // + triggerOperation - The string representing the operation which is capable of firing the trigger
 // + return - An enum value of TriggerOperation 
 isolated function getTriggerOperation(string triggerOperation) returns TriggerOperation {
@@ -495,7 +509,8 @@ isolated function getTriggerOperation(string triggerOperation) returns TriggerOp
     return ALL;
 }
 
-// Get the enum value for a given string which represent when  the trigger is fired.
+// Get the enum value for a given string which represent when the trigger is fired.
+//
 // + triggerType - The string representing when the trigger will be fired
 // + return - An enum value of TriggerType
 isolated function getTriggerType(string triggerType) returns TriggerType {
@@ -508,6 +523,7 @@ isolated function getTriggerType(string triggerType) returns TriggerType {
 }
 
 // Get the enum value for a given string which represent the access rights for the specific permission.
+//
 // + permissionMode - The string representing the permisssionMode
 // + return - An enum value of PermisssionMode
 isolated function getPermisssionMode(string permissionMode) returns PermisssionMode {
@@ -520,6 +536,7 @@ isolated function getPermisssionMode(string permissionMode) returns PermisssionM
 }
 
 // Get the enum value for a given string which represent the offer version of a specific offer.
+//
 // + offerVersion - The string representing the offer version
 // + return - An enum value of PermisssionMode
 isolated function getOfferVersion(string offerVersion) returns OfferVersion {
@@ -532,6 +549,7 @@ isolated function getOfferVersion(string offerVersion) returns OfferVersion {
 }
 
 // Get the enum value for a given string which represent the offer type of a specific version.
+//
 // + offerType - The string representing the offer type
 // + return - An enum value of OfferType
 isolated function getOfferType(string offerType) returns OfferType {

@@ -14,16 +14,16 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Represents the Consistancy Level Override for document create and update.
+# Represents the Consistency Level Override for document create and update.
 # 
-# + STRONG - `Strong` consistancy level where Users are always guaranteed to read the latest committed write
-# + BOUNDED - `Bounded` consistancy level where Reads might lag behind writes behind at most K updates of an item or by 
+# + STRONG - `Strong` consistency level where Users are always guaranteed to read the latest committed write
+# + BOUNDED - `Bounded` consistency level where Reads might lag behind writes behind at most K updates of an item or by 
 #       T time interval
-# + SESSION - `Session` consistancy level  where in a single client session reads are guaranteed to honor the 
+# + SESSION - `Session` consistency level where in a single client session reads are guaranteed to honor the 
 #       consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads guarantees
-# + EVENTUAL - `Eventual` consistancy level where there's no ordering guarantee for reads. In the absence of any further 
+# + EVENTUAL - `Eventual` consistency level where there's no ordering guarantee for reads. In the absence of any further 
 #       writes, the replicas eventually converge.
-public enum Consistancy {
+public enum Consistency {
     STRONG = "Strong",
     BOUNDED = "Bounded",
     SESSION = "Session",
@@ -173,7 +173,7 @@ const string MINIMUM_MANUAL_THROUGHPUT_ERROR = "The minimum manual throughput is
 const string SETTING_BOTH_VALUES_ERROR = "Cannot set both throughput and maxThroughput headers at once";
 const string NULL_PARTITIONKEY_VALUE_ERROR = "Partition key values are null";
 const string INDEXING_DIRECTIVE_ERROR = "Indexing directive should be either Exclude or Include";
-const string CONSISTANCY_LEVEL_ERROR = "Consistacy level should be one of Strong, Bounded, Session, or Eventual";
+const string CONSISTANCY_LEVEL_ERROR = "Consistency level should be one of Strong, Bounded, Session, or Eventual";
 const string VALIDITY_PERIOD_ERROR = "Resource token validity period must be between 3600 and 18000";
 const string MASTER_KEY_ERROR = "Enter a valid master key and token type should be master key";
 const string JSON_PAYLOAD_ACCESS_ERROR = "Error occurred while accessing the JSON payload of the response";

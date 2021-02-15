@@ -48,7 +48,7 @@ public type Result record {|
 # Represents the common elements representing information.
 # 
 # + resourceId - Resource id (_rid) - A unique identifier which is used internally for placement and navigation of the 
-#       resource
+#          resource
 # + selfReference - Self reference (_self) - A unique addressable URI for the resource
 # + eTag - Resource etag for the resource retrieved
 # + sessionToken - Session token of the request
@@ -134,8 +134,8 @@ public type Index record {|
 # Represent the record type with necessary parameters to represent a partition key.
 # 
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
-#               single value.
-# + kind - Algorithm used for partitioning. Only Hash is supported.
+#          single value.
+# + kind - Algorithm used for partitioning. Only `Hash` is supported.
 # + keyVersion - Version of partition key
 public type PartitionKey record {|
     string[] paths = [];
@@ -146,7 +146,7 @@ public type PartitionKey record {|
 # Represent the record type with necessary parameters to represent a stored procedure.
 # 
 # + id - User generated unique ID for the stored procedure
-# + storedProcedure - JavaSctipt function
+# + storedProcedure - JavaScript function
 public type StoredProcedure record {|
     string id = "";
     *Commons;
@@ -156,7 +156,7 @@ public type StoredProcedure record {|
 # Represent the record type with necessary parameters to represent a user defined function.
 # 
 # + id - User generated unique ID for the user defined function
-# + userDefinedFunction - JavaSctipt function
+# + userDefinedFunction - JavaScript function
 public type UserDefinedFunction record {|
     string id = "";
     *Commons;
@@ -166,7 +166,7 @@ public type UserDefinedFunction record {|
 # Represent the record type with necessary parameters to represent a trigger.
 # 
 # + id - User generated unique ID for the trigger
-# + triggerFunction - Javasctipt function
+# + triggerFunction - JavaScript function
 # + triggerOperation - Type of operation that invokes the trigger. Can be `All`, `Create`, `Replace` or `Delete`. 
 # + triggerType - When the trigger is fired, `Pre` or `Post`
 public type Trigger record {|
@@ -181,7 +181,7 @@ type JsonMap map<json>;
 
 // ---------------------------------------------Managment Plane---------------------------------------------------------
 
-# Represent the record type with necessary paramaters to create partition key range.
+# Represent the record type with necessary parameters to create partition key range.
 # 
 # + id - ID for the partition key range
 # + minInclusive - Minimum partition key hash value for the partition key range 
@@ -224,7 +224,7 @@ public type Permission record {|
 # 
 # + id - User generated unique ID for the offer
 # + offerVersion - Offer version, This value can be `V1` for pre-defined throughput levels and `V2` for user-defined 
-#       throughput levels
+#          throughput levels
 # + offerType - Optional. Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
 # + content - Information about the offer
 # + resourceResourceId - The resource id(_rid) of the collection
