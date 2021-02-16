@@ -36,7 +36,7 @@ public client class DataPlaneClient {
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
-    # + documentId - A unique ID for the document to save in the Database
+    # + document - A JSON document saved in the Database
     # + partitionKey - The value of partition key field of the Container 
     # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
     #       the request.

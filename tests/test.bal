@@ -50,8 +50,8 @@ string userId = string `user_${randomString.toString()}`;
 string newUserId = string `userr_${randomString.toString()}`;
 string permissionId = string `permission_${randomString.toString()}`;
 
-Database database = {};
-Container container = {};
+Database database = {id: ""};
+Container container = {id: "", indexingPolicy:{ indexingMode: ""}, partitionKey: {}};
 
 @test:BeforeSuite
 function test_createDatabase() {
@@ -291,17 +291,17 @@ function test_getAllContainers() {
         "test_getDocumentList", 
         "test_deleteDocument", 
         "test_queryDocuments", 
-        "test_queryDocumentsWithRequestOptions"
-        // "test_getAllStoredProcedures", 
-        // "test_deleteOneStoredProcedure", 
-        // "test_listAllUDF", 
-        // "test_deleteUDF", 
-        // "test_deleteTrigger", 
-        // "test_GetOneDocumentWithRequestOptions", 
-        // "test_createDocumentWithRequestOptions", 
-        // "test_getDocumentListWithRequestOptions",
-        // "test_createPermission",
-        // "test_createPermissionWithTTL"
+        "test_queryDocumentsWithRequestOptions",
+        "test_getAllStoredProcedures", 
+        "test_deleteOneStoredProcedure", 
+        "test_listAllUDF", 
+        "test_deleteUDF", 
+        "test_deleteTrigger", 
+        "test_GetOneDocumentWithRequestOptions", 
+        "test_createDocumentWithRequestOptions", 
+        "test_getDocumentListWithRequestOptions",
+        "test_createPermission",
+        "test_createPermissionWithTTL"
         // "test_replaceOfferWithOptionalParameter",
         // "test_replaceOffer",
         
@@ -856,7 +856,8 @@ function test_deleteTrigger() {
 
 @test:Config {
     groups: ["partitionKey"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["test_createContainer"], 
+    enable:false
 }
 function test_GetPartitionKeyRanges() {
     log:print("ACTION : GetPartitionKeyRanges()");

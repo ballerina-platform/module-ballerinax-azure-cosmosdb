@@ -28,17 +28,17 @@ public type Configuration record {|
 # + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read
 # + sessionToken - Session token of the request
 # + eTag - Resource etag for the resource retrieved
-public type ResponseHeaders record {|
+type ResponseHeaders record {|
     string? continuationHeader = ();
-    string sessionToken = "";
-    string eTag = "";
+    string sessionToken;
+    string eTag;
 |};
 
 # Represents information about the status of the relevent create, update or delete request.
 # 
 # + eTag - Resource etag for the resource
 # + sessionToken - Session token of the request
-type Result record {|
+public type Result record {|
     string eTag;
     string sessionToken;
 |};
@@ -51,17 +51,17 @@ type Result record {|
 # + eTag - Resource etag for the resource retrieved
 # + sessionToken - Session token of the request
 public type Commons record {|
-    string resourceId = "";
-    string selfReference = "";
-    string eTag = "";
-    string sessionToken = "";
+    string resourceId?;
+    string selfReference?;
+    string eTag?;
+    string sessionToken?;
 |};
 
 # Represents the elements representing information about a database.
 # 
 # + id - User generated unique ID for the database 
 public type Database record {|
-    string id = "";
+    string id;
     *Commons;
 |};
 
@@ -71,10 +71,10 @@ public type Database record {|
 # + indexingPolicy - Record of type IndexingPolicy
 # + partitionKey - Record of type PartitionKey
 public type Container record {|
-    string id = "";
+    string id;
     *Commons;
-    IndexingPolicy indexingPolicy = {};
-    PartitionKey partitionKey = {};
+    IndexingPolicy indexingPolicy;
+    PartitionKey partitionKey;
 |};
 
 # Represent the parameters representing information about a document in Cosmos DB.
@@ -82,7 +82,7 @@ public type Container record {|
 # + id - User generated unique ID for the document 
 # + documentBody - JSON document
 public type Document record {|
-    string id = "";
+    string id;
     *Commons;
     json documentBody = {};
 |};
@@ -94,7 +94,7 @@ public type Document record {|
 # + includedPaths - Array of type IncludedPath representing included paths
 # + excludedPaths - Array of type IncludedPath representing excluded paths
 public type IndexingPolicy record {|
-    string indexingMode = "";
+    string indexingMode;
     boolean automatic = true;
     IncludedPath[] includedPaths?;
     ExcludedPath[] excludedPaths?;
@@ -105,7 +105,7 @@ public type IndexingPolicy record {|
 # + path - Path for which the indexing behavior applies to
 # + indexes - Array of type Index representing index values
 public type IncludedPath record {|
-    string path = "";
+    string path;
     Index[] indexes = [];
 |};
 
@@ -113,7 +113,7 @@ public type IncludedPath record {|
 # 
 # + path - Path that is excluded from indexing 
 public type ExcludedPath record {|
-    string path = "";
+    string path;
 |};
 
 # Represent the record type with necessary parameters to represent an index. 
@@ -146,9 +146,9 @@ public type PartitionKey record {|
 # + id - User generated unique ID for the stored procedure
 # + storedProcedure - JavaScript function
 public type StoredProcedure record {|
-    string id = "";
+    string id;
     *Commons;
-    string storedProcedure = "";
+    string storedProcedure;
 |};
 
 # Represent the record type with necessary parameters to represent a user defined function.
@@ -156,9 +156,9 @@ public type StoredProcedure record {|
 # + id - User generated unique ID for the user defined function
 # + userDefinedFunction - JavaScript function
 public type UserDefinedFunction record {|
-    string id = "";
+    string id;
     *Commons;
-    string userDefinedFunction = "";
+    string userDefinedFunction;
 |};
 
 # Represent the record type with necessary parameters to represent a trigger.
@@ -168,9 +168,9 @@ public type UserDefinedFunction record {|
 # + triggerOperation - Type of operation that invokes the trigger. Can be `All`, `Create`, `Replace` or `Delete`. 
 # + triggerType - When the trigger is fired, `Pre` or `Post`
 public type Trigger record {|
-    string id = "";
+    string id;
     *Commons;
-    string triggerFunction = "";
+    string triggerFunction;
     TriggerOperation triggerOperation = ALL; 
     TriggerType triggerType = PRE;
 |};
@@ -185,10 +185,10 @@ type JsonMap map<json>;
 # + minInclusive - Minimum partition key hash value for the partition key range 
 # + maxExclusive - Maximum partition key hash value for the partition key range
 public type PartitionKeyRange record {|
-    string id = "";
+    string id;
     *Commons;
-    string minInclusive = "";
-    string maxExclusive = "";
+    string minInclusive;
+    string maxExclusive;
 |};
 
 # Represent the record type with necessary parameters to represent a user.
@@ -196,9 +196,9 @@ public type PartitionKeyRange record {|
 # + id - User generated unique ID for the user 
 # + permissions - A system generated property that specifies the addressable path of the permissions resource
 public type User record {|
-    string id = "";
+    string id;
     *Commons;
-    string permissions = "";
+    string permissions;
 |};
 
 
@@ -210,12 +210,12 @@ public type User record {|
 # + validityPeriodInSeconds - Optional. Validity period of the Resource Token.
 # + token - System generated `Resource Token` for the particular resource and user
 public type Permission record {|
-    string id = "";
+    string id;
     *Commons;
     PermisssionMode permissionMode = ALL_PERMISSION;
-    string resourcePath = "";
+    string resourcePath;
     int validityPeriodInSeconds = MIN_TIME_TO_LIVE_IN_SECONDS;
-    string token = "";
+    string token;
 |};
 
 # Represent the record type with necessary parameters to represent an offer.
@@ -228,13 +228,13 @@ public type Permission record {|
 # + resourceResourceId - The resource id(_rid) of the collection
 # + resourceSelfLink - The self-link of the collection
 public type Offer record {|
-    string id = "";
+    string id;
     *Commons;
     OfferVersion offerVersion = USER_DEFINED;
     string offerType = INVALID;
     json content = {};
-    string resourceResourceId = "";
-    string resourceSelfLink = "";
+    string resourceResourceId;
+    string resourceSelfLink;
 |};
 
 //---------------------------------------OPTIONAL --------------------------------------------------------------------
@@ -256,7 +256,7 @@ public type DocumentCreateOptions record {|
 #       matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
 #       failure error will be returned.
 public type DocumentReplaceOptions record {|
-    boolean? indexingDirective = ();
+    string? indexingDirective = ();
     string? ifMatchEtag = ();
 |};
 

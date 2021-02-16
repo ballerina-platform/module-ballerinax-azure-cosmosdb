@@ -325,10 +325,11 @@ isolated function mapCreationResponseToTuple(http:Response httpResponse) returns
 // + httpResponse - The http:Response returned from an HTTP request
 // + return - If successful, returns record type ResponseHeaders. Else returns error.
 isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseHeaders|error {
-    ResponseHeaders responseHeaders = {};
-    responseHeaders.continuationHeader = getHeaderIfExist(httpResponse, CONTINUATION_HEADER);
-    responseHeaders.sessionToken = getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER);
-    responseHeaders.eTag = getHeaderIfExist(httpResponse, http:ETAG);
+    ResponseHeaders responseHeaders = {
+        continuationHeader: getHeaderIfExist(httpResponse, CONTINUATION_HEADER),
+        sessionToken: getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER),
+        eTag: getHeaderIfExist(httpResponse, http:ETAG)
+    };
     return responseHeaders;
 }
 
