@@ -19,7 +19,7 @@ import ballerina/http;
 
 # Maps the JSON response returned from the request into record type of Result.
 # 
-# + payload - A JSON object returned from request
+# + response - A HTTP response object
 # + return - An instance of record type Result
 isolated function mapHeadersToResultType(http:Response response) returns @tainted Result {
     return {

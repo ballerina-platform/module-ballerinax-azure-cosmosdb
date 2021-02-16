@@ -25,6 +25,7 @@ import ballerina/lang.array as array;
 # Extract the type of token used for accessing the Cosmos DB.
 # 
 # + token - The token provided by the user to access Cosmos DB
+# + return - A string value which represents the type of token
 function getTokenType(string token) returns string {
     boolean ifContain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
     if (ifContain) {
@@ -158,7 +159,6 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
 #
 # + request - The http:Request to set the header
 # + partitionKeyValue - The value of the partition key
-# + return - If successful, request will be appended with headers
 isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal|string)? partitionKeyValue) {
     if (partitionKeyValue is (int|float|decimal|string)) {
         (int|float|decimal|string)[] partitionKeyArray = [partitionKeyValue];
@@ -170,7 +170,6 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # Set the required headers related to query operations.
 #
 # + request - The http:Request to set the header
-# + return - If successful, request will be appended with headers
 isolated function setHeadersForQuery(http:Request request) {
     var req = request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, true.toString());
@@ -197,7 +196,6 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 #
 # + request - The http:Request to set the header
 # + requestOptions - Record of type Options containing the values for optional headers
-# + return - If successful, request will be appended with headers
 isolated function setOptionalHeaders(http:Request request, Options? requestOptions) {
     if (requestOptions?.indexingDirective is IndexingDirective) {
         request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
@@ -319,7 +317,7 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 # + azureCosmosClient - Client which calls the azure endpoint
 # + path - Path to which API call is made
 # + request - HTTP request object 
-# +returns - A stream<json>
+# + return - A stream<json>
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
         stream<json>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
@@ -344,7 +342,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + azureCosmosClient - Client which calls the azure endpoint
 # + path - Path to which API call is made
 # + request - HTTP request object 
-# + returns - A stream<record{}>
+# + return - A stream<record{}>
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
         stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
@@ -357,7 +355,7 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 # 
 # + path - Path to which API call is made
 # + payload - json payload returned from the response
-# + returns - A stream<record{}> or error
+# + return - A stream<record{}> or error
 isolated function createStream(string path, json payload) returns @tainted stream<record{}>|error {
     record{}[] finalArray = [];
     if (payload.Databases is json) {
