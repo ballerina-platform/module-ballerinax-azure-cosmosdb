@@ -50,8 +50,6 @@ public client class DataPlaneClient {
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, partitionKey);
         setOptionalHeaders(request, documentCreateOptions);
-
-
         request.setJsonPayload(document);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
@@ -77,9 +75,8 @@ public client class DataPlaneClient {
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
         setPartitionKeyHeader(request, partitionKey);
         setOptionalHeaders(request, documentReplaceOptions);
-
         request.setJsonPayload(<@untainted>document);
-
+        
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
         return mapTupleToResultType(jsonResponse);

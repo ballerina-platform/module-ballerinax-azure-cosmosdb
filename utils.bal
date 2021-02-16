@@ -260,7 +260,8 @@ isolated function getDateTime() returns string?|error {
 // + return - If successful, returns string which is the hashed token signature. Else returns nil or error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
         string tokenType, string date) returns string?|error {
-    string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
+    string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`+
+            string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
     byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest);

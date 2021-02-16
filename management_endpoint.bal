@@ -45,11 +45,9 @@ public client class ManagementClient {
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         // Setting optional headers
         check setThroughputOrAutopilotHeader(request, throughputOption);
-
         // Setting a request payload
         json jsonPayload = {id: databaseId};
         request.setJsonPayload(jsonPayload);
-
         // Get the response
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         // Map the payload and headers, of the request to a tuple 

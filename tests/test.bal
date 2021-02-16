@@ -302,6 +302,7 @@ function test_getAllContainers() {
         "test_getDocumentListWithRequestOptions",
         "test_createPermission",
         "test_createPermissionWithTTL"
+        // "test_GetPartitionKeyRanges"
         // "test_replaceOfferWithOptionalParameter",
         // "test_replaceOffer",
         
@@ -856,8 +857,8 @@ function test_deleteTrigger() {
 
 @test:Config {
     groups: ["partitionKey"],
-    dependsOn: ["test_createContainer"], 
-    enable:false
+    dependsOn: ["test_createContainer"],
+    enable: false
 }
 function test_GetPartitionKeyRanges() {
     log:print("ACTION : GetPartitionKeyRanges()");

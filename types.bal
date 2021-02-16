@@ -177,8 +177,6 @@ public type Trigger record {|
 
 type JsonMap map<json>;
 
-// ---------------------------------------------Managment Plane---------------------------------------------------------
-
 # Represent the record type with necessary parameters to create partition key range.
 # 
 # + id - ID for the partition key range
@@ -200,7 +198,6 @@ public type User record {|
     *Commons;
     string permissions;
 |};
-
 
 # Represent the record type with necessary parameters to represent a permission.
 # 
@@ -237,7 +234,6 @@ public type Offer record {|
     string resourceSelfLink;
 |};
 
-//---------------------------------------OPTIONAL --------------------------------------------------------------------
 # Represent the optional parameters which can be passed to the function when creating a document.
 # 
 # + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
