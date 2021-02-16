@@ -159,8 +159,8 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
 // + request - The http:Request to set the header
 // + partitionKeyValue - The value of the partition key
 // + return - If successful, request will be appended with headers
-isolated function setPartitionKeyHeader(http:Request request, any partitionKeyValue) {
-    any[] partitionKeyArray = [partitionKeyValue];
+isolated function setPartitionKeyHeader(http:Request request, int|float|decimal|string partitionKeyValue) {
+    (int|float|decimal|string)[] partitionKeyArray = [partitionKeyValue];
     request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
 }
 
@@ -283,7 +283,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
     return prepareAzureError(message, (), httpResponse.statusCode);
 }
 
-// Handle success or error responses to requests and extract the sucess status.
+// Handle success or error responses to requests which does not need to return a payload.
 // 
 // + httpResponse - The http:Response returned from an HTTP request
 // + return - If successful, returns true. Else returns error or false. 

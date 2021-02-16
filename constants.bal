@@ -96,6 +96,7 @@ public enum PermisssionMode {
 }
 
 # The specific version for a given offer.
+# 
 # + PRE_DEFINED - `V1` represents pre-defined throughput levels
 # + USER_DEFINED - `V2` represents user-defined throughput levels
 public enum OfferVersion {
@@ -104,6 +105,7 @@ public enum OfferVersion {
 }
 
 # The performance levels for a specific throughput level.
+# 
 # + LEVEL_S1 - `S1` represents performance level for pre-defined throughput level 
 # + LEVEL_S2 - `S2` represents performance level for pre-defined throughput level
 # + LEVEL_S3 - `S3` represents performance level for pre-defined throughput level

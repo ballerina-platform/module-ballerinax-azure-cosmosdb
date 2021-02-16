@@ -17,9 +17,9 @@
 import ballerina/lang.array as array;
 import ballerina/http;
 
-// Maps the JSON response and response headers returned from the request into record type of Result.
+// Maps the JSON response returned from the request into record type of Result.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A JSON object returned from request
 // + return - An instance of record type Result
 isolated function mapHeadersToResultType(http:Response response) returns @tainted Result {
     return {
@@ -27,9 +27,9 @@ isolated function mapHeadersToResultType(http:Response response) returns @tainte
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of Database.
+// Maps the JSON response returned from the request into record type of Database.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A JSON object returned from request
 // + return - An instance of record type Database
 isolated function mapJsonToDatabaseType(json payload) returns Database {
     return {
@@ -41,9 +41,9 @@ isolated function mapJsonToDatabaseType(json payload) returns Database {
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of Container.
+// Maps the JSON response returned from the request into record type of Container.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A JSON object returned from request
 // + return - An instance of record type Container
 isolated function mapJsonToContainerType(json payload) returns @tainted Container {
     return {
@@ -59,45 +59,45 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 
 // Maps the JSON response returned from the request into record type of IndexingPolicy.
 // 
-// + jsonPayload - The JSON object returned from request
+// + payload - The JSON object returned from request
 // + return - An instance of record type IndexingPolicy
-isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
+isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
-        indexingMode: let var mode = jsonPayload.indexingMode in mode is string ? mode : EMPTY_STRING,
-        automatic: let var automatic = <json>jsonPayload.automatic in convertToBoolean(automatic),
-        includedPaths: let var inPaths = <json[]>jsonPayload.includedPaths in convertToIncludedPathsArray(inPaths),
-        excludedPaths: let var exPaths = <json[]>jsonPayload.excludedPaths in convertToExcludedPathsArray(exPaths)
+        indexingMode: let var mode = payload.indexingMode in mode is string ? mode : EMPTY_STRING,
+        automatic: let var automatic = <json>payload.automatic in convertToBoolean(automatic),
+        includedPaths: let var inPaths = <json[]>payload.includedPaths in convertToIncludedPathsArray(inPaths),
+        excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths)
     };
 }
 
 // Maps the JSON response returned from the request into record type of IncludedPath.
 // 
-// + jsonPayload - The JSON object returned from request
+// + payload - The JSON object returned from request
 // + return - An instance of record type IncludedPath
-isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted IncludedPath {
+isolated function mapJsonToIncludedPathsType(json payload) returns @tainted IncludedPath {
     IncludedPath includedPath = {
-        path: let var path = jsonPayload.path in path is string ? path : EMPTY_STRING
+        path: let var path = payload.path in path is string ? path : EMPTY_STRING
     };
-    if (jsonPayload.indexes is error) {
+    if (payload.indexes is error) {
         return includedPath;
     }
-    includedPath.indexes = let var indexes = <json[]>jsonPayload.indexes in convertToIndexArray(indexes);
+    includedPath.indexes = let var indexes = <json[]>payload.indexes in convertToIndexArray(indexes);
     return includedPath;
 }
 
 // Maps the JSON response returned from the request into record type of ExcludedPath.
 // 
-// + jsonPayload - The JSON object returned from request
+// + payload - The JSON object returned from request
 // + return - An instance of record type ExcludedPath
-isolated function mapJsonToExcludedPathsType(json jsonPayload) returns @tainted ExcludedPath {
+isolated function mapJsonToExcludedPathsType(json payload) returns @tainted ExcludedPath {
     return {
-        path: let var path = jsonPayload.path in path is string ? path : EMPTY_STRING
+        path: let var path = payload.path in path is string ? path : EMPTY_STRING
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of Document.
+// Maps the JSON response returned from the request into record type of Document.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A JSON object returned from request
 // + return - An instance of record type Document
 isolated function mapJsonToDocumentType(json payload) returns @tainted Document {
     return {
@@ -125,18 +125,18 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<js
 
 // Maps the JSON response returned from the request into record type of PartitionKey.
 // 
-// + jsonPayload - The JSON object returned from request
+// + payload - The JSON object returned from request
 // + return - An instance of record type PartitionKey
-isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @tainted PartitionKey {
+isolated function convertJsonToPartitionKeyType(json payload) returns @tainted PartitionKey {
     return {
-        paths: let var paths = <json[]>jsonPayload.paths in convertToStringArray(paths),
-        keyVersion: let var keyVersion = <json>jsonPayload.'version in convertToInt(keyVersion)
+        paths: let var paths = <json[]>payload.paths in convertToStringArray(paths),
+        keyVersion: let var keyVersion = <json>payload.'version in convertToInt(keyVersion)
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of PartitionKeyRange.
+// Maps the JSON response returned from the request into record type of PartitionKeyRange.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type PartitionKeyRange
 isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted PartitionKeyRange {
     return {
@@ -152,19 +152,19 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
 
 // Maps the JSON response returned from the request into record type of Index.
 // 
-// + jsonPayload - A JSON object returned from request
+// + payload - A JSON object returned from request
 // + return - An instance of record type Index
-isolated function mapJsonToIndexType(json jsonPayload) returns Index {
+isolated function mapJsonToIndexType(json payload) returns Index {
     return {
-        kind: let var kind = <string>jsonPayload.kind in getIndexType(kind),
-        dataType: let var dataType = <string>jsonPayload.dataType in getIndexDataType(dataType),
-        precision: let var precision = <string>jsonPayload.precision in convertToInt(precision)
+        kind: let var kind = <string>payload.kind in getIndexType(kind),
+        dataType: let var dataType = <string>payload.dataType in getIndexDataType(dataType),
+        precision: let var precision = <string>payload.precision in convertToInt(precision)
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of StoredProcedure.
+// Maps the JSON response returned from the request into record type of StoredProcedure.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type StoredProcedure
 isolated function mapJsonToStoredProcedure(json payload) returns @tainted StoredProcedure {
     return {
@@ -177,9 +177,9 @@ isolated function mapJsonToStoredProcedure(json payload) returns @tainted Stored
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of UserDefinedFunction.
+// Maps the JSON response returned from the request into record type of UserDefinedFunction.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type UserDefinedFunction
 isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted UserDefinedFunction {
     return {
@@ -192,9 +192,9 @@ isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted Us
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of Trigger.
+// Maps the JSON response returned from the request into record type of Trigger.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Trigger
 isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
     return {
@@ -209,9 +209,9 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of User.
+// Maps the JSON response returned from the request into record type of User.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type User
 isolated function mapJsonToUserType(json payload) returns @tainted User {
     return {
@@ -224,9 +224,9 @@ isolated function mapJsonToUserType(json payload) returns @tainted User {
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of Permission.
+// Maps the JSON response returned from the request into record type of Permission.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Permission
 isolated function mapJsonToPermissionType(json payload) returns @tainted Permission {
     return {
@@ -241,9 +241,9 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
     };
 }
 
-// Maps the JSON response and response headers returned from the request into record type of Offer.
+// Maps the JSON response returned from the request into record type of Offer.
 // 
-// + jsonPayload - A tuple which contains headers and JSON object returned from request
+// + payload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Offer.
 isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     return {

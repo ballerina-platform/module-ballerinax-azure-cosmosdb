@@ -258,7 +258,7 @@ public type DocumentListOptions record {|
 
 public type StoredProcedureOptions record {|
     any[] parameters = [];
-    int|float|string partitionKey?;
+    int|float|decimal|string partitionKey?;
 |};
 
 # Represent the optional parameters which can be passed to the function when reading the information about other 
