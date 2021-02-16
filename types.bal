@@ -23,23 +23,10 @@ public type Configuration record {|
     string masterOrResourceToken;
 |};
 
-# Represents the response headers which is returned.
-# 
-# + continuationHeader - Token returned for queries and read-feed operations if there are more results to be read
-# + sessionToken - Session token of the request
-# + eTag - Resource etag for the resource retrieved
-type ResponseHeaders record {|
-    string? continuationHeader = ();
-    string sessionToken;
-    string eTag;
-|};
-
 # Represents information about the status of the relevent create, update or delete request.
 # 
-# + eTag - Resource etag for the resource
 # + sessionToken - Session token of the request
 public type Result record {|
-    string eTag;
     string sessionToken;
 |};
 

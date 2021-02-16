@@ -197,25 +197,25 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 // + return - If successful, request will be appended with headers
 isolated function setOptionalHeaders(http:Request request, Options? requestOptions) {
     if (requestOptions?.indexingDirective is IndexingDirective) {
-        request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
+        request.setHeader(INDEXING_DIRECTIVE_HEADER, <string>requestOptions?.indexingDirective);
     }
     if (requestOptions?.consistancyLevel is ConsistencyLevel) {
-        request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
+        request.setHeader(CONSISTANCY_LEVEL_HEADER, <string>requestOptions?.consistancyLevel);
     }
     if (requestOptions?.sessionToken is string) {
-        request.setHeader(SESSION_TOKEN_HEADER, requestOptions?.sessionToken.toString());
+        request.setHeader(SESSION_TOKEN_HEADER, <string>requestOptions?.sessionToken);
     }
     if (requestOptions?.changeFeedOption is ChangeFeedOption){
-        request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString());
+        request.setHeader(A_IM_HEADER, <string>requestOptions?.changeFeedOption);
     }
     if (requestOptions?.ifNoneMatchEtag is string) {
-        request.setHeader(http:IF_NONE_MATCH, requestOptions?.ifNoneMatchEtag.toString());
+        request.setHeader(http:IF_NONE_MATCH, <string>requestOptions?.ifNoneMatchEtag.toString());
     }
     if (requestOptions?.partitionKeyRangeId is string) {
-        request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
+        request.setHeader(PARTITIONKEY_RANGE_HEADER, <string>requestOptions?.partitionKeyRangeId);
     }
     if (requestOptions?.ifMatchEtag is string) {
-        request.setHeader(http:IF_MATCH, requestOptions?.ifMatchEtag.toString());
+        request.setHeader(http:IF_MATCH, <string>requestOptions?.ifMatchEtag);
     }
     if (requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
@@ -287,11 +287,11 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 // 
 // + httpResponse - The http:Response returned from an HTTP request
 // + return - If successful, returns true. Else returns error or false. 
-isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
+isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @tainted error? {
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
         // Else Returns error.
-        return true;
+        return;
     } else {
         json jsonResponse = check httpResponse.getJsonPayload();
         string message = jsonResponse.message.toString();
@@ -299,52 +299,16 @@ isolated function handleCreationResponse(http:Response httpResponse) returns @ta
     }
 }
 
-// Map the json payload and necessary header values returned from a response to a tuple.
-// 
-// + httpResponse - The http:Response returned form the HTTP request
-// + return - returns a tuple of type [json, ResponseHeaders] if sucessful. Else, returns error.
-isolated function mapResponseToTuple(http:Response httpResponse) returns @tainted [json, 
-        ResponseHeaders]|error {
-    json responseBody = check handleResponse(httpResponse);
-    ResponseHeaders responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
-    return [responseBody, responseHeaders];
-}
-
-// Map the json payload and necessary header values returned from a response to a tuple.
-//
-// + httpResponse - The http:Response returned form the HTTP request
-// + return - Returns a tuple of type [boolean, ResponseHeaders] if sucessful. Else, returns error.
-isolated function mapCreationResponseToTuple(http:Response httpResponse) returns @tainted [boolean, 
-        ResponseHeaders]|error {
-    boolean responseBody = check handleCreationResponse(httpResponse);
-    ResponseHeaders responseHeaders = check mapResponseHeadersToHeadersRecord(httpResponse);
-    return [responseBody, responseHeaders];
-}
-
-// Get the http:Response and extract the headers to the record type ResponseHeaders.
-// 
-// + httpResponse - The http:Response returned from an HTTP request
-// + return - If successful, returns record type ResponseHeaders. Else returns error.
-isolated function mapResponseHeadersToHeadersRecord(http:Response httpResponse) returns @tainted ResponseHeaders|error {
-    ResponseHeaders responseHeaders = {
-        continuationHeader: getHeaderIfExist(httpResponse, CONTINUATION_HEADER),
-        sessionToken: getHeaderIfExist(httpResponse, SESSION_TOKEN_HEADER),
-        eTag: getHeaderIfExist(httpResponse, http:ETAG)
-    };
-    return responseHeaders;
-}
-
 // Get the value of an HTTP header if it exists.
 // 
 // + httpResponse - The http:Response returned from an HTTP request
 // + headerName - Name of the header
 // + return - String value of specific header
-isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string {
-    string headerValue = "";
+isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string? {
     if (httpResponse.hasHeader(headerName)) {
-        headerValue = httpResponse.getHeader(headerName);
+        return httpResponse.getHeader(headerName);
     } 
-    return headerValue;
+    return;
 } 
 
 // Get a stream of json documents which is returned as query results.
@@ -356,7 +320,7 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
         stream<json>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
-    var [payload, responseHeaders] = check mapResponseToTuple(response);
+    json payload = check handleResponse(response);
 
     if (payload.Documents is json) {
         json[] array = <json[]>payload.Documents;
@@ -381,7 +345,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
         stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
-    var [payload, headers] = check mapResponseToTuple(response);
+    json payload = check handleResponse(response);
     stream<record{}> finalStream = check createStream(path, payload);
     return finalStream;
 }

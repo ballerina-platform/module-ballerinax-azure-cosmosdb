@@ -52,7 +52,7 @@ public client class ManagementClient {
         // Get the response
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         // Map the payload and headers, of the request to a tuple 
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         // Map the reponse payload and the headers to a record type
         return mapJsonToDatabaseType(jsonResponse);
     }
@@ -87,7 +87,7 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToDatabaseType(jsonResponse);
     }
 
@@ -122,8 +122,8 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Create a Container inside the given Database.
@@ -156,7 +156,7 @@ public client class ManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToContainerType(jsonResponse);
     }
 
@@ -196,7 +196,7 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToContainerType(jsonResponse);
     }
 
@@ -233,8 +233,8 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Retrieve a list of partition key ranges for the Container.
@@ -268,7 +268,7 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToUserType(jsonResponse);
     }
 
@@ -287,8 +287,8 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # To get information of a User.
@@ -306,7 +306,7 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToUserType(jsonResponse);
     }
 
@@ -346,8 +346,8 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Create a Permission for a User. 
@@ -377,7 +377,7 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToPermissionType(jsonResponse);
     }
 
@@ -408,8 +408,8 @@ public client class ManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # To get information of a Permission.
@@ -429,7 +429,7 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToPermissionType(jsonResponse);
     }
 
@@ -475,8 +475,8 @@ public client class ManagementClient {
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
         json|error value = handleResponse(response); 
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse); 
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Replace an existing Offer.
@@ -504,8 +504,8 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPaylod);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Get information about an Offer.
@@ -521,7 +521,7 @@ public client class ManagementClient {
         setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToOfferType(jsonResponse);
     }
 

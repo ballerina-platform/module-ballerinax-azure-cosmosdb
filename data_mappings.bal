@@ -15,32 +15,29 @@
 // under the License. 
 
 import ballerina/lang.array as array;
+import ballerina/http;
 
 // Maps the JSON response and response headers returned from the request into record type of Result.
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Result
-isolated function mapTupleToResultType([boolean, ResponseHeaders] jsonPayload) returns @tainted Result {
-    var [status, headers] = jsonPayload;
-    Result result = {
-        eTag: <string>headers.eTag,
-        sessionToken: <string>headers.sessionToken
+isolated function mapHeadersToResultType(http:Response response) returns @tainted Result {
+    return {
+        sessionToken: response.getHeader(SESSION_TOKEN_HEADER)
     };
-    return result;
 }
 
 // Maps the JSON response and response headers returned from the request into record type of Database.
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Database
-isolated function mapJsonToDatabaseType([json, ResponseHeaders?] jsonPayload) returns Database {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToDatabaseType(json payload) returns Database {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING
+        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING
     };
 }
 
@@ -48,14 +45,13 @@ isolated function mapJsonToDatabaseType([json, ResponseHeaders?] jsonPayload) re
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Container
-isolated function mapJsonToContainerType([json, ResponseHeaders?] jsonPayload) returns @tainted Container {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToContainerType(json payload) returns @tainted Container {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         indexingPolicy: let var indexingPolicy = <json>payload.indexingPolicy in mapJsonToIndexingPolicy(indexingPolicy),
         partitionKey: let var partitionKey = <json>payload.partitionKey in convertJsonToPartitionKeyType(partitionKey)
     };
@@ -103,14 +99,13 @@ isolated function mapJsonToExcludedPathsType(json jsonPayload) returns @tainted 
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Document
-isolated function mapJsonToDocumentType([json, ResponseHeaders?] jsonPayload) returns @tainted Document {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToDocumentType(json payload) returns @tainted Document {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         documentBody: let var body = <map<json>>payload in mapJsonToDocumentBody(body)
     };
 }
@@ -143,14 +138,13 @@ isolated function convertJsonToPartitionKeyType(json jsonPayload) returns @taint
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type PartitionKeyRange
-isolated function mapJsonToPartitionKeyRange([json, ResponseHeaders?] jsonPayload) returns @tainted PartitionKeyRange {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted PartitionKeyRange {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         minInclusive: let var minInclusive = payload.minInclusive in minInclusive is string ? minInclusive : EMPTY_STRING,
         maxExclusive: let var maxExclusive = payload.maxExclusive in maxExclusive is string ? maxExclusive : EMPTY_STRING
     };
@@ -172,14 +166,13 @@ isolated function mapJsonToIndexType(json jsonPayload) returns Index {
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type StoredProcedure
-isolated function mapJsonToStoredProcedure([json, ResponseHeaders?] jsonPayload) returns @tainted StoredProcedure {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToStoredProcedure(json payload) returns @tainted StoredProcedure {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         storedProcedure: let var sproc = payload.body in sproc is string ? sproc : EMPTY_STRING
     };
 }
@@ -188,15 +181,13 @@ isolated function mapJsonToStoredProcedure([json, ResponseHeaders?] jsonPayload)
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type UserDefinedFunction
-isolated function mapJsonToUserDefinedFunction([json, ResponseHeaders?] jsonPayload) returns @tainted 
-        UserDefinedFunction {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted UserDefinedFunction {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         userDefinedFunction: let var udf = payload.body in udf is string ? udf : EMPTY_STRING
     };
 }
@@ -205,14 +196,13 @@ isolated function mapJsonToUserDefinedFunction([json, ResponseHeaders?] jsonPayl
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Trigger
-isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns @tainted Trigger {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         triggerFunction: let var func = payload.body in func is string ? func : EMPTY_STRING,
         triggerOperation: let var oper = <string>payload.triggerOperation in getTriggerOperation(oper),
         triggerType: let var triggerType = <string>payload.triggerType in getTriggerType(triggerType)
@@ -223,14 +213,13 @@ isolated function mapJsonToTrigger([json, ResponseHeaders?] jsonPayload) returns
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type User
-isolated function mapJsonToUserType([json, ResponseHeaders?] jsonPayload) returns @tainted User {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToUserType(json payload) returns @tainted User {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         permissions: let var permissions = payload._permissions in permissions is string ? permissions : EMPTY_STRING
     };
 }
@@ -239,14 +228,13 @@ isolated function mapJsonToUserType([json, ResponseHeaders?] jsonPayload) return
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Permission
-isolated function mapJsonToPermissionType([json, ResponseHeaders?] jsonPayload) returns @tainted Permission {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToPermissionType(json payload) returns @tainted Permission {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         token: payload._token != () ? payload._token.toString() : EMPTY_STRING,
         permissionMode: let var mode = <string>payload.permissionMode in getPermisssionMode(mode),
         resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
@@ -257,14 +245,13 @@ isolated function mapJsonToPermissionType([json, ResponseHeaders?] jsonPayload) 
 // 
 // + jsonPayload - A tuple which contains headers and JSON object returned from request
 // + return - An instance of record type Offer.
-isolated function mapJsonToOfferType([json, ResponseHeaders?] jsonPayload) returns @tainted Offer {
-    var [payload, headers] = jsonPayload;
+isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         offerVersion: let var offVersion = <string>payload.offerVersion in getOfferVersion(offVersion),
         offerType: let var offType = <string>payload.offerType in getOfferVersion(offType),
         content: let var content = payload.content in content is string ? content : EMPTY_STRING,
@@ -293,7 +280,7 @@ isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) r
 isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject) returns Container[] {
     Container[] containers = [];
     foreach json jsonCollection in sourceContainerArrayJsonObject {
-        Container container = mapJsonToContainerType([jsonCollection, ()]);
+        Container container = mapJsonToContainerType(jsonCollection);
         array:push(containers, container);
     }
     return containers;
@@ -306,7 +293,7 @@ isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject)
 isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns Document[] {
     Document[] documents = [];
     foreach json documentObject in sourceDocumentArrayJsonObject {
-        Document document = mapJsonToDocumentType([documentObject, ()]);
+        Document document = mapJsonToDocumentType(documentObject);
         array:push(documents, document);
     }
     return documents;
@@ -319,7 +306,7 @@ isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) r
 isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArrayJsonObject) returns StoredProcedure[] {
     StoredProcedure[] storedProcedures = [];
     foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
-        StoredProcedure storedProcedure = mapJsonToStoredProcedure([storedProcedureObject, ()]);
+        StoredProcedure storedProcedure = mapJsonToStoredProcedure(storedProcedureObject);
         array:push(storedProcedures, storedProcedure);
     }
     return storedProcedures;
@@ -332,7 +319,7 @@ isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArra
 isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns UserDefinedFunction[] {
     UserDefinedFunction[] userDefinedFunctions = [];
     foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
-        UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction([userDefinedFunctionObject, ()]);
+        UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction(userDefinedFunctionObject);
         array:push(userDefinedFunctions, userDefinedFunction);
     }
     return userDefinedFunctions;
@@ -345,7 +332,7 @@ isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonOb
 isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns Trigger[] {
     Trigger[] triggers = [];
     foreach json triggerObject in sourceTriggerArrayJsonObject {
-        Trigger trigger = mapJsonToTrigger([triggerObject, ()]);
+        Trigger trigger = mapJsonToTrigger(triggerObject);
         array:push(triggers, trigger);
     }
     return triggers;
@@ -358,7 +345,7 @@ isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) ret
 isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns User[] {
     User[] users = [];
     foreach json userObject in sourceUserArrayJsonObject {
-        User user = mapJsonToUserType([userObject, ()]);
+        User user = mapJsonToUserType(userObject);
         array:push(users, user);
     }
     return users;
@@ -371,7 +358,7 @@ isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns U
 isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns Permission[] {
     Permission[] permissions = [];
     foreach json permissionObject in sourcePermissionArrayJsonObject {
-        Permission permission = mapJsonToPermissionType([permissionObject, ()]);
+        Permission permission = mapJsonToPermissionType(permissionObject);
         array:push(permissions, permission);
     }
     return permissions;
@@ -384,7 +371,7 @@ isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObjec
 isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns Offer[] {
     Offer[] offers = [];
     foreach json offerObject in sourceOfferArrayJsonObject {
-        Offer offer = mapJsonToOfferType([offerObject, ()]);
+        Offer offer = mapJsonToOfferType(offerObject);
         array:push(offers, offer);
     }
     return offers;
@@ -441,7 +428,7 @@ isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJ
 isolated function convertToIndexArray(json[] sourceIndexArrayJsonObject) returns @tainted Index[] {
     Index[] indexes = [];
     foreach json indexObject in sourceIndexArrayJsonObject {
-        Index index = mapJsonToIndexType([indexObject, ()]);
+        Index index = mapJsonToIndexType(indexObject);
         array:push(indexes, index);
     }
     return indexes;

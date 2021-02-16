@@ -154,7 +154,7 @@ const string CONNECTION_KEEP_ALIVE = "keep-alive";
 const string CONTINUATION_HEADER = "x-ms-continuation";
 const string SESSION_TOKEN_HEADER = "x-ms-session-token";
 const string REQUEST_CHARGE_HEADER = "x-ms-request-charge";
-const string RESOURCE_USAGE_HEADER = "x-ms-resource-usage";
+const string RETRY_AFTER_MILLISECONDS = "x-ms-retry-after-ms";
 const string ITEM_COUNT_HEADER = "x-ms-item-count";
 
 // Time Zone

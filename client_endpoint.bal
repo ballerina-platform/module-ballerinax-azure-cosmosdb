@@ -53,7 +53,7 @@ public client class DataPlaneClient {
         request.setJsonPayload(document);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToDocumentType(jsonResponse);
     }
 
@@ -78,8 +78,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>document);
         
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Get information about one Document in a Container.
@@ -101,7 +101,7 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, resourceReadOptions);
 
         http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToDocumentType(jsonResponse);
     }
 
@@ -147,8 +147,8 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Query a Container.
@@ -207,7 +207,7 @@ public client class DataPlaneClient {
         request.setJsonPayload(payload); 
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToStoredProcedure(jsonResponse);
     }
 
@@ -232,8 +232,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # List information of all Stored Procedures in a Container.
@@ -278,8 +278,8 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Execute a Stored Procedure in a Container.
@@ -326,7 +326,7 @@ public client class DataPlaneClient {
         request.setJsonPayload(payload); 
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToUserDefinedFunction(jsonResponse);
     }
 
@@ -351,8 +351,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload); 
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Get a list of existing User Defined Functions inside a Container.
@@ -396,8 +396,8 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # Create a Trigger inside a Container. 
@@ -428,7 +428,7 @@ public client class DataPlaneClient {
         request.setJsonPayload(payload); 
         
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
+        json jsonResponse = check handleResponse(response);
         return mapJsonToTrigger(jsonResponse);
     }
 
@@ -457,8 +457,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
         
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 
     # List existing Triggers inside a Container.
@@ -501,8 +501,7 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
-        json|error value = handleCreationResponse(response); 
-        [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
-        return mapTupleToResultType(jsonResponse);
+        check handleHeaderOnlyResponse(response);
+        return mapHeadersToResultType(response); 
     }
 }
