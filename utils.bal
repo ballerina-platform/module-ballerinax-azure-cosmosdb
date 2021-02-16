@@ -159,9 +159,12 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
 // + request - The http:Request to set the header
 // + partitionKeyValue - The value of the partition key
 // + return - If successful, request will be appended with headers
-isolated function setPartitionKeyHeader(http:Request request, int|float|decimal|string partitionKeyValue) {
-    (int|float|decimal|string)[] partitionKeyArray = [partitionKeyValue];
-    request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
+isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal|string)? partitionKeyValue) {
+    if (partitionKeyValue is (int|float|decimal|string)) {
+        (int|float|decimal|string)[] partitionKeyArray = [partitionKeyValue];
+        request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
+    }
+    return;
 }
 
 // Set the required headers related to query operations.
