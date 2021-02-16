@@ -155,22 +155,23 @@ Now, with all the above steps followed you can create a new document inside Cosm
 to store and query JSON-like documents, the document you intend to store must be a JSON object. Then, the document must 
 have a unique ID to identify it. In this case the document ID will be `my_document`
 ```ballerina
-json documentBody = {
-    "FirstName": "Alan",
-    "FamilyName": "Turing",
-    "Parents": [{
+record {|string id; json...;|} document = {
+        id: "my_document",
+        "FirstName": "Alan",
         "FamilyName": "Turing",
-        "FirstName": "Julius"
-    }, {
-        "FamilyName": "Turing",
-        "FirstName": "Ethel"
-    }],
-    gender: 0
+        "Parents": [{
+            "FamilyName": "Turing",
+            "FirstName": "Julius"
+        }, {
+            "FamilyName": "Stoney",
+            "FirstName": "Ethel"
+        }],
+        gender: 0
 };
 int valueOfPartitionKey = 0;
 
-cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", "my_document", 
-        documentBody, valueOfPartitionKey);
+cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document, 
+        valueOfPartitionKey);
 ```
 Notes: <br/> As this container have selected `/gender` as the partition key for `my_container`, the document you create 
 should include that path with a valid value.
