@@ -37,7 +37,8 @@ public client class ManagementClient {
     # + databaseId - ID of the new Database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns Database. Else returns error.
-    remote function createDatabase(string databaseId, (int|json)? throughputOption = ()) returns @tainted Database|error {
+    remote function createDatabase(string databaseId, (int|record{|int maxThroughput;|})? throughputOption = ()) 
+            returns @tainted Database|error {
         // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
@@ -61,9 +62,9 @@ public client class ManagementClient {
     # + databaseId - ID of the new Database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns Database nil if database already exists. Else returns error.
-    remote function createDatabaseIfNotExist(string databaseId, (int|json)? throughputOption = ()) returns @tainted 
-           Database?|error {
-        var result = self->createDatabase(databaseId);
+    remote function createDatabaseIfNotExist(string databaseId, (int|record{|int maxThroughput;|})? throughputOption = ()) 
+            returns @tainted Database?|error {
+        var result = self->createDatabase(databaseId, throughputOption);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
                 return;
@@ -134,7 +135,8 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns Container. Else returns error.
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container|error { 
+            IndexingPolicy? indexingPolicy = (), (int|record{|int maxThroughput;|})? throughputOption = ()) 
+            returns @tainted Container|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
@@ -168,7 +170,8 @@ public client class ManagementClient {
     # + return - If successful, returns Container if a new container is created or nil if container already exists. 
     #       Else returns error.
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|json)? throughputOption = ()) returns @tainted Container?|error { 
+            IndexingPolicy? indexingPolicy = (), (int|record{|int maxThroughput;|})? throughputOption = ()) 
+            returns @tainted Container?|error { 
         var result = self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {

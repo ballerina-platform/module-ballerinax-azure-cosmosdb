@@ -54,7 +54,7 @@ Database database = {id: ""};
 Container container = {id: "", indexingPolicy:{ indexingMode: ""}, partitionKey: {}};
 
 @test:BeforeSuite
-function test_createDatabase() {
+function testCreateDatabase() {
     log:print("ACTION : createDatabase()");
 
     var result = azureCosmosManagementClient->createDatabase(databaseId);
@@ -67,7 +67,7 @@ function test_createDatabase() {
 @test:Config {
     groups: ["database"]
 }
-function test_createDatabaseUsingInvalidId() {
+function testCreateDatabaseUsingInvalidId() {
     log:print("ACTION : createDatabaseUsingInvalidId()");
 
     string createDatabaseId = "";
@@ -82,7 +82,7 @@ function test_createDatabaseUsingInvalidId() {
 @test:Config {
     groups: ["database"]
 }
-function test_createDatabaseIfNotExist() {
+function testCreateDatabaseIfNotExist() {
     log:print("ACTION : createDatabaseIfNotExist()");
 
     var result = azureCosmosManagementClient->createDatabaseIfNotExist(createDatabaseExistId);
@@ -96,7 +96,7 @@ function test_createDatabaseIfNotExist() {
 @test:Config {
     groups: ["database"]
 }
-function test_createDatabaseIfExist() {
+function testCreateDatabaseIfExist() {
     log:print("ACTION : createDatabaseIfExist()");
 
     var result = azureCosmosManagementClient->createDatabaseIfNotExist(databaseId);
@@ -111,7 +111,7 @@ function test_createDatabaseIfExist() {
     groups: ["database"],
     enable: false
 }
-function test_createDatabaseWithManualThroughput() {
+function testCreateDatabaseWithManualThroughput() {
     log:print("ACTION : createDatabaseWithManualThroughput()");
     int throughput = 1000;
 
@@ -126,7 +126,7 @@ function test_createDatabaseWithManualThroughput() {
     groups: ["database"],
     enable: false
 }
-function test_createDatabaseWithInvalidManualThroughput() {
+function testCreateDatabaseWithInvalidManualThroughput() {
     log:print("ACTION : createDatabaseWithInvalidManualThroughput()");
     int throughput = 40;
 
@@ -142,10 +142,9 @@ function test_createDatabaseWithInvalidManualThroughput() {
     groups: ["database"],
     enable: false
 }
-function test_createDBWithAutoscalingThroughput() {
+function testCreateDBWithAutoscalingThroughput() {
     log:print("ACTION : createDBWithAutoscalingThroughput()");
-
-    json maxThroughput = {"maxThroughput": 4000};
+    record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseAutoId, maxThroughput);
     if (result is Database) {
@@ -157,7 +156,7 @@ function test_createDBWithAutoscalingThroughput() {
 @test:Config {
     groups: ["database"]
 }
-function test_listAllDatabases() {
+function testListAllDatabases() {
     log:print("ACTION : listAllDatabases()");
 
     var result = azureCosmosManagementClient->listDatabases(6);
@@ -171,7 +170,7 @@ function test_listAllDatabases() {
 @test:Config {
     groups: ["database"]
 }
-function test_listOneDatabase() {
+function testListOneDatabase() {
     log:print("ACTION : listOneDatabase()");
 
     var result = azureCosmosManagementClient->getDatabase(databaseId);
@@ -185,7 +184,7 @@ function test_listOneDatabase() {
 @test:Config {
     groups: ["container"]
 }
-function test_createContainer() {
+function testCreateContainer() {
     log:print("ACTION : createContainer()");
 
     PartitionKey pk = {
@@ -201,9 +200,9 @@ function test_createContainer() {
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_createCollectionWithManualThroughputAndIndexingPolicy() {
+function testCreateCollectionWithManualThroughputAndIndexingPolicy() {
     log:print("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
 
     IndexingPolicy ip = {
@@ -235,9 +234,9 @@ function test_createCollectionWithManualThroughputAndIndexingPolicy() {
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["test_getOneContainer"]
+    dependsOn: ["testGetOneContainer"]
 }
-function test_createContainerIfNotExist() {
+function testCreateContainerIfNotExist() {
     log:print("ACTION : createContainerIfNotExist()");
 
     PartitionKey pk = {
@@ -256,9 +255,9 @@ function test_createContainerIfNotExist() {
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_getOneContainer() {
+function testGetOneContainer() {
     log:print("ACTION : getOneContainer()");
 
     var result = azureCosmosManagementClient->getContainer(databaseId, containerId);
@@ -272,7 +271,7 @@ function test_getOneContainer() {
 @test:Config {
     groups: ["container"]
 }
-function test_getAllContainers() {
+function testGetAllContainers() {
     log:print("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
@@ -286,29 +285,29 @@ function test_getAllContainers() {
 @test:Config {
     groups: ["container"], 
     dependsOn: [
-        "test_getOneContainer", 
-        "test_getAllContainers",
-        "test_getDocumentList", 
-        "test_deleteDocument", 
-        "test_queryDocuments", 
-        "test_queryDocumentsWithRequestOptions",
-        "test_getAllStoredProcedures", 
-        "test_deleteOneStoredProcedure", 
-        "test_listAllUDF", 
-        "test_deleteUDF", 
-        "test_deleteTrigger", 
-        "test_GetOneDocumentWithRequestOptions", 
-        "test_createDocumentWithRequestOptions", 
-        "test_getDocumentListWithRequestOptions",
-        "test_createPermission",
-        "test_createPermissionWithTTL"
-        // "test_GetPartitionKeyRanges"
-        // "test_replaceOfferWithOptionalParameter",
-        // "test_replaceOffer",
+        "testGetOneContainer", 
+        "testGetAllContainers",
+        "testGetDocumentList", 
+        "testDeleteDocument", 
+        "testQueryDocuments", 
+        "testQueryDocumentsWithRequestOptions",
+        "testGetAllStoredProcedures", 
+        "testDeleteOneStoredProcedure", 
+        "testListAllUDF", 
+        "testDeleteUDF", 
+        "testDeleteTrigger", 
+        "testGetOneDocumentWithRequestOptions", 
+        "testCreateDocumentWithRequestOptions", 
+        "testGetDocumentListWithRequestOptions",
+        "testCreatePermission",
+        "testCreatePermissionWithTTL",
+        "testGetPartitionKeyRanges"
+        // "testReplaceOfferWithOptionalParameter",
+        // "testReplaceOffer",
         
     ]
 }
-function test_deleteContainer() {
+function testDeleteContainer() {
     log:print("ACTION : deleteContainer()");
 
     var result = azureCosmosManagementClient->deleteContainer(databaseId, containerId);
@@ -321,9 +320,9 @@ function test_deleteContainer() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_createDocument() {
+function testCreateDocument() {
     log:print("ACTION : createDocument()");
 
     int valueOfPartitionKey = 1234;
@@ -363,9 +362,9 @@ function test_createDocument() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_createDocumentWithRequestOptions() {
+function testCreateDocumentWithRequestOptions() {
     log:print("ACTION : createDocumentWithRequestOptions()");
 
     var uuid = createRandomUUIDWithoutHyphens();
@@ -414,9 +413,9 @@ function test_createDocumentWithRequestOptions() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createDocument"]
+    dependsOn: ["testCreateDocument"]
 }
-function test_getDocumentList() {
+function testGetDocumentList() {
     log:print("ACTION : getDocumentList()");
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
@@ -429,9 +428,9 @@ function test_getDocumentList() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createDocument"]
+    dependsOn: ["testCreateDocument"]
 }
-function test_getDocumentListWithRequestOptions() {
+function testGetDocumentListWithRequestOptions() {
     log:print("ACTION : getDocumentListWithRequestOptions()");
 
     DocumentListOptions options = {
@@ -451,9 +450,9 @@ function test_getDocumentListWithRequestOptions() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createDocument"]
+    dependsOn: ["testCreateDocument"]
 }
-function test_GetOneDocument() {
+function testGetOneDocument() {
     log:print("ACTION : GetOneDocument()");
 
     int valueOfPartitionKey = 1234;
@@ -467,9 +466,9 @@ function test_GetOneDocument() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createDocument"]
+    dependsOn: ["testCreateDocument"]
 }
-function test_GetOneDocumentWithRequestOptions() {
+function testGetOneDocumentWithRequestOptions() {
     log:print("ACTION : GetOneDocumentWithRequestOptions()");
 
     int valueOfPartitionKey = 1234;
@@ -490,9 +489,9 @@ function test_GetOneDocumentWithRequestOptions() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_queryDocuments() {
+function testQueryDocuments() {
     log:print("ACTION : queryDocuments()");
 
     int partitionKey = 1234;
@@ -508,9 +507,9 @@ function test_queryDocuments() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_queryDocumentsWithRequestOptions() {
+function testQueryDocumentsWithRequestOptions() {
     log:print("ACTION : queryDocumentsWithRequestOptions()");
 
     string query = string `SELECT * FROM ${containerId} f WHERE f.Address.City = 'Seattle'`;
@@ -530,15 +529,15 @@ function test_queryDocumentsWithRequestOptions() {
 @test:Config {
     groups: ["document"], 
     dependsOn: [
-        "test_createContainer", 
-        "test_createDocument", 
-        "test_GetOneDocument", 
-        "test_GetOneDocumentWithRequestOptions", 
-        "test_queryDocuments",
-        "test_getDocumentList"
+        "testCreateContainer", 
+        "testCreateDocument", 
+        "testGetOneDocument", 
+        "testGetOneDocumentWithRequestOptions", 
+        "testQueryDocuments",
+        "testGetDocumentList"
     ]
 }
-function test_deleteDocument() {
+function testDeleteDocument() {
     log:print("ACTION : deleteDocument()");
 
     var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
@@ -551,9 +550,9 @@ function test_deleteDocument() {
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_createStoredProcedure() {
+function testCreateStoredProcedure() {
     log:print("ACTION : createStoredProcedure()");
 
     string createSprocBody = string `function (){
@@ -572,9 +571,9 @@ function test_createStoredProcedure() {
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_createStoredProcedure", "test_getAllStoredProcedures"]
+    dependsOn: ["testCreateStoredProcedure", "testGetAllStoredProcedures"]
 }
-function test_replaceStoredProcedure() {
+function testReplaceStoredProcedure() {
     log:print("ACTION : replaceStoredProcedure()");
 
     string replaceSprocBody = string `function heloo(personToGreet){
@@ -593,10 +592,10 @@ function test_replaceStoredProcedure() {
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_replaceStoredProcedure"
+    dependsOn: ["testReplaceStoredProcedure"
 ]
 }
-function test_executeOneStoredProcedure() {
+function testExecuteOneStoredProcedure() {
     log:print("ACTION : executeOneStoredProcedure()");
 
     string[] arrayofparameters = ["Sachi"];
@@ -613,9 +612,9 @@ function test_executeOneStoredProcedure() {
 }
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_getAllStoredProcedures() {
+function testGetAllStoredProcedures() {
     log:print("ACTION : getAllStoredProcedures()");
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
@@ -630,11 +629,11 @@ function test_getAllStoredProcedures() {
 @test:Config {
     groups: ["storedProcedure"],
     dependsOn: [
-        "test_createStoredProcedure", 
-        "test_executeOneStoredProcedure"    
+        "testCreateStoredProcedure", 
+        "testExecuteOneStoredProcedure"    
     ]
 }
-function test_deleteOneStoredProcedure() {
+function testDeleteOneStoredProcedure() {
     log:print("ACTION : deleteOneStoredProcedure()");
 
     var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, sprocId);
@@ -647,9 +646,9 @@ function test_deleteOneStoredProcedure() {
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_createUDF() {
+function testCreateUDF() {
     log:print("ACTION : createUDF()");
 
     string createUDFBody = string `function tax(income){
@@ -675,9 +674,9 @@ function test_createUDF() {
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["test_createContainer", "test_createUDF"]
+    dependsOn: ["testCreateContainer", "testCreateUDF"]
 }
-function test_replaceUDF() {
+function testReplaceUDF() {
     log:print("ACTION : replaceUDF()");
 
     string replaceUDFBody = string `function taxIncome(income){
@@ -701,9 +700,9 @@ function test_replaceUDF() {
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["test_createContainer", "test_createUDF"]
+    dependsOn: ["testCreateContainer", "testCreateUDF"]
 }
-function test_listAllUDF() {
+function testListAllUDF() {
     log:print("ACTION : listAllUDF()");
 
     var result = azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
@@ -716,9 +715,9 @@ function test_listAllUDF() {
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["test_replaceUDF", "test_listAllUDF"]
+    dependsOn: ["testReplaceUDF", "testListAllUDF"]
 }
-function test_deleteUDF() {
+function testDeleteUDF() {
     log:print("ACTION : deleteUDF()");
 
     var result = azureCosmosClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
@@ -731,9 +730,9 @@ function test_deleteUDF() {
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["test_createContainer"]
+    dependsOn: ["testCreateContainer"]
 }
-function test_createTrigger() {
+function testCreateTrigger() {
     log:print("ACTION : createTrigger()");
 
     string createTriggerBody = string `function updateMetadata() {
@@ -778,9 +777,9 @@ function test_createTrigger() {
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["test_createTrigger"]
+    dependsOn: ["testCreateTrigger"]
 }
-function test_replaceTrigger() {
+function testReplaceTrigger() {
     log:print("ACTION : replaceTrigger()");
 
     string replaceTriggerBody = string `function replaceMetadata() {
@@ -825,9 +824,9 @@ function test_replaceTrigger() {
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["test_createTrigger"]
+    dependsOn: ["testCreateTrigger"]
 }
-function test_listTriggers() {
+function testListTriggers() {
     log:print("ACTION : listTriggers()");
 
     var result = azureCosmosClient->listTriggers(databaseId, containerId);
@@ -840,9 +839,9 @@ function test_listTriggers() {
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["test_replaceTrigger", "test_listTriggers"]
+    dependsOn: ["testReplaceTrigger", "testListTriggers"]
 }
-function test_deleteTrigger() {
+function testDeleteTrigger() {
     log:print("ACTION : deleteTrigger()");
 
     var result = azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
@@ -857,10 +856,9 @@ function test_deleteTrigger() {
 
 @test:Config {
     groups: ["partitionKey"],
-    dependsOn: ["test_createContainer"],
-    enable: false
+    dependsOn: ["testCreateContainer"]
 }
-function test_GetPartitionKeyRanges() {
+function testGetPartitionKeyRanges() {
     log:print("ACTION : GetPartitionKeyRanges()");
 
     var result = azureCosmosManagementClient->listPartitionKeyRanges(databaseId, containerId);
@@ -874,12 +872,12 @@ function test_GetPartitionKeyRanges() {
 @test:Config {
     groups: ["user"]
 }
-function test_createUser() {
+function testCreateUser() {
     log:print("ACTION : createUser()");
 
     var result = azureCosmosManagementClient->createUser(databaseId, userId);
     if (result is User) {
-        //test_user = <@untainted>result;
+        //testuser = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -887,13 +885,13 @@ function test_createUser() {
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["test_createUser"]
+    dependsOn: ["testCreateUser"]
 }
-function test_replaceUserId() {
+function testReplaceUserId() {
     log:print("ACTION : replaceUserId()");
     var result = azureCosmosManagementClient->replaceUserId(databaseId, userId, newUserId);
     if (result is Result) {
-        //test_user = <@untainted>result;
+        //testuser = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
     }
@@ -901,9 +899,9 @@ function test_replaceUserId() {
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["test_createUser", "test_replaceUserId"]
+    dependsOn: ["testCreateUser", "testReplaceUserId"]
 }
-function test_getUser() {
+function testGetUser() {
     log:print("ACTION : getUser()");
 
     var result = azureCosmosManagementClient->getUser(databaseId, newUserId);
@@ -917,7 +915,7 @@ function test_getUser() {
 @test:Config {
     groups: ["user"]
 }
-function test_listUsers() {
+function testListUsers() {
     log:print("ACTION : listUsers()");
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
@@ -932,14 +930,14 @@ function test_listUsers() {
     groups: ["user"],
     dependsOn: 
     [           
-        "test_deletePermission",
-        "test_replaceUserId",
-        "test_getUser",
-        "test_createPermission",
-        "test_listPermissions"
+        "testDeletePermission",
+        "testReplaceUserId",
+        "testGetUser",
+        "testCreatePermission",
+        "testListPermissions"
     ]
 }
-function test_deleteUser() {
+function testDeleteUser() {
     log:print("ACTION : deleteUser()");
 
     var result = azureCosmosManagementClient->deleteUser(databaseId, newUserId);
@@ -953,11 +951,11 @@ function test_deleteUser() {
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "test_listOneDatabase", 
-        "test_replaceUserId"
+        "testListOneDatabase", 
+        "testReplaceUserId"
     ]
 }
-function test_createPermission() {
+function testCreatePermission() {
     log:print("ACTION : createPermission()");
 
     PermisssionMode permissionMode = "All";
@@ -975,11 +973,11 @@ function test_createPermission() {
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "test_replaceUserId",
-        "test_listOneDatabase"
+        "testReplaceUserId",
+        "testListOneDatabase"
     ]
 }
-function test_createPermissionWithTTL() {
+function testCreatePermissionWithTTL() {
     log:print("ACTION : createPermission()");
 
     var uuid = createRandomUUIDWithoutHyphens();
@@ -999,9 +997,9 @@ function test_createPermissionWithTTL() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_createPermission"]
+    dependsOn: ["testCreatePermission"]
 }
-function test_replacePermission() {
+function testReplacePermission() {
     log:print("ACTION : replacePermission()");
 
     PermisssionMode permissionMode = "All";
@@ -1018,9 +1016,9 @@ function test_replacePermission() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_createPermission"]
+    dependsOn: ["testCreatePermission"]
 }
-function test_listPermissions() {
+function testListPermissions() {
     log:print("ACTION : listPermissions()");
 
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
@@ -1034,9 +1032,9 @@ function test_listPermissions() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_createPermission"]
+    dependsOn: ["testCreatePermission"]
 }
-function test_getPermission() {
+function testGetPermission() {
     log:print("ACTION : getPermission()");
 
     var result = azureCosmosManagementClient->getPermission(databaseId, newUserId, permissionId);
@@ -1050,11 +1048,11 @@ function test_getPermission() {
 @test:Config {
     groups: ["permission"],
     dependsOn: [  
-        "test_replacePermission",
-        "test_getPermission"
+        "testReplacePermission",
+        "testGetPermission"
     ]
 }
-function test_deletePermission() {
+function testDeletePermission() {
     log:print("ACTION : deletePermission()");
 
     var result = azureCosmosManagementClient->deletePermission(databaseId, newUserId, permissionId);
@@ -1072,7 +1070,7 @@ string? resourceId = "";
     groups: ["offer"],
     enable: false
 } 
-function test_listOffers() {
+function testListOffers() {
     log:print("ACTION : listOffers()");
 
     var result = azureCosmosManagementClient->listOffers(3);
@@ -1088,10 +1086,10 @@ function test_listOffers() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: ["test_listOffers"],
+    dependsOn: ["testListOffers"],
     enable: false
 }
-function test_getOffer() {
+function testGetOffer() {
     log:print("ACTION : getOffer()");
 
     if (offerId is string && offerId != "") {
@@ -1110,7 +1108,7 @@ function test_getOffer() {
     groups: ["offer"],
     enable: false
 }
-function test_replaceOffer() {
+function testReplaceOffer() {
     log:print("ACTION : replaceOffer()");
 
     if (offerId is string && offerId != "" && resourceId is string && resourceId != "") {
@@ -1138,7 +1136,7 @@ function test_replaceOffer() {
     groups: ["offer"],
     enable: false
 }
-function test_replaceOfferWithOptionalParameter() {
+function testReplaceOfferWithOptionalParameter() {
     log:print("ACTION : replaceOfferWithOptionalParameter()");
 
     if (offerId is string && offerId != "" && resourceId is string && resourceId != "") {
@@ -1163,10 +1161,10 @@ function test_replaceOfferWithOptionalParameter() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: ["test_createContainer"],
+    dependsOn: ["testCreateContainer"],
     enable: false
 }
-function test_queryOffer() {
+function testQueryOffer() {
     log:print("ACTION : queryOffer()");
     string offerQuery = string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
@@ -1179,10 +1177,10 @@ function test_queryOffer() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["test_createPermission"],
+    dependsOn: ["testCreatePermission"],
     enable: false
 }
-function test_getCollection_Resource_Token() {
+function testGetCollection_Resource_Token() {
     log:print("ACTION : createCollection_Resource_Token()");
 
     string permissionDatabaseId = databaseId;

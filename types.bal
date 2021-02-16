@@ -84,7 +84,7 @@ public type Container record {|
 public type Document record {|
     string id;
     *Commons;
-    json documentBody = {};
+    map<json> documentBody;
 |};
 
 # Represent the parameters necessary to create an indexing policy when creating a container.
@@ -175,8 +175,6 @@ public type Trigger record {|
     TriggerType triggerType = PRE;
 |};
 
-type JsonMap map<json>;
-
 # Represent the record type with necessary parameters to create partition key range.
 # 
 # + id - ID for the partition key range
@@ -204,14 +202,12 @@ public type User record {|
 # + id - User generated unique ID for the permission
 # + permissionMode - Access mode for the resource, Should be `All` or `Read`
 # + resourcePath - Full addressable path of the resource associated with the permission
-# + validityPeriodInSeconds - Optional. Validity period of the Resource Token.
 # + token - System generated `Resource Token` for the particular resource and user
 public type Permission record {|
     string id;
     *Commons;
-    PermisssionMode permissionMode = ALL_PERMISSION;
+    PermisssionMode permissionMode;
     string resourcePath;
-    int validityPeriodInSeconds = MIN_TIME_TO_LIVE_IN_SECONDS;
     string token;
 |};
 
@@ -240,8 +236,8 @@ public type Offer record {|
 #       `Exclude`.
 # + isUpsertRequest - A boolean value which specify if the request is an upsert request
 public type DocumentCreateOptions record {|
-    string? indexingDirective = ();
-    boolean isUpsertRequest = false;
+    IndexingDirective indexingDirective?;
+    boolean isUpsertRequest =  false;
 |};
 
 # Represent the optional parameters which can be passed to the function when replacing a document.
@@ -252,8 +248,8 @@ public type DocumentCreateOptions record {|
 #       matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
 #       failure error will be returned.
 public type DocumentReplaceOptions record {|
-    string? indexingDirective = ();
-    string? ifMatchEtag = ();
+    IndexingDirective indexingDirective?;
+    string ifMatchEtag?;
 |};
 
 # Represent the optional parameters which can be passed to the function when listing information about the documents.
@@ -266,16 +262,16 @@ public type DocumentReplaceOptions record {|
 #       the etag of the resource.
 # + partitionKeyRangeId - The partition key range ID for reading data
 public type DocumentListOptions record {|
-    Consistency? consistancyLevel = ();
-    string? sessionToken = ();
-    string? changeFeedOption = ();
-    string? ifNoneMatchEtag = ();
-    string? partitionKeyRangeId = ();
+    ConsistencyLevel consistancyLevel?;
+    string sessionToken?;
+    ChangeFeedOption changeFeedOption?;
+    string ifNoneMatchEtag?;
+    string partitionKeyRangeId?;
 |};
 
 public type StoredProcedureOptions record {|
-    any[]? parameters = ();
-    any? partitionKey = ();
+    any[] parameters = [];
+    int|float|string partitionKey?;
 |};
 
 # Represent the optional parameters which can be passed to the function when reading the information about other 
@@ -287,9 +283,9 @@ public type StoredProcedureOptions record {|
 #       property. This is applicable only on GET. Makes operation conditional to only execute if the resource has 
 #       changed. The value should be the etag of the resource.
 public type ResourceReadOptions record {|
-    Consistency? consistancyLevel = ();
-    string? sessionToken = ();
-    string? ifNoneMatchEtag = ();
+    ConsistencyLevel consistancyLevel?;
+    string sessionToken?;
+    string ifNoneMatchEtag?;
 |};
 
 # Represent the optional parameters which can be passed to the function when querying containers.
@@ -298,8 +294,8 @@ public type ResourceReadOptions record {|
 # + enableCrossPartition - Boolean value specifying whether to allow cross partitioning
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
 public type ResourceQueryOptions record {|
-    Consistency? consistancyLevel = ();
-    string? sessionToken = ();
+    ConsistencyLevel consistancyLevel?;
+    string sessionToken?;
     boolean enableCrossPartition = false;
 |};
 
@@ -310,8 +306,8 @@ public type ResourceQueryOptions record {|
 #       matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
 #       failure error will be returned.
 public type ResourceDeleteOptions record {|
-    string? sessionToken = ();
-    string? ifMatchEtag = ();
+    string sessionToken?;
+    string ifMatchEtag?;
 |};
 
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|

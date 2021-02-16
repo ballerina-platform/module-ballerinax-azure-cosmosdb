@@ -81,7 +81,7 @@ public function main() {
 
     //Create container with autoscaling throughput policy
     log:print("Creating container with autoscaling throughput policy");
-    json maxThroughput = {"maxThroughput": 4000};
+    record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
     cosmosdb:PartitionKey partitionKeyAutoscaling = {
         paths: ["/id"],
         kind: "Hash",

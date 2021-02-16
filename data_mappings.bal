@@ -67,11 +67,10 @@ isolated function mapJsonToContainerType([json, ResponseHeaders?] jsonPayload) r
 // + return - An instance of record type IndexingPolicy
 isolated function mapJsonToIndexingPolicy(json jsonPayload) returns @tainted IndexingPolicy {
     return {
-        indexingMode: let var indexingMode = jsonPayload.indexingMode in indexingMode is string ? indexingMode : 
-                EMPTY_STRING,
+        indexingMode: let var mode = jsonPayload.indexingMode in mode is string ? mode : EMPTY_STRING,
         automatic: let var automatic = <json>jsonPayload.automatic in convertToBoolean(automatic),
-        includedPaths: let var includedPaths = <json[]>jsonPayload.includedPaths in convertToIncludedPathsArray(includedPaths),
-        excludedPaths: let var excludedPaths = <json[]>jsonPayload.excludedPaths in convertToExcludedPathsArray(excludedPaths)
+        includedPaths: let var inPaths = <json[]>jsonPayload.includedPaths in convertToIncludedPathsArray(inPaths),
+        excludedPaths: let var exPaths = <json[]>jsonPayload.excludedPaths in convertToExcludedPathsArray(exPaths)
     };
 }
 
@@ -86,7 +85,7 @@ isolated function mapJsonToIncludedPathsType(json jsonPayload) returns @tainted 
     if (jsonPayload.indexes is error) {
         return includedPath;
     }
-    includedPath.indexes = let var indexes = jsonPayload.indexes in indexes is json[] ? convertToIndexArray(indexes) :[];
+    includedPath.indexes = let var indexes = <json[]>jsonPayload.indexes in convertToIndexArray(indexes);
     return includedPath;
 }
 
@@ -106,31 +105,25 @@ isolated function mapJsonToExcludedPathsType(json jsonPayload) returns @tainted 
 // + return - An instance of record type Document
 isolated function mapJsonToDocumentType([json, ResponseHeaders?] jsonPayload) returns @tainted Document {
     var [payload, headers] = jsonPayload;
-    Document document = {
+    return {
         id: let var id = payload.id in id is string ? id : EMPTY_STRING,
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING
+        sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        documentBody: let var body = <map<json>>payload in mapJsonToDocumentBody(body)
     };
-    map<json>|error documentBodyJson = payload.cloneWithType(JsonMap);
-    if (documentBodyJson is map<json>) {
-        document.documentBody = mapJsonToDocumentBody(documentBodyJson);
-    }
-    return document;
 }
 
 // Format the JSON map returned from the request to contain only the document. 
 // 
 // + reponsePayload - A JSON map which contains JSON payload returned from the request
 // + return - JSON object which contains only the document
-isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns json {
+isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<json> {
     final var keysToDelete = [JSON_KEY_ID, JSON_KEY_RESOURCE_ID, JSON_KEY_SELF_REFERENCE, JSON_KEY_ETAG, JSON_KEY_TIMESTAMP, 
             JSON_KEY_ATTACHMENTS];
     foreach var keyValue in keysToDelete {
-        if (reponsePayload.hasKey(keyValue)) {
-            var removedValue = reponsePayload.remove(keyValue);
-        }
+        _ = reponsePayload.removeIfHasKey(keyValue);
     }
     return reponsePayload;
 }
@@ -428,16 +421,17 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
 // + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
 // + return - An array of type PartitionKeyRange
 isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns @tainted 
-PartitionKeyRange[] {
-    PartitionKeyRange[] partitionKeyRanges = [];
-    int i = 0;
+        PartitionKeyRange[] {
+    PartitionKeyRange[] partitionKeyRangesArray = [];
     foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
-        partitionKeyRanges[i].id = jsonPartitionKey.id.toString();
-        partitionKeyRanges[i].minInclusive = jsonPartitionKey.minInclusive.toString();
-        partitionKeyRanges[i].maxExclusive = jsonPartitionKey.maxExclusive.toString();
-        i = i + 1;
+        PartitionKeyRange value = {
+            id: let var id = jsonPartitionKey.id in id is string ? id : EMPTY_STRING,
+            minInclusive: let var min = jsonPartitionKey.minInclusive in min is string ? min : EMPTY_STRING,
+            maxExclusive: let var max = jsonPartitionKey.maxExclusive in max is string ? max : EMPTY_STRING
+        };
+        array:push(partitionKeyRangesArray, value);
     }
-    return partitionKeyRanges;
+    return partitionKeyRangesArray;
 }
 
 // Convert JSON array of indexes in to an array of type Index.

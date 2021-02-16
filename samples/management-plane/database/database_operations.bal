@@ -51,7 +51,7 @@ public function main() {
     // Create database with autoscaling throughput
     log:print("Creating database with autoscaling throughput");
 
-    json maxThroughput = {"maxThroughput": 4000};
+    record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
     databaseResult = checkpanic managementClient->createDatabase(databaseAutoScalingId, maxThroughput);
 
     // Database read

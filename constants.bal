@@ -23,11 +23,20 @@
 #       consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads guarantees
 # + EVENTUAL - `Eventual` consistency level where there's no ordering guarantee for reads. In the absence of any further 
 #       writes, the replicas eventually converge.
-public enum Consistency {
+public enum ConsistencyLevel {
     STRONG = "Strong",
     BOUNDED = "Bounded",
     SESSION = "Session",
     EVENTUAL = "Eventual"
+}
+
+# Represents whether to include or exclude the document in indexing.
+#
+# + INCLUDE - `Include` adds the document to the index
+# + EXCLUDE - `Exclude` omits the document from indexing     
+public enum IndexingDirective {
+    INCLUDE = "Include",
+    EXCLUDE = "Exclude"
 }
 
 # Represents the type of an Index.
@@ -104,6 +113,13 @@ public enum OfferType {
     LEVEL_S2 = "S2",
     LEVEL_S3 = "S3",
     INVALID = "Invalid"
+}
+
+# Use to retrieve only the incremental changes to documents within the collection.
+# 
+# + INCREMENTAL - Must be set to `Incremental feed`, or omitted otherwise
+public enum ChangeFeedOption {
+    INCREMENTAL = "Incremental feed"
 }
 
 // Indexing Policy

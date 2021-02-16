@@ -196,25 +196,25 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json
 // + requestOptions - Record of type Options containing the values for optional headers
 // + return - If successful, request will be appended with headers
 isolated function setOptionalHeaders(http:Request request, Options? requestOptions) {
-    if (requestOptions?.indexingDirective != ()) {
+    if (requestOptions?.indexingDirective is IndexingDirective) {
         request.setHeader(INDEXING_DIRECTIVE_HEADER, requestOptions?.indexingDirective.toString());
     }
-    if (requestOptions?.consistancyLevel != ()) {
+    if (requestOptions?.consistancyLevel is ConsistencyLevel) {
         request.setHeader(CONSISTANCY_LEVEL_HEADER, requestOptions?.consistancyLevel.toString());
     }
-    if (requestOptions?.sessionToken != ()) {
+    if (requestOptions?.sessionToken is string) {
         request.setHeader(SESSION_TOKEN_HEADER, requestOptions?.sessionToken.toString());
     }
-    if (requestOptions?.changeFeedOption != ()) {
+    if (requestOptions?.changeFeedOption is ChangeFeedOption){
         request.setHeader(A_IM_HEADER, requestOptions?.changeFeedOption.toString());
     }
-    if (requestOptions?.ifNoneMatchEtag != ()) {
+    if (requestOptions?.ifNoneMatchEtag is string) {
         request.setHeader(http:IF_NONE_MATCH, requestOptions?.ifNoneMatchEtag.toString());
     }
-    if (requestOptions?.partitionKeyRangeId != ()) {
+    if (requestOptions?.partitionKeyRangeId is string) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, requestOptions?.partitionKeyRangeId.toString());
     }
-    if (requestOptions?.ifMatchEtag != ()) {
+    if (requestOptions?.ifMatchEtag is string) {
         request.setHeader(http:IF_MATCH, requestOptions?.ifMatchEtag.toString());
     }
     if (requestOptions?.enableCrossPartition == true) {
