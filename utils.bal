@@ -260,8 +260,7 @@ isolated function getDateTime() returns string?|error {
 // + return - If successful, returns string which is the hashed token signature. Else returns nil or error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
         string tokenType, string date) returns string?|error {
-    string payload = verb.toLowerAscii() + NEW_LINE + resourceType.toLowerAscii() + NEW_LINE + resourceId + NEW_LINE + 
-            date.toLowerAscii() + NEW_LINE + EMPTY_STRING + NEW_LINE;
+    string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
     byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest);
@@ -276,13 +275,11 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 // + return - If successful, returns json. Else returns error. 
 isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
     json jsonResponse = check httpResponse.getJsonPayload();
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_CREATED) {
-        //If status is 200, request is successful. Returns resulting payload.
+    if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_CREATED) {
         return jsonResponse;
-    } else {
-        string message = jsonResponse.message.toString();
-        return prepareAzureError(message, (), httpResponse.statusCode);
     }
+    string message = jsonResponse.message.toString();
+    return prepareAzureError(message, (), httpResponse.statusCode);
 }
 
 // Handle success or error responses to requests and extract the sucess status.
@@ -290,7 +287,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 // + httpResponse - The http:Response returned from an HTTP request
 // + return - If successful, returns true. Else returns error or false. 
 isolated function handleCreationResponse(http:Response httpResponse) returns @tainted boolean|error {
-    if (httpResponse.statusCode == http:STATUS_OK || httpResponse.statusCode == http:STATUS_NO_CONTENT) {
+    if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
         // Else Returns error.
         return true;

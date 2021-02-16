@@ -291,17 +291,17 @@ function test_getAllContainers() {
         "test_getDocumentList", 
         "test_deleteDocument", 
         "test_queryDocuments", 
-        "test_queryDocumentsWithRequestOptions", 
-        "test_getAllStoredProcedures", 
-        "test_deleteOneStoredProcedure", 
-        "test_listAllUDF", 
-        "test_deleteUDF", 
-        "test_deleteTrigger", 
-        "test_GetOneDocumentWithRequestOptions", 
-        "test_createDocumentWithRequestOptions", 
-        "test_getDocumentListWithRequestOptions",
-        "test_createPermission",
-        "test_createPermissionWithTTL"
+        "test_queryDocumentsWithRequestOptions"
+        // "test_getAllStoredProcedures", 
+        // "test_deleteOneStoredProcedure", 
+        // "test_listAllUDF", 
+        // "test_deleteUDF", 
+        // "test_deleteTrigger", 
+        // "test_GetOneDocumentWithRequestOptions", 
+        // "test_createDocumentWithRequestOptions", 
+        // "test_getDocumentListWithRequestOptions",
+        // "test_createPermission",
+        // "test_createPermissionWithTTL"
         // "test_replaceOfferWithOptionalParameter",
         // "test_replaceOffer",
         
@@ -325,8 +325,9 @@ function test_deleteContainer() {
 function test_createDocument() {
     log:print("ACTION : createDocument()");
 
-    int valueOfPartitionKeyN = 1234;
-    json documentBody = {
+    int valueOfPartitionKey = 1234;
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
         "LastName": "keeeeeee",
         "Parents": [{
             "FamilyName": null,
@@ -351,8 +352,7 @@ function test_createDocument() {
         "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, 
-            valueOfPartitionKeyN);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, valueOfPartitionKey);
     if (result is Document) {
 
     } else {
@@ -374,9 +374,9 @@ function test_createDocumentWithRequestOptions() {
         indexingDirective: "Include"
     };
     int valueOfPartitionKey = 1234;
-    string id = string `document_${uuid.toString()}`;
-
-    json documentBody = {
+    string newDocumentId = string `document_${uuid.toString()}`;
+    record {|string id; json...;|} documentBody = {
+        id: newDocumentId,
         "LastName": "keeeeeee",
         "Parents": [{
             "FamilyName": null,
@@ -401,8 +401,7 @@ function test_createDocumentWithRequestOptions() {
         "AccountNumber": 1234
     };
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, id, documentBody, valueOfPartitionKey, 
-            options);
+    var result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, valueOfPartitionKey, options);
     if (result is Document) {
 
     } else {

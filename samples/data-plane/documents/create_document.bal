@@ -31,7 +31,8 @@ public function main() {
     string documentId = "my_document";
 
     log:print("Create a new document");
-    json documentBody = {
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
@@ -45,7 +46,7 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
-            documentBody, partitionKeyValue); 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentBody, 
+            partitionKeyValue); 
     log:print("Success!");
 }

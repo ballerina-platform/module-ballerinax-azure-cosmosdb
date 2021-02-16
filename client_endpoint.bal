@@ -37,13 +37,13 @@ public client class DataPlaneClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
     # + documentId - A unique ID for the document to save in the Database
-    # + document - A JSON document to be saved in the Database
     # + partitionKey - The value of partition key field of the Container 
     # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns Document. Else returns error.
-    remote function createDocument(string databaseId, string containerId, string documentId, json document, 
-            any partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted Document|error { 
+    remote function createDocument(string databaseId, string containerId, record {| string id; json...;|} document, 
+            int|float|decimal|string partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted 
+            Document|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
@@ -51,11 +51,8 @@ public client class DataPlaneClient {
         setPartitionKeyHeader(request, partitionKey);
         setOptionalHeaders(request, documentCreateOptions);
 
-        json payload = {
-            id: documentId
-        };
-        _ = check payload.mergeJson(document);
-        request.setJsonPayload(payload);
+
+        request.setJsonPayload(document);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         [json, ResponseHeaders] jsonResponse = check mapResponseToTuple(response);
@@ -66,24 +63,22 @@ public client class DataPlaneClient {
     # 
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
-    # + documentId - The ID of the Document to be replaced
     # + document - A JSON document saved in the Database
     # + partitionKey - The value of partition key field of the Container 
     # + documentReplaceOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns a Result. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, string documentId, json document, 
-            any partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) returns @tainted Result|error {
+    remote function replaceDocument(string databaseId, string containerId, @tainted record {| string id; json...;|} document, 
+            int|float|decimal|string partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) returns @tainted 
+            Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_DOCUMENTS, documentId]);
+                RESOURCE_TYPE_DOCUMENTS, document.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
         setPartitionKeyHeader(request, partitionKey);
         setOptionalHeaders(request, documentReplaceOptions);
 
-        json payload = {id: documentId};
-        _ = check payload.mergeJson(document);
-        request.setJsonPayload(<@untainted>payload);
+        request.setJsonPayload(<@untainted>document);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
         [boolean, ResponseHeaders] jsonResponse = check mapCreationResponseToTuple(response);
@@ -99,8 +94,8 @@ public client class DataPlaneClient {
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns Document. Else returns error.
-    remote function getDocument(string databaseId, string containerId, string documentId, any partitionKey, 
-            ResourceReadOptions? resourceReadOptions = ()) returns @tainted Document|error { 
+    remote function getDocument(string databaseId, string containerId, string documentId, int|float|decimal|string 
+            partitionKey, ResourceReadOptions? resourceReadOptions = ()) returns @tainted Document|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -145,8 +140,8 @@ public client class DataPlaneClient {
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to 
     #       the request.
     # + return - If successful, returns Result. Else returns error.
-    remote function deleteDocument(string databaseId, string containerId, string documentId, any partitionKey, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
+    remote function deleteDocument(string databaseId, string containerId, string documentId, int|float|decimal|string 
+            partitionKey, ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -169,8 +164,9 @@ public client class DataPlaneClient {
     # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
     #       request.
     # + return - If successful, returns a stream<json>. Else returns error.
-    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), any? 
-            partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns @tainted stream<json>|error { 
+    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), 
+        (int|float|decimal|string)? partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns @tainted 
+        stream<json>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);

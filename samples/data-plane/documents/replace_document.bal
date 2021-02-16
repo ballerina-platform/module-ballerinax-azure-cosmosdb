@@ -33,7 +33,8 @@ public function main() {
     int partitionKeyValue = 0; 
 
     log:print("Replacing document");
-    json newDocumentBody = {
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
@@ -46,7 +47,7 @@ public function main() {
         gender: 0
     };
 
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, documentId, 
+    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
             newDocumentBody, partitionKeyValue);
     log:print("Success!");
 }

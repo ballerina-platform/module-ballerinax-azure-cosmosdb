@@ -824,7 +824,8 @@ public function main() {
     string documentId = "my_document";
 
     log:print("Create a new document");
-    json documentBody = {
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
@@ -838,8 +839,8 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
-            documentBody partitionKeyValue); 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentBody, 
+            partitionKeyValue); 
     log:print("Success!");
 }
 ```
@@ -874,11 +875,12 @@ public function main() {
     // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
-    //You have to give the currently existing partition key of this document you can't replace that
+    //We have to give the currently existing partition key of this document we can't replace that
     int partitionKeyValue = 0; 
 
     log:print("Replacing document");
-    json newDocumentBody = {
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
@@ -891,7 +893,7 @@ public function main() {
         gender: 0
     };
 
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, documentId, 
+    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
             newDocumentBody, partitionKeyValue);
     log:print("Success!");
 }

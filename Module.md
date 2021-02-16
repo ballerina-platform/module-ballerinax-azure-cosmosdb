@@ -99,11 +99,14 @@ public function main() {
     };
     cosmosdb:DataPlaneClient coreClient = new (configuration);
 
-    string id =  "documentid1";
-    string documentBody = { "LastName": "Sheldon", accountNumber: 001234222 };
+    record {|string id; json...;|} documentBody = {
+        id: "documentid1",
+        LastName: "Sheldon", 
+        accountNumber: 001234222    
+    };
 
-    cosmosdb:Document documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, id, 
-            documentBody, <VALUE_OF_PARTITIONKEY>); 
+    cosmosdb:Document documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, documentBody, 
+            <VALUE_OF_PARTITIONKEY>); 
 }
 ```
 ### List Documents
