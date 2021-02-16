@@ -39,7 +39,7 @@ public client class DataPlaneClient {
     # + document - A JSON document saved in the Database
     # + partitionKey - The value of partition key field of the Container 
     # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                           the request.
     # + return - If successful, returns Document. Else returns error.
     remote function createDocument(string databaseId, string containerId, record {| string id; json...;|} document, 
             int|float|decimal|string partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted 
@@ -64,11 +64,11 @@ public client class DataPlaneClient {
     # + document - A JSON document saved in the Database
     # + partitionKey - The value of partition key field of the Container 
     # + documentReplaceOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                            the request.
     # + return - If successful, returns a Result. Else returns error. 
-    remote function replaceDocument(string databaseId, string containerId, @tainted record {| string id; json...;|} document, 
-            int|float|decimal|string partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) returns @tainted 
-            Result|error {
+    remote function replaceDocument(string databaseId, string containerId, @tainted record {| string id; json...;|} 
+            document, int|float|decimal|string partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) 
+            returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, document.id]);
@@ -89,7 +89,7 @@ public client class DataPlaneClient {
     # + documentId - Id of the Document to retrieve 
     # + partitionKey - The value of partition key field of the Container
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                         request.
     # + return - If successful, returns Document. Else returns error.
     remote function getDocument(string databaseId, string containerId, string documentId, int|float|decimal|string 
             partitionKey, ResourceReadOptions? resourceReadOptions = ()) returns @tainted Document|error { 
@@ -111,7 +111,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the Container which Document belongs to
     # + maxItemCount - Optional. Maximum number of Document records in one returning page.
     # + documentListOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                         request.
     # + return - If successful, returns stream<Document> Else, returns error. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
             DocumentListOptions? documentListOptions = ()) returns @tainted stream<Document>|error { 
@@ -124,7 +124,7 @@ public client class DataPlaneClient {
         }
         setOptionalHeaders(request, documentListOptions);
 
-        stream<Document> documentStream = <stream<Document>> check retrieveStream(self.httpClient, requestPath, request);
+        stream<Document> documentStream = <stream<Document>>check retrieveStream(self.httpClient, requestPath, request);
         return documentStream;
     }
 
@@ -135,7 +135,7 @@ public client class DataPlaneClient {
     # + documentId - ID of the document to delete
     # + partitionKey - The value of partition key field of the container
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                           the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deleteDocument(string databaseId, string containerId, string documentId, int|float|decimal|string 
             partitionKey, ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
@@ -159,7 +159,7 @@ public client class DataPlaneClient {
     # + partitionKey - Optional. The value of partition key field of the container.
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
     # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                          request.
     # + return - If successful, returns a stream<json>. Else returns error.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), 
         (int|float|decimal|string)? partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns @tainted 
@@ -242,7 +242,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contain the stored procedures
     # + maxItemCount - Optional. Maximum number of Stored Procedure records in one returning page.
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                         request.
     # + return - If successful, returns a stream<StoredProcedure>. Else returns error. 
     remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<StoredProcedure>|error { 
@@ -267,7 +267,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contain the stored procedure
     # + storedProcedureId - ID of the stored procedure to delete
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional 
-    #       capabilities to the request.
+    #                           capabilities to the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
@@ -361,7 +361,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which user defined functions belongs to
     # + maxItemCount - Optional. Maximum number of User Defined Function records in one returning page.
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                         the request.
     # + return - If successful, returns a stream<UserDefinedFunction>. Else returns error. 
     remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<UserDefinedFunction>|error { 
@@ -385,7 +385,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which user defined function is created
     # + userDefinedFunctionid - Id of UDF to delete
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional 
-    #       capabilities to the request.
+    #                           capabilities to the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
             ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
@@ -403,13 +403,13 @@ public client class DataPlaneClient {
     # Create a Trigger inside a Container. 
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript.
-    #  
+    #
     # + databaseId - ID of the Database where Container is created
     # + containerId - ID of the Container where Trigger is created
     # + triggerId - A unique ID for the newly created Trigger
     # + trigger - A JavaScript function
     # + triggerOperation - The specific operation in which trigger will be executed can be `All`, `Create`, `Replace` or 
-    #       `Delete`
+    #                      `Delete`
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a Trigger. Else returns error. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
@@ -467,7 +467,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the Container where the Triggers are created
     # + maxItemCount - Optional. Maximum number of Trigger records in one returning page.
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                         request.
     # + return - If successful, returns a stream<Trigger>. Else returns error. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
             ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<Trigger>|error { 
@@ -490,7 +490,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the Container where the Trigger is created 
     # + triggerId - ID of the Trigger to be deleted
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional 
-    #       capabilities to the request.
+    #                           capabilities to the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
             ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error {

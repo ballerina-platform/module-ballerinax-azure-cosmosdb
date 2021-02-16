@@ -124,12 +124,12 @@ public enum ChangeFeedOption {
     INCREMENTAL = "Incremental feed"
 }
 
-// Indexing Policy
+# Indexing Policy
 const string INDEXING_TYPE_INCLUDE = "Include";
 const string INDEXING_TYPE_EXCLUDE = "Exclude";
 const int MAX_PRECISION = -1;
 
-// Request headers
+# Request headers
 const string API_VERSION_HEADER = "x-ms-version";
 const string HOST_HEADER = "Host";
 const string ACCEPT_HEADER = "Accept";
@@ -147,23 +147,23 @@ const string PARTITION_KEY_HEADER = "x-ms-documentdb-partitionkey";
 const string EXPIRY_HEADER = "x-ms-documentdb-expiry-seconds";
 const string IS_ENABLE_CROSS_PARTITION_HEADER = "x-ms-documentdb-query-enablecrosspartition";
 
-// Values for request headers
+# Values for request headers
 const string CONTENT_TYPE_QUERY = "application/query+json";
 const string ACCEPT_ALL = "*/*";
 const string CONNECTION_KEEP_ALIVE = "keep-alive";
 
-// Response headers
+# Response headers
 const string CONTINUATION_HEADER = "x-ms-continuation";
 const string SESSION_TOKEN_HEADER = "x-ms-session-token";
 const string REQUEST_CHARGE_HEADER = "x-ms-request-charge";
 const string RETRY_AFTER_MILLISECONDS = "x-ms-retry-after-ms";
 const string ITEM_COUNT_HEADER = "x-ms-item-count";
 
-// Time Zone
+# Time Zone
 const string GMT_ZONE = "Europe/London";
 const string TIME_ZONE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
 
-// Resources
+# Resources
 const string RESOURCE_TYPE_DATABASES = "dbs";
 const string RESOURCE_TYPE_COLLECTIONS = "colls";
 const string RESOURCE_TYPE_DOCUMENTS = "docs";
@@ -175,18 +175,18 @@ const string RESOURCE_TYPE_USER = "users";
 const string RESOURCE_TYPE_PERMISSION = "permissions";
 const string RESOURCE_TYPE_OFFERS = "offers";
 
-// Cosmos DB SQL API version
+# Cosmos DB SQL API version
 const string API_VERSION = "2018-12-31";
 
-// Token information
+# Token information
 const string TOKEN_TYPE_MASTER = "master";
 const string TOKEN_TYPE_RESOURCE = "resource";
 const string TOKEN_VERSION = "1.0";
 
-//Encoding types
+# Encoding types
 const string UTF8_URL_ENCODING = "UTF-8";
 
-// Error messages
+# Error messages
 const string MINIMUM_MANUAL_THROUGHPUT_ERROR = "The minimum manual throughput is 400 RU/s";
 const string SETTING_BOTH_VALUES_ERROR = "Cannot set both throughput and maxThroughput headers at once";
 const string NULL_PARTITIONKEY_VALUE_ERROR = "Partition key values are null";
@@ -210,7 +210,7 @@ const string EMPTY_BASE_URL_ERROR = "Base URL cannot be empty";
 const string EMPTY_MASTER_TOKEN_ERROR = "Master token cannot be empty";
 const string INVALID_MASTER_TOKEN_ERROR = "Master token is not valid";
 
-// json keys in response
+# JSON keys in response
 const string JSON_KEY_ID = "id";
 const string JSON_KEY_RESOURCE_ID = "_rid";
 const string JSON_KEY_SELF_REFERENCE = "_self";
@@ -220,7 +220,7 @@ const string JSON_KEY_ATTACHMENTS = "_attachments";
 const string JSON_KEY_DOCUMENTS = "Documents";
 const string JSON_KEY_OFFERS = "Offers";
 
-// Fields in record types
+# Fields in record types
 const string JSON_KEY_PERMISSIONMODE = "permissionMode";
 const string JSON_KEY_RESOURCE = "resource";
 const string JSON_KEY_OFFER_RESOURCE_ID = "offerResourceId";
@@ -228,27 +228,27 @@ const string JSON_KEY_OFFER_TYPE = "offerType";
 const string JSON_KEY_OFFER_VERSION = "offerVersion";
 const string JSON_KEY_CONTENT = "content";
 
-// Property in record type representing headers
+# Property in record type representing headers
 const string RESPONSE_HEADERS = "reponseMetadata";
 
-// Elements in an error response
+# Elements in an error response
 const string ACTIVITY_ID = "ActivityId";
 const string STATUS = "status";
 const string STATUS_NOT_FOUND_STRING = "404";
 
-// Numeric constants
+# Numeric constants
 const int MIN_REQUEST_UNITS = 400;
 const int MIN_TIME_TO_LIVE_IN_SECONDS = 3600;
 const int MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
 
-// Algorithm Used for partitioning
+# Algorithm Used for partitioning
 const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
 const int DEFAULT_PARTITION_KEY_VERSION = 1;
 
-// String constants
+# String constants
 const string SPACE_STRING = " ";
 const string COLON_WITH_SPACE = " : ";
 const string FORWARD_SLASH = "/";
 const string EMPTY_STRING = "";
 const string NEW_LINE = "\n";
-const string HTTPS_REGEX = "^(https)://";
+const string HTTPS_REGEX = "^(https):#";

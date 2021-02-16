@@ -33,7 +33,7 @@ public type Result record {|
 # Represents the common elements representing information.
 # 
 # + resourceId - Resource id (_rid) - A unique identifier which is used internally for placement and navigation of the 
-#          resource
+#                resource
 # + selfReference - Self reference (_self) - A unique addressable URI for the resource
 # + eTag - Resource etag for the resource retrieved
 # + sessionToken - Session token of the request
@@ -107,9 +107,9 @@ public type ExcludedPath record {|
 # 
 # + kind - Type of index. Can be `HASH`, `RANGE` or `SPATIAL`
 # + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon` 
-#        or `LineString`
+#              or `LineString`
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
-#        and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1.
+#               and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1.
 public type Index record {|
     IndexType kind = HASH;
     IndexDataType dataType = STRING;
@@ -119,7 +119,7 @@ public type Index record {|
 # Represent the record type with necessary parameters to represent a partition key.
 # 
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
-#          single value.
+#           single value.
 # + kind - Algorithm used for partitioning. Only `Hash` is supported.
 # + keyVersion - Version of partition key
 public type PartitionKey record {|
@@ -202,7 +202,7 @@ public type Permission record {|
 # 
 # + id - User generated unique ID for the offer
 # + offerVersion - Offer version, This value can be `V1` for pre-defined throughput levels and `V2` for user-defined 
-#          throughput levels
+#                  throughput levels
 # + offerType - Optional. Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
 # + content - Information about the offer
 # + resourceResourceId - The resource id(_rid) of the collection
@@ -220,7 +220,7 @@ public type Offer record {|
 # Represent the optional parameters which can be passed to the function when creating a document.
 # 
 # + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
-#       `Exclude`.
+#                       `Exclude`.
 # + isUpsertRequest - A boolean value which specify if the request is an upsert request
 public type DocumentCreateOptions record {|
     IndexingDirective indexingDirective?;
@@ -232,8 +232,8 @@ public type DocumentCreateOptions record {|
 # + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
 #       `Exclude`.
 # + ifMatchEtag - Used to make operation conditional for optimistic concurrency. will check if the resource's ETag value 
-#       matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
-#       failure error will be returned.
+#                 matches the ETag value provided in the Condition property. If the resource has changes a 412 
+#                 Precondition failure error will be returned.
 public type DocumentReplaceOptions record {|
     IndexingDirective indexingDirective?;
     string ifMatchEtag?;
@@ -245,8 +245,8 @@ public type DocumentReplaceOptions record {|
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
 # + ifNoneMatchEtag - Specify `*` to return all new changes, `<eTag>` to return changes made sice that timestamp or 
-#       otherwise omitted. Makes operation conditional to only execute if the resource has changed. The value should be 
-#       the etag of the resource.
+#                     otherwise omitted. Makes operation conditional to only execute if the resource has changed. The 
+#                     value should be the etag of the resource.
 # + partitionKeyRangeId - The partition key range ID for reading data
 public type DocumentListOptions record {|
     ConsistencyLevel consistancyLevel?;
@@ -267,8 +267,8 @@ public type StoredProcedureOptions record {|
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
 # + ifNoneMatchEtag - Check if the resource's ETag value does not matches the ETag value provided in the Condition 
-#       property. This is applicable only on GET. Makes operation conditional to only execute if the resource has 
-#       changed. The value should be the etag of the resource.
+#                     property. This is applicable only on GET. Makes operation conditional to only execute if the 
+#                     resource has changed. The value should be the etag of the resource.
 public type ResourceReadOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
@@ -290,8 +290,8 @@ public type ResourceQueryOptions record {|
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
 # + ifMatchEtag - Used to make operation conditional for optimistic concurrency. will check if the resource's ETag value 
-#       matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
-#       failure error will be returned.
+#                 matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
+#                 failure error will be returned.
 public type ResourceDeleteOptions record {|
     string sessionToken?;
     string ifMatchEtag?;

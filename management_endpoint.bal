@@ -62,8 +62,8 @@ public client class ManagementClient {
     # + databaseId - ID of the new Database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns Database nil if database already exists. Else returns error.
-    remote function createDatabaseIfNotExist(string databaseId, (int|record{|int maxThroughput;|})? throughputOption = ()) 
-            returns @tainted Database?|error {
+    remote function createDatabaseIfNotExist(string databaseId, (int|record{|int maxThroughput;|})? throughputOption 
+            = ()) returns @tainted Database?|error {
         var result = self->createDatabase(databaseId, throughputOption);
         if result is error {
             if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
@@ -77,7 +77,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the Database to retrieve information 
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                         request.
     # + return - If successful, returns Database. Else returns error.
     remote function getDatabase(string databaseId, ResourceReadOptions? resourceReadOptions = ()) returns @tainted 
             Database|error {
@@ -104,7 +104,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        stream<Database> databaseStream = <stream<Database>> check retrieveStream(self.httpClient, requestPath, request);
+        stream<Database> databaseStream = <stream<Database>>check retrieveStream(self.httpClient, requestPath, request);
         return databaseStream;
     }
 
@@ -112,10 +112,10 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to delete
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities 
-    #       to the request.
+    #                           to the request.
     # + return - If successful, returns Result. Else returns error.
-    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted 
-            Result|error {
+    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+            @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -168,7 +168,7 @@ public client class ManagementClient {
     # + indexingPolicy - Optional. A record of type IndexingPolicy.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns Container if a new container is created or nil if container already exists. 
-    #       Else returns error.
+    #            Else returns error.
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
             IndexingPolicy? indexingPolicy = (), (int|record{|int maxThroughput;|})? throughputOption = ()) 
             returns @tainted Container?|error { 
@@ -186,7 +186,7 @@ public client class ManagementClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container to retrive infromation
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to the 
-    #       request.
+    #                         request.
     # + return - If successful, returns Container. Else returns error.
     remote function getContainer(string databaseId, string containerId, ResourceReadOptions? resourceReadOptions = ()) 
             returns @tainted Container|error {
@@ -223,10 +223,10 @@ public client class ManagementClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container to delete
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                           the request.
     # + return - If successful, returns Result. Else returns error.
-    remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
-            returns @tainted Result|error {
+    remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? resourceDeleteOptions 
+            = ()) returns @tainted Result|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -296,7 +296,7 @@ public client class ManagementClient {
     # + databaseId - ID of the Database where the User is created
     # + userId - ID of User to get information
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities 
-    #       to the request.
+    #                         to the request.
     # + return - If successful, returns a User. Else returns error.
     remote function getUser(string databaseId, string userId, ResourceReadOptions? resourceReadOptions = ()) returns 
             @tainted User|error {
@@ -315,7 +315,7 @@ public client class ManagementClient {
     # + databaseId - ID of the Database where Users is created
     # + maxItemCount - Optional. Maximum number of User records in one returning page.
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                         the request.
     # + return - If successful, returns a stream<User>. Else returns error.
     remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) 
             returns @tainted stream<User>|error { 
@@ -336,7 +336,7 @@ public client class ManagementClient {
     # + databaseId - ID of the Database where User is created
     # + userId - ID of User to delete
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional 
-    #       capabilities to the request.
+    #                           capabilities to the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
             returns @tainted Result|error {
@@ -359,8 +359,8 @@ public client class ManagementClient {
     # + resourcePath - The resource this permission is allowing the User to access
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
-    remote function createPermission(string databaseId, string userId, string permissionId, PermisssionMode permissionMode, 
-            string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Permission|error {
+    remote function createPermission(string databaseId, string userId, string permissionId, PermisssionMode 
+            permissionMode, string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION]);
@@ -390,8 +390,8 @@ public client class ManagementClient {
     # + resourcePath - The resource this permission is allowing the User to access
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
-    remote function replacePermission(string databaseId, string userId, string permissionId, PermisssionMode permissionMode, 
-            string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error { 
+    remote function replacePermission(string databaseId, string userId, string permissionId, PermisssionMode 
+            permissionMode, string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
@@ -418,7 +418,7 @@ public client class ManagementClient {
     # + userId - ID of User where the the Permission belongs to
     # + permissionId - ID of the Permission to get information
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities 
-    #       to the request.
+    #                         to the request.
     # + return - If successful, returns a Permission. Else returns error.
     remote function getPermission(string databaseId, string userId, string permissionId, ResourceReadOptions? 
             resourceReadOptions = ()) returns @tainted Permission|error { 
@@ -439,7 +439,7 @@ public client class ManagementClient {
     # + userId - ID of User where the the Permissions is created
     # + maxItemCount - Optional. Maximum number of Permission records in one returning page.
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                         the request.
     # + return - If successful, returns a stream<Permission>. Else returns error.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), ResourceReadOptions? 
             resourceReadOptions = ()) returns @tainted stream<Permission>|error { 
@@ -463,7 +463,7 @@ public client class ManagementClient {
     # + userId - ID of User which the Permission belongs to
     # + permissionId - ID of the Permission to delete
     # + resourceDeleteOptions - Optional. The ResourceDeleteOptions which can be used to add addtional 
-    #       capabilities to the request.
+    #                           capabilities to the request.
     # + return - If successful, returns Result. Else returns error.
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? 
             resourceDeleteOptions = ()) returns @tainted Result|error { 
@@ -512,9 +512,10 @@ public client class ManagementClient {
     # 
     # + offerId - The ID of the offer
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities 
-    #       to the request.
+    #                         to the request.
     # + return - If successful, returns a Offer. Else returns error.
-    remote function getOffer(string offerId, ResourceReadOptions? resourceReadOptions = ()) returns @tainted Offer|error {
+    remote function getOffer(string offerId, ResourceReadOptions? resourceReadOptions = ()) returns @tainted Offer|error 
+            {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -532,7 +533,7 @@ public client class ManagementClient {
     # 
     # + maxItemCount - Optional. Maximum number of Offer records in one returning page.
     # + resourceReadOptions - Optional. The ResourceReadOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                         the request.
     # + return - If successful, returns a stream<Offer> Else returns error.
     remote function listOffers(int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) returns @tainted 
             stream<Offer>|error { 
@@ -553,7 +554,7 @@ public client class ManagementClient {
     # + sqlQuery - A string value containing SQL query
     # + maxItemCount - Optional. Maximum number of offers in one returning page.
     # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to 
-    #       the request.
+    #                          the request.
     # + return - If successful, returns a stream<json>. Else returns error.
     remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? resourceQueryOptions = ()) 
             returns @tainted stream<json>|error { 
