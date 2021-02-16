@@ -215,586 +215,8 @@ you have to give `my_database` and `my_container` as parameters. Apart from that
 ```
 
 # Samples
-## Management Plane Operations
-- ## Databases
-Management of Databases is a common practice in every organization. It is a kind of task which is usually done with the 
-administrator privileges in normal cases. The Databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
-management for Containers. One Cosmos DB account can contain one or more Databases inside it. Using the Ballerina 
-connector itself, you can manage these Databases. As Database operations are more of management operation type, they are 
-included inside the management client of the connector.
-### Creating a Database 
-Creation of Databases is a common capability of every Database. For creating a Database in Azure, you have to provide a 
-unique Database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
-of type Database. This will contain the success as true if the operation is successful.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-
-    log:print("Creating database");
-    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
-    log:print("Success!");
-}
-```
-Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a json object. 
-For example:
- 
-```ballerina
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
- 
-public function main() {
-    string databaseId = "my_database";
-
-    int throughput = 600;
-    cosmosdb:Database databaseResult = check managementClient-> createDatabase(databaseId, throughput);
-
-    // or
-
-    json maxThroughput = {"maxThroughput": 4000};
-    cosmosdb:Database databaseResult = check managementClient->createDatabase(databaseId, maxThroughput);
-}
-```
-Notes: <br/> These options for throughput are only allowed in the Cosmos DB account type known as `provisioned throughput` 
-accounts. For the account type which is called `serverless(preview)` you cannot specify any throughput because it is not 
-providing support for provisioned throughput for containers or databases inside it. More information about serverless 
-accounts can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/serverless
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/create_database.bal
-
-### Get one Database
-This operation is related to reading information about a Database which is already created inside the cosmos DB account. 
-It mainly returns the ID of the Database with resourceId. We can use the results to refer to a Database by it’s 
-`resourceId` which will be useful in query operations and creating offers.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    string databaseId = "my_database";
-
-    log:print("Reading database by id");
-    cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/get_a_database.bal
-
-### List All Databases
-When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
-stream of Databases, each containing a record of type `Database`.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    log:print("Getting list of databases");
-    stream<cosmosdb:Database> databaseList = checkpanic managementClient->listDatabases(10);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/list_databases.bal
-
-### Delete a Database
-This operation can be used for deleting a Database inside an Azure Cosmos DB account. It returns true if the Database is
-deleted successfully or else returns an error in case there is a problem.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    string databaseId = "my_database";
-
-    log:print("Deleting database");
-    _ = checkpanic managementClient->deleteDatabase(databaseId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/delete_database.bal
-
-- ## Containers
-A Container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
-partitioned and distributed across multiple regions. This is done according to the partition key and the items added to 
-the Container and the provisioned throughput is distributed across a set of logical partitions.
-### Creating a Container
-A Container can be created inside an existing Database in the cosmos DB account. As the REST api version which is used 
-in this implementation of the connector strictly supports the partition key, it is a necessity to provide the partition 
-key in the creation of a Container. 
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-
-    log:print("Creating container");
-    cosmosdb:PartitionKey partitionKey = {
-        paths: ["/id"],
-        keyVersion: 2
-    };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
-    log:print("Success!");
-}
-```
-
-Notes: <br/> Apart from this the creation of containers allows several optional parameters to provide more specialized 
-characteristics to the container which is created.
-- `IndexingPolicy` - can be used in creating a container, if you want to enable an Indexing policy for a specified path,
-the special optional parameter can be used. 
-More information about indexing can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/index-policy
-- `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
-json object.
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/create_container.bal
-### Get one Container
-This operation is related to reading information about a Container which is already created inside a Database. It mainly 
-returns the ID of the Container, The indexing policy and partition key along with the resourceId.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-
-    log:print("Reading container info");
-    cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/get_container.bal
-
-### List all Containers
-When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
-Containers to the user each containing a record of type Container.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    string databaseId = "my_database";
-
-    log:print("Getting list of containers");
-    stream<cosmosdb:Container> containerList = checkpanic managementClient->listContainers(databaseId, 2);
-    log:print("Success!");
-}
-```
-
-Notes: <br/> The optional parameter `maxItemCount` can be provided as an int to this function as the second argument. 
-This item count decides the number of items returned per page. If this is not specified the number to return will be 
-100 records per page by default.
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/list_containers.bal
-
-### Delete a Container
-This operation can be used for deleting a Container inside a Database. It returns true if the Container is deleted 
-successfully or else returns an error in case there is a problem.
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-
-    log:print("Deleting the container");
-    _ = checkpanic managementClient->deleteContainer(databaseId, containerId);
-    log:print("Success!");
-}
-```
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/delete_container.bal
-
-- ## Users
-User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
-A user acts as a namespace, scoping permissions on collections, documents, attachment, stored procedures, triggers, and 
-user-defined functions. The User construct lives under a Database resource and thus cannot cross the Database boundary 
-it is under. The ballerina connector implementation facilitates creating a new User, replacing User ID, get, list and 
-delete of Users in a Cosmos DB account. More information about users can be found here: 
-https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
-
-### Create User
-Users are stored within the context of the Database in Cosmos DB. Each User has a set of unique named permissions. So in 
-this operation an instance of User for a specific Database is created. The things you need to create a User in Cosmos DB 
-is the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string userId = "my_user";
-
-    log:print("Creating user");
-    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/create_user.bal
-
-### Replace User ID
-From this sample you can replace the ID of an existing User. The only replaceable property is the ID of a User created 
-earlier. Although a User can have Permissions which are related to him, those will not be affected from this operation. 
-For this, you have to provide the Database ID where the User is scoped into, the User ID you want to replace and the new 
-User ID which the older one is to be replaced with.
-``` ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string oldUserId = "my_user";
-    string newUserId = "my_new_user";
-
-    log:print("Replace user id");
-    cosmosdb:Result userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/replace_user_id.bal
-
-### Get User
-From this sample, you can get the basic information about a created User. For this, the the Database ID where the User 
-is scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
-Database ID will be `my_database` and User ID will be `my_user` in this case.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string userId = "my_user";
-
-    log:print("Get user information");
-    cosmosdb:User user = checkpanic managementClient->getUser(databaseId, userId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/get_user.bal
-
-### List Users
-From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
-contain information about each User. Each result will be similar to a list of results returned from getUser operation. 
-You have to provide the Database ID which is `my_database` as a parameter.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-
-    log:print("List users");
-    stream<cosmosdb:User> userList = checkpanic managementClient->listUsers(databaseId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/list_users.bal
-
-### Delete User
-The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
-connector supports this operation. For deleting a User the specific Database ID User is scoped to and the ID User of the 
-User to delete must be provided.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string userId = "my_user";
-    
-    log:print("Delete user");
-    _ = checkpanic managementClient->deleteUser(databaseId, userId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/delete_user.bal
-
-- ## Permissions
-Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Key Token` of the Cosmos DB 
-account is capable of creating permissions to each User. By using this concept, a ballerina service which uses the 
-Cosmos DB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
-middle-tier service that serves as the authentication and authorization broker between a client and a back-end service). 
-This is granted by using `Resource Token`. 
-
-Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
-attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database User is 
-granted permissions to a resource and re-generated in response to a request referencing that permission. By default, 
-they are valid for one hour, with the maximum time-span of five hours. As the use of Master Key Token should be limited to 
-scenarios that require full privileges to the content of an account, for more granular access, you should use Resource 
-Tokens. More information on token types can be found here: 
-https://docs.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data
-
-### Create Permission
-Permissions in Cosmos DB have 3 primary properties:
-- `permissionId` - Id for the permission.
-- `permissionMode` - You only have two options here, `"Read"` or `"All"`, and like you would expect, limits the scope 
-    of what you are able to do with the data.
-- `permissionResource` - ResourceLink is really the meat of what this permission is allowing the User to access. In 
-    Cosmos DB, many things are resources such as `Databases`, `Containers`, `Documents`, and `Attachments`. Depending on 
-    the granularity, multiple permissions can be created and assigned to a User based on the data they should be able to 
-    have access to.
-When creating a Permission you should provide values for the above properties. Apart from that, as a Permission is 
-explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
-properties must be provided as parameters to the function. The created token is expired in one hour.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string userId = "my_user";
-
-    string permissionId = "my_permission";
-    cosmosdb:PermisssionMode permissionMode = "All";
-    string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
-        
-    log:print("Create permission for a user");
-    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
-            permissionId, permissionMode, <@untainted>permissionResource);
-    log:print("Success!");
-}
-```
-Notes: <br/>
-A `validityPeriodInSeconds` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
-you are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/create_permission.bal
-
-### Replace Permission
-This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
-existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
-properties have to have changes. These primary properties are provided as function parameters.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string userId = "my_user";
-    string permissionId = "my_permission";
-
-    cosmosdb:PermisssionMode permissionModeReplace = "Read";
-    string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
-
-    log:print("Replace permission");
-    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
-            permissionId, permissionModeReplace, permissionResourceReplace);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/replace_permission.bal
-
-### Get Permission
-From this sample you can get the basic information about a created Permission. For this, the the Database ID and the User 
-ID to which the permission belongs to and the Permission ID that, you want to get information about should be provided.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string userId = "my_user";
-    string permissionId = "my_permission";
-
-    log:print("Get intormation about one permission");
-    cosmosdb:Permission permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/get_permission.bal
-
-### List Permission
-From this operation you can get a list of all the Permissions belong to a single User. Each record returned will 
-contain information about each Permission. Each result will be similar to a list of results returned from `getPermission`
-operation. You have to provide the Database ID and the User ID as parameters
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string userId = "my_user";
-
-    log:print("List permissions");
-    stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/list_permissions.bal
-
-### Delete Permission
-This Operation allows to delete a Permission in the database. For deleting a Permission, the specific Database ID, User 
-ID and the ID of the Permission to delete must be provided.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
-public function main() { 
-    string databaseId = "my_database";
-    string userId = "my_user";
-    string permissionId = "my_permission";
-    
-    log:print("Delete permission");
-    _ = checkpanic managementClient->deletePermission(databaseId, userId, permissionId);
-    log:print("Success!");
-}
-```
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/delete_permission.bal
-
-- ## Offers
-Cosmos DB Containers have either user-defined performance levels or pre-defined performance levels defined for each of 
-them. The operations on offers support replacing existing offers, listing and reading them and querying offers.
-
-Note: <br/>Operations on offers are not supported in `Serverless` accounts because they don’t specifically have a 
-predefined throughput level.
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/offers/offer_operations.bal
-
 ## Data Plane operations
-- ## Documents
+## Documents
 Azure cosmos DB allows the execution of CRUD operations on items separately. As this connector is using the Core API 
 underneath, an item may refer to a document in the Container. SQL API stores entities in JSON in a hierarchical 
 key-value document. The max document size in Cosmos DB is 2 MB.
@@ -1083,7 +505,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/stored-procedures-triggers-udfs
 The ballerina connector supports the creation, modification , listing and deletion of Stored procedures, Triggers and 
 User Defined Functions.
 
-- ## Stored procedures
+## Stored procedures
 A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
 collection as a single transaction. You can use Stored Procedures to manipulate one or more documents within a Container 
 in Cosmos DB.
@@ -1248,7 +670,7 @@ For example, if only one parameter is passed, the argument must be an array with
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/stored-procedure/execute_stored_procedure.bal
 
-- ## User Defined Functions
+## User Defined Functions
 User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
 extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
 refer to them when writing queries. User-defined functions provide “compute-only” processing of information within a 
@@ -1388,7 +810,7 @@ public function main() {
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/user-defined-functions/delete_udf.bal
 
-- ## Triggers
+## Triggers
 Trigger is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers). You can 
 use Triggers to validate and/or modify data when a document is added, modified, or deleted within a Container. The 
 Triggers does not accept any parameters or does not return any result set.
@@ -1569,6 +991,584 @@ public function main() {
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/triggers/delete_trigger.bal
+
+## Management Plane Operations
+## Databases
+Management of Databases is a common practice in every organization. It is a kind of task which is usually done with the 
+administrator privileges in normal cases. The Databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
+management for Containers. One Cosmos DB account can contain one or more Databases inside it. Using the Ballerina 
+connector itself, you can manage these Databases. As Database operations are more of management operation type, they are 
+included inside the management client of the connector.
+### Creating a Database 
+Creation of Databases is a common capability of every Database. For creating a Database in Azure, you have to provide a 
+unique Database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
+of type Database. This will contain the success as true if the operation is successful.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+
+    log:print("Creating database");
+    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
+    log:print("Success!");
+}
+```
+Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a record type. 
+For example:
+ 
+```ballerina
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+ 
+public function main() {
+    string databaseId = "my_database";
+
+    int throughput = 600;
+    cosmosdb:Database databaseResult = check managementClient-> createDatabase(databaseId, throughput);
+
+    // or
+
+    record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
+    cosmosdb:Database databaseResult = check managementClient->createDatabase(databaseId, maxThroughput);
+}
+```
+Notes: <br/> These options for throughput are only allowed in the Cosmos DB account type known as `provisioned throughput` 
+accounts. For the account type which is called `serverless(preview)` you cannot specify any throughput because it is not 
+providing support for provisioned throughput for containers or databases inside it. More information about serverless 
+accounts can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/serverless
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/create_database.bal
+
+### Get one Database
+This operation is related to reading information about a Database which is already created inside the cosmos DB account. 
+It mainly returns the ID of the Database with resourceId. We can use the results to refer to a Database by it’s 
+`resourceId` which will be useful in query operations and creating offers.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    string databaseId = "my_database";
+
+    log:print("Reading database by id");
+    cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/get_a_database.bal
+
+### List All Databases
+When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
+stream of Databases, each containing a record of type `Database`.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    log:print("Getting list of databases");
+    stream<cosmosdb:Database> databaseList = checkpanic managementClient->listDatabases(10);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/list_databases.bal
+
+### Delete a Database
+This operation can be used for deleting a Database inside an Azure Cosmos DB account. It returns true if the Database is
+deleted successfully or else returns an error in case there is a problem.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    string databaseId = "my_database";
+
+    log:print("Deleting database");
+    _ = checkpanic managementClient->deleteDatabase(databaseId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/delete_database.bal
+
+## Containers
+A Container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
+partitioned and distributed across multiple regions. This is done according to the partition key and the items added to 
+the Container and the provisioned throughput is distributed across a set of logical partitions.
+### Creating a Container
+A Container can be created inside an existing Database in the cosmos DB account. As the REST api version which is used 
+in this implementation of the connector strictly supports the partition key, it is a necessity to provide the partition 
+key in the creation of a Container. 
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("Creating container");
+    cosmosdb:PartitionKey partitionKey = {
+        paths: ["/id"],
+        keyVersion: 2
+    };
+    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
+    log:print("Success!");
+}
+```
+
+Notes: <br/> Apart from this the creation of containers allows several optional parameters to provide more specialized 
+characteristics to the container which is created.
+- `IndexingPolicy` - can be used in creating a container, if you want to enable an Indexing policy for a specified path,
+the special optional parameter can be used. 
+More information about indexing can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/index-policy
+- `throughputOption` - is used in creation of a container to configure a throughputOption which is an integer value or a 
+record type.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/create_container.bal
+### Get one Container
+This operation is related to reading information about a Container which is already created inside a Database. It mainly 
+returns the ID of the Container, The indexing policy and partition key along with the resourceId.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("Reading container info");
+    cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/get_container.bal
+
+### List all Containers
+When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
+Containers to the user each containing a record of type Container.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    string databaseId = "my_database";
+
+    log:print("Getting list of containers");
+    stream<cosmosdb:Container> containerList = checkpanic managementClient->listContainers(databaseId, 2);
+    log:print("Success!");
+}
+```
+
+Notes: <br/> The optional parameter `maxItemCount` can be provided as an int to this function as the second argument. 
+This item count decides the number of items returned per page. If this is not specified the number to return will be 
+100 records per page by default.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/list_containers.bal
+
+### Delete a Container
+This operation can be used for deleting a Container inside a Database. It returns true if the Container is deleted 
+successfully or else returns an error in case there is a problem.
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("Deleting the container");
+    _ = checkpanic managementClient->deleteContainer(databaseId, containerId);
+    log:print("Success!");
+}
+```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/delete_container.bal
+
+## Users
+User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
+A user acts as a namespace, scoping permissions on collections, documents, attachment, stored procedures, triggers, and 
+user-defined functions. The User construct lives under a Database resource and thus cannot cross the Database boundary 
+it is under. The ballerina connector implementation facilitates creating a new User, replacing User ID, get, list and 
+delete of Users in a Cosmos DB account. More information about users can be found here: 
+https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
+
+### Create User
+Users are stored within the context of the Database in Cosmos DB. Each User has a set of unique named permissions. So in 
+this operation an instance of User for a specific Database is created. The things you need to create a User in Cosmos DB 
+is the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string userId = "my_user";
+
+    log:print("Creating user");
+    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/create_user.bal
+
+### Replace User ID
+From this sample you can replace the ID of an existing User. The only replaceable property is the ID of a User created 
+earlier. Although a User can have Permissions which are related to him, those will not be affected from this operation. 
+For this, you have to provide the Database ID where the User is scoped into, the User ID you want to replace and the new 
+User ID which the older one is to be replaced with.
+``` ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string oldUserId = "my_user";
+    string newUserId = "my_new_user";
+
+    log:print("Replace user id");
+    cosmosdb:Result userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/replace_user_id.bal
+
+### Get User
+From this sample, you can get the basic information about a created User. For this, the the Database ID where the User 
+is scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
+Database ID will be `my_database` and User ID will be `my_user` in this case.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string userId = "my_user";
+
+    log:print("Get user information");
+    cosmosdb:User user = checkpanic managementClient->getUser(databaseId, userId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/get_user.bal
+
+### List Users
+From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
+contain information about each User. Each result will be similar to a list of results returned from getUser operation. 
+You have to provide the Database ID which is `my_database` as a parameter.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+
+    log:print("List users");
+    stream<cosmosdb:User> userList = checkpanic managementClient->listUsers(databaseId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/list_users.bal
+
+### Delete User
+The Common User management operations of databases usually have the option to delete an existing User. The Cosmos DB 
+connector supports this operation. For deleting a User the specific Database ID User is scoped to and the ID User of the 
+User to delete must be provided.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string userId = "my_user";
+    
+    log:print("Delete user");
+    _ = checkpanic managementClient->deleteUser(databaseId, userId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/delete_user.bal
+
+## Permissions
+Permissions are related to the Users in the Cosmos DB. The person who possesses the `Master Key Token` of the Cosmos DB 
+account is capable of creating permissions to each User. By using this concept, a ballerina service which uses the 
+Cosmos DB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
+middle-tier service that serves as the authentication and authorization broker between a client and a back-end service). 
+This is granted by using `Resource Token`. 
+
+Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
+attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database User is 
+granted permissions to a resource and re-generated in response to a request referencing that permission. By default, 
+they are valid for one hour, with the maximum time-span of five hours. As the use of Master Key Token should be limited to 
+scenarios that require full privileges to the content of an account, for more granular access, you should use Resource 
+Tokens. More information on token types can be found here: 
+https://docs.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data
+
+### Create Permission
+Permissions in Cosmos DB have 3 primary properties:
+- `permissionId` - Id for the permission.
+- `permissionMode` - You only have two options here, `"Read"` or `"All"`, and like you would expect, limits the scope 
+    of what you are able to do with the data.
+- `permissionResource` - ResourceLink is really the meat of what this permission is allowing the User to access. In 
+    Cosmos DB, many things are resources such as `Databases`, `Containers`, `Documents`, and `Attachments`. Depending on 
+    the granularity, multiple permissions can be created and assigned to a User based on the data they should be able to 
+    have access to.
+When creating a Permission you should provide values for the above properties. Apart from that, as a Permission is 
+explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
+properties must be provided as parameters to the function. The created token is expired in one hour.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string userId = "my_user";
+
+    string permissionId = "my_permission";
+    cosmosdb:PermisssionMode permissionMode = "All";
+    string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
+        
+    log:print("Create permission for a user");
+    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
+            permissionId, permissionMode, <@untainted>permissionResource);
+    log:print("Success!");
+}
+```
+Notes: <br/>
+A `validityPeriodInSeconds` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
+you are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/create_permission.bal
+
+### Replace Permission
+This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
+existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
+properties have to have changes. These primary properties are provided as function parameters.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string userId = "my_user";
+    string permissionId = "my_permission";
+
+    cosmosdb:PermisssionMode permissionModeReplace = "Read";
+    string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
+
+    log:print("Replace permission");
+    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
+            permissionId, permissionModeReplace, permissionResourceReplace);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/replace_permission.bal
+
+### Get Permission
+From this sample you can get the basic information about a created Permission. For this, the the Database ID and the User 
+ID to which the permission belongs to and the Permission ID that, you want to get information about should be provided.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string userId = "my_user";
+    string permissionId = "my_permission";
+
+    log:print("Get intormation about one permission");
+    cosmosdb:Permission permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/get_permission.bal
+
+### List Permission
+From this operation you can get a list of all the Permissions belong to a single User. Each record returned will 
+contain information about each Permission. Each result will be similar to a list of results returned from `getPermission`
+operation. You have to provide the Database ID and the User ID as parameters
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string userId = "my_user";
+
+    log:print("List permissions");
+    stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/list_permissions.bal
+
+### Delete Permission
+This Operation allows to delete a Permission in the database. For deleting a Permission, the specific Database ID, User 
+ID and the ID of the Permission to delete must be provided.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration managementConfig = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+public function main() { 
+    string databaseId = "my_database";
+    string userId = "my_user";
+    string permissionId = "my_permission";
+    
+    log:print("Delete permission");
+    _ = checkpanic managementClient->deletePermission(databaseId, userId, permissionId);
+    log:print("Success!");
+}
+```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/delete_permission.bal
+
+## Offers
+Cosmos DB Containers have either user-defined performance levels or pre-defined performance levels defined for each of 
+them. The operations on offers support replacing existing offers, listing and reading them and querying offers.
+
+Note: <br/>Operations on offers are not supported in `Serverless` accounts because they don’t specifically have a 
+predefined throughput level.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/offers/offer_operations.bal
 
 # Building from the Source
 ## Setting Up the Prerequisites
