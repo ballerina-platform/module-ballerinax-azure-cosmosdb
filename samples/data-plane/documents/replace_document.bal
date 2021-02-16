@@ -47,7 +47,7 @@ public function main() {
         gender: 0
     };
 
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
+    cosmosdb:Document replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
             newDocumentBody, partitionKeyValue);
     log:print("Success!");
 }

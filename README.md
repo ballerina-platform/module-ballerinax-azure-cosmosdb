@@ -316,7 +316,7 @@ public function main() {
         gender: 0
     };
 
-    cosmosdb:Result replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
+    cosmosdb:Document replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
             newDocumentBody, partitionKeyValue);
     log:print("Success!");
 }
@@ -332,7 +332,7 @@ document into an upsert request by using this parameter.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/documents/replace_document.bal
 
-### Get one Document
+### Get Document
 This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As 
 the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for that 
 partition key.
@@ -573,7 +573,7 @@ public function main() {
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
-    cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
+    cosmosdb:StoredProcedure storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
             containerId, existingStoredProcedureId, newStoredProcedureBody);
     log:print("Success!");
 }
@@ -748,7 +748,7 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
+    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
             udfId, replacementUDF);
     log:print("Success!");
 }
@@ -933,7 +933,7 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
     
-    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
+    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
             existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
     log:print("Success!");
 }
@@ -1308,7 +1308,7 @@ public function main() {
     string newUserId = "my_new_user";
 
     log:print("Replace user id");
-    cosmosdb:Result userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
+    cosmosdb:User userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
     log:print("Success!");
 }
 ```
@@ -1475,7 +1475,7 @@ public function main() {
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
     log:print("Replace permission");
-    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
+    cosmosdb:Permission replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
             permissionId, permissionModeReplace, permissionResourceReplace);
     log:print("Success!");
 }

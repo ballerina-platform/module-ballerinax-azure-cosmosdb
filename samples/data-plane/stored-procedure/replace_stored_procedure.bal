@@ -37,7 +37,7 @@ public function main() {
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
 
-    cosmosdb:Result storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
+    cosmosdb:StoredProcedure storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
             containerId, existingStoredProcedureId, newStoredProcedureBody);
     log:print("Success!");
 }

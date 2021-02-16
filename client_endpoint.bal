@@ -65,10 +65,10 @@ public client class DataPlaneClient {
     # + partitionKey - The value of partition key field of the Container 
     # + documentReplaceOptions - Optional. The DocumentReplaceOptions which can be used to add addtional capabilities to 
     #                            the request.
-    # + return - If successful, returns a Result. Else returns error. 
+    # + return - If successful, returns a Document. Else returns error. 
     remote function replaceDocument(string databaseId, string containerId, @tainted record {| string id; json...;|} 
             document, int|float|decimal|string partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) 
-            returns @tainted Result|error {
+            returns @tainted Document|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, document.id]);
@@ -78,8 +78,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>document);
         
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToDocumentType(jsonResponse); 
     }
 
     # Get information about one Document in a Container.
@@ -219,7 +219,7 @@ public client class DataPlaneClient {
     # + storedProcedure - A JavaScript function
     # + return - If successful, returns a Result. Else returns error. 
     remote function replaceStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-            string storedProcedure) returns @tainted Result|error { 
+            string storedProcedure) returns @tainted StoredProcedure|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
@@ -232,8 +232,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToStoredProcedure(jsonResponse);
     }
 
     # List information of all Stored Procedures in a Container.
@@ -336,9 +336,9 @@ public client class DataPlaneClient {
     # + containerId - ID of the container in which user defined function is created
     # + userDefinedFunctionId - The ID of the User Defined Function to replace
     # + userDefinedFunction - A JavaScript function
-    # + return - If successful, returns a Result. Else returns error. 
+    # + return - If successful, returns a UserDefinedFunction. Else returns error. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
-            string userDefinedFunction) returns @tainted Result|error { 
+            string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunctionId]);
@@ -351,8 +351,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload); 
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToUserDefinedFunction(jsonResponse); 
     }
 
     # Get a list of existing User Defined Functions inside a Container.
@@ -440,9 +440,9 @@ public client class DataPlaneClient {
     # + trigger - A JavaScript function
     # + triggerOperation - The specific operation in which trigger will be executed
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
-    # + return - If successful, returns a Result. Else returns error. 
+    # + return - If successful, returns a Trigger. Else returns error. 
     remote function replaceTrigger(string databaseId, string containerId, string triggerId, string trigger, 
-            TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Result|error {
+            TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Trigger|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, triggerId]);
@@ -457,8 +457,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
         
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToTrigger(jsonResponse);
     }
 
     # List existing Triggers inside a Container.

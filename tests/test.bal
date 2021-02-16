@@ -516,7 +516,8 @@ function testQueryDocumentsWithRequestOptions() {
 
     ResourceQueryOptions options = {
         //sessionToken: "tag", 
-        enableCrossPartition: true};
+        enableCrossPartition: true
+    };
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, (), (), options);
     if (result is stream<json>) {
@@ -583,7 +584,7 @@ function testReplaceStoredProcedure() {
                                     }`;
 
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sprocId, replaceSprocBody);
-    if (result is Result) {
+    if (result is StoredProcedure) {
         //storedPrcedure = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -691,7 +692,7 @@ function testReplaceUDF() {
                                                 }`;
 
     var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replaceUDFBody);
-    if (result is Result) {
+    if (result is UserDefinedFunction) {
         //udf = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -815,7 +816,7 @@ function testReplaceTrigger() {
 
     var result = azureCosmosClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
             replaceTriggerOperation, replaceTriggerType);
-    if (result is Result) {
+    if (result is Trigger) {
         //trigger = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -890,7 +891,7 @@ function testCreateUser() {
 function testReplaceUserId() {
     log:print("ACTION : replaceUserId()");
     var result = azureCosmosManagementClient->replaceUserId(databaseId, userId, newUserId);
-    if (result is Result) {
+    if (result is User) {
         //testuser = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -1007,7 +1008,7 @@ function testReplacePermission() {
 
     var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
             permissionResource);
-    if (result is Result) {
+    if (result is Permission) {
         //permission = <@untainted>result;
     } else {
         test:assertFail(msg = result.message());
@@ -1122,7 +1123,7 @@ function testReplaceOffer() {
             resourceId: <string>resourceId
         };
         var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
-        if (result is Result) {
+        if (result is Offer) {
             var output = "";
         } else {
             test:assertFail(msg = result.message());
@@ -1149,7 +1150,7 @@ function testReplaceOfferWithOptionalParameter() {
             resourceId: <string>resourceId
         };
         var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
-        if (result is Result) {
+        if (result is Offer) {
             var output = "";
         } else {
             test:assertFail(msg = result.message());

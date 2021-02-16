@@ -56,7 +56,7 @@ public function main() {
             id: offerId,
             resourceId: resourceId
         };
-        cosmosdb:Result offerReplaceResult = checkpanic managementClient->replaceOffer(<@untainted>replaceOfferBody);
+        cosmosdb:Offer offerReplaceResult = checkpanic managementClient->replaceOffer(<@untainted>replaceOfferBody);
     }
 
     // Replace Offer updating optional parameters

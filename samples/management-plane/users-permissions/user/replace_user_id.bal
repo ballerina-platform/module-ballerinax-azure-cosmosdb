@@ -30,6 +30,6 @@ public function main() {
     string newUserId = "my_new_user";
 
     log:print("Replace user id");
-    cosmosdb:Result userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
+    cosmosdb:User userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
     log:print("Success!");
 }

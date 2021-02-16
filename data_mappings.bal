@@ -237,7 +237,7 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
-        token: payload._token != () ? payload._token.toString() : EMPTY_STRING,
+        token: let var token = payload._token in token is string? token : EMPTY_STRING,
         permissionMode: let var mode = <string>payload.permissionMode in getPermisssionMode(mode),
         resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
     };

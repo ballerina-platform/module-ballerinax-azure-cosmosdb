@@ -277,8 +277,8 @@ public client class ManagementClient {
     # + databaseId - ID of the Database where the User is created
     # + userId - Old ID of the User
     # + newUserId - New ID for the User
-    # + return - If successful, returns a Result. Else returns error.
-    remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted Result|error {
+    # + return - If successful, returns a User. Else returns error.
+    remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
@@ -287,8 +287,8 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToUserType(jsonResponse);
     }
 
     # To get information of a User.
@@ -391,7 +391,7 @@ public client class ManagementClient {
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a Permission. Else returns error.
     remote function replacePermission(string databaseId, string userId, string permissionId, PermisssionMode 
-            permissionMode, string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Result|error { 
+            permissionMode, string resourcePath, int? validityPeriodInSeconds = ()) returns @tainted Permission|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);
@@ -408,8 +408,8 @@ public client class ManagementClient {
         request.setJsonPayload(<@untainted>jsonPayload);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToPermissionType(jsonResponse); 
     }
 
     # To get information of a Permission.
@@ -483,8 +483,8 @@ public client class ManagementClient {
     # 
     # + offer - A record of type Offer
     # + offerType - Optional. Type of the Offer.
-    # + return - If successful, returns a Result. Else returns error.
-    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Result|error {
+    # + return - If successful, returns a Offer. Else returns error.
+    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
@@ -504,8 +504,8 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPaylod);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
-        check handleHeaderOnlyResponse(response);
-        return mapHeadersToResultType(response); 
+        json jsonResponse = check handleResponse(response);
+        return mapJsonToOfferType(jsonResponse); 
     }
 
     # Get information about an Offer.

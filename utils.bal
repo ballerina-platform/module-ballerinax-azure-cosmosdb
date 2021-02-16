@@ -161,8 +161,7 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
 # + partitionKeyValue - The value of the partition key
 isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal|string)? partitionKeyValue) {
     if (partitionKeyValue is (int|float|decimal|string)) {
-        (int|float|decimal|string)[] partitionKeyArray = [partitionKeyValue];
-        request.setHeader(PARTITION_KEY_HEADER, string `${partitionKeyArray.toString()}`);
+        request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKeyValue.toString()}]`);
     }
     return;
 }
@@ -172,7 +171,7 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # + request - The http:Request to set the header
 isolated function setHeadersForQuery(http:Request request) {
     var req = request.setContentType(CONTENT_TYPE_QUERY);
-    request.setHeader(ISQUERY_HEADER, true.toString());
+    request.setHeader(ISQUERY_HEADER, TRUE);
 }
 
 # Set the optional header related to throughput options.
@@ -180,7 +179,8 @@ isolated function setHeadersForQuery(http:Request request) {
 # + request - The http:Request to set the header
 # + throughputOption - Throughput parameter of type int or json
 # + return - If successful, request will be appended with headers. Else returns error or nil.
-isolated function setThroughputOrAutopilotHeader(http:Request request, (int|json) throughputOption = ()) returns error? {
+isolated function setThroughputOrAutopilotHeader(http:Request request, (int|record{|int maxThroughput;|})? 
+        throughputOption = ()) returns error? {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
@@ -219,10 +219,10 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
         request.setHeader(http:IF_MATCH, <string>requestOptions?.ifMatchEtag);
     }
     if (requestOptions?.enableCrossPartition == true) {
-        request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, requestOptions?.enableCrossPartition.toString());
+        request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, TRUE);
     }
     if (requestOptions?.isUpsertRequest == true) {
-        request.setHeader(IS_UPSERT_HEADER, requestOptions?.isUpsertRequest.toString());
+        request.setHeader(IS_UPSERT_HEADER, TRUE);
     }
 }
 

@@ -60,7 +60,7 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
     
-    cosmosdb:Result triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
+    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
             existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
     log:print("Success!");
 }
