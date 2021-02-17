@@ -224,13 +224,13 @@ public type Offer record {|
 # + isUpsertRequest - A boolean value which specify if the request is an upsert request
 public type DocumentCreateOptions record {|
     IndexingDirective indexingDirective?;
-    boolean isUpsertRequest =  false;
+    boolean isUpsertRequest = false;
 |};
 
 # Represent the optional parameters which can be passed to the function when replacing a document.
 # 
 # + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
-#       `Exclude`.
+#                       `Exclude`.
 public type DocumentReplaceOptions record {|
     IndexingDirective indexingDirective?;
 |};

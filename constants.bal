@@ -34,7 +34,7 @@ public enum ConsistencyLevel {
 # Represents whether to include or exclude the document in indexing.
 #
 # + INCLUDE - `Include` adds the document to the index
-# + EXCLUDE - `Exclude` omits the document from indexing     
+# + EXCLUDE - `Exclude` omits the document from indexing
 public enum IndexingDirective {
     INCLUDE = "Include",
     EXCLUDE = "Exclude"
