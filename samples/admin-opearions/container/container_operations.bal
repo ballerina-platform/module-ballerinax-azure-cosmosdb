@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 import ballerina/java;
@@ -31,7 +31,7 @@ public function main() {
     string databaseId = "my_database";
     var uuid = createRandomUUIDWithoutHyphens();
 
-    string containerId = "my_container";
+    string containerId = "my_new_container";
     string containerWithIndexingId = string `containero_${uuid.toString()}`;
     string containerManualId = string `containerm_${uuid.toString()}`;
     string containerAutoscalingId = string `containera_${uuid.toString()}`;
@@ -97,28 +97,21 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    cosmosdb:DeleteResponse? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
+    cosmosdb:Container? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
             containerIfnotExistId, partitionKey5);
 
     // Read container info
     log:print("Reading container info");
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    string? etag = container.eTag;
-    string? sessiontoken = container.sessionToken;
+    string? etag = container?.eTag;
+    string? sessiontoken = container?.sessionToken;
 
     // Read container info with options   
     log:print("Reading container info with request options");
     cosmosdb:ResourceReadOptions options = {
-        sessionToken: sessiontoken
+        consistancyLevel: "Bounded"
     };
     container = checkpanic managementClient->getContainer(databaseId, containerId, options);
-
-    // Chack the response of this kind of request from postaman and develop
-    // log:print("Reading container info with request options");
-    // cosmosdb:ResourceReadOptions options2 = {
-    //     ifNoneMatchEtag: etag
-    // };
-    // container = checkpanic azureCosmosClient->getContainer(databaseId, containerId, options2);
 
     // Get a list of containers
     log:print("Getting list of containers");

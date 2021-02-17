@@ -30,7 +30,7 @@ public function main() {
 
     var uuid = createRandomUUIDWithoutHyphens();
     
-    string databaseId = "my_database";
+    string databaseId = "my__new_database";
     string databaseIfNotExist = string `databasex_${uuid.toString()}`;
     string databaseManualId = string `databasem_${uuid.toString()}`;
     string databaseAutoScalingId = string `databasea_${uuid.toString()}`;
@@ -57,24 +57,15 @@ public function main() {
     // Database read
     log:print("Reading database by id");
     cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    string? etag = database.eTag;
-    string? sessiontoken = database.sessionToken;
+    string? etag = database?.eTag;
+    string? sessiontoken = database?.sessionToken;
   
     // Database read with session level consistancy
     log:print("Reading database with options");
     cosmosdb:ResourceReadOptions options = {
-        sessionToken: sessiontoken
+        consistancyLevel: "Bounded"
     };
     database = checkpanic managementClient->getDatabase(databaseId, options);
-
-    // Makes operation conditional to only execute if the database has changed.
-    // try to get the response in such situation and handle the error
-    // check this
-    // log:print("Reading database with options");
-    // cosmosdb:ResourceReadOptions options2 = {
-    //     ifNoneMatchEtag: etag
-    // };
-    // database = checkpanic azureCosmosClient->getDatabase(databaseId, options2);
 
     // Get a list of databases
     log:print("Getting list of databases");

@@ -30,17 +30,14 @@ cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
-    string filePath = "./EmployeeData.json";
     var uuid = createRandomUUIDWithoutHyphens();
-
-    string? sessionToken = "";
-    string? etag = "";
     
     // Create a new document
     log:print("Create a new document");
     string documentId = string `document_${uuid.toString()}`;
-    json documentBody = {
-        "LastName": "keeeeeee",
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
+        "LastName": "Sam",
         "Parents": [{
             "FamilyName": null,
             "FirstName": "Thomas"
@@ -48,19 +45,18 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 0
+        "gender": 0
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
             documentBody, partitionKeyValue); 
-    etag = documentResult.eTag;
 
     //Create document specifying whether to include it in the indexing.
     log:print("Creating a new document allowing to include it in the indexing.");
-    string documentIndexingId = string `documenti_${uuid.toString()}`;
-    json documentBody2 = {
-        "LastName": "keeeeeee",
+    record {|string id; json...;|} documentIndexing = {
+        id: string `documenti_${uuid.toString()}`,
+        "LastName": "Tom",
         "Parents": [{
             "FamilyName": null,
             "FirstName": "Thomas"
@@ -68,7 +64,7 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 1
+        "gender": 1
     };
     partitionKeyValue = 1;
 
@@ -77,15 +73,15 @@ public function main() {
     };
 
     cosmosdb:Document documentCreateResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            documentIndexingId, documentBody2, partitionKeyValue, indexingOptions);
+            documentIndexing, partitionKeyValue, indexingOptions);
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
     // error.
     // Achieve session level consistancy when creating document
     log:print("Upserting the document");
-    string upsertDocumentId = string `documentu_${uuid.toString()}`;
-    json documentBody3 = {
-        "LastName": "Ranasinghe",
+    record {|string id; json...;|} upsertDocument = {
+        id: string `documentu_${uuid.toString()}`,
+        "LastName": "Tim",
         "Parents": [{
             "FamilyName": null,
             "FirstName": "Thomas"
@@ -93,7 +89,7 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 0
+        "gender": 0
     };
     partitionKeyValue = 0;
 
@@ -102,11 +98,12 @@ public function main() {
     };
     
     cosmosdb:Document documentUpsertResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            upsertDocumentId, documentBody3, partitionKeyValue, upsertOptions);
+            upsertDocument, partitionKeyValue, upsertOptions);
 
     // Replace document
     log:print("Replacing document");
-    json newDocumentBody = {
+    record {|string id; json...;|} newDocumentBody = {
+        id: documentId,
         "LastName": "Helena",
         "Parents": [{
             "FamilyName": null,
@@ -115,13 +112,12 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 0
+        "gender": 0
     };
-
     partitionKeyValue = 0;
 
-    cosmosdb:DeleteResponse replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
-            documentId, newDocumentBody, partitionKeyValue);
+    cosmosdb:Document replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
+            newDocumentBody, partitionKeyValue);
 
     log:print("Read the document by id");
     cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
@@ -129,35 +125,15 @@ public function main() {
 
     // Read document with request options create this one for each
     log:print("Read the document with request options");
-    // cosmosdb:DocumentGetOptions options = {
-    //     consistancyLevel: "Eventual",
-    //     sessionToken: sessionToken,
-    //     ifNoneMatchEtag: etag
-    // };
-    // cosmosdb:Document document3 = checkpanic azureCosmosClient->getDocument(databaseId, containerId, document.id, 
-    // [document.id], options);
+    cosmosdb:ResourceReadOptions options = {
+        consistancyLevel: "Eventual"
+    };
+    cosmosdb:Document document3 = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
+            partitionKeyValue, options);
 
     // Delete a document
     log:print("Deleting the document");
     _ = checkpanic azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
-
-    // Create a list of documents
-    log:print("Creating list of documents");
-    var resultList = read(filePath);
-    if (resultList is error) {
-        log:printError("Error occurred while reading json: ", err = resultList);
-    } else {
-        json[] list = <json[]>resultList;
-        int k = 0;
-        foreach var item in list {
-            string id = string `document_${uuid.toString()}${k}`; 
-            int partitionKeyVal = <int>item.gender;
-
-            cosmosdb:Document result = checkpanic azureCosmosClient->createDocument(databaseId, containerId, id, item, 
-                    partitionKeyVal);
-            k += 1;
-        }
-    }
 
     // Get the list of documents
     log:print("Getting list of documents");
