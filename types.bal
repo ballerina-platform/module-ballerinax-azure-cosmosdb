@@ -212,7 +212,7 @@ public type Offer record {|
     *Commons;
     OfferVersion offerVersion = USER_DEFINED;
     string offerType = INVALID;
-    json content = {};
+    map<json> content;
     string resourceResourceId;
     string resourceSelfLink;
 |};

@@ -33,10 +33,10 @@ isolated function mapHeadersToResultType(http:Response response) returns @tainte
 # + return - An instance of record type Database
 isolated function mapJsonToDatabaseType(json payload) returns Database {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag
     };
 }
 
@@ -46,11 +46,11 @@ isolated function mapJsonToDatabaseType(json payload) returns Database {
 # + return - An instance of record type Container
 isolated function mapJsonToContainerType(json payload) returns @tainted Container {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        indexingPolicy: let var indexingP = <json>payload.indexingPolicy in mapJsonToIndexingPolicy(indexingP),
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        indexingPolicy: let var indexing = <json>payload.indexingPolicy in mapJsonToIndexingPolicy(indexing),
         partitionKey: let var partitionKey = <json>payload.partitionKey in convertJsonToPartitionKeyType(partitionKey)
     };
 }
@@ -61,7 +61,7 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 # + return - An instance of record type IndexingPolicy
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
-        indexingMode: let var mode = payload.indexingMode in mode is string ? mode : EMPTY_STRING,
+        indexingMode: <string>payload.indexingMode,
         includedPaths: let var inPaths = <json[]>payload.includedPaths in convertToIncludedPathsArray(inPaths),
         excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths),
         automatic: <boolean>payload.automatic
@@ -99,10 +99,10 @@ isolated function mapJsonToExcludedPathsType(json payload) returns @tainted Excl
 # + return - An instance of record type Document
 isolated function mapJsonToDocumentType(json payload) returns @tainted Document {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
         documentBody: let var body = <map<json>>payload in mapJsonToDocumentBody(body)
     };
 }
@@ -137,14 +137,12 @@ isolated function convertJsonToPartitionKeyType(json payload) returns @tainted P
 # + return - An instance of record type PartitionKeyRange
 isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted PartitionKeyRange {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        minInclusive: let var minInclusive = payload.minInclusive in minInclusive is string ? minInclusive : 
-                EMPTY_STRING,
-        maxExclusive: let var maxExclusive = payload.maxExclusive in maxExclusive is string ? maxExclusive : 
-                EMPTY_STRING
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        minInclusive: <string>payload.minInclusive,
+        maxExclusive: <string>payload.maxExclusive
     };
 }
 
@@ -166,11 +164,11 @@ isolated function mapJsonToIndexType(json payload) returns Index {
 # + return - An instance of record type StoredProcedure
 isolated function mapJsonToStoredProcedure(json payload) returns @tainted StoredProcedure {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        storedProcedure: let var sproc = payload.body in sproc is string ? sproc : EMPTY_STRING
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        storedProcedure: <string>payload.body
     };
 }
 
@@ -180,11 +178,11 @@ isolated function mapJsonToStoredProcedure(json payload) returns @tainted Stored
 # + return - An instance of record type UserDefinedFunction
 isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted UserDefinedFunction {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        userDefinedFunction: let var udf = payload.body in udf is string ? udf : EMPTY_STRING
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        userDefinedFunction: <string>payload.body
     };
 }
 
@@ -194,11 +192,11 @@ isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted Us
 # + return - An instance of record type Trigger
 isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        triggerFunction: let var func = payload.body in func is string ? func : EMPTY_STRING,
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        triggerFunction: <string>payload.body,
         triggerOperation: let var oper = <string>payload.triggerOperation in getTriggerOperation(oper),
         triggerType: let var triggerType = <string>payload.triggerType in getTriggerType(triggerType)
     };
@@ -210,11 +208,11 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
 # + return - An instance of record type User
 isolated function mapJsonToUserType(json payload) returns @tainted User {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        permissions: let var permissions = payload._permissions in permissions is string ? permissions : EMPTY_STRING
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        permissions: <string>payload._permissions
     };
 }
 
@@ -224,13 +222,13 @@ isolated function mapJsonToUserType(json payload) returns @tainted User {
 # + return - An instance of record type Permission
 isolated function mapJsonToPermissionType(json payload) returns @tainted Permission {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        token: let var token = payload._token in token is string? token : EMPTY_STRING,
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
+        token: <string>payload._token,
         permissionMode: let var mode = <string>payload.permissionMode in getPermisssionMode(mode),
-        resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
+        resourcePath: <string>payload.'resource
     };
 }
 
@@ -240,15 +238,15 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
 # + return - An instance of record type Offer.
 isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     return {
-        id: let var id = payload.id in id is string ? id : EMPTY_STRING,
-        resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
-        selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
-        eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
+        id: <string>payload.id,
+        resourceId: <string>payload._rid,
+        selfReference: <string>payload._self,
+        eTag: <string>payload._etag,
         offerVersion: let var offVersion = <string>payload.offerVersion in getOfferVersion(offVersion),
         offerType: let var offType = <string>payload.offerType in getOfferVersion(offType),
-        content: let var content = payload.content in content is string ? content : EMPTY_STRING,
-        resourceSelfLink: let var link = payload.'resource in link is string ? link : EMPTY_STRING,
-        resourceResourceId: let var resId = payload.offerResourceId in resId is string ? resId : EMPTY_STRING
+        content: <map<json>>payload.content,
+        resourceSelfLink: <string>payload.'resource,
+        resourceResourceId: <string>payload.offerResourceId
     };
 }
 
