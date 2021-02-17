@@ -63,7 +63,8 @@ public function main() {
 
     // Query offers
     log:print("Query offers");
-    string offersInContainerQuery = string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
+    string offersInContainerQuery = 
+            string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
     stream<json> result6 = checkpanic managementClient->queryOffer(<@untainted>offersInContainerQuery, maximumItemCount);
     log:print("Success!");

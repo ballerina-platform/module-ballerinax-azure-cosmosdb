@@ -22,14 +22,27 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string udfId = "my_udf";
-    
-    log:print("Delete user defined function");
-    _ = checkpanic azureCosmosClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
+
+    log:print("Creating a user defined function");
+    string userDefinedFunctionBody = string `function tax(income){
+                                                if (income == undefined)
+                                                    throw 'no input';
+
+                                                if (income < 1000)
+                                                    return income * 0.1;
+                                                else if (income < 10000)
+                                                    return income * 0.2;
+                                                else
+                                                    return income * 0.4;
+                                            }`;
+
+    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, 
+            containerId, udfId, userDefinedFunctionBody);
     log:print("Success!");
 }

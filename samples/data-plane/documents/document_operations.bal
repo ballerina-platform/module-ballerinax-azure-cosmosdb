@@ -79,7 +79,8 @@ public function main() {
     cosmosdb:Document documentCreateResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
             documentIndexingId, documentBody2, partitionKeyValue, indexingOptions);
 
-    // Create the document which already existing id and specify that it is an upsert request. If not this will show an error.
+    // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
+    // error.
     // Achieve session level consistancy when creating document
     log:print("Upserting the document");
     string upsertDocumentId = string `documentu_${uuid.toString()}`;

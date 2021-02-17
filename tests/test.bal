@@ -663,7 +663,7 @@ function testCreateUDF() {
                                                     return income * 0.4;
                                             }`;
 
-    var result = azureCosmosClient->createUserDefinedFunction(databaseId, containerId, udfId, createUDFBody);
+    var result = azureCosmosManagementClient->createUserDefinedFunction(databaseId, containerId, udfId, createUDFBody);
     if (result is UserDefinedFunction) {
         //udf = <@untainted>result;
     } else {
@@ -689,7 +689,7 @@ function testReplaceUDF() {
                                                         return income * 0.4;
                                                 }`;
 
-    var result = azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replaceUDFBody);
+    var result = azureCosmosManagementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replaceUDFBody);
     if (result is UserDefinedFunction) {
         //udf = <@untainted>result;
     } else {
@@ -704,7 +704,7 @@ function testReplaceUDF() {
 function testListAllUDF() {
     log:print("ACTION : listAllUDF()");
 
-    var result = azureCosmosClient->listUserDefinedFunctions(databaseId, containerId);
+    var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
     if (result is stream<UserDefinedFunction>) {
         var userDefinedFunction = result.next();
     } else {
@@ -719,7 +719,7 @@ function testListAllUDF() {
 function testDeleteUDF() {
     log:print("ACTION : deleteUDF()");
 
-    var result = azureCosmosClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
+    var result = azureCosmosManagementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
     if (result is Result) {
         var output = "";
     } else {
@@ -765,7 +765,7 @@ function testCreateTrigger() {
     TriggerOperation createTriggerOperation = "All";
     TriggerType createTriggerType = "Post";
 
-    var result = azureCosmosClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
+    var result = azureCosmosManagementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
             createTriggerOperation, createTriggerType);
     if (result is Trigger) {
         //trigger = <@untainted>result;
@@ -812,7 +812,7 @@ function testReplaceTrigger() {
     TriggerOperation replaceTriggerOperation = "All";
     TriggerType replaceTriggerType = "Post";
 
-    var result = azureCosmosClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
+    var result = azureCosmosManagementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
             replaceTriggerOperation, replaceTriggerType);
     if (result is Trigger) {
         //trigger = <@untainted>result;
@@ -828,7 +828,7 @@ function testReplaceTrigger() {
 function testListTriggers() {
     log:print("ACTION : listTriggers()");
 
-    var result = azureCosmosClient->listTriggers(databaseId, containerId);
+    var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
     if (result is stream<Trigger>) {
         var doc = result.next();
     } else {
@@ -843,7 +843,7 @@ function testListTriggers() {
 function testDeleteTrigger() {
     log:print("ACTION : deleteTrigger()");
 
-    var result = azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
+    var result = azureCosmosManagementClient->deleteTrigger(databaseId, containerId, triggerId);
     if (result is Result) {
         var output = "";
     } else {
@@ -958,7 +958,8 @@ function testCreatePermission() {
     log:print("ACTION : createPermission()");
 
     PermisssionMode permissionMode = "All";
-    string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
+    string permissionResource = 
+            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
             permissionResource);
@@ -982,7 +983,8 @@ function testCreatePermissionWithTTL() {
     var uuid = createRandomUUIDWithoutHyphens();
     string newPermissionId = string `permission_${uuid.toString()}`;
     PermisssionMode permissionMode = "Read";
-    string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
+    string permissionResource = 
+            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
     int validityPeriod = 9000;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode, 
@@ -1165,7 +1167,8 @@ function testReplaceOfferWithOptionalParameter() {
 }
 function testQueryOffer() {
     log:print("ACTION : queryOffer()");
-    string offerQuery = string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
+    string offerQuery = 
+            string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
     if (result is stream<json>) {
         var offer = result.next();

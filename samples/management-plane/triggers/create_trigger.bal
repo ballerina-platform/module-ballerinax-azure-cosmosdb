@@ -22,16 +22,16 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
-    string existingTriggerId = "my_trigger";
-
-    log:print("Replacing a trigger");
-    string replaceTriggerBody = 
-    string `function replaceFunction() {
+    string triggerId = "my_trigger";
+    
+    log:print("Creating a trigger");
+    string createTriggerBody = 
+    string `function updateMetadata() {
         var context = getContext();
         var collection = context.getCollection();
         var response = context.getResponse();
@@ -57,10 +57,10 @@ public function main() {
         if(!accept) throw "Unable to update metadata, abort";
         return;
     }`;
-    cosmosdb:TriggerOperation replaceTriggerOperation = "All";
-    cosmosdb:TriggerType replaceTriggerType = "Post";
-    
-    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
-            existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
+    cosmosdb:TriggerOperation createTriggerOperationType = "All";
+    cosmosdb:TriggerType createTriggerType = "Post";
+
+    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
+            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
     log:print("Success!");
 }

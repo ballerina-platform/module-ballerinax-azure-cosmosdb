@@ -55,17 +55,21 @@ public function main() {
     log:print("Create permission for a user");
     string permissionId = string `permission_${uuid.toString()}`;
     string permissionMode = "All";
-    string permissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
+    string permissionResource = 
+            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
     cosmosdb:Permission createPermission = {
         id: permissionId,
         permissionMode: permissionMode,
         resourcePath: permissionResource
     };
-    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, <@untainted>createPermission);
+    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId,
+            <@untainted>createPermission);
 
     // Create permission with time to live
+    // 
     // string newPermissionMode = "Read";
-    // string newPermissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
+    // string newPermissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.
+    // toString()}`;
     // int validityPeriod = 9000;
     // cosmosdb:Permission newPermission = {
     //     id: string `permissionttl_${uuid.toString()}`,
@@ -87,7 +91,8 @@ public function main() {
         permissionMode: permissionMode,
         resourcePath: permissionResource
     };
-    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, replacePermission);
+    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
+            replacePermission);
 
     log:print("List permissions");
     stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);

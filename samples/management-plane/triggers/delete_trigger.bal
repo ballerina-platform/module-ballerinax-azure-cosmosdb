@@ -15,21 +15,21 @@
 // under the License.
 
 import ballerinax/cosmosdb;
-import ballerina/log;
 import ballerina/config;
+import ballerina/log;
 
 cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient azureCosmosClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
+    string triggerId = "my_trigger";
 
-    log:print("List  user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, 
-            containerId);
+    log:print("Deleting trigger");
+    _ = checkpanic azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
     log:print("Success!");
 }

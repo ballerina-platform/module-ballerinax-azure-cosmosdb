@@ -27,15 +27,15 @@ flexible scalability. Cosmos DB is a super-set of Azure Document DB and is avail
 Azure Cosmos DB Ballerina connector is a connector for connecting to Azure Cosmos DB via Ballerina language easily. 
 It provides capability to connect to Azure Cosmos DB and to execute basic database operations like Create, Read, 
 Update and Delete Databases and Containers, Executing SQL queries to query Containers etc. Apart from this it allows 
-the special features provided by Cosmos DB like operations on JavaScript language integrated queries, management of users 
-and permissions. This connector promotes easy integration and access to Cosmos DB via ballerina by handling most of the 
-burden on ballerina developers in configuring a new connection to the Cosmos DB from scratch. 
+the special features provided by Cosmos DB like operations on JavaScript language integrated queries, management of 
+users and permissions. This connector promotes easy integration and access to Cosmos DB via ballerina by handling most 
+of the burden on ballerina developers in configuring a new connection to the Cosmos DB from scratch. 
 
 Ballerina Cosmos DB connector uses the SQL(Core) API which has the full support for all the operations and where used 
 extensively by the existing developer community. The reason for the use of SQL API is to provide a developer a better 
 experience in querying, setting up a database and managing it because most/majority of the developer community has 
-familiarity with the use of SQL. For version 0.1.0 of this connector, version 2018-12-31 of Azure Cosmos DB Core REST API 
-is used.
+familiarity with the use of SQL. For version 0.1.0 of this connector, version 2018-12-31 of Azure Cosmos DB Core REST 
+API is used.
 
 ![connecting to Cosmos DB](resources/connector.gif)
 
@@ -187,9 +187,9 @@ log:print(document?.value);
 ```
 ### Step 9: Query Documents
 Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Database you 
-have created, you have to give `my_database` and `my_container` as parameters. The SQL query must be provided as a string. 
-When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
-optional parameters.More information on this can be found here: 
+have created, you have to give `my_database` and `my_container` as parameters. The SQL query must be provided as a 
+string. When executing a SQL query using the connector, there are specific ways you can write the query itself and 
+provide the optional parameters.More information on this can be found here: 
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
 
 ```ballerina
@@ -213,7 +213,6 @@ you have to give `my_database` and `my_container` as parameters. Apart from that
 ```ballerina
  _ = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", valueOfPartitionKey);
 ```
-
 # Samples
 ## Data Plane operations
 ## Documents
@@ -262,8 +261,8 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentBody, 
-            partitionKeyValue); 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
+            documentBody, partitionKeyValue); 
     log:print("Success!");
 }
 ```
@@ -327,15 +326,15 @@ in `DocumentReplaceOptions` record type in the connector.
 the container. This is provided by giving `Include` or `Exclude`.
 - `ifMatchEtag` - check if the resource's ETag value matches the ETag value provided in the Condition property. 
 Replacement is done only if the Etags match. If the AccessCondition is not satisfied during a request then Cosmos will 
-reject the operation and it will return an HTTP 412 Precondition failure response code. You can convert the creation of a new 
-document into an upsert request by using this parameter.
+reject the operation and it will return an HTTP 412 Precondition failure response code. You can convert the creation of 
+a new document into an upsert request by using this parameter.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/documents/replace_document.bal
 
 ### Get Document
 This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As 
-the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for that 
-partition key.
+the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for 
+that partition key.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/log;
@@ -486,8 +485,8 @@ the user can either get the items in one page or get all the results related to 
 - The optional `partitionKey` parameter can be specified so that, it only returns the documents which have it’s
 `partition key value` equals to specific value
 - The optional record type `ResourceQueryOptions` can be used to provide several options for executing the qury.
-    - `consistancyLevel` - It is the consistency level override. The valid values are: `Strong`, `Bounded`, `Session`, or 
-    `Eventual`. Users must set this level to the same or weaker level than the account’s configured consistency level.
+    - `consistancyLevel` - It is the consistency level override. The valid values are: `Strong`, `Bounded`, `Session`, 
+    or `Eventual`. Users must set this level to the same or weaker level than the account’s configured consistency level.
     - `sessionToken` - the client will use a session token internally with each read/query request to ensure that the 
     set consistency level is maintained.
     - `enableCrossPartition` - Use to provide whether to ignore the partition keys and query across partitions. This can 
@@ -495,15 +494,6 @@ the user can either get the items in one page or get all the results related to 
     anything. The querying will still be done across partitions.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/query_container.bal
-
-## Server-Side programming in Cosmos DB
-Cosmos DB Supports JavaScript language integrated queries to execute because it has built in support for JavaScript 
-inside the database engine. It allows stored procedures and the triggers to execute in the same scope as the database 
-session. More information about JavaScript language integrated functions can be found here:
-https://docs.microsoft.com/en-us/azure/cosmos-db/stored-procedures-triggers-udfs
-
-The ballerina connector supports the creation, modification , listing and deletion of Stored procedures, Triggers and 
-User Defined Functions.
 
 ## Stored procedures
 A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
@@ -538,8 +528,8 @@ public function main() {
                                             response.setBody("Hello, World");
                                         }`;
 
-    cosmosdb:StoredProcedure storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(databaseId, 
-            containerId, storedProcedureId, storedProcedureBody);
+    cosmosdb:StoredProcedure storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(
+            databaseId, containerId, storedProcedureId, storedProcedureBody);
     log:print("Success!");
 }
 ```
@@ -573,8 +563,8 @@ public function main() {
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
-    cosmosdb:StoredProcedure storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(databaseId, 
-            containerId, existingStoredProcedureId, newStoredProcedureBody);
+    cosmosdb:StoredProcedure storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(
+            databaseId, containerId, existingStoredProcedureId, newStoredProcedureBody);
     log:print("Success!");
 }
 ```
@@ -600,7 +590,8 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List stored procedure");
-    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, 
+            containerId);
     log:print("Success!");
 }
 ```
@@ -670,328 +661,6 @@ For example, if only one parameter is passed, the argument must be an array with
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/stored-procedure/execute_stored_procedure.bal
 
-## User Defined Functions
-User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
-extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
-refer to them when writing queries. User-defined functions provide “compute-only” processing of information within a 
-single document in Cosmos DB without any side-effects.
-
-### Create User Defined Function
-This sample shows how to create a User Defined Function which will compute the tax amount for a given income amount. For 
-this operation, you have to provide the Database ID and the Container ID where the User Defined Function is saved in. 
-Apart from that, a unique ID for User Defined Function and a JavaScript function should be provided as parameters.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/log;
-import ballerina/config;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string udfId = "my_udf";
-
-    log:print("Creating a user defined function");
-    string userDefinedFunctionBody = string `function tax(income){
-                                                if (income == undefined)
-                                                    throw 'no input';
-
-                                                if (income < 1000)
-                                                    return income * 0.1;
-                                                else if (income < 10000)
-                                                    return income * 0.2;
-                                                else
-                                                    return income * 0.4;
-                                            }`;
-    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, containerId, 
-            udfId, userDefinedFunctionBody);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/user-defined-functions/create_udf.bal
-
-### Replace User Defined Function
-This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User 
-Defined Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where 
-the User Defined Function is saved in and you should pass the ID of the User Defined Function to be replaced and the 
-JavaScript function which will replace the existing User Defined Function. 
-
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/log;
-import ballerina/config;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string udfId = "my_udf";
-
-    log:print("Replacing a user defined function");
-    string replacementUDF = string `function taxFromIncome(income){
-                                                    if (income == undefined)
-                                                        throw 'no input';
-                                                    if (income < 1000)
-                                                        return income * 0.1;
-                                                    else if (income < 10000)
-                                                        return income * 0.2;
-                                                    else
-                                                        return income * 0.4;
-                                                }`;
-    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
-            udfId, replacementUDF);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/user-defined-functions/replace_udf.bal
-
-### List User Defined Functions
-From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
-contain a `UserDefinedFunction` and several other important information. You have to provide the Database ID and Container 
-ID as other mandatory parameters.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/log;
-import ballerina/config;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-
-    log:print("List user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, 
-            containerId);
-    log:print("Success!");
-}
-```
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/user-defined-functions/list_udf.bal
-
-### Delete User Defined Function
-This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the 
-Database ID, Container ID where the User Defined Function exists and the ID of the User Defined Function you want to 
-delete.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/log;
-import ballerina/config;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string udfId = "my_udf";
-    
-    log:print("Delete user defined function");
-    _ = checkpanic azureCosmosClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/user-defined-functions/delete_udf.bal
-
-## Triggers
-Trigger is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers). You can 
-use Triggers to validate and/or modify data when a document is added, modified, or deleted within a Container. The 
-Triggers does not accept any parameters or does not return any result set.
-
-### Create Trigger
-In this sample shows how to create a Trigger which will update a Document with ID "_metadata" after creation of a new 
-Document in the Container. For this operation, you have to provide the Database ID and the Container ID where the Trigger 
-is saved in. A unique ID for Trigger and a JavaScript function should be provided to the `triggerFunction`record type. 
-Apart from that, you have to provide the `triggerOperation`, `triggerType`.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string triggerId = "my_trigger";
-    
-    log:print("Creating a trigger");
-    string createTriggerBody = 
-    string `function updateMetadata() {
-        var context = getContext();
-        var collection = context.getCollection();
-        var response = context.getResponse();
-        var createdDocument = response.getBody();
-
-        // query for metadata document
-        var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-        var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
-        if(!accept) throw "Unable to update metadata, abort";
-    }
-
-    function updateMetadataCallback(err, documents, responseOptions) {
-        if(err) throw new Error("Error" + err.message);
-        if(documents.length != 1) throw "Unable to find metadata document";
-        var metadataDocument = documents[0];
-        // update metadata
-        metadataDocument.createdDocuments += 1;
-        metadataDocument.createdNames += " " + createdDocument.id;
-        var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
-            if(err) throw "Unable to update metadata, abort";
-        });
-
-        if(!accept) throw "Unable to update metadata, abort";
-        return;
-    }`;
-    cosmosdb:TriggerOperation createTriggerOperationType = "All";
-    cosmosdb:TriggerType createTriggerType = "Post";
-
-    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
-            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
-    log:print("Success!");
-}
-```
-Notes: <br/> When creating a Trigger, there are several required parameters we have to pass as parameters.
-- `triggerId` - A unique ID for the newly created Trigger
-- `triggerOperation` - The type of operation in which trigger will be invoked from. The acceptable values are `All`, 
-`Create`, `Replace`, and `Delete`.
-- `triggerType` - Specifies when the trigger will be fired, `Pre` or `Post`.
-- `triggerFunction` - The function which will be fired when the trigger is executed.
-
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/triggers/create_trigger.bal
-
-### Replace Trigger
-This sample shows how you can replace an existing Trigger with a new one. Here, the name of the Trigger is updated to a 
-new one. When replacing, you should pass all mandatory parameters `triggerId`, `triggerOperation`, `triggerType` and 
-`triggerFunction`, with all the values filled correctly. (It is not mandatory to replace all parameters with a new value 
-but all the values should be passed). The `triggerId` should be the ID of the Trigger to be replaced.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string existingTriggerId = "my_trigger";
-
-    log:print("Replacing a trigger");
-    string replaceTriggerBody = 
-    string `function replaceFunction() {
-        var context = getContext();
-        var collection = context.getCollection();
-        var response = context.getResponse();
-        var createdDocument = response.getBody();
-
-        // query for metadata document
-        var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-        var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
-        if(!accept) throw "Unable to update metadata, abort";
-    }
-
-    function updateMetadataCallback(err, documents, responseOptions) {
-        if(err) throw new Error("Error" + err.message);
-        if(documents.length != 1) throw "Unable to find metadata document";
-        var metadataDocument = documents[0];
-        // update metadata
-        metadataDocument.createdDocuments += 1;
-        metadataDocument.createdNames += " " + createdDocument.id;
-        var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
-            if(err) throw "Unable to update metadata, abort";
-        });
-
-        if(!accept) throw "Unable to update metadata, abort";
-        return;
-    }`;
-    cosmosdb:TriggerOperation replaceTriggerOperation = "All";
-    cosmosdb:TriggerType replaceTriggerType = "Post";
-    
-    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
-            existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/triggers/replace_trigger.bal
-
-### List Triggers
-From this sample you can get a list of all the Triggers inside a Container. Each record in the result list will 
-contain a `Trigger` and several other important information. You have to provide the Database ID and Container ID as 
-other mandatory parameters.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-
-    log:print("List available triggers");
-    stream<cosmosdb:Trigger> result5 = checkpanic azureCosmosClient->listTriggers(databaseId, containerId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/triggers/list_trigger.bal
-
-### Delete Trigger
-This sample shows how to delete a Trigger which exists inside a Container. You have to specify the Database ID, 
-Container ID where the Trigger exists and the ID of the Trigger you want to delete.
-```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
-
-public function main() {
-    string databaseId = "my_database";
-    string containerId = "my_container";
-    string triggerId = "my_trigger";
-
-    log:print("Deleting trigger");
-    _ = checkpanic azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
-    log:print("Success!");
-}
-```
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/triggers/delete_trigger.bal
-
 ## Management Plane Operations
 ## Databases
 Management of Databases is a common practice in every organization. It is a kind of task which is usually done with the 
@@ -1023,7 +692,8 @@ public function main() {
     log:print("Success!");
 }
 ```
-Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a record type. 
+Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a record 
+type. 
 For example:
  
 ```ballerina
@@ -1155,7 +825,8 @@ public function main() {
         paths: ["/id"],
         keyVersion: 2
     };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
+    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, 
+            partitionKey);
     log:print("Success!");
 }
 ```
@@ -1251,6 +922,328 @@ public function main() {
 ```
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/delete_container.bal
+
+## User Defined Functions
+User Defined Function - is a side effect free piece of application logic written in JavaScript. They can be used to 
+extend the Cosmos DB query language to support a custom application logic. They are read only once created. You can 
+refer to them when writing queries. User-defined functions provide “compute-only” processing of information within a 
+single document in Cosmos DB without any side-effects.
+
+### Create User Defined Function
+This sample shows how to create a User Defined Function which will compute the tax amount for a given income amount. For 
+this operation, you have to provide the Database ID and the Container ID where the User Defined Function is saved in. 
+Apart from that, a unique ID for User Defined Function and a JavaScript function should be provided as parameters.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string udfId = "my_udf";
+
+    log:print("Creating a user defined function");
+    string userDefinedFunctionBody = string `function tax(income){
+                                                if (income == undefined)
+                                                    throw 'no input';
+
+                                                if (income < 1000)
+                                                    return income * 0.1;
+                                                else if (income < 10000)
+                                                    return income * 0.2;
+                                                else
+                                                    return income * 0.4;
+                                            }`;
+    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosManagementClient->createUserDefinedFunction(databaseId, 
+            containerId, udfId, userDefinedFunctionBody);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/create_udf.bal
+
+### Replace User Defined Function
+This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User 
+Defined Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where 
+the User Defined Function is saved in and you should pass the ID of the User Defined Function to be replaced and the 
+JavaScript function which will replace the existing User Defined Function. 
+
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string udfId = "my_udf";
+
+    log:print("Replacing a user defined function");
+    string replacementUDF = string `function taxFromIncome(income){
+                                                    if (income == undefined)
+                                                        throw 'no input';
+                                                    if (income < 1000)
+                                                        return income * 0.1;
+                                                    else if (income < 10000)
+                                                        return income * 0.2;
+                                                    else
+                                                        return income * 0.4;
+                                                }`;
+    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosManagementClient->replaceUserDefinedFunction(databaseId,
+            containerId, udfId, replacementUDF);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/replace_udf.bal
+
+### List User Defined Functions
+From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
+contain a `UserDefinedFunction` and several other important information. You have to provide the Database ID and 
+Container ID as other mandatory parameters.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("List user defined functions");
+    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosManagementClient->listUserDefinedFunctions(databaseId, 
+            containerId);
+    log:print("Success!");
+}
+```
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/list_udf.bal
+
+### Delete User Defined Function
+This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the 
+Database ID, Container ID where the User Defined Function exists and the ID of the User Defined Function you want to 
+delete.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/log;
+import ballerina/config;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string udfId = "my_udf";
+    
+    log:print("Delete user defined function");
+    _ = checkpanic azureCosmosManagementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/delete_udf.bal
+
+## Triggers
+Trigger is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers). You can 
+use Triggers to validate and/or modify data when a document is added, modified, or deleted within a Container. The 
+Triggers does not accept any parameters or does not return any result set.
+
+### Create Trigger
+In this sample shows how to create a Trigger which will update a Document with ID "_metadata" after creation of a new 
+Document in the Container. For this operation, you have to provide the Database ID and the Container ID where the 
+Trigger is saved in. A unique ID for Trigger and a JavaScript function should be provided to the `triggerFunction`record 
+type. Apart from that, you have to provide the `triggerOperation`, `triggerType`.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string triggerId = "my_trigger";
+    
+    log:print("Creating a trigger");
+    string createTriggerBody = 
+    string `function updateMetadata() {
+        var context = getContext();
+        var collection = context.getCollection();
+        var response = context.getResponse();
+        var createdDocument = response.getBody();
+
+        // query for metadata document
+        var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
+        var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+        if(!accept) throw "Unable to update metadata, abort";
+    }
+
+    function updateMetadataCallback(err, documents, responseOptions) {
+        if(err) throw new Error("Error" + err.message);
+        if(documents.length != 1) throw "Unable to find metadata document";
+        var metadataDocument = documents[0];
+        // update metadata
+        metadataDocument.createdDocuments += 1;
+        metadataDocument.createdNames += " " + createdDocument.id;
+        var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+            if(err) throw "Unable to update metadata, abort";
+        });
+
+        if(!accept) throw "Unable to update metadata, abort";
+        return;
+    }`;
+    cosmosdb:TriggerOperation createTriggerOperationType = "All";
+    cosmosdb:TriggerType createTriggerType = "Post";
+
+    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosManagementClient->createTrigger(databaseId, containerId, 
+            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
+    log:print("Success!");
+}
+```
+Notes: <br/> When creating a Trigger, there are several required parameters we have to pass as parameters.
+- `triggerId` - A unique ID for the newly created Trigger
+- `triggerOperation` - The type of operation in which trigger will be invoked from. The acceptable values are `All`, 
+`Create`, `Replace`, and `Delete`.
+- `triggerType` - Specifies when the trigger will be fired, `Pre` or `Post`.
+- `triggerFunction` - The function which will be fired when the trigger is executed.
+
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/create_trigger.bal
+
+### Replace Trigger
+This sample shows how you can replace an existing Trigger with a new one. Here, the name of the Trigger is updated to a 
+new one. When replacing, you should pass all mandatory parameters `triggerId`, `triggerOperation`, `triggerType` and 
+`triggerFunction`, with all the values filled correctly. (It is not mandatory to replace all parameters with a new value 
+but all the values should be passed). The `triggerId` should be the ID of the Trigger to be replaced.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string existingTriggerId = "my_trigger";
+
+    log:print("Replacing a trigger");
+    string replaceTriggerBody = 
+    string `function replaceFunction() {
+        var context = getContext();
+        var collection = context.getCollection();
+        var response = context.getResponse();
+        var createdDocument = response.getBody();
+
+        // query for metadata document
+        var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
+        var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, updateMetadataCallback);
+        if(!accept) throw "Unable to update metadata, abort";
+    }
+
+    function updateMetadataCallback(err, documents, responseOptions) {
+        if(err) throw new Error("Error" + err.message);
+        if(documents.length != 1) throw "Unable to find metadata document";
+        var metadataDocument = documents[0];
+        // update metadata
+        metadataDocument.createdDocuments += 1;
+        metadataDocument.createdNames += " " + createdDocument.id;
+        var accept = collection.replaceDocument(metadataDocument._self, metadataDocument, function(err, docReplaced) {
+            if(err) throw "Unable to update metadata, abort";
+        });
+
+        if(!accept) throw "Unable to update metadata, abort";
+        return;
+    }`;
+    cosmosdb:TriggerOperation replaceTriggerOperation = "All";
+    cosmosdb:TriggerType replaceTriggerType = "Post";
+    
+    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosManagementClient->replaceTrigger(databaseId, containerId, 
+            existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/replace_trigger.bal
+
+### List Triggers
+From this sample you can get a list of all the Triggers inside a Container. Each record in the result list will 
+contain a `Trigger` and several other important information. You have to provide the Database ID and Container ID as 
+other mandatory parameters.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+
+    log:print("List available triggers");
+    stream<cosmosdb:Trigger> result5 = checkpanic azureCosmosManagementClient->listTriggers(databaseId, containerId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/list_trigger.bal
+
+### Delete Trigger
+This sample shows how to delete a Trigger which exists inside a Container. You have to specify the Database ID, 
+Container ID where the Trigger exists and the ID of the Trigger you want to delete.
+```ballerina
+import ballerinax/cosmosdb;
+import ballerina/config;
+import ballerina/log;
+
+cosmosdb:Configuration configuration = {
+    baseUrl: config:getAsString("BASE_URL"),
+    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+};
+cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+public function main() {
+    string databaseId = "my_database";
+    string containerId = "my_container";
+    string triggerId = "my_trigger";
+
+    log:print("Deleting trigger");
+    _ = checkpanic azureCosmosManagementClient->deleteTrigger(databaseId, containerId, triggerId);
+    log:print("Success!");
+}
+```
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/delete_trigger.bal
 
 ## Users
 User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
@@ -1401,9 +1394,9 @@ This is granted by using `Resource Token`.
 Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
 attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a database User is 
 granted permissions to a resource and re-generated in response to a request referencing that permission. By default, 
-they are valid for one hour, with the maximum time-span of five hours. As the use of Master Key Token should be limited to 
-scenarios that require full privileges to the content of an account, for more granular access, you should use Resource 
-Tokens. More information on token types can be found here: 
+they are valid for one hour, with the maximum time-span of five hours. As the use of Master Key Token should be limited 
+to scenarios that require full privileges to the content of an account, for more granular access, you should use 
+Resource Tokens. More information on token types can be found here: 
 https://docs.microsoft.com/en-us/azure/cosmos-db/secure-access-to-data
 
 ### Create Permission
@@ -1445,8 +1438,9 @@ public function main() {
 }
 ```
 Notes: <br/>
-A `validityPeriodInSeconds` argument can be provided as the last parameter of this method to explicitly specify a TTL for the token 
-you are creating. This will override the default validity period of the token. The maximum override value is 18000 seconds.
+A `validityPeriodInSeconds` argument can be provided as the last parameter of this method to explicitly specify a TTL 
+for the token you are creating. This will override the default validity period of the token. The maximum override value 
+is 18000 seconds.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/create_permission.bal
 
@@ -1483,8 +1477,9 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/replace_permission.bal
 
 ### Get Permission
-From this sample you can get the basic information about a created Permission. For this, the the Database ID and the User 
-ID to which the permission belongs to and the Permission ID that, you want to get information about should be provided.
+From this sample you can get the basic information about a created Permission. For this, the the Database ID and the 
+User ID to which the permission belongs to and the Permission ID that, you want to get information about should be 
+provided.
 ```ballerina
 import ballerinax/cosmosdb;
 import ballerina/config;
