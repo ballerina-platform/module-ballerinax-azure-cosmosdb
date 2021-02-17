@@ -113,8 +113,8 @@ public client class DataPlaneClient {
     # + documentListOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `stream<Document>` Else, returns `error`. 
-    remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
-            DocumentListOptions? documentListOptions = ()) returns @tainted stream<Document>|error { 
+    remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), DocumentListOptions? 
+            documentListOptions = ()) returns @tainted stream<Document>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
@@ -124,8 +124,7 @@ public client class DataPlaneClient {
         }
         setOptionalHeaders(request, documentListOptions);
 
-        stream<Document> documentStream = <stream<Document>>check retrieveStream(self.httpClient, requestPath, request);
-        return documentStream;
+        return <stream<Document>>check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete a Document in a Container.
@@ -179,10 +178,8 @@ public client class DataPlaneClient {
         };
         request.setJsonPayload(<@untainted>payload);
 
-        setHeadersForQuery(request);
-        stream<Document> documentStream = <stream<Document>> check getQueryResults(self.httpClient, requestPath, 
-                request);
-        return documentStream;
+        check setHeadersForQuery(request);
+        return <stream<Document>> check getQueryResults(self.httpClient, requestPath, request);
     }
 
     # Create a new Stored Procedure inside a Container.
@@ -257,9 +254,7 @@ public client class DataPlaneClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<StoredProcedure> storedProcedureStream = <stream<StoredProcedure>> check retrieveStream(self.httpClient, 
-                requestPath, request);
-        return storedProcedureStream;
+        return <stream<StoredProcedure>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete a Stored Procedure in a Container.
@@ -303,7 +298,6 @@ public client class DataPlaneClient {
         request.setTextPayload(parameters);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        json jsonResponse = check handleResponse(response);
-        return jsonResponse;
+        return check handleResponse(response);
     }
 }

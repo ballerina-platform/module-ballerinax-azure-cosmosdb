@@ -104,8 +104,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        stream<Database> databaseStream = <stream<Database>>check retrieveStream(self.httpClient, requestPath, request);
-        return databaseStream;
+        return <stream<Database>>check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete a given Database in an Azure Cosmos DB account.
@@ -213,9 +212,7 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        stream<Container> containerStream = <stream<Container>> check retrieveStream(self.httpClient, requestPath, 
-                request);
-        return containerStream;
+        return <stream<Container>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete a given Container.
@@ -249,9 +246,7 @@ public client class ManagementClient {
                 RESOURCE_TYPE_PK_RANGES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
 
-        stream<PartitionKeyRange> partitionKeyStream = <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, 
-                requestPath, request);
-        return partitionKeyStream;
+        return <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Create a new User Defined Function inside a Container.
@@ -324,9 +319,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<UserDefinedFunction> userDefinedFunctionStream = <stream<UserDefinedFunction>> check retrieveStream(
-        self.httpClient, requestPath, request);
-        return userDefinedFunctionStream;
+        return <stream<UserDefinedFunction>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete an existing User Defined Function inside a Container.
@@ -430,8 +423,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<Trigger> triggerStream = <stream<Trigger>> check retrieveStream(self.httpClient, requestPath, request);
-        return triggerStream;
+        return <stream<Trigger>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete an existing Trigger inside a Container.
@@ -469,8 +461,7 @@ public client class ManagementClient {
         request.setJsonPayload(reqBody);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        json jsonResponse = check handleResponse(response);
-        return mapJsonToUserType(jsonResponse);
+        return mapJsonToUserType(check handleResponse(response));
     }
 
     # Replace the ID of an existing User.
@@ -528,8 +519,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<User> userStream = <stream<User>> check retrieveStream(self.httpClient, requestPath, request);
-        return userStream;
+        return <stream<User>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Delete a User.
@@ -653,9 +643,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<Permission> permissionStream = <stream<Permission>> check retrieveStream(self.httpClient, requestPath, 
-                request);
-        return permissionStream;
+        return <stream<Permission>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Deletes a Permission belongs to a User.
@@ -746,8 +734,7 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        stream<Offer> offerStream = <stream<Offer>> check retrieveStream(self.httpClient, requestPath, request);
-        return offerStream;
+        return <stream<Offer>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
     # Perform queries on Offer resources.
@@ -768,9 +755,8 @@ public client class ManagementClient {
         }
 
         request.setJsonPayload({query: sqlQuery});
-        setHeadersForQuery(request);
+        check setHeadersForQuery(request);
 
-        stream<json> offerStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request);
-        return offerStream;
+        return <stream<json>> check getQueryResults(self.httpClient, requestPath, request);
     }
 }

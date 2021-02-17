@@ -169,8 +169,8 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # Set the required headers related to query operations.
 #
 # + request - The http:Request to set the header
-isolated function setHeadersForQuery(http:Request request) {
-    var req = request.setContentType(CONTENT_TYPE_QUERY);
+isolated function setHeadersForQuery(http:Request request) returns error? {
+    check request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, TRUE);
 }
 
@@ -226,8 +226,8 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 # + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
 # + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
-    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= MAX_TIME_TO_LIVE_IN_SECONDS) 
-    {
+    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= 
+            MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
         return prepareUserError(VALIDITY_PERIOD_ERROR);
@@ -241,8 +241,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 isolated function getDateTime() returns string?|error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
-    string timeString = check time:format(timeWithZone, TIME_ZONE_FORMAT);
-    return timeString; 
+    return check time:format(timeWithZone, TIME_ZONE_FORMAT);
 }
 
 # To construct the hashed token signature for a token to set 'Authorization' header.
@@ -262,8 +261,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
     byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest);
     string authorizationString = string `type=${tokenType}&ver=${TOKEN_VERSION}&sig=${signature}`;
-    string? encodedAuthorizationString = check encoding:encodeUriComponent(authorizationString, "UTF-8");
-    return encodedAuthorizationString;
+    return check encoding:encodeUriComponent(authorizationString, "UTF-8");
 }
 
 # Handle success or error responses to requests and extract the json payload.
@@ -321,12 +319,10 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     if (payload.Documents is json) {
         json[] array = <json[]>payload.Documents;
         Document[] documents = convertToDocumentArray(<json[]>payload.Documents);
-        stream<Document> documentStream = (<@untainted>documents).toStream();
-        return documentStream;
+        return (<@untainted>documents).toStream();
     } else if (payload.Offers is json) {
         json[] array = <json[]>payload.Offers;
-        stream<json> offerStream = (<@untainted>array).toStream();
-        return offerStream;
+        return (<@untainted>array).toStream();
     }
     else {
         return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
@@ -343,8 +339,7 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
         stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     json payload = check handleResponse(response);
-    stream<record{}> finalStream = check createStream(path, payload);
-    return finalStream;
+    return check createStream(path, payload);
 }
 
 # Create a stream from the array obtained from the request call.
@@ -377,8 +372,7 @@ isolated function createStream(string path, json payload) returns @tainted strea
     } else {
         return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
-    stream<record{}> newStream = (<@untainted>finalArray).toStream();
-    return newStream;
+    return (<@untainted>finalArray).toStream();
 }
 
 # Convert json string values to boolean.

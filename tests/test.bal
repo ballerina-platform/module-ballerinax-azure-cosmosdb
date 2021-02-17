@@ -1143,10 +1143,12 @@ function testReplaceOfferWithOptionalParameter() {
     log:print("ACTION : replaceOfferWithOptionalParameter()");
 
     if (offerId is string && offerId != "" && resourceId is string && resourceId != "") {
+        string resourceSelfLink = 
+                string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         Offer replaceOfferBody = {
             offerVersion: "V2",
             content: {"offerThroughput": 600},
-            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,
+            resourceSelfLink: resourceSelfLink,
             resourceResourceId: string `${container?.resourceId.toString()}`,
             id: <string>offerId,
             resourceId: <string>resourceId

@@ -63,10 +63,10 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
         authentication and authorization broker between a client and a back-end service). This is handled by using 
         Resource Tokens. 
 
-        Resource tokens provide user-based permissions to individual account resources, including collections, documents, 
-        attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a Database 
-        user is granted permissions to a resource and re-generated in response to a request referencing that permission. 
-        By default, they are valid for one hour, with the maximum time-span of five hours.
+        Resource tokens provide user-based permissions to individual account resources, including collections, 
+        documents, attachments, stored procedures, triggers, and user-defined functions. They are auto-generated when a 
+        Database user is granted permissions to a resource and re-generated in response to a request referencing that 
+        permission. By default, they are valid for one hour, with the maximum time-span of five hours.
 
         More information about tokens can be found here: <br/>
         https://docs.microsoft.com/en-us/rest/api/cosmos-db/access-control-on-cosmosdb-resources <br/>
@@ -1120,8 +1120,8 @@ public function main() {
     cosmosdb:TriggerOperation createTriggerOperationType = "All";
     cosmosdb:TriggerType createTriggerType = "Post";
 
-    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosManagementClient->createTrigger(databaseId, containerId, 
-            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
+    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosManagementClient->createTrigger(databaseId, 
+            containerId, triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
     log:print("Success!");
 }
 ```
