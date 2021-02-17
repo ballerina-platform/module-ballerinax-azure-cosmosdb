@@ -39,7 +39,8 @@ public function main() {
     // Create a new document
     log:print("Create a new document");
     string documentId = string `document_${uuid.toString()}`;
-    json documentBody = {
+    record {|string id; json...;|} documentBody = {
+        id: documentId,
         "LastName": "keeeeeee",
         "Parents": [{
             "FamilyName": null,
@@ -48,18 +49,18 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 0
+        "gender": 0
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, documentId, 
+    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
             documentBody, partitionKeyValue); 
-    etag = documentResult.eTag;
+    etag = documentResult?.eTag;
 
     //Create document specifying whether to include it in the indexing.
     log:print("Creating a new document allowing to include it in the indexing.");
-    string documentIndexingId = string `documenti_${uuid.toString()}`;
-    json documentBody2 = {
+    record {|string id; json...;|} documentIndexing = {
+        id: string `documenti_${uuid.toString()}`,
         "LastName": "keeeeeee",
         "Parents": [{
             "FamilyName": null,
@@ -68,7 +69,7 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 1
+        "gender": 1
     };
     partitionKeyValue = 1;
 
@@ -77,14 +78,14 @@ public function main() {
     };
 
     cosmosdb:Document documentCreateResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            documentIndexingId, documentBody2, partitionKeyValue, indexingOptions);
+            documentIndexing, partitionKeyValue, indexingOptions);
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
     // error.
     // Achieve session level consistancy when creating document
     log:print("Upserting the document");
-    string upsertDocumentId = string `documentu_${uuid.toString()}`;
-    json documentBody3 = {
+    record {|string id; json...;|} upsertDocument = {
+        id: string `documentu_${uuid.toString()}`,
         "LastName": "Ranasinghe",
         "Parents": [{
             "FamilyName": null,
@@ -93,7 +94,7 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 0
+        "gender": 0
     };
     partitionKeyValue = 0;
 
@@ -102,11 +103,12 @@ public function main() {
     };
     
     cosmosdb:Document documentUpsertResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            upsertDocumentId, documentBody3, partitionKeyValue, upsertOptions);
+            upsertDocument, partitionKeyValue, upsertOptions);
 
     // Replace document
     log:print("Replacing document");
-    json newDocumentBody = {
+    record {|string id; json...;|} newDocumentBody = {
+        id: documentId,
         "LastName": "Helena",
         "Parents": [{
             "FamilyName": null,
@@ -115,13 +117,12 @@ public function main() {
             "FamilyName": null,
             "FirstName": "Mary Kay"
         }],
-        gender: 0
+        "gender": 0
     };
-
     partitionKeyValue = 0;
 
-    cosmosdb:DeleteResponse replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
-            documentId, newDocumentBody, partitionKeyValue);
+    cosmosdb:Document replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
+            newDocumentBody, partitionKeyValue);
 
     log:print("Read the document by id");
     cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
@@ -153,8 +154,8 @@ public function main() {
             string id = string `document_${uuid.toString()}${k}`; 
             int partitionKeyVal = <int>item.gender;
 
-            cosmosdb:Document result = checkpanic azureCosmosClient->createDocument(databaseId, containerId, id, item, 
-                    partitionKeyVal);
+            cosmosdb:Document result = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
+                    <@untainted>{id:id, "Employee":item}, partitionKeyVal);
             k += 1;
         }
     }

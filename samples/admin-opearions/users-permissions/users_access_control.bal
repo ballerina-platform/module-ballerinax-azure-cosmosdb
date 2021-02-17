@@ -42,7 +42,7 @@ public function main() {
 
     log:print("Replace user id");
     string newReplaceId = string `user_${uuid.toString()}`;
-    cosmosdb:Result userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, userId, newReplaceId);
+    cosmosdb:User userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, userId, newReplaceId);
 
     log:print("Get user information");
     cosmosdb:User user  = checkpanic managementClient->getUser(databaseId, userId);
@@ -54,16 +54,13 @@ public function main() {
 
     log:print("Create permission for a user");
     string permissionId = string `permission_${uuid.toString()}`;
-    string permissionMode = "All";
+    cosmosdb:PermisssionMode permissionMode = "All";
     string permissionResource = 
             string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
-    cosmosdb:Permission createPermission = {
-        id: permissionId,
-        permissionMode: permissionMode,
-        resourcePath: permissionResource
-    };
-    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId,
-            <@untainted>createPermission);
+        
+    log:print("Create permission for a user");
+    cosmosdb:Permission permission  = checkpanic managementClient->createPermission(databaseId, userId, permissionId, 
+            permissionMode, <@untainted>permissionResource);
 
     // Create permission with time to live
     // 
@@ -84,21 +81,15 @@ public function main() {
     // }
 
     log:print("Replace permission");
-    string permissionModeReplace = "All";
+    cosmosdb:PermisssionMode permissionModeReplace = "All";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
-    cosmosdb:Permission replacePermission = {
-        id: permissionId,
-        permissionMode: permissionMode,
-        resourcePath: permissionResource
-    };
-    cosmosdb:Result replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
-            replacePermission);
-
+    permission = checkpanic managementClient->replacePermission(databaseId, userId, permissionId, permissionModeReplace, 
+        permissionResourceReplace);
     log:print("List permissions");
     stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);
 
     log:print("Get intormation about one permission");
-    cosmosdb:Permission permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
+    permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
 
     log:print("Delete permission");
     _ = checkpanic managementClient->deletePermission(databaseId, userId, permissionId);

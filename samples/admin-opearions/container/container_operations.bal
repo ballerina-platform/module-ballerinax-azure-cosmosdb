@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 import ballerina/java;
@@ -97,19 +97,19 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    cosmosdb:DeleteResponse? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
+    cosmosdb:Container? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
             containerIfnotExistId, partitionKey5);
 
     // Read container info
     log:print("Reading container info");
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    string? etag = container.eTag;
-    string? sessiontoken = container.sessionToken;
+    string? etag = container?.eTag;
+    string? sessiontoken = container?.sessionToken;
 
     // Read container info with options   
     log:print("Reading container info with request options");
     cosmosdb:ResourceReadOptions options = {
-        sessionToken: sessiontoken
+        consistancyLevel: "Bounded"
     };
     container = checkpanic managementClient->getContainer(databaseId, containerId, options);
 

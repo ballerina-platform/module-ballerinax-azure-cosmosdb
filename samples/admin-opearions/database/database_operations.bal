@@ -57,13 +57,13 @@ public function main() {
     // Database read
     log:print("Reading database by id");
     cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    string? etag = database.eTag;
-    string? sessiontoken = database.sessionToken;
+    string? etag = database?.eTag;
+    string? sessiontoken = database?.sessionToken;
   
     // Database read with session level consistancy
     log:print("Reading database with options");
     cosmosdb:ResourceReadOptions options = {
-        sessionToken: sessiontoken
+        consistancyLevel: "Bounded"
     };
     database = checkpanic managementClient->getDatabase(databaseId, options);
 

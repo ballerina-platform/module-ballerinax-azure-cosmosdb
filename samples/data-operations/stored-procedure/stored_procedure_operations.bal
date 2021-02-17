@@ -51,7 +51,7 @@ public function main() {
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
 
-    cosmosdb:DeleteResponse storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(
+    cosmosdb:StoredProcedure storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(
             databaseId, containerId, storedProcedureId, newStoredProcedureBody);
 
     // Get a list of stored procedures

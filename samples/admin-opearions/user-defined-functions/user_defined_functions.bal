@@ -64,7 +64,7 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:DeleteResponse udfReplaceResult = checkpanic managementClient->replaceUserDefinedFunction(databaseId, 
+    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic managementClient->replaceUserDefinedFunction(databaseId, 
     containerId, udfId, newUserDefinedFunctionBody);
 
 
