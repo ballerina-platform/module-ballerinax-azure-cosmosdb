@@ -298,7 +298,9 @@ public client class DataPlaneClient {
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, storedProcedureOptions?.partitionKey);
 
-        request.setTextPayload(storedProcedureOptions?.parameters.toString());
+        string parameters = let var param = storedProcedureOptions?.parameters in param is string[] ? param.toString() : 
+                EMPTY_ARRAY_STRING;
+        request.setTextPayload(parameters);
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);

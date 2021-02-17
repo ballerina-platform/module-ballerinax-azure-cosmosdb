@@ -254,3 +254,4 @@ const string EMPTY_STRING = "";
 const string NEW_LINE = "\n";
 const string HTTPS_REGEX = "^(https):#";
 const string TRUE = "true";
+const string EMPTY_ARRAY_STRING = "[]";

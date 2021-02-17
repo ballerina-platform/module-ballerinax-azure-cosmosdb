@@ -249,7 +249,7 @@ public type DocumentListOptions record {|
 |};
 
 public type StoredProcedureOptions record {|
-    any[] parameters = [];
+    string[] parameters = [];
     int|float|decimal|string partitionKey?;
 |};
 
