@@ -120,8 +120,8 @@ public function main() {
 
     partitionKeyValue = 0;
 
-    cosmosdb:Result replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, documentId, 
-            newDocumentBody, partitionKeyValue);
+    cosmosdb:DeleteResponse replaceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
+            documentId, newDocumentBody, partitionKeyValue);
 
     log:print("Read the document by id");
     cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 

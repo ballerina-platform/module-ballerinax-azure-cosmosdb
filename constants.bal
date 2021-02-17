@@ -18,11 +18,12 @@
 # 
 # + STRONG - `Strong` consistency level where Users are always guaranteed to read the latest committed write
 # + BOUNDED - `Bounded` consistency level where Reads might lag behind writes behind at most K updates of an item or by 
-#       T time interval
+#              T time interval
 # + SESSION - `Session` consistency level where in a single client session reads are guaranteed to honor the 
-#       consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads guarantees
+#              consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads 
+#              guarantees
 # + EVENTUAL - `Eventual` consistency level where there's no ordering guarantee for reads. In the absence of any further 
-#       writes, the replicas eventually converge.
+#               writes, the replicas eventually converge.
 public enum ConsistencyLevel {
     STRONG = "Strong",
     BOUNDED = "Bounded",

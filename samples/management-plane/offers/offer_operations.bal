@@ -46,11 +46,13 @@ public function main() {
         cosmosdb:Offer result3 = checkpanic managementClient->getOffer(offerId);
 
         log:print("Replace offer");   
+        string resourceSelfLink = 
+                string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         cosmosdb:Offer replaceOfferBody = {
             offerVersion: "V2",
             offerType: "Invalid",
             content: {"offerThroughput": 1000},
-            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`, 
+            resourceSelfLink: resourceSelfLink, 
             /// not found in the result
             resourceResourceId: string `${container?.resourceId.toString()}`,
             id: offerId,
@@ -66,7 +68,7 @@ public function main() {
     string offersInContainerQuery = 
             string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
-    stream<json> result6 = checkpanic managementClient->queryOffer(<@untainted>offersInContainerQuery, maximumItemCount);
+    stream<json> result = checkpanic managementClient->queryOffer(<@untainted>offersInContainerQuery, maximumItemCount);
     log:print("Success!");
 }
 

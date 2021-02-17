@@ -122,7 +122,7 @@ Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-
 ### Step 4: Create new Database
 You have to create a Database in Azure Account to create a document. For this you have to provide a unique Database ID 
 which does not already exist in the specific Cosmos DB account. The ID for this example will be `my_database`. This 
-operation will return a record of type Result. This will contain the success as `true` if the operation is successful. 
+operation will return a record of type Document. This will contain the success as `true` if the operation is successful. 
 ```ballerina
 cosmosdb:Database result = managementClient->createDatabase("my_database");
 ```
@@ -196,11 +196,11 @@ https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-
 string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 int partitionKeyValueMale = 0;
 int maxItemCount = 10;
-stream<json> queryResult = check azureCosmosClient-> queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
+stream<Document> queryResult = check azureCosmosClient-> queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
         maxItemCount, partitionKeyValueMale);
 
-error? e =  resultStream.forEach(function (json document){
-                log:printInfo(document);
+error? e =  resultStream.forEach(function (Document record){
+                log:printInfo(record);
             });
 ```
 Notes: <br/> As the Cosmos Containers are creating logical partitions with the partition key provided, you have to 
@@ -473,7 +473,7 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     int partitionKeyValueMale = 0;
     int maxItemCount = 10;
-    stream<json> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
+    stream<Document> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
             maxItemCount, partitionKeyValueMale);
     var document = queryResult.next();
     log:print("Success!");
@@ -493,7 +493,7 @@ the user can either get the items in one page or get all the results related to 
     be done using a boolean value. When cross-partitioning is enabled, providing `partitionKey` will not do 
     anything. The querying will still be done across partitions.
 
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/query_container.bal
+Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/documents/query_document.bal
 
 ## Stored procedures
 A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 

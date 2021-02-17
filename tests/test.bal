@@ -311,7 +311,7 @@ function testDeleteContainer() {
     log:print("ACTION : deleteContainer()");
 
     var result = azureCosmosManagementClient->deleteContainer(databaseId, containerId);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(result.message());
@@ -496,7 +496,7 @@ function testQueryDocuments() {
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, 10, partitionKey);
-    if (result is stream<json>) {
+    if (result is stream<Document>) {
         var document = result.next();
     } else {
         test:assertFail(msg = result.message());
@@ -540,7 +540,7 @@ function testDeleteDocument() {
     log:print("ACTION : deleteDocument()");
 
     var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -636,7 +636,7 @@ function testDeleteOneStoredProcedure() {
     log:print("ACTION : deleteOneStoredProcedure()");
 
     var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, sprocId);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -678,7 +678,7 @@ function testCreateUDF() {
 function testReplaceUDF() {
     log:print("ACTION : replaceUDF()");
 
-    string replaceUDFBody = string `function taxIncome(income){
+    string replace = string `function taxIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
                                                     if (income < 1000)
@@ -689,7 +689,7 @@ function testReplaceUDF() {
                                                         return income * 0.4;
                                                 }`;
 
-    var result = azureCosmosManagementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replaceUDFBody);
+    var result = azureCosmosManagementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replace);
     if (result is UserDefinedFunction) {
         //udf = <@untainted>result;
     } else {
@@ -720,7 +720,7 @@ function testDeleteUDF() {
     log:print("ACTION : deleteUDF()");
 
     var result = azureCosmosManagementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -742,7 +742,7 @@ function testCreateTrigger() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, 
+                                            var accept = collection.queryDocuments(collection.getSelfLink(),filterQuery, 
                                                     updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
@@ -789,7 +789,7 @@ function testReplaceTrigger() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(), filterQuery, 
+                                            var accept = collection.queryDocuments(collection.getSelfLink(),filterQuery, 
                                                     updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
@@ -844,7 +844,7 @@ function testDeleteTrigger() {
     log:print("ACTION : deleteTrigger()");
 
     var result = azureCosmosManagementClient->deleteTrigger(databaseId, containerId, triggerId);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -940,7 +940,7 @@ function testDeleteUser() {
     log:print("ACTION : deleteUser()");
 
     var result = azureCosmosManagementClient->deleteUser(databaseId, newUserId);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -1057,7 +1057,7 @@ function testDeletePermission() {
     log:print("ACTION : deletePermission()");
 
     var result = azureCosmosManagementClient->deletePermission(databaseId, newUserId, permissionId);
-    if (result is Result) {
+    if (result is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = result.message());
@@ -1113,11 +1113,13 @@ function testReplaceOffer() {
     log:print("ACTION : replaceOffer()");
 
     if (offerId is string && offerId != "" && resourceId is string && resourceId != "") {
+        string resourceSelfLink = 
+                string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         Offer replaceOfferBody = {
             offerVersion: "V2",
             offerType: "Invalid",
             content: {"offerThroughput": 600},
-            resourceSelfLink: string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`,
+            resourceSelfLink: resourceSelfLink,
             resourceResourceId: string `${container?.resourceId.toString()}`,
             id: <string>offerId,
             resourceId: <string>resourceId
@@ -1218,7 +1220,7 @@ function afterFunc() {
     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
     var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
 
-    if (result1 is Result && result2 is Result) {
+    if (result1 is DeleteResponse && result2 is DeleteResponse) {
         var output = "";
     } else {
         test:assertFail(msg = "Failed to delete one of the databases");

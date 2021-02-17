@@ -34,7 +34,6 @@ public function main() {
     // Using UDFs, you can extend Azure Cosmos DB's query language. 
     // UDFs are a great way to express complex business logic in a query's projection.
 
-    // ---------------------------------- USE CASE ----------------------------------------------------------
     // Create User Defined Function
     log:print("Creating a user defined function");
     string udfId = string `udf_${uuid.toString()}`;
@@ -65,8 +64,8 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:Result udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, containerId, 
-            udfId, newUserDefinedFunctionBody);
+    cosmosdb:DeleteResponse udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, 
+    containerId, udfId, newUserDefinedFunctionBody);
 
 
     // List all User defined Functions

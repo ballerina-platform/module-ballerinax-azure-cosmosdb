@@ -113,9 +113,9 @@ public client class ManagementClient {
     # + databaseId - ID of the database to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities 
     #                           to the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
-            @tainted Result|error {
+            @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -224,9 +224,9 @@ public client class ManagementClient {
     # + containerId - ID of the Container to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
     #                           the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteContainer(string databaseId, string containerId, ResourceDeleteOptions? resourceDeleteOptions 
-            = ()) returns @tainted Result|error {
+            = ()) returns @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -336,9 +336,9 @@ public client class ManagementClient {
     # + userDefinedFunctionid - Id of UDF to delete
     # + resourceDeleteOptions - Optional. The ``ResourceDeleteOptions`` which can be used to add addtional 
     #                           capabilities to the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_UDF, userDefinedFunctionid]);
@@ -441,9 +441,9 @@ public client class ManagementClient {
     # + triggerId - ID of the Trigger to be deleted
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error {
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_TRIGGER, triggerId]);
@@ -538,9 +538,9 @@ public client class ManagementClient {
     # + userId - ID of User to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
-            returns @tainted Result|error {
+            returns @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -665,9 +665,9 @@ public client class ManagementClient {
     # + permissionId - ID of the Permission to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deletePermission(string databaseId, string userId, string permissionId, ResourceDeleteOptions? 
-            resourceDeleteOptions = ()) returns @tainted Result|error { 
+            resourceDeleteOptions = ()) returns @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
                 RESOURCE_TYPE_PERMISSION, permissionId]);

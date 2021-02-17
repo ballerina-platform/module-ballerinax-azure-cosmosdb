@@ -17,11 +17,11 @@
 import ballerina/lang.array as array;
 import ballerina/http;
 
-# Maps the JSON response returned from the request into record type of Result.
+# Maps the JSON response returned from the request into record type of DeleteResponse.
 # 
 # + response - A HTTP response object
-# + return - An instance of record type Result
-isolated function mapHeadersToResultType(http:Response response) returns @tainted Result {
+# + return - An instance of record type DeleteResponse
+isolated function mapHeadersToResultType(http:Response response) returns @tainted DeleteResponse {
     return {
         sessionToken: response.getHeader(SESSION_TOKEN_HEADER)
     };

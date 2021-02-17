@@ -40,7 +40,7 @@ management-plane operations
 ## Samples 
 ### Creating a database
 For creating a database in Azure we have to provide a unique database ID which does not already exist in the specific 
-cosmos DB account. This operation will return a record of type Result. This will contain the success as true if the 
+cosmos DB account. This operation will return a record of type Database. This will contain the success as true if the 
 operation is successful.
 
 ```ballerina

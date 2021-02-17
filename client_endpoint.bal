@@ -136,9 +136,9 @@ public client class DataPlaneClient {
     # + partitionKey - The value of partition key field of the container
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
     #                           the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteDocument(string databaseId, string containerId, string documentId, int|float|decimal|string 
-            partitionKey, ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
+            partitionKey, ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -160,10 +160,10 @@ public client class DataPlaneClient {
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
     # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
     #                          request.
-    # + return - If successful, returns a `stream<json>`. Else returns `error`.
+    # + return - If successful, returns a `stream<Document>`. Else returns `error`.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), 
         (int|float|decimal|string)? partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns @tainted 
-        stream<json>|error { 
+        stream<Document>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
@@ -180,7 +180,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
 
         setHeadersForQuery(request);
-        stream<json> documentStream = <stream<json>> check getQueryResults(self.httpClient, requestPath, request);
+        stream<Document> documentStream = <stream<Document>> check getQueryResults(self.httpClient, requestPath, 
+                request);
         return documentStream;
     }
 
@@ -217,7 +218,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the Container which existing Stored Procedure belongs to
     # + storedProcedureId - The ID of the Stored Procedure to be replaced
     # + storedProcedure - A JavaScript function
-    # + return - If successful, returns a `Result`. Else returns `error`. 
+    # + return - If successful, returns a `StoredProcedure`. Else returns `error`. 
     remote function replaceStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             string storedProcedure) returns @tainted StoredProcedure|error { 
         http:Request request = new;
@@ -268,9 +269,9 @@ public client class DataPlaneClient {
     # + storedProcedureId - ID of the stored procedure to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
-    # + return - If successful, returns `Result`. Else returns `error`.
+    # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted Result|error { 
+            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);

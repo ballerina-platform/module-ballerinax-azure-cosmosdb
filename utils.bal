@@ -314,13 +314,14 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 # + request - HTTP request object 
 # + return - A stream<json>
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
-        stream<json>|error {
+        stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
 
     if (payload.Documents is json) {
         json[] array = <json[]>payload.Documents;
-        stream<json> documentStream = (<@untainted>array).toStream();
+        Document[] documents = convertToDocumentArray(<json[]>payload.Documents);
+        stream<Document> documentStream = (<@untainted>documents).toStream();
         return documentStream;
     } else if (payload.Offers is json) {
         json[] array = <json[]>payload.Offers;

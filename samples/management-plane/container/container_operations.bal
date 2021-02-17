@@ -44,7 +44,8 @@ public function main() {
         paths: ["/id"],
         keyVersion: 2
     };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, partitionKey);
+    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, 
+            partitionKey);
 
     // Create container with indexing policy
     log:print("Creating container with indexing policy");   
@@ -76,7 +77,7 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerManualId, partitionKeyManual, (), 
+    containerResult = checkpanic managementClient->createContainer(databaseId, containerManualId, partitionKeyManual,(), 
             throughput);
 
     //Create container with autoscaling throughput policy
@@ -97,7 +98,7 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    cosmosdb:Result? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
+    cosmosdb:DeleteResponse? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
             containerIfnotExistId, partitionKey5);
 
     // Read container info

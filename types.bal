@@ -23,10 +23,10 @@ public type Configuration record {|
     string masterOrResourceToken;
 |};
 
-# Represents information about the status of the relevent create, update or delete request.
+# Represents matadata headers which will return for a delete request.
 # 
 # + sessionToken - Session token of the request
-public type Result record {|
+public type DeleteResponse record {|
     string sessionToken;
 |};
 
@@ -64,7 +64,7 @@ public type Container record {|
     PartitionKey partitionKey;
 |};
 
-# Represent the parameters representing information about a document in Cosmos DB.
+# Represent the parameters representing information about a document.
 # 
 # + id - User generated unique ID for the document 
 # + documentBody - JSON document
