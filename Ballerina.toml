@@ -1,6 +1,6 @@
 [package]
 org= "ballerinax"
-name= "cosmosdb"
+name= "azure_cosmosdb"
 version= "0.1.0"
 authors = ["Ballerina"]
 keywords = ["azure", "cosmosdb"]

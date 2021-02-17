@@ -865,7 +865,7 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Deleting database");
-    var result = azureCosmosClient->deleteDatabase(databaseId);
+    var result = managementClient->deleteDatabase(databaseId);
     if (result is error) {
         log:printError(result.message());
     }
@@ -1014,7 +1014,7 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Deleting database");
-    var result = azureCosmosClient->deleteDatabase(databaseId);
+    var result = managementClient->deleteDatabase(databaseId);
     if (result is error) {
         log:printError(result.message());
     }

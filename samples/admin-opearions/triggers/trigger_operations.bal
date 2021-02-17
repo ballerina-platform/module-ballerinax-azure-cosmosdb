@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 import ballerina/java;
@@ -98,7 +98,7 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
 
-    cosmosdb:DeleteResponse triggerReplaceResult = checkpanic managementClient->replaceTrigger(databaseId, containerId, 
+    cosmosdb:Trigger triggerReplaceResult = checkpanic managementClient->replaceTrigger(databaseId, containerId, 
             triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
 
     // List triggers

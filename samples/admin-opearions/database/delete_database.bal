@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -28,7 +28,7 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Deleting database");
-    var result = azureCosmosClient->deleteDatabase(databaseId);
+    var result = managementClient->deleteDatabase(databaseId);
     if (result is error) {
         log:printError(result.message());
     }
