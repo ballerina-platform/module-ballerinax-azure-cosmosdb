@@ -169,7 +169,7 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # Set the required headers related to query operations.
 #
 # + request - The http:Request to set the header
-# + return - Returns error or nil
+# + return - Returns error
 isolated function setHeadersForQuery(http:Request request) returns error? {
     check request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, TRUE);
@@ -188,8 +188,10 @@ isolated function setThroughputOrAutopilotHeader(http:Request request, (int|reco
         } else {
             return prepareUserError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
-    } else {
+    } else if (throughputOption is record{|int maxThroughput;|}) {
         request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
+    } else {
+        return;
     }
 }
 
@@ -238,8 +240,8 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # Get the current time(GMT) in the specific format.
 #
 # + return - If successful, returns string representing UTC date and time 
-#          (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error or nil.
-isolated function getDateTime() returns string?|error {
+#          (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error.
+isolated function getDateTime() returns string|error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
     return check time:format(timeWithZone, TIME_ZONE_FORMAT);
@@ -253,9 +255,9 @@ isolated function getDateTime() returns string?|error {
 # + token - master or resource token
 # + tokenType - denotes the type of token: master or resource
 # + date - current GMT date and time
-# + return - If successful, returns string which is the hashed token signature. Else returns nil or error.
+# + return - If successful, returns string which is the hashed token signature. Else returns error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
-        string tokenType, string date) returns string?|error {
+        string tokenType, string date) returns string|error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`+
             string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
@@ -281,7 +283,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
 # Handle success or error responses to requests which does not need to return a payload.
 # 
 # + httpResponse - The http:Response returned from an HTTP request
-# + return - If successful, returns true. Else returns error or false. 
+# + return - If successful, returns true. Else returns error or nil. 
 isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @tainted error? {
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
@@ -298,7 +300,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 # 
 # + httpResponse - The http:Response returned from an HTTP request
 # + headerName - Name of the header
-# + return - String value of specific header
+# + return - String value of specific header or nil if header does not exist
 isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string? {
     if (httpResponse.hasHeader(headerName)) {
         return httpResponse.getHeader(headerName);

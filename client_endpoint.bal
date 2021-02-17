@@ -41,7 +41,7 @@ public client class DataPlaneClient {
     # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
     #                           the request.
     # + return - If successful, returns `Document`. Else returns `error`.
-    remote function createDocument(string databaseId, string containerId, record {| string id; json...;|} document, 
+    remote function createDocument(string databaseId, string containerId, record {|string id; json...;|} document, 
             int|float|decimal|string partitionKey, DocumentCreateOptions? documentCreateOptions = ()) returns @tainted 
             Document|error { 
         http:Request request = new;
@@ -66,7 +66,7 @@ public client class DataPlaneClient {
     # + documentReplaceOptions - Optional. The `DocumentReplaceOptions` which can be used to add addtional capabilities 
     #                            to the request.
     # + return - If successful, returns a `Document`. Else returns `error`. 
-    remote function replaceDocument(string databaseId, string containerId, @tainted record {| string id; json...;|} 
+    remote function replaceDocument(string databaseId, string containerId, @tainted record {|string id; json...;|} 
             document, int|float|decimal|string partitionKey, DocumentReplaceOptions? documentReplaceOptions = ()) 
             returns @tainted Document|error {
         http:Request request = new;

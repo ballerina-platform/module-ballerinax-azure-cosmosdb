@@ -105,7 +105,7 @@ isolated function mapJsonToDocumentType(json payload) returns @tainted Document 
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
+        //sessionToken: let var session = sessionToken in session is string ? session : EMPTY_STRING,
         documentBody: let var body = <map<json>>payload in mapJsonToDocumentBody(body)
     };
 }
