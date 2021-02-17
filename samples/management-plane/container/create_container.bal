@@ -33,7 +33,13 @@ public function main() {
         paths: ["/gender"],
         keyVersion: 2
     };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, 
-            partitionKey);
-    log:print("Success!");
+
+    var result = managementClient->createContainer(databaseId, containerId, partitionKey);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Container) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

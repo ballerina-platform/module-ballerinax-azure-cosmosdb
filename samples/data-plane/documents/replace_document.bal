@@ -44,10 +44,15 @@ public function main() {
             "FamilyName": "Turing",
             "FirstName": "Ethel"
         }],
-        gender: 0
+        "gender": 0
     };
 
-    cosmosdb:Document replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
-            newDocumentBody, partitionKeyValue);
-    log:print("Success!");
+    var result = azureCosmosClient->replaceDocument(databaseId, containerId, documentBody, partitionKeyValue); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

@@ -45,7 +45,7 @@ operation is successful.
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {
@@ -65,7 +65,7 @@ partition key in the creation of a container.
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {
@@ -90,7 +90,7 @@ key-value document.  The max document size in Cosmos DB is 2 MB.
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {
@@ -116,7 +116,7 @@ that, Cosmos DB originally allows pagination of results returned list operations
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {
@@ -132,7 +132,7 @@ public function main() {
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {
@@ -150,7 +150,7 @@ public function main() {
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {
@@ -174,7 +174,7 @@ public function main() {
 
 ```ballerina
 import ballerina/log;
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 public function main() {
     cosmosdb:Configuration configuration = {

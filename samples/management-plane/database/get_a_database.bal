@@ -28,6 +28,12 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Reading database by id");
-    cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    log:print("Success!");
+    var result = managementClient->getDatabase(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Database) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

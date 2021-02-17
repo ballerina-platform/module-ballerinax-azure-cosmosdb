@@ -34,7 +34,12 @@ public function main() {
         parameters: ["Sachi"]
     };
 
-    json result = checkpanic azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, 
-            options);
-    log:print("Success!");
+    var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is json) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

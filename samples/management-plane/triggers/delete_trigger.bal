@@ -22,7 +22,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -30,6 +30,13 @@ public function main() {
     string triggerId = "my_trigger";
 
     log:print("Deleting trigger");
-    _ = checkpanic azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
-    log:print("Success!");
+    
+    var result = managementClient->deleteTrigger(databaseId, containerId, triggerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

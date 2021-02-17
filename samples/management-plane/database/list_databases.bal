@@ -26,6 +26,13 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() {
     log:print("Getting list of databases");
-    stream<cosmosdb:Database> databaseList = checkpanic managementClient->listDatabases(10);
-    log:print("Success!");
+    var result = managementClient->listDatabases(10);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Database>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }

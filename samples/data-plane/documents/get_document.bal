@@ -32,7 +32,12 @@ public function main() {
     int partitionKeyValue = 0;
     
     log:print("Read the document by id");
-    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
-            partitionKeyValue);
-    log:print("Success!");
+    var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

@@ -29,6 +29,12 @@ public function main() {
     string userId = "my_user";
 
     log:print("Creating user");
-    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->createUser(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:User) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

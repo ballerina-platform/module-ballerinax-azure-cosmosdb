@@ -24,7 +24,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -63,7 +63,7 @@ public function main() {
     }`;
     cosmosdb:TriggerOperation createTriggerOperationType = "All";
     cosmosdb:TriggerType createTriggerType = "Post";
-    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
+    cosmosdb:Trigger triggerCreationResult = checkpanic managementClient->createTrigger(databaseId, containerId, 
             triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
 
     // Replace trigger
@@ -98,16 +98,16 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
 
-    cosmosdb:DeleteResponse triggerReplaceResult = checkpanic azureCosmosClient->replaceTrigger(databaseId, containerId, 
+    cosmosdb:DeleteResponse triggerReplaceResult = checkpanic managementClient->replaceTrigger(databaseId, containerId, 
             triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
 
     // List triggers
     log:print("List available triggers");
-    stream<cosmosdb:Trigger> result5 = checkpanic azureCosmosClient->listTriggers(databaseId, containerId);
+    stream<cosmosdb:Trigger> result5 = checkpanic managementClient->listTriggers(databaseId, containerId);
 
     // Delete trigger
     log:print("Deleting trigger");
-    _ = checkpanic azureCosmosClient->deleteTrigger(databaseId, containerId, triggerId);
+    _ = checkpanic managementClient->deleteTrigger(databaseId, containerId, triggerId);
     log:print("Success!");
 }
 

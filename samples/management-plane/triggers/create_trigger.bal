@@ -22,7 +22,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -60,7 +60,13 @@ public function main() {
     cosmosdb:TriggerOperation createTriggerOperationType = "All";
     cosmosdb:TriggerType createTriggerType = "Post";
 
-    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosClient->createTrigger(databaseId, containerId, 
-            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
-    log:print("Success!");
+    var result = managementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
+            createTriggerOperationType, createTriggerType); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Trigger) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

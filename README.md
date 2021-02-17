@@ -102,9 +102,9 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 ## Management of Documents
 
 ### Step 1: Import Cosmos DB Package
-First, import the ballerinax/azure.cosmosdb module into the Ballerina project.
+First, import the ballerinax/azure_cosmosdb module into the Ballerina project.
 ```ballerina
-import ballerinax/azure.cosmosdb as cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 ```
 ### Step 2: Initialize the cosmos DB Management Plane Client
 You can now make the connection configuration using the Master Key Token or Resource Token, and the resource URI to the 
@@ -166,7 +166,7 @@ record {|string id; json...;|} document = {
             "FamilyName": "Stoney",
             "FirstName": "Ethel"
         }],
-        gender: 0
+        "gender": 0
 };
 int valueOfPartitionKey = 0;
 
@@ -211,7 +211,8 @@ Finally, you can delete the document you have created. For this operation to be 
 you have to give `my_database` and `my_container` as parameters. Apart from that, the target document to delete
 `my_document` and `value of the partition key` of that document must be provided.
 ```ballerina
- _ = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", valueOfPartitionKey);
+cosmosdb:DeleteResponse = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", 
+        valueOfPartitionKey);
 ```
 # Samples
 ## Data Plane operations
@@ -229,7 +230,7 @@ represent the Document. As the partition key is made mandatory for the Container
 passed as a parameter.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -257,13 +258,18 @@ public function main() {
             "FamilyName": "Stoney",
             "FirstName": "Ethel"
         }],
-        gender: 0
+        "gender": 0
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            documentBody, partitionKeyValue); 
-    log:print("Success!");
+    var result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, partitionKeyValue); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> Several Optional Parameters are supported in the creation of documents. These options can be specified in 
@@ -282,7 +288,7 @@ value for a Document. It should be the same value as the old Document. Refer mor
 here: https://github.com/Azure/azure-sdk-for-js/issues/6324
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -312,12 +318,17 @@ public function main() {
             "FamilyName": "Turing",
             "FirstName": "Ethel"
         }],
-        gender: 0
+        "gender": 0
     };
 
-    cosmosdb:Document replsceResult = checkpanic azureCosmosClient->replaceDocument(databaseId, containerId, 
-            newDocumentBody, partitionKeyValue);
-    log:print("Success!");
+    var result = azureCosmosClient->replaceDocument(databaseId, containerId, documentBody, partitionKeyValue); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> Several Optional Parameters are supported in the replacement of documents. These options can be specified 
@@ -336,7 +347,7 @@ This sample shows how to get a document by it's ID. It returns the Document reco
 the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for 
 that partition key.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -354,9 +365,14 @@ public function main() {
     int partitionKeyValue = 0;
     
     log:print("Read the document by id");
-    cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
-            partitionKeyValue);
-    log:print("Success!");
+    var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> For document read operations several optional parameters can be provided using `DocumentReadOptions` These 
@@ -376,7 +392,7 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This sample shows how you can get a list of all the Documents.Each result will be similar to a list of results returned 
 from getDocument operation. You have to provide the Database ID and Container ID as parameters.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -391,8 +407,16 @@ public function main() {
     string containerId = "my_container";
 
     log:print("Getting list of documents");
-    stream<cosmosdb:Document> documentList = checkpanic azureCosmosClient->getDocumentList(databaseId, containerId);
-    log:print("Success!");
+    //stream<cosmosdb:Document> documentList = checkpanic azureCosmosClient->getDocumentList(databaseId, containerId);
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Document>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> For document list operations several optional parameters can be provided using `DocumentListOptions` record 
@@ -415,7 +439,7 @@ This sample shows how to delete a Document which exists inside a Container. You 
 Container ID where the Document exists and the ID of Document ID of the Document you want to delete. The value of the 
 partition key for that specific document should also passed to it.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -433,8 +457,14 @@ public function main() {
     int partitionKeyValue = 0;
     
     log:print("Deleting the document");
-    _ = checkpanic azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
-    log:print("Success!");
+    var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> For delete operations optional parameters can be provided using `ResourceDeleteOptions` record type in the 
@@ -455,7 +485,7 @@ Cosmos DB Ballerina connector allows the option to either to provide a query as 
 specify the query parameters which matches with the SQL queries compatible with the REST API.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -473,10 +503,17 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     int partitionKeyValueMale = 0;
     int maxItemCount = 10;
-    stream<Document> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
-            maxItemCount, partitionKeyValueMale);
-    var document = queryResult.next();
-    log:print("Success!");
+
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, maxItemCount, 
+            partitionKeyValueMale);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Document>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> 
@@ -506,7 +543,7 @@ response appending the given value inside the function to the response body. For
 to provide the Database ID and the Container ID where the Stored Procedure is saved in. Apart from that, a unique ID 
 for Stored Procedure and a JavaScript function which represents the Stored Procedure should be provided as parameters. 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -525,12 +562,18 @@ public function main() {
     string storedProcedureBody = string `function (){
                                             var context = getContext();
                                             var response = context.getResponse();
-                                            response.setBody("Hello, World");
+                                            response.setBody("Hello,  World");
                                         }`;
 
-    cosmosdb:StoredProcedure storedProcedureCreateResult = checkpanic azureCosmosClient->createStoredProcedure(
-            databaseId, containerId, storedProcedureId, storedProcedureBody);
-    log:print("Success!");
+    var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, storedProcedureId, 
+            storedProcedureBody); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:StoredProcedure) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 
@@ -541,7 +584,7 @@ This sample shows how to replace an existing Stored Procedure. This new Stored P
 the earlier Stored Procedure by appending the function parameter passed through the request to a string inside the 
 function and returning it back to the caller. You can provide any JavaScript function as the new `storedProcedure`. 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -554,18 +597,25 @@ cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
-    string existingStoredProcedureId = "my_storedprocedure"
+    string existingStoredProcedureId = "my_stored_procedure";
 
     // Replace stored procedure
     log:print("Replacing stored procedure");
-    string newStoredProcedureBody = string `function HelloFunction(personToGreet){
+    string newStoredProcedureBody = string `function heloo(personToGreet){
                                                 var context = getContext();
                                                 var response = context.getResponse();
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
-    cosmosdb:StoredProcedure storedProcedureReplaceResult = checkpanic azureCosmosClient->replaceStoredProcedure(
-            databaseId, containerId, existingStoredProcedureId, newStoredProcedureBody);
-    log:print("Success!");
+
+    var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, existingStoredProcedureId, 
+            newStoredProcedureBody);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:StoredProcedure) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/stored-procedure/replace_stored_procedure.bal
@@ -575,7 +625,7 @@ From this sample you can get a list of all the Stored Procedures inside a Contai
 contain a `StoredProcedure` and several other important information. You have to provide the Database ID and Container 
 ID as other mandatory parameters.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -590,9 +640,15 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List stored procedure");
-    stream<cosmosdb:StoredProcedure> result5 = checkpanic azureCosmosClient->listStoredProcedures(databaseId, 
-            containerId);
-    log:print("Success!");
+    var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:StoredProcedure>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/stored-procedure/list_stored_procedure.bal
@@ -601,7 +657,7 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This sample shows how to delete a Stored Procedure which exists inside a Container. You have to specify the Database ID, 
 Container ID where the Stored Procedure exists and the ID of the Stored Procedure you want to delete.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -617,8 +673,14 @@ public function main() {
     string storedProcedureId = "my_stored_procedure";
     
     log:print("Deleting stored procedure");
-    _ = checkpanic azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
-    log:print("Success!");
+    var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-plane/stored-procedure/delete_stored_procedure.bal
@@ -630,7 +692,7 @@ operations on documents and also to read from the request body and write to the 
 this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs.
 This sample shows how to execute a Stored Procedure already existing inside a Container.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -650,9 +712,14 @@ public function main() {
         parameters: ["Sachi"]
     };
 
-    json result = checkpanic azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, 
-            options);
-    log:print("Success!");
+    var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is json) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Note: <br/> If a stored procedure contains parameters to be passed to it, you can pass them as an array of arguments as 
@@ -674,22 +741,18 @@ unique Database ID which does not already exist in the specific cosmos DB accoun
 of type Database. This will contain the success as true if the operation is successful.
 
 ```ballerina
-import ballerinax/cosmosdb;
-import ballerina/config;
-import ballerina/log;
-
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-};
-cosmosdb:ManagementClient managementClient = new(managementConfig);
-
 public function main() { 
     string databaseId = "my_database";
 
     log:print("Creating database");
-    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
-    log:print("Success!");
+    var result = managementClient->createDatabase(databaseId); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Database) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a record 
@@ -728,7 +791,7 @@ It mainly returns the ID of the Database with resourceId. We can use the results
 `resourceId` which will be useful in query operations and creating offers.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -742,8 +805,14 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Reading database by id");
-    cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    log:print("Success!");
+    var result = managementClient->getDatabase(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Database) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/get_a_database.bal
@@ -753,7 +822,7 @@ When there is a need to list down all the Databases available inside a Cosmos DB
 stream of Databases, each containing a record of type `Database`.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -765,8 +834,15 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() {
     log:print("Getting list of databases");
-    stream<cosmosdb:Database> databaseList = checkpanic managementClient->listDatabases(10);
-    log:print("Success!");
+    var result = managementClient->listDatabases(10);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Database>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/database/list_databases.bal
@@ -776,7 +852,7 @@ This operation can be used for deleting a Database inside an Azure Cosmos DB acc
 deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -806,7 +882,7 @@ in this implementation of the connector strictly supports the partition key, it 
 key in the creation of a Container. 
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -822,12 +898,18 @@ public function main() {
 
     log:print("Creating container");
     cosmosdb:PartitionKey partitionKey = {
-        paths: ["/id"],
+        paths: ["/gender"],
         keyVersion: 2
     };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, 
-            partitionKey);
-    log:print("Success!");
+
+    var result = managementClient->createContainer(databaseId, containerId, partitionKey);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Container) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 
@@ -845,7 +927,7 @@ This operation is related to reading information about a Container which is alre
 returns the ID of the Container, The indexing policy and partition key along with the resourceId.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -857,11 +939,16 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() {
     string databaseId = "my_database";
-    string containerId = "my_container";
 
-    log:print("Reading container info");
-    cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    log:print("Success!");
+    log:print("Reading database by id");
+    var result = managementClient->getDatabase(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Database) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/container/get_container.bal
@@ -871,7 +958,7 @@ When there is a need to list down all the Containers available inside a Database
 Containers to the user each containing a record of type Container.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -885,8 +972,15 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Getting list of containers");
-    stream<cosmosdb:Container> containerList = checkpanic managementClient->listContainers(databaseId, 2);
-    log:print("Success!");
+    var result = managementClient->listContainers(databaseId, 2);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Container>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 
@@ -901,7 +995,7 @@ This operation can be used for deleting a Container inside a Database. It return
 successfully or else returns an error in case there is a problem.
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -913,11 +1007,16 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() {
     string databaseId = "my_database";
-    string containerId = "my_container";
 
-    log:print("Deleting the container");
-    _ = checkpanic managementClient->deleteContainer(databaseId, containerId);
-    log:print("Success!");
+    log:print("Deleting database");
+    var result = azureCosmosClient->deleteDatabase(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 
@@ -934,7 +1033,7 @@ This sample shows how to create a User Defined Function which will compute the t
 this operation, you have to provide the Database ID and the Container ID where the User Defined Function is saved in. 
 Apart from that, a unique ID for User Defined Function and a JavaScript function should be provided as parameters.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -961,9 +1060,15 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosManagementClient->createUserDefinedFunction(
-            databaseId, containerId, udfId, userDefinedFunctionBody);
-    log:print("Success!");
+
+    var result = managementClient->createUserDefinedFunction(databaseId, containerId, udfId, userDefinedFunctionBody);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:UserDefinedFunction) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/create_udf.bal
@@ -975,7 +1080,7 @@ the User Defined Function is saved in and you should pass the ID of the User Def
 JavaScript function which will replace the existing User Defined Function. 
 
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -991,7 +1096,7 @@ public function main() {
     string udfId = "my_udf";
 
     log:print("Replacing a user defined function");
-    string replacementUDF = string `function taxFromIncome(income){
+    string newUserDefinedFuncBody = string `function taxIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
                                                     if (income < 1000)
@@ -1001,9 +1106,15 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosManagementClient->replaceUserDefinedFunction(
-            databaseId,containerId, udfId, replacementUDF);
-    log:print("Success!");
+
+    var result = managementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, newUserDefinedFuncBody);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:UserDefinedFunction) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/replace_udf.bal
@@ -1013,7 +1124,7 @@ From this sample you can get a list of all the Stored Procedures inside a Contai
 contain a `UserDefinedFunction` and several other important information. You have to provide the Database ID and 
 Container ID as other mandatory parameters.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -1027,10 +1138,16 @@ public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosManagementClient->listUserDefinedFunctions(
-            databaseId, containerId);
-    log:print("Success!");
+    log:print("List  user defined functions");
+    var result = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:UserDefinedFunction>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 
@@ -1041,7 +1158,7 @@ This sample shows how to delete a User Defined Function which exists inside a Co
 Database ID, Container ID where the User Defined Function exists and the ID of the User Defined Function you want to 
 delete.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/config;
 
@@ -1057,8 +1174,14 @@ public function main() {
     string udfId = "my_udf";
     
     log:print("Delete user defined function");
-    _ = checkpanic azureCosmosManagementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
-    log:print("Success!");
+    var result = managementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/user-defined-functions/delete_udf.bal
@@ -1074,7 +1197,7 @@ Document in the Container. For this operation, you have to provide the Database 
 Trigger is saved in. A unique ID for Trigger and a JavaScript function should be provided to the `triggerFunction`record 
 type. Apart from that, you have to provide the `triggerOperation`, `triggerType`.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1120,9 +1243,15 @@ public function main() {
     cosmosdb:TriggerOperation createTriggerOperationType = "All";
     cosmosdb:TriggerType createTriggerType = "Post";
 
-    cosmosdb:Trigger triggerCreationResult = checkpanic azureCosmosManagementClient->createTrigger(databaseId, 
-            containerId, triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
-    log:print("Success!");
+    var result = managementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
+            createTriggerOperationType, createTriggerType); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Trigger) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/> When creating a Trigger, there are several required parameters we have to pass as parameters.
@@ -1140,7 +1269,7 @@ new one. When replacing, you should pass all mandatory parameters `triggerId`, `
 `triggerFunction`, with all the values filled correctly. (It is not mandatory to replace all parameters with a new value 
 but all the values should be passed). The `triggerId` should be the ID of the Trigger to be replaced.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1186,9 +1315,15 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
     
-    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosManagementClient->replaceTrigger(databaseId, 
-            containerId, existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
-    log:print("Success!");
+    var result = managementClient->replaceTrigger(databaseId, containerId, existingTriggerId, replaceTriggerBody, 
+            replaceTriggerOperation, replaceTriggerType); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Trigger) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/replace_trigger.bal
@@ -1198,7 +1333,7 @@ From this sample you can get a list of all the Triggers inside a Container. Each
 contain a `Trigger` and several other important information. You have to provide the Database ID and Container ID as 
 other mandatory parameters.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1213,8 +1348,15 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List available triggers");
-    stream<cosmosdb:Trigger> result5 = checkpanic azureCosmosManagementClient->listTriggers(databaseId, containerId);
-    log:print("Success!");
+    var result = managementClient->listTriggers(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Trigger>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/list_trigger.bal
@@ -1223,7 +1365,7 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This sample shows how to delete a Trigger which exists inside a Container. You have to specify the Database ID, 
 Container ID where the Trigger exists and the ID of the Trigger you want to delete.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1239,8 +1381,15 @@ public function main() {
     string triggerId = "my_trigger";
 
     log:print("Deleting trigger");
-    _ = checkpanic azureCosmosManagementClient->deleteTrigger(databaseId, containerId, triggerId);
-    log:print("Success!");
+    
+    var result = managementClient->deleteTrigger(databaseId, containerId, triggerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/triggers/delete_trigger.bal
@@ -1258,7 +1407,7 @@ Users are stored within the context of the Database in Cosmos DB. Each User has 
 this operation an instance of User for a specific Database is created. The things you need to create a User in Cosmos DB 
 is the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1273,8 +1422,14 @@ public function main() {
     string userId = "my_user";
 
     log:print("Creating user");
-    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->createUser(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:User) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/create_user.bal
@@ -1285,7 +1440,7 @@ earlier. Although a User can have Permissions which are related to him, those wi
 For this, you have to provide the Database ID where the User is scoped into, the User ID you want to replace and the new 
 User ID which the older one is to be replaced with.
 ``` ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1301,8 +1456,14 @@ public function main() {
     string newUserId = "my_new_user";
 
     log:print("Replace user id");
-    cosmosdb:User userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, oldUserId, newUserId);
-    log:print("Success!");
+    var result = managementClient->replaceUserId(databaseId, oldUserId, newUserId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:User) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/replace_user_id.bal
@@ -1312,7 +1473,7 @@ From this sample, you can get the basic information about a created User. For th
 is scoped into and the User ID you want to get information about should be provided. Referring to earlier samples, the 
 Database ID will be `my_database` and User ID will be `my_user` in this case.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1324,11 +1485,17 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() { 
     string databaseId = "my_database";
-    string userId = "my_user";
+    string userId = "my_new_user";
 
     log:print("Get user information");
-    cosmosdb:User user = checkpanic managementClient->getUser(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->getUser(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:User) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/get_user.bal
@@ -1338,7 +1505,7 @@ From this operation you can get a list of all the users who are scoped into a gi
 contain information about each User. Each result will be similar to a list of results returned from getUser operation. 
 You have to provide the Database ID which is `my_database` as a parameter.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1352,8 +1519,15 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("List users");
-    stream<cosmosdb:User> userList = checkpanic managementClient->listUsers(databaseId);
-    log:print("Success!");
+    var result = managementClient->listUsers(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:User>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/list_users.bal
@@ -1363,7 +1537,7 @@ The Common User management operations of databases usually have the option to de
 connector supports this operation. For deleting a User the specific Database ID User is scoped to and the ID User of the 
 User to delete must be provided.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1375,11 +1549,17 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() { 
     string databaseId = "my_database";
-    string userId = "my_user";
+    string userId = "my_new_user";
     
     log:print("Delete user");
-    _ = checkpanic managementClient->deleteUser(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->deleteUser(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/user/delete_user.bal
@@ -1412,7 +1592,7 @@ When creating a Permission you should provide values for the above properties. A
 explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
 properties must be provided as parameters to the function. The created token is expired in one hour.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1432,9 +1612,15 @@ public function main() {
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
     log:print("Create permission for a user");
-    cosmosdb:Permission createPermissionResult = checkpanic managementClient->createPermission(databaseId, userId, 
-            permissionId, permissionMode, <@untainted>permissionResource);
-    log:print("Success!");
+    var result = managementClient->createPermission(databaseId, userId, permissionId, permissionMode, 
+            <@untainted>permissionResource);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Permission) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Notes: <br/>
@@ -1449,7 +1635,7 @@ This operation has all the parameters similar to Create Permission. The only dif
 existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
 properties have to have changes. These primary properties are provided as function parameters.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1469,9 +1655,15 @@ public function main() {
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
     log:print("Replace permission");
-    cosmosdb:Permission replacePermissionResult = checkpanic managementClient->replacePermission(databaseId, userId, 
-            permissionId, permissionModeReplace, permissionResourceReplace);
-    log:print("Success!");
+    var result = managementClient->replacePermission(databaseId, userId, permissionId, permissionModeReplace, 
+        permissionResourceReplace);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Permission) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/replace_permission.bal
@@ -1481,7 +1673,7 @@ From this sample you can get the basic information about a created Permission. F
 User ID to which the permission belongs to and the Permission ID that, you want to get information about should be 
 provided.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1497,8 +1689,14 @@ public function main() {
     string permissionId = "my_permission";
 
     log:print("Get intormation about one permission");
-    cosmosdb:Permission permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
-    log:print("Success!");
+    var result = managementClient->getPermission(databaseId, userId, permissionId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Permission) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/get_permission.bal
@@ -1508,7 +1706,7 @@ From this operation you can get a list of all the Permissions belong to a single
 contain information about each Permission. Each result will be similar to a list of results returned from `getPermission`
 operation. You have to provide the Database ID and the User ID as parameters
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1523,8 +1721,15 @@ public function main() {
     string userId = "my_user";
 
     log:print("List permissions");
-    stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->listPermissions(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Permission>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/management-plane/users-permissions/permission/list_permissions.bal
@@ -1533,7 +1738,7 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This Operation allows to delete a Permission in the database. For deleting a Permission, the specific Database ID, User 
 ID and the ID of the Permission to delete must be provided.
 ```ballerina
-import ballerinax/cosmosdb;
+import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
 import ballerina/log;
 
@@ -1549,8 +1754,14 @@ public function main() {
     string permissionId = "my_permission";
     
     log:print("Delete permission");
-    _ = checkpanic managementClient->deletePermission(databaseId, userId, permissionId);
-    log:print("Success!");
+    var result = managementClient->deletePermission(databaseId, userId, permissionId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 

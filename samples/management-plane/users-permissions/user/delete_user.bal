@@ -29,6 +29,12 @@ public function main() {
     string userId = "my_new_user";
     
     log:print("Delete user");
-    _ = checkpanic  managementClient->deleteUser(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->deleteUser(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

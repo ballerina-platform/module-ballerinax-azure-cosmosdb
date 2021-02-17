@@ -51,7 +51,7 @@ public client class ManagementClient {
         request.setJsonPayload(jsonPayload);
         // Get the response
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
-        // Map the payload and headers, of the request to a tuple 
+        // Return the json payload from the response 
         json jsonResponse = check handleResponse(response);
         // Map the reponse payload and the headers to a record type
         return mapJsonToDatabaseType(jsonResponse);

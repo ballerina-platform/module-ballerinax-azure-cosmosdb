@@ -269,7 +269,7 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns Database[] {
     Database[] databases = [];
     foreach json databaseObject in sourceDatabaseArrayJsonObject {
-        Database database = mapJsonToDatabaseType([databaseObject, ()]);
+        Database database = mapJsonToDatabaseType(databaseObject);
         array:push(databases, database);
     }
     return databases;

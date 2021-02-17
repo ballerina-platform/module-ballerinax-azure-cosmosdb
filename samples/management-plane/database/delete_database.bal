@@ -28,6 +28,12 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Deleting database");
-    _ = checkpanic managementClient->deleteDatabase(databaseId);
-    log:print("Success!");
+    var result = azureCosmosClient->deleteDatabase(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

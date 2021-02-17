@@ -28,6 +28,13 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("List users");
-    stream<cosmosdb:User> userList = checkpanic managementClient->listUsers(databaseId);
-    log:print("Success!");
+    var result = managementClient->listUsers(databaseId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:User>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }

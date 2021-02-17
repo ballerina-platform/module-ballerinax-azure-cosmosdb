@@ -28,6 +28,13 @@ public function main() {
     string databaseId = "my_database";
 
     log:print("Getting list of containers");
-    stream<cosmosdb:Container> containerList = checkpanic managementClient->listContainers(databaseId, 2);
-    log:print("Success!");
+    var result = managementClient->listContainers(databaseId, 2);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Container>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }

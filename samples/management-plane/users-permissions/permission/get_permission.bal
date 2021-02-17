@@ -30,6 +30,12 @@ public function main() {
     string permissionId = "my_permission";
 
     log:print("Get intormation about one permission");
-    cosmosdb:Permission permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
-    log:print("Success!");
+    var result = managementClient->getPermission(databaseId, userId, permissionId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Permission) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

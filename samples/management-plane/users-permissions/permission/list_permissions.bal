@@ -29,6 +29,13 @@ public function main() {
     string userId = "my_user";
 
     log:print("List permissions");
-    stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->listPermissions(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Permission>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }

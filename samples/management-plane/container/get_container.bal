@@ -29,6 +29,12 @@ public function main() {
     string containerId = "my_container";
 
     log:print("Reading container info");
-    cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    log:print("Success!");
+    var result = managementClient->getContainer(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Container) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

@@ -26,9 +26,15 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() { 
     string databaseId = "my_database";
-    string userId = "my_user";
+    string userId = "my_new_user";
 
     log:print("Get user information");
-    cosmosdb:User user  = checkpanic managementClient->getUser(databaseId, userId);
-    log:print("Success!");
+    var result = managementClient->getUser(databaseId, userId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:User) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

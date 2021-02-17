@@ -22,13 +22,20 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
     log:print("List available triggers");
-    stream<cosmosdb:Trigger> result5 = checkpanic azureCosmosClient->listTriggers(databaseId, containerId);
-    log:print("Success!");
+    var result = managementClient->listTriggers(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Trigger>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }

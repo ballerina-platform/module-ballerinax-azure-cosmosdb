@@ -22,14 +22,20 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
     log:print("List  user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosClient->listUserDefinedFunctions(databaseId, 
-            containerId);
-    log:print("Success!");
+    var result = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:UserDefinedFunction>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }

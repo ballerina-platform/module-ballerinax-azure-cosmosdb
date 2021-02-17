@@ -22,7 +22,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -30,7 +30,7 @@ public function main() {
     string udfId = "my_udf";
 
     log:print("Replacing a user defined function");
-    string newUserDefinedFunctionBody = string `function taxIncome(income){
+    string newUserDefinedFuncBody = string `function taxIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
                                                     if (income < 1000)
@@ -40,11 +40,13 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:UserDefinedFunction replacementUdf = {
-        id: udfId,
-        userDefinedFunction: newUserDefinedFunctionBody
-    };
-    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosClient->replaceUserDefinedFunction(databaseId, 
-            containerId, udfId, newUserDefinedFunctionBody);
-    log:print("Success!");
+
+    var result = managementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, newUserDefinedFuncBody);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:UserDefinedFunction) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

@@ -29,6 +29,12 @@ public function main() {
     string containerId = "my_container";
 
     log:print("Deleting the container");
-    _ = checkpanic managementClient->deleteContainer(databaseId, containerId);
-    log:print("Success!");
+    var result = managementClient->deleteContainer(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

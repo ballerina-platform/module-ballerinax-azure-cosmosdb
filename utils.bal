@@ -169,6 +169,7 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # Set the required headers related to query operations.
 #
 # + request - The http:Request to set the header
+# + return - Returns error or nil
 isolated function setHeadersForQuery(http:Request request) returns error? {
     check request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, TRUE);

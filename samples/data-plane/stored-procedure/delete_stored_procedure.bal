@@ -30,6 +30,12 @@ public function main() {
     string storedProcedureId = "my_stored_procedure";
     
     log:print("Deleting stored procedure");
-    _ = checkpanic azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
-    log:print("Success!");
+    var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

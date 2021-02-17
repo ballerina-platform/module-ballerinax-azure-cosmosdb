@@ -22,7 +22,7 @@ cosmosdb:Configuration configuration = {
     baseUrl: config:getAsString("BASE_URL"),
     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+cosmosdb:ManagementClient managementClient = new (configuration);
 
 public function main() {
     string databaseId = "my_database";
@@ -42,7 +42,12 @@ public function main() {
                                                     return income * 0.4;
                                             }`;
 
-    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosClient->createUserDefinedFunction(databaseId, 
-            containerId, udfId, userDefinedFunctionBody);
-    log:print("Success!");
+    var result = managementClient->createUserDefinedFunction(databaseId, containerId, udfId, userDefinedFunctionBody);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:UserDefinedFunction) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }

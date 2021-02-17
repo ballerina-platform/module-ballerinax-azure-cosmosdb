@@ -29,7 +29,13 @@ public function main() {
     string containerId = "my_container";
 
     log:print("Getting list of documents");
-    stream<cosmosdb:Document> documentList = checkpanic azureCosmosClient->getDocumentList(databaseId, containerId);
-    log:print("Success!");
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Document>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
-

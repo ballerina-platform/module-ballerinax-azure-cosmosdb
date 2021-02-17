@@ -32,8 +32,15 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     int partitionKeyValueMale = 0;
     int maxItemCount = 10;
-    stream<Document> queryResult = checkpanic azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
-            maxItemCount, partitionKeyValueMale);
-    var document = queryResult.next();
-    log:print("Success!");
+
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, maxItemCount, 
+            partitionKeyValueMale);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Document>) {
+        var document = result.next();
+        log:print(document.toString());
+        log:print("Success!");
+    }
 }
