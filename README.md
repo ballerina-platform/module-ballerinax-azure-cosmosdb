@@ -407,7 +407,6 @@ public function main() {
     string containerId = "my_container";
 
     log:print("Getting list of documents");
-    //stream<cosmosdb:Document> documentList = checkpanic azureCosmosClient->getDocumentList(databaseId, containerId);
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());

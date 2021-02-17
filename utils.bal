@@ -133,26 +133,18 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
     request.setHeader(http:CONNECTION, CONNECTION_KEEP_ALIVE);
     string tokenType = getTokenType(token);
-    string? dateTime = check getDateTime();
-    if (dateTime is string) {
-        request.setHeader(DATE_HEADER, dateTime);
-        string? signature = ();
-        if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
-            signature = check generateMasterTokenSignature(httpVerb, getResourceType(requestPath), 
-                    getResourceId(requestPath), token, tokenType, dateTime);
-        } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
-            signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
-        } else {
-            return prepareUserError(NULL_RESOURCE_TYPE_ERROR);
-        }
-        if (signature is string) {
-            request.setHeader(http:AUTH_HEADER, signature);
-        } else {
-            return prepareAzureError(NULL_AUTHORIZATION_SIGNATURE_ERROR);
-        }
+    string dateTime = check getDateTime();
+    request.setHeader(DATE_HEADER, dateTime);
+    string signature = "";
+    if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
+        signature = check generateMasterTokenSignature(httpVerb, getResourceType(requestPath), 
+                getResourceId(requestPath), token, tokenType, dateTime);
+    } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
+        signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
     } else {
-        return prepareAzureError(NULL_DATE_ERROR);
+        return prepareUserError(NULL_RESOURCE_TYPE_ERROR);
     }
+    request.setHeader(http:AUTH_HEADER, signature);
 }
 
 # Set the optional header related to partitionkey value.
