@@ -961,8 +961,8 @@ public function main() {
                                                 else
                                                     return income * 0.4;
                                             }`;
-    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosManagementClient->createUserDefinedFunction(databaseId, 
-            containerId, udfId, userDefinedFunctionBody);
+    cosmosdb:UserDefinedFunction udfCreateResult = checkpanic azureCosmosManagementClient->createUserDefinedFunction(
+            databaseId, containerId, udfId, userDefinedFunctionBody);
     log:print("Success!");
 }
 ```
@@ -1001,8 +1001,8 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosManagementClient->replaceUserDefinedFunction(databaseId,
-            containerId, udfId, replacementUDF);
+    cosmosdb:UserDefinedFunction udfReplaceResult = checkpanic azureCosmosManagementClient->replaceUserDefinedFunction(
+            databaseId,containerId, udfId, replacementUDF);
     log:print("Success!");
 }
 ```
@@ -1028,8 +1028,8 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List user defined functions");
-    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosManagementClient->listUserDefinedFunctions(databaseId, 
-            containerId);
+    stream<cosmosdb:UserDefinedFunction> result5 = checkpanic azureCosmosManagementClient->listUserDefinedFunctions(
+            databaseId, containerId);
     log:print("Success!");
 }
 ```
@@ -1186,8 +1186,8 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
     
-    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosManagementClient->replaceTrigger(databaseId, containerId, 
-            existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
+    cosmosdb:Trigger triggerReplaceResult = checkpanic azureCosmosManagementClient->replaceTrigger(databaseId, 
+            containerId, existingTriggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
     log:print("Success!");
 }
 ```
