@@ -37,7 +37,6 @@ public function main() {
     string containerAutoscalingId = string `containera_${uuid.toString()}`;
     string containerIfnotExistId = string `containerx_${uuid.toString()}`;
 
-    
     // Create a container
     log:print("Creating container");
     cosmosdb:PartitionKey partitionKey = {

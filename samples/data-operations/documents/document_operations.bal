@@ -30,7 +30,7 @@ cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
-    string filePath = "./resources/EmployeeData.json";
+    string filePath = "./EmployeeData.json";
     var uuid = createRandomUUIDWithoutHyphens();
 
     string? sessionToken = "";

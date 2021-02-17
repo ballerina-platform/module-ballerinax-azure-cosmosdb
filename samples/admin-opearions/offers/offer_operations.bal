@@ -53,7 +53,6 @@ public function main() {
             offerType: "Invalid",
             content: {"offerThroughput": 1000},
             resourceSelfLink: resourceSelfLink, 
-            /// not found in the result
             resourceResourceId: string `${container?.resourceId.toString()}`,
             id: offerId,
             resourceId: resourceId
