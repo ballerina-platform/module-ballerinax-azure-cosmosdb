@@ -37,7 +37,6 @@ isolated function mapJsonToDatabaseType(json payload) returns Database {
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING
     };
 }
 
@@ -51,7 +50,6 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         indexingPolicy: let var indexingP = <json>payload.indexingPolicy in mapJsonToIndexingPolicy(indexingP),
         partitionKey: let var partitionKey = <json>payload.partitionKey in convertJsonToPartitionKeyType(partitionKey)
     };
@@ -64,9 +62,9 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
         indexingMode: let var mode = payload.indexingMode in mode is string ? mode : EMPTY_STRING,
-        automatic: let var automatic = <json>payload.automatic in convertToBoolean(automatic),
         includedPaths: let var inPaths = <json[]>payload.includedPaths in convertToIncludedPathsArray(inPaths),
-        excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths)
+        excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths),
+        automatic: <boolean>payload.automatic
     };
 }
 
@@ -105,7 +103,6 @@ isolated function mapJsonToDocumentType(json payload) returns @tainted Document 
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = sessionToken in session is string ? session : EMPTY_STRING,
         documentBody: let var body = <map<json>>payload in mapJsonToDocumentBody(body)
     };
 }
@@ -130,7 +127,7 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<js
 isolated function convertJsonToPartitionKeyType(json payload) returns @tainted PartitionKey {
     return {
         paths: let var paths = <json[]>payload.paths in convertToStringArray(paths),
-        keyVersion: let var keyVersion = <json>payload.'version in convertToInt(keyVersion)
+        keyVersion: <int>payload.'version
     };
 }
 
@@ -144,7 +141,6 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         minInclusive: let var minInclusive = payload.minInclusive in minInclusive is string ? minInclusive : 
                 EMPTY_STRING,
         maxExclusive: let var maxExclusive = payload.maxExclusive in maxExclusive is string ? maxExclusive : 
@@ -160,7 +156,7 @@ isolated function mapJsonToIndexType(json payload) returns Index {
     return {
         kind: let var kind = <string>payload.kind in getIndexType(kind),
         dataType: let var dataType = <string>payload.dataType in getIndexDataType(dataType),
-        precision: let var precision = <string>payload.precision in convertToInt(precision)
+        precision: <int>payload.precision
     };
 }
 
@@ -174,7 +170,6 @@ isolated function mapJsonToStoredProcedure(json payload) returns @tainted Stored
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         storedProcedure: let var sproc = payload.body in sproc is string ? sproc : EMPTY_STRING
     };
 }
@@ -189,7 +184,6 @@ isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted Us
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         userDefinedFunction: let var udf = payload.body in udf is string ? udf : EMPTY_STRING
     };
 }
@@ -204,7 +198,6 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         triggerFunction: let var func = payload.body in func is string ? func : EMPTY_STRING,
         triggerOperation: let var oper = <string>payload.triggerOperation in getTriggerOperation(oper),
         triggerType: let var triggerType = <string>payload.triggerType in getTriggerType(triggerType)
@@ -221,7 +214,6 @@ isolated function mapJsonToUserType(json payload) returns @tainted User {
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         permissions: let var permissions = payload._permissions in permissions is string ? permissions : EMPTY_STRING
     };
 }
@@ -236,7 +228,6 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         token: let var token = payload._token in token is string? token : EMPTY_STRING,
         permissionMode: let var mode = <string>payload.permissionMode in getPermisssionMode(mode),
         resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
@@ -253,7 +244,6 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        //sessionToken: let var session = headers?.sessionToken in session is string ? session : EMPTY_STRING,
         offerVersion: let var offVersion = <string>payload.offerVersion in getOfferVersion(offVersion),
         offerType: let var offType = <string>payload.offerType in getOfferVersion(offType),
         content: let var content = payload.content in content is string ? content : EMPTY_STRING,

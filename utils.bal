@@ -378,34 +378,6 @@ isolated function createStream(string path, json payload) returns @tainted strea
     return (<@untainted>finalArray).toStream();
 }
 
-# Convert json string values to boolean.
-#
-# + value - json value which has reprsents boolean value
-# + return - boolean value of specified json
-isolated function convertToBoolean(json|error value) returns boolean {
-    if (value is json) {
-        boolean|error result = 'boolean:fromString(value.toString());
-        if (result is boolean) {
-            return result;
-        }
-    }
-    return false;
-}
-
-# Convert json string values to int
-#
-# + value - json value which has reprsents int value
-# + return - int value of specified json
-isolated function convertToInt(json|error value) returns int {
-    if (value is json) {
-        int|error result = 'int:fromString(value.toString());
-        if (result is int) {
-            return result;
-        }
-    }
-    return 0;
-}
-
 # Get the enum value for a given string which represents the type of index.
 #
 # + kind - The index type
