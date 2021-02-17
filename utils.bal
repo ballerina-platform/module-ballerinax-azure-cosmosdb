@@ -209,14 +209,8 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
     if (requestOptions?.changeFeedOption is ChangeFeedOption){
         request.setHeader(A_IM_HEADER, <string>requestOptions?.changeFeedOption);
     }
-    if (requestOptions?.ifNoneMatchEtag is string) {
-        request.setHeader(http:IF_NONE_MATCH, <string>requestOptions?.ifNoneMatchEtag);
-    }
     if (requestOptions?.partitionKeyRangeId is string) {
         request.setHeader(PARTITIONKEY_RANGE_HEADER, <string>requestOptions?.partitionKeyRangeId);
-    }
-    if (requestOptions?.ifMatchEtag is string) {
-        request.setHeader(http:IF_MATCH, <string>requestOptions?.ifMatchEtag);
     }
     if (requestOptions?.enableCrossPartition == true) {
         request.setHeader(IS_ENABLE_CROSS_PARTITION_HEADER, TRUE);
@@ -232,7 +226,8 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 # + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
 # + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
-    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= MAX_TIME_TO_LIVE_IN_SECONDS) {
+    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= MAX_TIME_TO_LIVE_IN_SECONDS) 
+    {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
         return prepareUserError(VALIDITY_PERIOD_ERROR);

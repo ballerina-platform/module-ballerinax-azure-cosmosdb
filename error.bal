@@ -24,9 +24,8 @@ isolated function prepareAzureError(string message, error? err = (), int? status
     }
     if (err is error){
         return AzureError(message, err);
-    } else {
-        return AzureError(message);
     }
+    return AzureError(message);
 }
 
 isolated function prepareUserError(string message, error? err = (), int? status = ()) returns error {
@@ -36,7 +35,6 @@ isolated function prepareUserError(string message, error? err = (), int? status 
     }
     if (err is error){
         return UserError(message, err);
-    } else {
-        return UserError(message);
     }
+    return UserError(message);
 }

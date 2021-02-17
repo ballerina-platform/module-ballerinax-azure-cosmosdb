@@ -437,7 +437,6 @@ function testGetDocumentListWithRequestOptions() {
         consistancyLevel: EVENTUAL,
         // changeFeedOption : "Incremental feed", 
         sessionToken: "tag",
-        ifNoneMatchEtag: "hhh",
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
@@ -475,8 +474,7 @@ function testGetOneDocumentWithRequestOptions() {
 
     ResourceReadOptions options = {
         consistancyLevel: EVENTUAL,
-        sessionToken: "tag",
-        ifNoneMatchEtag: "hhh"
+        sessionToken: "tag"
     };
 
     var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, valueOfPartitionKey, options);

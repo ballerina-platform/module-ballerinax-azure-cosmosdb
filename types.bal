@@ -231,12 +231,8 @@ public type DocumentCreateOptions record {|
 # 
 # + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
 #       `Exclude`.
-# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. will check if the resource's ETag value 
-#                 matches the ETag value provided in the Condition property. If the resource has changes a 412 
-#                 Precondition failure error will be returned.
 public type DocumentReplaceOptions record {|
     IndexingDirective indexingDirective?;
-    string ifMatchEtag?;
 |};
 
 # Represent the optional parameters which can be passed to the function when listing information about the documents.
@@ -244,15 +240,11 @@ public type DocumentReplaceOptions record {|
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
-# + ifNoneMatchEtag - Specify `*` to return all new changes, `<eTag>` to return changes made sice that timestamp or 
-#                     otherwise omitted. Makes operation conditional to only execute if the resource has changed. The 
-#                     value should be the etag of the resource.
 # + partitionKeyRangeId - The partition key range ID for reading data
 public type DocumentListOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
     ChangeFeedOption changeFeedOption?;
-    string ifNoneMatchEtag?;
     string partitionKeyRangeId?;
 |};
 
@@ -266,13 +258,9 @@ public type StoredProcedureOptions record {|
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
-# + ifNoneMatchEtag - Check if the resource's ETag value does not matches the ETag value provided in the Condition 
-#                     property. This is applicable only on GET. Makes operation conditional to only execute if the 
-#                     resource has changed. The value should be the etag of the resource.
 public type ResourceReadOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
-    string ifNoneMatchEtag?;
 |};
 
 # Represent the optional parameters which can be passed to the function when querying containers.
@@ -289,12 +277,8 @@ public type ResourceQueryOptions record {|
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
 # 
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
-# + ifMatchEtag - Used to make operation conditional for optimistic concurrency. will check if the resource's ETag value 
-#                 matches the ETag value provided in the Condition property. If the resource has changes a 412 Precondition 
-#                 failure error will be returned.
 public type ResourceDeleteOptions record {|
     string sessionToken?;
-    string ifMatchEtag?;
 |};
 
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|

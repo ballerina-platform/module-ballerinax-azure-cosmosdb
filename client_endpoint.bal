@@ -151,7 +151,7 @@ public client class DataPlaneClient {
         return mapHeadersToResultType(response); 
     }
 
-    # Query a Container.
+    # Query a Documents inside a container.
     # 
     # + databaseId - ID of the database which Container belongs to
     # + containerId - ID of the Container to query
