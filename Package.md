@@ -1,8 +1,8 @@
-The Azure Cosmos DB is Microsoft’s NOSQL database in Azure technology stack. It is called a globally distributed 
-multi-model database which is used for managing data across the world. Key purposes of the Azure CosmosDB is to achieve 
+The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed 
+multi-model database which is used for managing data across the world. Key purposes of the Azure Cosmos DB is to achieve 
 low latency and high availability while maintaining a flexible scalability. 
-The Ballerina Cosmos DB connector allows you to connect to a Azure Cosmos DB resource from Ballerina and perform various 
-operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`,
+The Ballerina Cosmos DB connector allows you to connect to an Azure Cosmos DB resource from Ballerina and perform 
+various operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`,
 `User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`. 
 
 ## Compatibility
@@ -12,11 +12,11 @@ operations such as `find`, `create`, `read`, `update`, and `delete` operations o
 | Ballerina Language        | Swan-Lake-Preview8          |
 | Cosmos DB API Version     | 2018-12-31                  |
 
-## CosmosDB Clients
+## Cosmos DB Clients
 
-There are two clients provided by Ballerina to interact with CosmosDB.
+There are two clients provided by Ballerina to interact with Cosmos DB.
 
-1. **cosmosdb:DataPlaneClient** - This connects to the running CosmosDB databases and containers to execute data-plane 
+1. **cosmosdb:DataPlaneClient** - This connects to the running Cosmos DB databases and containers to execute data-plane 
 operations 
 
    ```ballerina
@@ -26,7 +26,7 @@ operations
     };
     cosmosdb:DataPlaneClient coreClient = new(configuration);
    ```
-2. **cosmosdb:ManagementClient** - This connects to the running CosmosDB databases and containers to execute 
+2. **cosmosdb:ManagementClient** - This connects to the running Cosmos DB databases and containers to execute 
 management-plane operations 
 
    ```ballerina
@@ -38,9 +38,9 @@ management-plane operations
    ```
 
 ## Samples 
-### Creating a database
+### Creating a Database
 For creating a database in Azure we have to provide a unique database ID which does not already exist in the specific 
-cosmos DB account. This operation will return a record of type Database. This will contain the success as true if the 
+Cosmos DB account. This operation will return a record of type Database. This will contain the success as true if the 
 operation is successful.
 
 ```ballerina
@@ -59,7 +59,7 @@ public function main() {
 ```
 
 ### Creating a Container
-A container can be created inside an existing database in the cosmos DB account. As the REST api version which is used 
+A container can be created inside an existing database in the Cosmos DB account. As the REST API version which is used 
 in this implementation of the connector strictly supports the partition key, it is a necessity to provide the 
 partition key in the creation of a container. 
 
@@ -83,8 +83,8 @@ public function main() {
             partitionKey);
 }
 ```
-### Inserting a Doument
-Azure cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath 
+### Inserting a Document
+Azure Cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath 
 the connector, an item may refer to a document in the container. SQL API stores entities in JSON in a hierarchical 
 key-value document. The max document size in Cosmos DB is 2 MB.
 

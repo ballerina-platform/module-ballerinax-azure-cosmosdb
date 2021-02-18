@@ -8,10 +8,10 @@ Ballerina Connector For Azure Cosmos DB
 Connects to Microsoft Azure Cosmos DB using Ballerina.
 
 # What is Azure Cosmos DB?
-[Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/) is Microsoft’s highly scalable NOSQL database in 
-Azure technology stack. It is called a globally distributed multi-model database which is used for managing data across 
-the world. Key purposes of the Azure CosmosDB is to achieve low latency and high availability while maintaining a 
-flexible scalability. Cosmos DB is a super-set of Azure Document DB and is available in all Azure regions.
+[Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/) is Microsoft’s highly scalable NoSQL database in 
+the Azure technology stack. It is called a globally distributed multi-model database which is used for managing data 
+across the world. The key purpose of the Azure Cosmos DB is to achieve low latency and high availability while 
+maintaining a flexible scalability. Cosmos DB is a super-set of Azure Document DB and is available in all Azure regions.
 
 # Key features of Azure Cosmos DB 
 - Has a guaranteed low latency that is backed by a comprehensive set of Service Level Agreements (SLAs).
@@ -211,7 +211,7 @@ cosmosdb:Configuration configuration = {
 ```
 Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`
 
-### Step 3: Initialize the cosmos DB Management Plane Client
+### Step 3: Initialize the Cosmos DB Management Plane Client
 For executing management plane operations, the `ManagementClient` should be configured.
 ```ballerina
 cosmosdb:ManagementClient managementClient = new(configuration);
@@ -225,7 +225,7 @@ database which contain the ID of the that database along with some other paramet
 cosmosdb:Database result = managementClient->createDatabase("my_new_database");
 ```
 ### Step 5: Create new Container
-You can create a container inside the created database. As the REST api version which is used in this implementation 
+You can create a container inside the created database. As the REST API version which is used in this implementation 
 of the connector strictly supports the partition key and logical partitioning, it is a necessity to provide the 
 partition key definition in the creation of a container. For this container it will be created inside `my_new_database` 
 and ID will be `my__new_container`. The path for partition key is `/gender`.
@@ -248,7 +248,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/partitioning-overview#choose-pa
 # Samples
 ## Data Plane operations
 ## Documents
-Azure cosmos DB allows the execution of CRUD operations on items separately. As this connector is using the Core API 
+Azure Cosmos DB allows the execution of CRUD operations on items separately. As this connector is using the Core API 
 underneath, an item may refer to a document in the container. SQL API stores entities in JSON in a hierarchical 
 key-value document. The max document size in Cosmos DB is 2 MB.
 
@@ -769,7 +769,7 @@ connector itself, you can manage these databases. As database operations are mor
 included inside the management client of the connector.
 ### Creating a Database 
 Creation of databases is a common capability of every Database System. For creating a database in Azure, you have to 
-provide a unique Database ID which does not already exist in the specific cosmos DB account. This operation will return 
+provide a unique Database ID which does not already exist in the specific Cosmos DB account. This operation will return 
 a record of type `Database`. This will contain the success as true if the operation is successful.
 
 ```ballerina
@@ -818,7 +818,7 @@ accounts can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/ser
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/database/create_database.bal
 
 ### Get one Database
-This operation is related to reading information about a database which is already created inside the cosmos DB account. 
+This operation is related to reading information about a database which is already created inside the Cosmos DB account. 
 It mainly returns the ID of the database with resourceId. We can use the results to refer to a database by it’s 
 `resourceId` which will be useful in query operations and creating offers.
 
@@ -912,11 +912,11 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/database/delete_database.bal
 
 ## Containers
-A container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
+A container in Cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
 partitioned and distributed across multiple regions. This is done according to the partition key and the items added to 
 the container and the provisioned throughput is distributed across a set of logical partitions.
 ### Creating a Container
-A container can be created inside an existing database in the cosmos DB account. As the REST api version which is used 
+A container can be created inside an existing database in the Cosmos DB account. As the REST API version which is used 
 in this implementation of the connector strictly supports the partition key, it is a necessity to provide the partition 
 key in the creation of a container. 
 
