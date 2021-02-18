@@ -124,7 +124,7 @@ client provided by the ballerina connector. For this, the connection configurati
 cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
 ```
 ### Step 4: Create a Document
-Now, with all the above steps followed you can create a new document inside Cosmos Container. As Cosmos DB is designed 
+Now, with all the above steps followed you can create a new document inside Cosmos container. As Cosmos DB is designed 
 to store and query JSON-like documents, the document you intend to store must be JSON. Then, the document must 
 have a unique ID to identify it. In this case the Document ID will be `my_document`. 
 
@@ -148,14 +148,14 @@ cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_
         valueOfPartitionKey);
 ```
 Notes: <br/> 
-- This document is created inside already existing Container with ID `my_container` and the Container was created inside 
-a Database with ID `my_document`.
-- As this Container have selected path `/gender` as the partition key, the document you create should include that path 
+- This document is created inside already existing container with ID `my_container` and the container was created inside 
+a database with ID `my_document`.
+- As this container have selected path `/gender` as the partition key, the document you create should include that path 
 with a valid value.
 
 ### Step 5: List the Documents
-For listing the existing documents inside this Cosmos Container you have to give `my_database` and `my_container` as 
-parameters. Here, you will get a stream of Document records as the response. Using the ballerina Stream API you can 
+For listing the existing documents inside this Cosmos container you have to give `my_database` and `my_container` as 
+parameters. Here, you will get a stream of `Document` records as the response. Using the ballerina Stream API you can 
 access the returned results.
 ```ballerina
 stream<cosmosdb:Document> documentList = check azureCosmosClient-> getDocumentList("my_database", "my_container");
@@ -165,7 +165,7 @@ error? e = documentList.forEach(function (cosmosdb:Document document) {
 }
 ```
 ### Step 6: Query Documents
-Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Container you 
+Querying documents is one of the main use-cases supported by a database. For querying documents inside the container you 
 have created, you have to give `my_database` and `my_container` as parameters. A SQL query must be provided, which is 
 represented as a string. When executing a SQL query using the connector, there are specific ways you can write the query
 itself. More information on this can be found here: 
@@ -182,11 +182,11 @@ error? e =  queryResult.forEach(function (Document record){
                 log:printInfo(record);
             });
 ```
-Notes: <br/> As the Cosmos Containers are creating logical partitions with the partition key provided, you have to 
+Notes: <br/> As the Cosmos containers are creating logical partitions with the partition key provided, you have to 
 provide the `value of partition key`, if the querying must be done only considering that logical partition.
 
 ### Step 7: Delete a given Document
-Finally, you can delete the document you have created. For this operation to be done inside the Container created, 
+Finally, you can delete the document you have created. For this operation to be done inside the container created, 
 you have to give `my_database` and `my_container` as parameters. Apart from that, the ID of target document to delete
 `my_document` and `value of the partition key` of that document must be provided.
 ```ballerina
@@ -220,14 +220,14 @@ cosmosdb:ManagementClient managementClient = new(configuration);
 ### Step 4: Create new Database
 For creating a new database you have to provide a unique Database ID which does not already exist in the specific 
 Cosmos DB account. The ID for this example will be `my__new_database`. This operation will return a record of type 
-Database which contain the ID of the that database along with some other parameters.
+database which contain the ID of the that database along with some other parameters.
 ```ballerina
 cosmosdb:Database result = managementClient->createDatabase("my_new_database");
 ```
 ### Step 5: Create new Container
-You can create a Container inside the created Database. As the REST api version which is used in this implementation 
+You can create a container inside the created database. As the REST api version which is used in this implementation 
 of the connector strictly supports the partition key and logical partitioning, it is a necessity to provide the 
-partition key definition in the creation of a Container. For this Container it will be created inside `my_new_database` 
+partition key definition in the creation of a container. For this container it will be created inside `my_new_database` 
 and ID will be `my__new_container`. The path for partition key is `/gender`.
 
 ```ballerina
@@ -249,16 +249,16 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/partitioning-overview#choose-pa
 ## Data Plane operations
 ## Documents
 Azure cosmos DB allows the execution of CRUD operations on items separately. As this connector is using the Core API 
-underneath, an item may refer to a document in the Container. SQL API stores entities in JSON in a hierarchical 
+underneath, an item may refer to a document in the container. SQL API stores entities in JSON in a hierarchical 
 key-value document. The max document size in Cosmos DB is 2 MB.
 
 ### Create a Document
-This sample shows how to create a new Document inside a Container. The document contains information about a person's 
-family and his/her gender. The Container in which the document will be created has a partition key which has the path 
+This sample shows how to create a new document inside a container. This document contains information about a person's 
+family and his/her gender. The container in which the document will be created has a partition key which has the path 
 "/gender". So, the document you create should contain a value for that path. Here, you have to provide 
-Database ID, Container ID where the document will be created, A unique ID for the new Document and JSON object which 
-represent the Document. As the partition key is made mandatory for the Container, the value for that also should be 
-passed as a parameter.
+Database ID, Container ID where the document will be created, A unique ID for the new document and a JSON object which 
+represent the document. As the partition key is made mandatory for the container, the value for that also should be 
+passed as a parameter to the function.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -313,9 +313,9 @@ Must be a boolean value.
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/documents/create_document.bal
 
 ### Replace Document
-This sample shows how to replace an existing Document inside a Container. Similar to document creation but, it replaces 
+This sample shows how to replace an existing document inside a container. Similar to document creation but, it replaces 
 an existing document. An important thing about this operation is that you `cannot` replace the existing partition key 
-value for a Document. It should be the same value as the old Document. Refer more about replacing partition key values 
+value for a document. It should be the same value as the old document. Refer more about replacing partition key values 
 here: https://github.com/Azure/azure-sdk-for-js/issues/6324
 
 ```ballerina
@@ -374,8 +374,8 @@ a new document into an upsert request by using this parameter.
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/documents/replace_document.bal
 
 ### Get Document
-This sample shows how to get a document by it's ID. It returns the Document record along with some other parameters. As 
-the partition key is mandatory in the Container, for getDocument operation you need to provide the correct value for 
+This sample shows how to get a document by it's ID. It returns the `Document` record along with some other parameters. As 
+the partition key is mandatory in the container, for getDocument operation you need to provide the correct value for 
 that partition key.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -420,7 +420,7 @@ about Cosmos DB consistency levels can be found here: https://docs.microsoft.com
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/documents/get_document.bal
 
 ### List Documents
-This sample shows how you can get a list of all the Documents.Each result will be similar to a list of results returned 
+This sample shows how you can get a list of all the documents. Each result will be similar to a list of results returned 
 from getDocument operation. You have to provide the Database ID and Container ID as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -466,9 +466,9 @@ found here: https://docs.microsoft.com/en-us/azure/cosmos-db/change-feed
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/documents/list_documents.bal
 
 ### Delete Document
-This sample shows how to delete a Document which exists inside a Container. You have to specify the Database ID, 
-Container ID where the Document exists and the ID of Document ID of the Document you want to delete. The value of the 
-partition key for that specific document should also passed to it.
+This sample shows how to delete a document which exists inside a container. You have to specify the Database ID, 
+Container ID where the document exists and the ID of document you want to delete. The value of the partition key for 
+that specific document should also passed to the function.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
@@ -509,12 +509,11 @@ operation and it will return an HTTP 412 Precondition failure response code.
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/documents/delete_document.bal
 
 ### Querying Documents
-When executing a SQL query using the connector, there are specific ways you can write the query itself and provide the 
-optional parameters. As specified in the Cosmos DB documentation, SQL queries can be written in different ways for 
-querying Cosmos DB.
-Cosmos DB Ballerina connector allows the option to either to provide a query as a normal ballerina string or explicitly 
-specify the query parameters which matches with the SQL queries compatible with the REST API.
-
+When executing a SQL query using the connector, there are specific ways you can write the query itself. As specified in 
+the Cosmos DB documentation, SQL queries can be written in different ways for querying Cosmos DB. Cosmos DB Ballerina 
+connector allows the option to either to provide a query as a normal ballerina string which matches with the SQL queries 
+compatible with the REST API. This sample shows a query which will return all the data inside a document such that the 
+value for `/gender` is equals to 0.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
@@ -564,16 +563,16 @@ the user can either get the items in one page or get all the results related to 
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/documents/query_document.bal
 
-## Stored procedures
+## Stored Procedures
 A Stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
-collection as a single transaction. You can use Stored Procedures to manipulate one or more documents within a Container 
+collection as a single transaction. You can use stored procedures to manipulate one or more documents within a container 
 in Cosmos DB.
 
 ### Create Stored Procedure
-This sample shows how to create a Stored Procedure inside a Container. This Stored Procedure will return a 
+This sample shows how to create a stored procedures inside a container. This stored procedures will return a 
 response appending the given value inside the function to the response body. For this, you have 
-to provide the Database ID and the Container ID where the Stored Procedure is saved in. Apart from that, a unique ID 
-for Stored Procedure and a JavaScript function which represents the Stored Procedure should be provided as parameters. 
+to provide the Database ID and the Container ID where the stored procedures is saved in. Apart from that, a unique ID 
+for stored procedures and a JavaScript function which represents the stored procedures should be provided as parameters. 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
@@ -612,8 +611,8 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/stored-procedure/create_stored_procedure.bal
 
 ### Replace Stored Procedure
-This sample shows how to replace an existing Stored Procedure. This new Stored Procedure enhances the capabilities of 
-the earlier Stored Procedure by appending the function parameter passed through the request to a string inside the 
+This sample shows how to replace an existing stored procedures. This new stored procedures enhances the capabilities of 
+the earlier stored procedures by appending the function parameter passed through the request to a string inside the 
 function and returning it back to the caller. You can provide any JavaScript function as the new `storedProcedure`. 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -653,7 +652,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/stored-procedure/replace_stored_procedure.bal
 
 ### List Stored Procedures
-From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
+From this sample you can get a list of all the stored procedures inside a container. Each record in the result list will 
 contain a `StoredProcedure` and several other important information. You have to provide the Database ID and Container 
 ID as other mandatory parameters.
 ```ballerina
@@ -687,8 +686,8 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/stored-procedure/list_stored_procedure.bal
 
 ### Delete Stored Procedure
-This sample shows how to delete a Stored Procedure which exists inside a Container. You have to specify the Database ID, 
-Container ID where the Stored Procedure exists and the ID of the Stored Procedure you want to delete.
+This sample shows how to delete a stored procedures which exists inside a container. You have to specify the Database ID, 
+Container ID where the stored procedures exists and the ID of the stored procedures you want to delete.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
@@ -719,11 +718,11 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/data-operations/stored-procedure/delete_stored_procedure.bal
 
 ### Execute a Stored Procedure
-Stored Procedure is a piece of logic written in JavaScript which can be executed via an API call. Cosmos DB connector 
+Stored procedures is a piece of logic written in JavaScript which can be executed via an API call. Cosmos DB connector 
 explicitly gives the capability to execute stored procedures. They can be used in Azure databases to execute CRUD 
 operations on documents and also to read from the request body and write to the response body. More information about 
 this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs.
-This sample shows how to execute a Stored Procedure already existing inside a Container.
+This sample shows how to execute a stored procedures already existing inside a container.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
@@ -763,15 +762,15 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 
 ## Management Plane Operations
 ## Databases
-Management of Databases is a common practice in every organization. It is a kind of task which is usually done with the 
-administrator privileges in normal cases. The Databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
-management for Containers. One Cosmos DB account can contain one or more Databases inside it. Using the Ballerina 
-connector itself, you can manage these Databases. As Database operations are more of management operation type, they are 
+Management of databases is a common practice in every organization. It is a kind of task which is usually done with the 
+administrator privileges in normal cases. The databases in Azure Cosmos DB are like namespaces and it acts as a unit of 
+management for containers. One Cosmos DB account can contain one or more databases inside it. Using the Ballerina 
+connector itself, you can manage these databases. As database operations are more of management operation type, they are 
 included inside the management client of the connector.
 ### Creating a Database 
-Creation of Databases is a common capability of every Database. For creating a Database in Azure, you have to provide a 
-unique Database ID which does not already exist in the specific cosmos DB account. This operation will return a record 
-of type Database. This will contain the success as true if the operation is successful.
+Creation of databases is a common capability of every Database System. For creating a database in Azure, you have to 
+provide a unique Database ID which does not already exist in the specific cosmos DB account. This operation will return 
+a record of type `Database`. This will contain the success as true if the operation is successful.
 
 ```ballerina
 public function main() { 
@@ -788,7 +787,7 @@ public function main() {
     }
 }
 ```
-Notes: <br/> For creation of a Database you can configure a `throughputOption` which is an integer value or a record 
+Notes: <br/> For creation of a database you can configure a `throughputOption` which is an integer value or a record 
 type. 
 For example:
  
@@ -819,8 +818,8 @@ accounts can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/ser
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/database/create_database.bal
 
 ### Get one Database
-This operation is related to reading information about a Database which is already created inside the cosmos DB account. 
-It mainly returns the ID of the Database with resourceId. We can use the results to refer to a Database by it’s 
+This operation is related to reading information about a database which is already created inside the cosmos DB account. 
+It mainly returns the ID of the database with resourceId. We can use the results to refer to a database by it’s 
 `resourceId` which will be useful in query operations and creating offers.
 
 ```ballerina
@@ -851,8 +850,8 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/database/get_a_database.bal
 
 ### List All Databases
-When there is a need to list down all the Databases available inside a Cosmos DB account. This operation will return a 
-stream of Databases, each containing a record of type `Database`.
+When there is a need to list down all the databases available inside a Cosmos DB account. This operation will return a 
+stream of databases, each containing a record of type `Database`.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -882,7 +881,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/database/list_databases.bal
 
 ### Delete a Database
-This operation can be used for deleting a Database inside an Azure Cosmos DB account. It returns true if the Database is
+This operation can be used for deleting a database inside an Azure Cosmos DB account. It returns true if the database is
 deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
@@ -913,13 +912,13 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/database/delete_database.bal
 
 ## Containers
-A Container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
+A container in cosmos DB is a schema agnostic and it is a unit of scalability for the Cosmos DB. It is horizontally 
 partitioned and distributed across multiple regions. This is done according to the partition key and the items added to 
-the Container and the provisioned throughput is distributed across a set of logical partitions.
+the container and the provisioned throughput is distributed across a set of logical partitions.
 ### Creating a Container
-A Container can be created inside an existing Database in the cosmos DB account. As the REST api version which is used 
+A container can be created inside an existing database in the cosmos DB account. As the REST api version which is used 
 in this implementation of the connector strictly supports the partition key, it is a necessity to provide the partition 
-key in the creation of a Container. 
+key in the creation of a container. 
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -963,8 +962,8 @@ record type.
 
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/container/create_container.bal
 ### Get one Container
-This operation is related to reading information about a Container which is already created inside a Database. It mainly 
-returns the ID of the Container, The indexing policy and partition key along with the resourceId.
+This operation is related to reading information about a container which is already created inside a database. It mainly 
+returns the ID of the container, The indexing policy and partition key along with the resourceId.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -979,13 +978,14 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() {
     string databaseId = "my_database";
+    string containerId = "my_container";
 
-    log:print("Reading database by id");
-    var result = managementClient->getDatabase(databaseId);
+    log:print("Reading container info");
+    var result = managementClient->getContainer(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
-    if (result is cosmosdb:Database) {
+    if (result is cosmosdb:Container) {
         log:print(result.toString());
         log:print("Success!");
     }
@@ -994,8 +994,8 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/container/get_container.bal
 
 ### List all Containers
-When there is a need to list down all the Containers available inside a Database. This operation will return a stream of 
-Containers to the user each containing a record of type Container.
+When there is a need to list-down all the containers available inside a database. This operation will return a stream of 
+containers to the user each containing a record of type `Container`.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1032,8 +1032,8 @@ This item count decides the number of items returned per page. If this is not sp
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/container/list_containers.bal
 
 ### Delete a Container
-This operation can be used for deleting a Container inside a Database. It returns true if the Container is deleted 
-successfully or else returns an error in case there is a problem.
+This operation can be used for deleting a container inside a database. It returns `DeleteResponse` if the container is 
+deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1048,9 +1048,10 @@ cosmosdb:ManagementClient managementClient = new(managementConfig);
 
 public function main() {
     string databaseId = "my_database";
+    string containerId = "my_container";
 
-    log:print("Deleting database");
-    var result = managementClient->deleteDatabase(databaseId);
+    log:print("Deleting the container");
+    var result = managementClient->deleteContainer(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
@@ -1070,9 +1071,9 @@ refer to them when writing queries. User-defined functions provide “compute-on
 single document in Cosmos DB without any side-effects.
 
 ### Create User Defined Function
-This sample shows how to create a User Defined Function which will compute the tax amount for a given income amount. For 
-this operation, you have to provide the Database ID and the Container ID where the User Defined Function is saved in. 
-Apart from that, a unique ID for User Defined Function and a JavaScript function should be provided as parameters.
+This sample shows how to create a stored procedures which will compute the tax amount for a given income amount. For 
+this operation, you have to provide the Database ID and the Container ID where the stored procedures is saved in. 
+Apart from that, a unique ID for stored procedures and a JavaScript function should be provided as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
@@ -1115,10 +1116,10 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/user-defined-functions/create_udf.bal
 
 ### Replace User Defined Function
-This sample shows how you can replace an existing User Defined Function with a new one. Here, the name of the User 
+This sample shows how you can replace an existing stored procedures with a new one. Here, the name of the User 
 Defined Function is updated to a new one. When replacing, you have to provide the Database ID and the Container ID where 
-the User Defined Function is saved in and you should pass the ID of the User Defined Function to be replaced and the 
-JavaScript function which will replace the existing User Defined Function. 
+the stored procedures is saved in and you should pass the ID of the stored procedures to be replaced and the 
+JavaScript function which will replace the existing stored procedures. 
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1161,7 +1162,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/user-defined-functions/replace_udf.bal
 
 ### List User Defined Functions
-From this sample you can get a list of all the Stored Procedures inside a Container. Each record in the result list will 
+From this sample you can get a list of all the stored procedures inside a container. Each record in the result list will 
 contain a `UserDefinedFunction` and several other important information. You have to provide the Database ID and 
 Container ID as other mandatory parameters.
 ```ballerina
@@ -1196,8 +1197,8 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/user-defined-functions/list_udf.bal
 
 ### Delete User Defined Function
-This sample shows how to delete a User Defined Function which exists inside a Container. You have to specify the 
-Database ID, Container ID where the User Defined Function exists and the ID of the User Defined Function you want to 
+This sample shows how to delete a stored procedures which exists inside a container. You have to specify the 
+Database ID, Container ID where the stored procedures exists and the ID of the stored procedures you want to 
 delete.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1230,13 +1231,13 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 
 ## Triggers
 Trigger is a piece of application logic that can be executed before (pre-triggers) and after (post-triggers). You can 
-use Triggers to validate and/or modify data when a document is added, modified, or deleted within a Container. The 
+use Triggers to validate and/or modify data when a document is added, modified, or deleted within a container. The 
 Triggers does not accept any parameters or does not return any result set.
 
 ### Create Trigger
-In this sample shows how to create a Trigger which will update a Document with ID "_metadata" after creation of a new 
-Document in the Container. For this operation, you have to provide the Database ID and the Container ID where the 
-Trigger is saved in. A unique ID for Trigger and a JavaScript function should be provided to the `triggerFunction`record 
+In this sample shows how to create a trigger which will update a document with ID "_metadata" after creation of a new 
+document in the container. For this operation, you have to provide the Database ID and the Container ID where the 
+trigger is saved in. A unique ID for trigger and a JavaScript function should be provided to the `triggerFunction`record 
 type. Apart from that, you have to provide the `triggerOperation`, `triggerType`.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1296,8 +1297,8 @@ public function main() {
     }
 }
 ```
-Notes: <br/> When creating a Trigger, there are several required parameters we have to pass as parameters.
-- `triggerId` - A unique ID for the newly created Trigger
+Notes: <br/> When creating a trigger, there are several required parameters we have to pass as parameters.
+- `triggerId` - A unique ID for the newly created trigger
 - `triggerOperation` - The type of operation in which trigger will be invoked from. The acceptable values are `All`, 
 `Create`, `Replace`, and `Delete`.
 - `triggerType` - Specifies when the trigger will be fired, `Pre` or `Post`.
@@ -1306,10 +1307,10 @@ Notes: <br/> When creating a Trigger, there are several required parameters we h
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/triggers/create_trigger.bal
 
 ### Replace Trigger
-This sample shows how you can replace an existing Trigger with a new one. Here, the name of the Trigger is updated to a 
+This sample shows how you can replace an existing trigger with a new one. Here, the name of the trigger is updated to a 
 new one. When replacing, you should pass all mandatory parameters `triggerId`, `triggerOperation`, `triggerType` and 
 `triggerFunction`, with all the values filled correctly. (It is not mandatory to replace all parameters with a new value 
-but all the values should be passed). The `triggerId` should be the ID of the Trigger to be replaced.
+but all the values should be passed). The `triggerId` should be the ID of the trigger to be replaced.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
@@ -1371,7 +1372,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/triggers/replace_trigger.bal
 
 ### List Triggers
-From this sample you can get a list of all the Triggers inside a Container. Each record in the result list will 
+From this sample you can get a list of all the triggers inside a container. Each record in the result list will 
 contain a `Trigger` and several other important information. You have to provide the Database ID and Container ID as 
 other mandatory parameters.
 ```ballerina
@@ -1405,8 +1406,8 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/triggers/list_trigger.bal
 
 ### Delete Trigger
-This sample shows how to delete a Trigger which exists inside a Container. You have to specify the Database ID, 
-Container ID where the Trigger exists and the ID of the Trigger you want to delete.
+This sample shows how to delete a trigger which exists inside a container. You have to specify the Database ID, 
+Container ID where the trigger exists and the ID of the trigger you want to delete.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/config;
@@ -1440,14 +1441,14 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 ## Users
 User management operations in Cosmos DB are strictly related with the `Master Key/Primary Key` of the Cosmos DB account. 
 A user acts as a namespace, scoping permissions on collections, documents, attachment, stored procedures, triggers, and 
-user-defined functions. The User construct lives under a Database resource and thus cannot cross the Database boundary 
+user-defined functions. The User construct lives under a database resource and thus cannot cross the database boundary 
 it is under. The ballerina connector implementation facilitates creating a new User, replacing User ID, get, list and 
 delete of Users in a Cosmos DB account. More information about users can be found here: 
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/users
 
 ### Create User
-Users are stored within the context of the Database in Cosmos DB. Each User has a set of unique named permissions. So in 
-this operation an instance of User for a specific Database is created. The things you need to create a User in Cosmos DB 
+Users are stored within the context of the database in Cosmos DB. Each User has a set of unique named permissions. So in 
+this operation an instance of User for a specific database is created. The things you need to create a User in Cosmos DB 
 is the Database ID and a unique ID for the User. Here `my_database` and `my_user` are given as parameters respectively.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1544,7 +1545,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/users-permissions/user/get_user.bal
 
 ### List Users
-From this operation you can get a list of all the users who are scoped into a given Database. Each record returned will 
+From this operation you can get a list of all the users who are scoped into a given database. Each record returned will 
 contain information about each User. Each result will be similar to a list of results returned from getUser operation. 
 You have to provide the Database ID which is `my_database` as a parameter.
 ```ballerina
@@ -1813,7 +1814,7 @@ public function main() {
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/users-permissions/permission/delete_permission.bal
 
 ## Offers
-Cosmos DB Containers have either user-defined performance levels or pre-defined performance levels defined for each of 
+Cosmos DB containers have either user-defined performance levels or pre-defined performance levels defined for each of 
 them. The operations on offers support replacing existing offers, listing and reading them and querying offers.
 
 Note: <br/>Operations on offers are not supported in `Serverless` accounts because they don’t specifically have a 
