@@ -1,5 +1,5 @@
 The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed 
-multi-model database which is used for managing data across the world. Key purposes of the Azure Cosmos DB is to achieve 
+multi-model database which is used for managing data across the world. The key purpose of the Azure Cosmos DB is to achieve 
 low latency and high availability while maintaining a flexible scalability. 
 The Ballerina Cosmos DB connector allows you to connect to an Azure Cosmos DB resource from Ballerina and perform 
 various operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`,
@@ -85,7 +85,7 @@ public function main() {
 ```
 ### Inserting a Document
 Azure Cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath 
-the connector, an item may refer to a document in the container. SQL API stores entities in JSON in a hierarchical 
+the connector, an item may refer to a document in the container. SQL API stores entities as JSON in a hierarchical 
 key-value document. The max document size in Cosmos DB is 2 MB.
 
 ```ballerina
@@ -110,7 +110,7 @@ public function main() {
 }
 ```
 ### List Documents
-Usually Cosmos DB provides an json array of json objects as the response for list operations. But, the connector 
+Usually, Cosmos DB provides an array of JSON objects as the response for list operations. But, the connector 
 has handled this array and instead of that it provides streaming capabilities for these kinds of operations. Apart from 
 that, Cosmos DB originally allows pagination of results returned list operations.
 
