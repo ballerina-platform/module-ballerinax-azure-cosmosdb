@@ -25,16 +25,15 @@ public type Configuration record {|
 
 # Represents matadata headers which will return for a delete request.
 # 
-# + sessionToken - Session token of the request
+# + sessionToken - Session token from the response
 public type DeleteResponse record {|
     string sessionToken;
 |};
 
 # Represents the common elements representing information.
 # 
-# + resourceId - Resource id (_rid) - A unique identifier which is used internally for placement and navigation of the 
-#                resource
-# + selfReference - Self reference (_self) - A unique addressable URI for the resource
+# + resourceId - A unique identifier which is used internally for placement and navigation of the resource
+# + selfReference - A unique addressable URI for the resource
 # + eTag - Resource etag for the resource retrieved
 # + sessionToken - Session token of the request
 public type Commons record {|
@@ -67,7 +66,7 @@ public type Container record {|
 # Represent the parameters representing information about a document.
 # 
 # + id - User generated unique ID for the document 
-# + documentBody - JSON document
+# + documentBody - The document reprsented as a map of json
 public type Document record {|
     string id;
     *Commons;
@@ -77,7 +76,7 @@ public type Document record {|
 # Represent the parameters necessary to create an indexing policy when creating a container.
 # 
 # + indexingMode - Mode of indexing
-# + automatic - Whether indexing is automatic or not
+# + automatic - Specify whether indexing is done automatically or not
 # + includedPaths - Array of type IncludedPath representing included paths
 # + excludedPaths - Array of type IncludedPath representing excluded paths
 public type IndexingPolicy record {|
@@ -89,8 +88,8 @@ public type IndexingPolicy record {|
 
 # Represent the necessary parameters of included path type.
 # 
-# + path - Path for which the indexing behavior applies to
-# + indexes - Array of type Index representing index values
+# + path - Path to which the indexing behavior applies to
+# + indexes - Array of type Index, representing index values
 public type IncludedPath record {|
     string path;
     Index[] indexes = [];
@@ -108,8 +107,8 @@ public type ExcludedPath record {|
 # + kind - Type of index. Can be `HASH`, `RANGE` or `SPATIAL`
 # + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon` 
 #              or `LineString`
-# + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for Number, 
-#               and 1-100 for String. Not applicable for Point, Polygon, and LineString data types. Default is -1.
+# + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for `Number`, 
+#               and 1-100 for `String`.Not applicable for `Point`, `Polygon`, and `LineString` data types.Default is -1.
 public type Index record {|
     IndexType kind = HASH;
     IndexDataType dataType = STRING;
@@ -121,7 +120,7 @@ public type Index record {|
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
 #           single value.
 # + kind - Algorithm used for partitioning. Only `Hash` is supported.
-# + keyVersion - Version of partition key
+# + keyVersion - Version of partition key. Default is `1`. To use the large partition key, set the version to 2. 
 public type PartitionKey record {|
     string[] paths = [];
     readonly string kind = PARTITIONING_ALGORITHM_TYPE_HASH;
@@ -189,7 +188,7 @@ public type User record {|
 # + id - User generated unique ID for the permission
 # + permissionMode - Access mode for the resource, Should be `All` or `Read`
 # + resourcePath - Full addressable path of the resource associated with the permission
-# + token - System generated `Resource Token` for the particular resource and user
+# + token - System generated `Resource-Token` for the particular resource and user
 public type Permission record {|
     string id;
     *Commons;
@@ -206,7 +205,7 @@ public type Permission record {|
 # + offerType - Optional. Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
 # + content - Information about the offer
 # + resourceResourceId - The resource id(_rid) of the collection
-# + resourceSelfLink - The self-link of the collection
+# + resourceSelfLink - The self-link(_self) of the collection
 public type Offer record {|
     string id;
     *Commons;
@@ -239,7 +238,7 @@ public type DocumentReplaceOptions record {|
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
-# + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
+# + sessionToken - Echo the latest read value of `session token header` to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
 # + partitionKeyRangeId - The partition key range ID for reading data
 public type DocumentListOptions record {|
@@ -263,7 +262,7 @@ public type StoredProcedureOptions record {|
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
-# + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
+# + sessionToken - Echo the latest read value of `session token header` to acquire session level consistency
 public type ResourceReadOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;

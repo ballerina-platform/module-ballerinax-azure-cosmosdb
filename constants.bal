@@ -16,14 +16,11 @@
 
 # Represents the Consistency Level Override for document create and update.
 # 
-# + STRONG - `Strong` consistency level where Users are always guaranteed to read the latest committed write
-# + BOUNDED - `Bounded` consistency level where Reads might lag behind writes behind at most K updates of an item or by 
-#              T time interval
-# + SESSION - `Session` consistency level where in a single client session reads are guaranteed to honor the 
-#              consistent-prefix, monotonic reads, monotonic writes, read-your-writes, and write-follows-reads 
-#              guarantees
-# + EVENTUAL - `Eventual` consistency level where there's no ordering guarantee for reads. In the absence of any further 
-#               writes, the replicas eventually converge.
+# + STRONG - Users are always guaranteed to read the latest committed write
+# + BOUNDED - Reads might lag behind writes behind at most K updates of an item or by T time interval
+# + SESSION - Reads are guaranteed to honor the consistent-prefix, monotonic reads, monotonic writes, read-your-writes, 
+#             and write-follows-reads guarantees in a single client session.
+# + EVENTUAL - No ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge.
 public enum ConsistencyLevel {
     STRONG = "Strong",
     BOUNDED = "Bounded",
@@ -33,8 +30,8 @@ public enum ConsistencyLevel {
 
 # Represents whether to include or exclude the document in indexing.
 #
-# + INCLUDE - `Include` adds the document to the index
-# + EXCLUDE - `Exclude` omits the document from indexing
+# + INCLUDE - Adds the document to the index
+# + EXCLUDE - Omits the document from indexing
 public enum IndexingDirective {
     INCLUDE = "Include",
     EXCLUDE = "Exclude"
@@ -42,9 +39,9 @@ public enum IndexingDirective {
 
 # Represents the type of an Index.
 # 
-# + HASH - `Hash` indexes are useful for equality comparisons
-# + RANGE - `Range` indexes are useful for equality, range comparisons and sorting
-# + SPATIAL - `Spatial` indexes are useful for spatial queries
+# + HASH - Useful for equality comparisons
+# + RANGE - Useful for equality, range comparisons and sorting
+# + SPATIAL - Useful for spatial queries
 public enum IndexType {
     HASH = "Hash",
     RANGE = "Range",
@@ -68,10 +65,10 @@ public enum IndexDataType {
 
 # Type of operation that invokes the trigger.
 # 
-# + ALL - `All` where trigger fires in all create, replace and delete operations
-# + CREATE - `Create` trigger fires only in a create operations
-# + REPLACE - `Replace` trigger fires only in a replace operations
-# + DELETE - `Delete` trigger fires only in a delete operations
+# + ALL - Trigger fires in all create, replace and delete operations
+# + CREATE - Trigger fires only in a create operations
+# + REPLACE - Trigger fires only in a replace operations
+# + DELETE - Trigger fires only in a delete operations
 public enum TriggerOperation {
     ALL = "All",
     CREATE = "Create",
@@ -81,16 +78,16 @@ public enum TriggerOperation {
 
 # When is the trigger is fired.
 # 
-# + PRE - `Pre` triggers fire before an operation 
-# + POST - `Post` triggers fires after an operation
+# + PRE - Triggers fire before an operation 
+# + POST - Triggers fires after an operation
 public enum TriggerType {
     PRE = "Pre",
     POST = "Post"
 }
 
 # The access mode for the resource.
-# + ALL_PERMISSION - `All` provides read, write, and delete access to a resource
-# + READ_PERMISSION - `Read` restricts the user to read access on the resource
+# + ALL_PERMISSION - Provides read, write, and delete access to a resource
+# + READ_PERMISSION - Restricts the user to have only read access to the resource
 public enum PermisssionMode {
     ALL_PERMISSION = "All",
     READ_PERMISSION = "Read"
@@ -98,8 +95,8 @@ public enum PermisssionMode {
 
 # The specific version for a given offer.
 # 
-# + PRE_DEFINED - `V1` represents pre-defined throughput levels
-# + USER_DEFINED - `V2` represents user-defined throughput levels
+# + PRE_DEFINED - Represents pre-defined throughput levels
+# + USER_DEFINED - Represents user-defined throughput levels
 public enum OfferVersion {
     PRE_DEFINED = "V1",
     USER_DEFINED = "V2"
@@ -107,10 +104,10 @@ public enum OfferVersion {
 
 # The performance levels for a specific throughput level.
 # 
-# + LEVEL_S1 - `S1` represents performance level for pre-defined throughput level 
-# + LEVEL_S2 - `S2` represents performance level for pre-defined throughput level
-# + LEVEL_S3 - `S3` represents performance level for pre-defined throughput level
-# + INVALID - The performance level is set `Invalid` for `V2` user-defined throughput levels
+# + LEVEL_S1 - Performance level for pre-defined throughput level 
+# + LEVEL_S2 - Performance level for pre-defined throughput level
+# + LEVEL_S3 - Performance level for pre-defined throughput level
+# + INVALID - Performance level is set `Invalid` for `V2`, user-defined throughput levels
 public enum OfferType {
     LEVEL_S1 = "S1",
     LEVEL_S2 = "S2",
@@ -120,7 +117,7 @@ public enum OfferType {
 
 # Use to retrieve only the incremental changes to documents within the collection.
 # 
-# + INCREMENTAL - Must be set to `Incremental feed`, or omitted otherwise
+# + INCREMENTAL - Provides a sorted list of documents that were changed in the order in which they were modified
 public enum ChangeFeedOption {
     INCREMENTAL = "Incremental feed"
 }
