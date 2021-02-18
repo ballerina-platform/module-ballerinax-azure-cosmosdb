@@ -17,20 +17,20 @@
 import ballerina/lang.array as array;
 import ballerina/http;
 
-# Maps the JSON response returned from the request into record type of DeleteResponse.
+# Maps the JSON response returned from the request into record type of `DeleteResponse`.
 # 
 # + response - A HTTP response object
-# + return - An instance of record type DeleteResponse
+# + return - An instance of record type `DeleteResponse`
 isolated function mapHeadersToResultType(http:Response response) returns @tainted DeleteResponse {
     return {
         sessionToken: response.getHeader(SESSION_TOKEN_HEADER)
     };
 }
 
-# Maps the JSON response returned from the request into record type of Database.
+# Maps the JSON response returned from the request into record type of `Database`.
 # 
 # + payload - A JSON object returned from request
-# + return - An instance of record type Database
+# + return - An instance of record type `Database`
 isolated function mapJsonToDatabaseType(json payload) returns Database {
     return {
         id: <string>payload.id,
@@ -40,10 +40,10 @@ isolated function mapJsonToDatabaseType(json payload) returns Database {
     };
 }
 
-# Maps the JSON response returned from the request into record type of Container.
+# Maps the JSON response returned from the request into record type of `Container`.
 # 
 # + payload - A JSON object returned from request
-# + return - An instance of record type Container
+# + return - An instance of record type `Container`
 isolated function mapJsonToContainerType(json payload) returns @tainted Container {
     return {
         id: <string>payload.id,
@@ -55,10 +55,10 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
     };
 }
 
-# Maps the JSON response returned from the request into record type of IndexingPolicy.
+# Maps the JSON response returned from the request into record type of `IndexingPolicy`.
 # 
 # + payload - The JSON object returned from request
-# + return - An instance of record type IndexingPolicy
+# + return - An instance of record type `IndexingPolicy`
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
         indexingMode: <string>payload.indexingMode,
@@ -68,10 +68,10 @@ isolated function mapJsonToIndexingPolicy(json payload) returns @tainted Indexin
     };
 }
 
-# Maps the JSON response returned from the request into record type of IncludedPath.
+# Maps the JSON response returned from the request into record type of `IncludedPath`.
 # 
 # + payload - The JSON object returned from request
-# + return - An instance of record type IncludedPath
+# + return - An instance of record type `IncludedPath`
 isolated function mapJsonToIncludedPathsType(json payload) returns @tainted IncludedPath {
     IncludedPath includedPath = {
         path: let var path = payload.path in path is string ? path : EMPTY_STRING
@@ -83,20 +83,20 @@ isolated function mapJsonToIncludedPathsType(json payload) returns @tainted Incl
     return includedPath;
 }
 
-# Maps the JSON response returned from the request into record type of ExcludedPath.
+# Maps the JSON response returned from the request into record type of `ExcludedPath`.
 # 
 # + payload - The JSON object returned from request
-# + return - An instance of record type ExcludedPath
+# + return - An instance of record type `ExcludedPath`
 isolated function mapJsonToExcludedPathsType(json payload) returns @tainted ExcludedPath {
     return {
         path: let var path = payload.path in path is string ? path : EMPTY_STRING
     };
 }
 
-# Maps the JSON response returned from the request into record type of Document.
+# Maps the JSON response returned from the request into record type of `Document`.
 # 
 # + payload - A JSON object returned from request
-# + return - An instance of record type Document
+# + return - An instance of record type `Document`
 isolated function mapJsonToDocumentType(json payload) returns @tainted Document {
     return {
         id: <string>payload.id,
@@ -110,7 +110,7 @@ isolated function mapJsonToDocumentType(json payload) returns @tainted Document 
 # Format the JSON map returned from the request to contain only the document. 
 # 
 # + reponsePayload - A JSON map which contains JSON payload returned from the request
-# + return - JSON object which contains only the document
+# + return - Map of json which contains only the document
 isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<json> {
     final var keysToDelete = [JSON_KEY_ID, JSON_KEY_RESOURCE_ID, JSON_KEY_SELF_REFERENCE, JSON_KEY_ETAG, 
             JSON_KEY_TIMESTAMP, JSON_KEY_ATTACHMENTS];
@@ -120,10 +120,10 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<js
     return reponsePayload;
 }
 
-# Maps the JSON response returned from the request into record type of PartitionKey.
+# Maps the JSON response returned from the request into record type of `PartitionKey`.
 # 
 # + payload - The JSON object returned from request
-# + return - An instance of record type PartitionKey
+# + return - An instance of record type `PartitionKey`
 isolated function convertJsonToPartitionKeyType(json payload) returns @tainted PartitionKey {
     return {
         paths: let var paths = <json[]>payload.paths in convertToStringArray(paths),
@@ -131,10 +131,10 @@ isolated function convertJsonToPartitionKeyType(json payload) returns @tainted P
     };
 }
 
-# Maps the JSON response returned from the request into record type of PartitionKeyRange.
+# Maps the JSON response returned from the request into record type of `PartitionKeyRange`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type PartitionKeyRange
+# + return - An instance of record type `PartitionKeyRange`
 isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted PartitionKeyRange {
     return {
         id: <string>payload.id,
@@ -146,10 +146,10 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
     };
 }
 
-# Maps the JSON response returned from the request into record type of Index.
+# Maps the JSON response returned from the request into record type of `Index`.
 # 
 # + payload - A JSON object returned from request
-# + return - An instance of record type Index
+# + return - An instance of record type `Index`
 isolated function mapJsonToIndexType(json payload) returns Index {
     return {
         kind: let var kind = <string>payload.kind in getIndexType(kind),
@@ -158,10 +158,10 @@ isolated function mapJsonToIndexType(json payload) returns Index {
     };
 }
 
-# Maps the JSON response returned from the request into record type of StoredProcedure.
+# Maps the JSON response returned from the request into record type of `StoredProcedure`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type StoredProcedure
+# + return - An instance of record type `StoredProcedure`
 isolated function mapJsonToStoredProcedure(json payload) returns @tainted StoredProcedure {
     return {
         id: <string>payload.id,
@@ -172,10 +172,10 @@ isolated function mapJsonToStoredProcedure(json payload) returns @tainted Stored
     };
 }
 
-# Maps the JSON response returned from the request into record type of UserDefinedFunction.
+# Maps the JSON response returned from the request into record type of `UserDefinedFunction`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type UserDefinedFunction
+# + return - An instance of record type `UserDefinedFunction`
 isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted UserDefinedFunction {
     return {
         id: <string>payload.id,
@@ -186,10 +186,10 @@ isolated function mapJsonToUserDefinedFunction(json payload) returns @tainted Us
     };
 }
 
-# Maps the JSON response returned from the request into record type of Trigger.
+# Maps the JSON response returned from the request into record type of `Trigger`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type Trigger
+# + return - An instance of record type `Trigger`
 isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
     return {
         id: <string>payload.id,
@@ -202,10 +202,10 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
     };
 }
 
-# Maps the JSON response returned from the request into record type of User.
+# Maps the JSON response returned from the request into record type of `User`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type User
+# + return - An instance of record type `User`
 isolated function mapJsonToUserType(json payload) returns @tainted User {
     return {
         id: <string>payload.id,
@@ -216,10 +216,10 @@ isolated function mapJsonToUserType(json payload) returns @tainted User {
     };
 }
 
-# Maps the JSON response returned from the request into record type of Permission.
+# Maps the JSON response returned from the request into record type of `Permission`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type Permission
+# + return - An instance of record type `Permission`
 isolated function mapJsonToPermissionType(json payload) returns @tainted Permission {
     return {
         id: <string>payload.id,
@@ -232,10 +232,10 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
     };
 }
 
-# Maps the JSON response returned from the request into record type of Offer.
+# Maps the JSON response returned from the request into record type of `Offer`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type Offer.
+# + return - An instance of record type `Offer`.
 isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     return {
         id: <string>payload.id,
@@ -250,10 +250,10 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     };
 }
 
-# Convert JSON array of database information in to an array of type Database.
+# Convert JSON array of database information in to an array of type `Database`.
 # 
 # + sourceDatabaseArrayJsonObject - JSON object which contain the array of database information
-# + return - An array of type Database
+# + return - An array of type `Database`
 isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns Database[] {
     Database[] databases = [];
     foreach json databaseObject in sourceDatabaseArrayJsonObject {
@@ -263,10 +263,10 @@ isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) r
     return databases;
 }
 
-# Convert JSON array of container information in to an array of type Container.
+# Convert JSON array of container information in to an array of type `Container`.
 # 
 # + sourceContainerArrayJsonObject - JSON object which contain the array of container information
-# + return - An array of type Container
+# + return - An array of type `Container`
 isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject) returns Container[] {
     Container[] containers = [];
     foreach json jsonCollection in sourceContainerArrayJsonObject {
@@ -276,10 +276,10 @@ isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject)
     return containers;
 }
 
-# Convert JSON array of document information in to an array of type Document.
+# Convert JSON array of document information in to an array of type `Document`.
 # 
 # + sourceDocumentArrayJsonObject - JSON object which contain the array of document information
-# + return - An array of type Document
+# + return - An array of type `Document`
 isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns Document[] {
     Document[] documents = [];
     foreach json documentObject in sourceDocumentArrayJsonObject {
@@ -289,10 +289,10 @@ isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) r
     return documents;
 }
 
-# Convert JSON array of stored procedure information in to an array of type StoredProcedure.
+# Convert JSON array of stored procedure information in to an array of type `StoredProcedure`.
 # 
 # + sourceStoredProcedureArrayJsonObject - JSON object which contain the array of stored procedure information
-# + return - An array of type StoredProcedure
+# + return - An array of type `StoredProcedure`
 isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArrayJsonObject) returns StoredProcedure[] {
     StoredProcedure[] storedProcedures = [];
     foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
@@ -302,10 +302,10 @@ isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArra
     return storedProcedures;
 }
 
-# Convert JSON array of user defined function information in to an array of type UserDefinedFunction.
+# Convert JSON array of user defined function information in to an array of type `UserDefinedFunction`.
 # 
 # + sourceUdfArrayJsonObject - JSON object which contain the array of user defined function information
-# + return - An array of type UserDefinedFunction
+# + return - An array of type `UserDefinedFunction`
 isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns UserDefinedFunction[] {
     UserDefinedFunction[] userDefinedFunctions = [];
     foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
@@ -315,10 +315,10 @@ isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonOb
     return userDefinedFunctions;
 }
 
-# Convert JSON array of trigger information in to an array of type Trigger.
+# Convert JSON array of trigger information in to an array of type `Trigger`.
 # 
 # + sourceTriggerArrayJsonObject - JSON object which contain the array of trigger information
-# + return - An array of type Trigger
+# + return - An array of type `Trigger`
 isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns Trigger[] {
     Trigger[] triggers = [];
     foreach json triggerObject in sourceTriggerArrayJsonObject {
@@ -328,10 +328,10 @@ isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) ret
     return triggers;
 }
 
-# Convert JSON array of user information in to an array of type User.
+# Convert JSON array of user information in to an array of type `User`.
 # 
 # + sourceUserArrayJsonObject - JSON object which contain the array of user information
-# + return - An array of type User
+# + return - An array of type `User`
 isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns User[] {
     User[] users = [];
     foreach json userObject in sourceUserArrayJsonObject {
@@ -341,10 +341,10 @@ isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns U
     return users;
 }
 
-# Convert JSON array of permission information in to an array of type Permission.
+# Convert JSON array of permission information in to an array of type `Permission`.
 # 
 # + sourcePermissionArrayJsonObject - JSON object which contain the array of permission information
-# + return - An array of type Permission
+# + return - An array of type `Permission`
 isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns Permission[] {
     Permission[] permissions = [];
     foreach json permissionObject in sourcePermissionArrayJsonObject {
@@ -354,10 +354,10 @@ isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObjec
     return permissions;
 }
 
-# Convert JSON array of offer infromation in to an array of type Offer.
+# Convert JSON array of offer infromation in to an array of type `Offer`.
 # 
 # + sourceOfferArrayJsonObject - JSON object which contain the array of offer information
-# + return - An array of type Offer
+# + return - An array of type `Offer`
 isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns Offer[] {
     Offer[] offers = [];
     foreach json offerObject in sourceOfferArrayJsonObject {
@@ -367,10 +367,10 @@ isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns
     return offers;
 }
 
-# Convert JSON array of included path information in to an array of type IncludedPath.
+# Convert JSON array of included path information in to an array of type `IncludedPath`.
 # 
 # + sourcePathArrayJsonObject - JSON object which contain the array of included path information
-# + return - An array of type IncludedPath
+# + return - An array of type `IncludedPath`
 isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted IncludedPath[] {
     IncludedPath[] includedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {
@@ -380,10 +380,10 @@ isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) 
     return includedPaths;
 }
 
-# Convert JSON array of excluded path information in to an array of type ExcludedPath.
+# Convert JSON array of excluded path information in to an array of type `ExcludedPath`.
 # 
 # + sourcePathArrayJsonObject - JSON object which contain the array of excluded path information
-# + return - An array of type ExcludedPath.
+# + return - An array of type `ExcludedPath`.
 isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted ExcludedPath[] {
     ExcludedPath[] excludedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {
@@ -393,10 +393,10 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
     return excludedPaths;
 }
 
-# Convert JSON array of partition key ranges in to an array of type PartitionKeyRange.
+# Convert JSON array of partition key ranges in to an array of type `PartitionKeyRange`.
 # 
 # + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
-# + return - An array of type PartitionKeyRange
+# + return - An array of type `PartitionKeyRange`
 isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns @tainted 
         PartitionKeyRange[] {
     PartitionKeyRange[] partitionKeyRangesArray = [];
@@ -411,10 +411,10 @@ isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJ
     return partitionKeyRangesArray;
 }
 
-# Convert JSON array of indexes in to an array of type Index.
+# Convert JSON array of indexes in to an array of type `Index`.
 # 
 # + sourceIndexArrayJsonObject - JSON object which contain the array of index information
-# + return - An array of type Index
+# + return - An array of type `Index`
 isolated function convertToIndexArray(json[] sourceIndexArrayJsonObject) returns @tainted Index[] {
     Index[] indexes = [];
     foreach json indexObject in sourceIndexArrayJsonObject {

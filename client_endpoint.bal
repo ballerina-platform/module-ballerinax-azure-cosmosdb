@@ -38,7 +38,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the Container which Document belongs to
     # + document - A JSON document saved in the Database
     # + partitionKey - The value of partition key field of the Container 
-    # + documentCreateOptions - Optional. The DocumentCreateOptions which can be used to add addtional capabilities to 
+    # + documentCreateOptions - Optional. The `DocumentCreateOptions` which can be used to add addtional capabilities to 
     #                           the request.
     # + return - If successful, returns `Document`. Else returns `error`.
     remote function createDocument(string databaseId, string containerId, record {|string id; json...;|} document, 
@@ -110,7 +110,7 @@ public client class DataPlaneClient {
     # + databaseId - ID of the Database which Container belongs to
     # + containerId - ID of the Container which Document belongs to
     # + maxItemCount - Optional. Maximum number of Document records in one returning page.
-    # + documentListOptions - Optional. The DocumentListOptions which can be used to add addtional capabilities to the 
+    # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `stream<Document>` Else, returns `error`. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), DocumentListOptions? 
@@ -157,8 +157,8 @@ public client class DataPlaneClient {
     # + sqlQuery - A string containing the SQL query
     # + partitionKey - Optional. The value of partition key field of the container.
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
-    # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to the 
-    #                          request.
+    # + resourceQueryOptions - Optional. The `ResourceQueryOptions` which can be used to add addtional capabilities to 
+    #                          the request.
     # + return - If successful, returns a `stream<Document>`. Else returns `error`.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), 
         (int|float|decimal|string)? partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns @tainted 
@@ -283,7 +283,8 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure
     # + storedProcedureId - ID of the stored procedure to execute
-    # + storedProcedureOptions - Optional. A record of type StoredProcedureOptions to specify the additional parameters.
+    # + storedProcedureOptions - Optional. A record of type `StoredProcedureOptions` to specify the additional 
+    #                            parameters.
     # + return - If successful, returns `json` with the output from the executed function. Else returns `error`. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
             StoredProcedureOptions? storedProcedureOptions = ()) returns @tainted json|error { 

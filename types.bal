@@ -51,7 +51,7 @@ public type Database record {|
     *Commons;
 |};
 
-# Represents the elements representing information about a collection.
+# Represents the elements representing information about a container.
 # 
 # + id - User generated unique ID for the container
 # + indexingPolicy - Record of type IndexingPolicy
@@ -104,7 +104,7 @@ public type ExcludedPath record {|
 
 # Represent the record type with necessary parameters to represent an index. 
 # 
-# + kind - Type of index. Can be `HASH`, `RANGE` or `SPATIAL`
+# + kind - Type of index. Can be `Hash`, `Range` or `Spatial`
 # + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon` 
 #              or `LineString`
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for `Number`, 

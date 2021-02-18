@@ -35,7 +35,7 @@ function getTokenType(string token) returns string {
     }
 }
 
-# Extract the host of the cosmos db from the base URL.
+# Extract the host of the Cosmos DB from the base URL.
 # 
 # + url - The Base URL given by the user from which we want to extract host
 # + return - String representing the resource id
@@ -48,7 +48,7 @@ isolated function getHost(string url) returns string {
     return replacedString;
 }
 
-# Extract the resource type related to cosmos db from a given URL.
+# Extract the resource type related to Cosmos DB from a given URL.
 # 
 # + url - The URL from which we want to extract resource type
 # + return - String representing the resource type
@@ -67,7 +67,7 @@ isolated function getResourceType(string url) returns string {
     return resourceType;
 }
 
-# Extract the resource ID related to cosmos db from a given URL.
+# Extract the resource ID related to Cosmos DB from a given URL.
 # 
 # + url - The URL from which we want to extract resource type
 # + return - String representing the resource id
@@ -259,7 +259,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
     return check encoding:encodeUriComponent(authorizationString, "UTF-8");
 }
 
-# Handle success or error responses to requests and extract the json payload.
+# Handle success or error responses to requests and extract the JSON payload.
 #
 # + httpResponse - The http:Response returned from an HTTP request
 # + return - If successful, returns json. Else returns error. 
@@ -300,7 +300,7 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
     return;
 } 
 
-# Get a stream of json documents which is returned as query results.
+# Get a stream of JSON documents which is returned as query results.
 # 
 # + azureCosmosClient - Client which calls the azure endpoint
 # + path - Path to which API call is made
@@ -340,7 +340,7 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 # Create a stream from the array obtained from the request call.
 # 
 # + path - Path to which API call is made
-# + payload - json payload returned from the response
+# + payload - JSON payload returned from the response
 # + return - A stream<record{}> or error
 isolated function createStream(string path, json payload) returns @tainted stream<record{}>|error {
     record{}[] finalArray = [];

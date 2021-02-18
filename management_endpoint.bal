@@ -129,10 +129,10 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the Database the Container belongs to
     # + containerId - ID of the new Container. Must be a unique value.
-    # + partitionKey - A record of type PartitionKey
-    # + indexingPolicy - Optional. A record of type IndexingPolicy.
+    # + partitionKey - A record of type `PartitionKey`
+    # + indexingPolicy - Optional. A record of type `IndexingPolicy`.
     # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns Container. Else returns error.
+    # + return - If successful, returns `Container`. Else returns `error`.
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
             IndexingPolicy? indexingPolicy = (), (int|record{|int maxThroughput;|})? throughputOption = ()) 
             returns @tainted Container|error { 
@@ -163,8 +163,8 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the Database the Container belongs to
     # + containerId - ID of the new Container
-    # + partitionKey - A record of type PartitionKey
-    # + indexingPolicy - Optional. A record of type IndexingPolicy.
+    # + partitionKey - A record of type `PartitionKey`
+    # + indexingPolicy - Optional. A record of type `IndexingPolicy`.
     # + throughputOption - Optional. Throughput parameter of type int OR json.
     # + return - If successful, returns `Container` if a new container is created or `nil` if container already exists. 
     #            Else returns `error`.
@@ -327,7 +327,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database which container is created
     # + containerId - ID of the container which user defined function is created
     # + userDefinedFunctionid - Id of UDF to delete
-    # + resourceDeleteOptions - Optional. The ``ResourceDeleteOptions`` which can be used to add addtional 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
@@ -741,7 +741,7 @@ public client class ManagementClient {
     # 
     # + sqlQuery - A string value containing SQL query
     # + maxItemCount - Optional. Maximum number of offers in one returning page.
-    # + resourceQueryOptions - Optional. The ResourceQueryOptions which can be used to add addtional capabilities to 
+    # + resourceQueryOptions - Optional. The `ResourceQueryOptions` which can be used to add addtional capabilities to 
     #                          the request.
     # + return - If successful, returns a `stream<json>`. Else returns `error`.
     remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? resourceQueryOptions = ()) 
