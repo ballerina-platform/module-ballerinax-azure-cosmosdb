@@ -34,8 +34,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:StoredProcedure>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:StoredProcedure procedure) {
+            log:print(procedure.toString());
+        });
         log:print("Success!");
     }
 }

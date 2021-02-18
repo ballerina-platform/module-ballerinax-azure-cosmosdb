@@ -34,8 +34,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Permission>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Permission permission) {
+            log:print(permission.toString());
+        });
         log:print("Success!");
     }
 }

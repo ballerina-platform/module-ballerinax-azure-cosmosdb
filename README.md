@@ -182,8 +182,10 @@ parameters. Here, you will get a stream of json objects as the response. Using t
 the returned results.
 ```ballerina
 stream<cosmosdb:Document> documentList = check azureCosmosClient-> getDocumentList("my_database", "my_container");
-var document = documentList.next();
-log:print(document?.value);
+error? e = documentList.forEach(function (cosmosdb:Document document) {
+    log:print(document.toString());
+});
+}
 ```
 ### Step 9: Query Documents
 Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Database you 
@@ -199,7 +201,7 @@ int maxItemCount = 10;
 stream<Document> queryResult = check azureCosmosClient-> queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
         maxItemCount, partitionKeyValueMale);
 
-error? e =  resultStream.forEach(function (Document record){
+error? e =  queryResult.forEach(function (Document record){
                 log:printInfo(record);
             });
 ```
@@ -412,8 +414,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Document>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Document document) {
+            log:print(document.toString());
+        });
         log:print("Success!");
     }
 }
@@ -509,8 +512,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Document>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Document document) {
+            log:print(document.toString());
+        });
         log:print("Success!");
     }
 }
@@ -644,8 +648,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:StoredProcedure>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:StoredProcedure procedure) {
+            log:print(procedure.toString());
+        });
         log:print("Success!");
     }
 }
@@ -838,8 +843,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Database>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Database database) {
+            log:print(database.toString());
+        });
         log:print("Success!");
     }
 }
@@ -982,8 +988,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Container>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Container container) {
+            log:print(container.toString());
+        });
         log:print("Success!");
     }
 }
@@ -1149,8 +1156,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:UserDefinedFunction>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
+            log:print(udf.toString());
+        });
         log:print("Success!");
     }
 }
@@ -1358,8 +1366,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Trigger>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Trigger trigger) {
+            log:print(trigger.toString());
+        });
         log:print("Success!");
     }
 }
@@ -1529,8 +1538,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:User>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:User user) {
+            log:print(user.toString());
+        });
         log:print("Success!");
     }
 }
@@ -1731,8 +1741,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Permission>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Permission permission) {
+            log:print(permission.toString());
+        });
         log:print("Success!");
     }
 }

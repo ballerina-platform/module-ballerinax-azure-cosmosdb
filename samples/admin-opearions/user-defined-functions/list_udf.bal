@@ -34,8 +34,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:UserDefinedFunction>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
+            log:print(udf.toString());
+        });
         log:print("Success!");
     }
 }

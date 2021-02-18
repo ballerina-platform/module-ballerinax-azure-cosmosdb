@@ -33,8 +33,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Container>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Container container) {
+            log:print(container.toString());
+        });
         log:print("Success!");
     }
 }

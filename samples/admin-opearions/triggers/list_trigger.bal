@@ -34,8 +34,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Trigger>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Trigger trigger) {
+            log:print(trigger.toString());
+        });
         log:print("Success!");
     }
 }

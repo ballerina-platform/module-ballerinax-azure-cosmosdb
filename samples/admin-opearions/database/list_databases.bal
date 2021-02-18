@@ -31,8 +31,9 @@ public function main() {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Database>) {
-        var document = result.next();
-        log:print(document.toString());
+        error? e = result.forEach(function (cosmosdb:Database database) {
+            log:print(database.toString());
+        });
         log:print("Success!");
     }
 }
