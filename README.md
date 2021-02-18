@@ -99,61 +99,35 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 
 # Quickstart(s)
 
-## Management of Documents
-
+## CRUD opeartions on Documents
 ### Step 1: Import Cosmos DB Package
 First, import the ballerinax/azure_cosmosdb module into the Ballerina project.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 ```
-### Step 2: Initialize the cosmos DB Management Plane Client
-You can now make the connection configuration using the Master Key Token or Resource Token, and the resource URI to the 
-Cosmos DB Account. For executing management plane operations, the `ManagementClient` should be configured.
+### Step 2: Configure the connection to an existing Azure Cosmos DB account.
+You can now make the connection configuration using the `Master-Token` or `Resource Token`, and the resource URI to the 
+Cosmos DB Account. 
 ```ballerina
 cosmosdb:Configuration configuration = {
     baseUrl: <BASE_URL>,
     masterOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
 };
-
-cosmosdb:ManagementClient managementClient = new(configuration);
 ```
 Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`
 
-### Step 4: Create new Database
-You have to create a Database in Azure Account to create a document. For this you have to provide a unique Database ID 
-which does not already exist in the specific Cosmos DB account. The ID for this example will be `my_database`. This 
-operation will return a record of type Document. This will contain the success as `true` if the operation is successful. 
-```ballerina
-cosmosdb:Database result = managementClient->createDatabase("my_database");
-```
-### Step 5: Create new Container
-Then, you have to create a Container inside the created Database. As the REST api version which is used in this 
-implementation of the connector strictly supports the partition key, it is a necessity to provide the partition key 
-definition in the creation of a Container. For this Container it will be created inside `my_database` and ID will 
-be `my_container`. The path for partition key is `/gender`. We can set the version of the partition key to 1 or 2.
-```ballerina
-cosmosdb:PartitionKey partitionKeyDefinition = {
-    paths: ["/gender"],
-    keyVersion: 2
-};
-cosmosdb:Container containerResult = check managementClient-> createContainer("my_database", "my_container", 
-        partitionKeyDefinition);
-```
-Notes: <br/> For this operation, you have to have an understanding on how to select a suitable partition key according 
-to the nature of documents stored inside. The guide to select a better partition key can be found here: 
-https://docs.microsoft.com/en-us/azure/cosmos-db/partitioning-overview#choose-partitionkey
-
-
-### Step 6: Initialize the Cosmos DB Data Plane Client
-For continuing with the data plane operations in Cosmos DB you have to make use of the Data Plane client provided by the 
-ballerina connector. For this, the same connection configuration as the `ManagementClient` can be used.
+### Step 3: Initialize the Cosmos DB Data Plane Client
+You can now make the connection configuration using the `Master-Token` or `Resource-Token`, and the resource URI to the 
+Cosmos DB Account. For continuing with the data plane operations in Cosmos DB, you have to make use of the Data Plane 
+client provided by the ballerina connector. For this, the connection configuration above is be used.
 ```ballerina
 cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
 ```
-### Step 7: Create a Document
+### Step 4: Create a Document
 Now, with all the above steps followed you can create a new document inside Cosmos Container. As Cosmos DB is designed 
-to store and query JSON-like documents, the document you intend to store must be a JSON object. Then, the document must 
-have a unique ID to identify it. In this case the document ID will be `my_document`
+to store and query JSON-like documents, the document you intend to store must be JSON. Then, the document must 
+have a unique ID to identify it. In this case the Document ID will be `my_document`. 
+
 ```ballerina
 record {|string id; json...;|} document = {
         id: "my_document",
@@ -173,13 +147,16 @@ int valueOfPartitionKey = 0;
 cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document, 
         valueOfPartitionKey);
 ```
-Notes: <br/> As this container have selected `/gender` as the partition key for `my_container`, the document you create 
-should include that path with a valid value.
+Notes: <br/> 
+- This document is created inside already existing Container with ID `my_container` and the Container was created inside 
+a Database with ID `my_document`.
+- As this Container have selected path `/gender` as the partition key, the document you create should include that path 
+with a valid value.
 
-### Step 8: List the Documents
+### Step 5: List the Documents
 For listing the existing documents inside this Cosmos Container you have to give `my_database` and `my_container` as 
-parameters. Here, you will get a stream of json objects as the response. Using the ballerina Stream API you can access 
-the returned results.
+parameters. Here, you will get a stream of Document records as the response. Using the ballerina Stream API you can 
+access the returned results.
 ```ballerina
 stream<cosmosdb:Document> documentList = check azureCosmosClient-> getDocumentList("my_database", "my_container");
 error? e = documentList.forEach(function (cosmosdb:Document document) {
@@ -187,11 +164,11 @@ error? e = documentList.forEach(function (cosmosdb:Document document) {
 });
 }
 ```
-### Step 9: Query Documents
-Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Database you 
-have created, you have to give `my_database` and `my_container` as parameters. The SQL query must be provided as a 
-string. When executing a SQL query using the connector, there are specific ways you can write the query itself and 
-provide the optional parameters.More information on this can be found here: 
+### Step 6: Query Documents
+Querying documents is one of the main use-cases supported by a Database. For querying documents inside the Container you 
+have created, you have to give `my_database` and `my_container` as parameters. A SQL query must be provided, which is 
+represented as a string. When executing a SQL query using the connector, there are specific ways you can write the query
+itself. More information on this can be found here: 
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
 
 ```ballerina
@@ -206,16 +183,68 @@ error? e =  queryResult.forEach(function (Document record){
             });
 ```
 Notes: <br/> As the Cosmos Containers are creating logical partitions with the partition key provided, you have to 
-provide the value of partition key, if the querying must be done in that logical partition.
+provide the `value of partition key`, if the querying must be done only considering that logical partition.
 
-### Step 10: Delete a given Document
+### Step 7: Delete a given Document
 Finally, you can delete the document you have created. For this operation to be done inside the Container created, 
-you have to give `my_database` and `my_container` as parameters. Apart from that, the target document to delete
+you have to give `my_database` and `my_container` as parameters. Apart from that, the ID of target document to delete
 `my_document` and `value of the partition key` of that document must be provided.
 ```ballerina
 cosmosdb:DeleteResponse = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", 
         valueOfPartitionKey);
 ```
+
+## Basic Database administration operations 
+### Step 1: Import Cosmos DB Package
+First, import the ballerinax/azure_cosmosdb module into the Ballerina project.
+```ballerina
+import ballerinax/azure_cosmosdb as cosmosdb;
+```
+### Step 2: Configure the connection to an existing Azure Cosmos DB account.
+You can now make the connection configuration using the `Master-Token` or `Resource Token`, and the resource URI to the 
+Cosmos DB Account. 
+```ballerina
+cosmosdb:Configuration configuration = {
+    baseUrl: <BASE_URL>,
+    masterOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
+};
+```
+Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`
+
+### Step 3: Initialize the cosmos DB Management Plane Client
+For executing management plane operations, the `ManagementClient` should be configured.
+```ballerina
+cosmosdb:ManagementClient managementClient = new(configuration);
+```
+
+### Step 4: Create new Database
+For creating a new database you have to provide a unique Database ID which does not already exist in the specific 
+Cosmos DB account. The ID for this example will be `my__new_database`. This operation will return a record of type 
+Database which contain the ID of the that database along with some other parameters.
+```ballerina
+cosmosdb:Database result = managementClient->createDatabase("my_new_database");
+```
+### Step 5: Create new Container
+You can create a Container inside the created Database. As the REST api version which is used in this implementation 
+of the connector strictly supports the partition key and logical partitioning, it is a necessity to provide the 
+partition key definition in the creation of a Container. For this Container it will be created inside `my_new_database` 
+and ID will be `my__new_container`. The path for partition key is `/gender`.
+
+```ballerina
+cosmosdb:PartitionKey partitionKeyDefinition = {
+    paths: ["/gender"],
+    keyVersion: 2
+};
+cosmosdb:Container containerResult = check managementClient-> createContainer("my_database", "my_container", 
+        partitionKeyDefinition);
+```
+Notes: <br/> 
+-  We can set the version of the partition key to 1 or 2. This is an optional field, if not specified the default value 
+is 1. To use the large partition key, set the version to 2.
+- For this operation, you have to have an understanding on how to select a suitable partition key according 
+to the nature of documents stored inside. The guide to select a better partition key can be found here: 
+https://docs.microsoft.com/en-us/azure/cosmos-db/partitioning-overview#choose-partitionkey
+
 # Samples
 ## Data Plane operations
 ## Documents

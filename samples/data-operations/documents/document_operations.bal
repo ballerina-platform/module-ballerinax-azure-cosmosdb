@@ -32,7 +32,6 @@ public function main() {
     string containerId = "my_container";
     var uuid = createRandomUUIDWithoutHyphens();
     
-    // Create a new document
     log:print("Create a new document");
     string documentId = string `document_${uuid.toString()}`;
     record {|string id; json...;|} documentBody = {
@@ -52,7 +51,6 @@ public function main() {
     cosmosdb:Document documentResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
             documentBody, partitionKeyValue); 
 
-    //Create document specifying whether to include it in the indexing.
     log:print("Creating a new document allowing to include it in the indexing.");
     record {|string id; json...;|} documentIndexing = {
         id: string `documenti_${uuid.toString()}`,
@@ -77,7 +75,6 @@ public function main() {
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
     // error.
-    // Achieve session level consistancy when creating document
     log:print("Upserting the document");
     record {|string id; json...;|} upsertDocument = {
         id: string `documentu_${uuid.toString()}`,
@@ -100,7 +97,6 @@ public function main() {
     cosmosdb:Document documentUpsertResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
             upsertDocument, partitionKeyValue, upsertOptions);
 
-    // Replace document
     log:print("Replacing document");
     record {|string id; json...;|} newDocumentBody = {
         id: documentId,
@@ -123,7 +119,6 @@ public function main() {
     cosmosdb:Document returnedDocument = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
             partitionKeyValue);
 
-    // Read document with request options create this one for each
     log:print("Read the document with request options");
     cosmosdb:ResourceReadOptions options = {
         consistancyLevel: "Eventual"
@@ -131,11 +126,9 @@ public function main() {
     cosmosdb:Document document3 = checkpanic azureCosmosClient->getDocument(databaseId, containerId, documentId, 
             partitionKeyValue, options);
 
-    // Delete a document
     log:print("Deleting the document");
     _ = checkpanic azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
 
-    // Get the list of documents
     log:print("Getting list of documents");
     stream<cosmosdb:Document> documentList = checkpanic azureCosmosClient->getDocumentList(databaseId, containerId);
     log:print("Success!");

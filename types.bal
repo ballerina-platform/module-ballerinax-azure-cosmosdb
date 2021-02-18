@@ -237,7 +237,7 @@ public type DocumentReplaceOptions record {|
 
 # Represent the optional parameters which can be passed to the function when listing information about the documents.
 # 
-# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
+# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
@@ -261,7 +261,7 @@ public type StoredProcedureOptions record {|
 # Represent the optional parameters which can be passed to the function when reading the information about other 
 # resources in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions etc.
 # 
-# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
+# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
 public type ResourceReadOptions record {|
@@ -271,10 +271,10 @@ public type ResourceReadOptions record {|
 
 # Represent the optional parameters which can be passed to the function when querying containers.
 # 
+# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
+#                      The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
 # + enableCrossPartition - Boolean value specifying whether to allow cross partitioning
-# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Sesssion` or `Eventual`.
-#                      The override must be the same or weaker than the account’s configured consistency level.
 public type ResourceQueryOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
