@@ -289,3 +289,5 @@ public type ResourceDeleteOptions record {|
 
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
         ResourceQueryOptions|ResourceDeleteOptions;
+
+type PartitionKeyValue int|float|decimal|string;

@@ -73,7 +73,7 @@ function testCreateDatabaseUsingInvalidId() {
     string createDatabaseId = "";
     var result = azureCosmosManagementClient->createDatabase(createDatabaseId);
     if (result is Database) {
-        test:assertFail(msg = "Database created with  '' id value");
+        test:assertFail(msg = "Database created with '' id value");
     } else {
         var output = "";
     }
@@ -557,7 +557,7 @@ function testCreateStoredProcedure() {
     string createSprocBody = string `function (){
                                             var context = getContext();
                                             var response = context.getResponse();
-                                            response.setBody("Hello,  World");
+                                            response.setBody("Hello, World");
                                         }`;
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, createSprocBody);
@@ -629,7 +629,7 @@ function testGetAllStoredProcedures() {
     groups: ["storedProcedure"],
     dependsOn: [
         "testCreateStoredProcedure", 
-        "testExecuteOneStoredProcedure"    
+        "testExecuteOneStoredProcedure"
     ]
 }
 function testDeleteOneStoredProcedure() {
@@ -1048,7 +1048,7 @@ function testGetPermission() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: [  
+    dependsOn: [
         "testReplacePermission",
         "testGetPermission"
     ]
@@ -1131,7 +1131,7 @@ function testReplaceOffer() {
             test:assertFail(msg = result.message());
         }
     } else {
-        test:assertFail(msg = "Offer id  and resource ID are invalid");
+        test:assertFail(msg = "Offer id and resource ID are invalid");
     }
 }
 
@@ -1161,7 +1161,7 @@ function testReplaceOfferWithOptionalParameter() {
             test:assertFail(msg = result.message());
         }
     } else {
-        test:assertFail(msg = "Offer id  and resource ID are invalid");
+        test:assertFail(msg = "Offer id and resource ID are invalid");
     }
 }
 

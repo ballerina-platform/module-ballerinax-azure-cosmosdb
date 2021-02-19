@@ -250,8 +250,8 @@ isolated function getDateTime() returns string|error {
 # + return - If successful, returns string which is the hashed token signature. Else returns error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
         string tokenType, string date) returns string|error {
-    string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`+
-            string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
+    string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
+            + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
     byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest);
@@ -306,8 +306,8 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 # + path - Path to which API call is made
 # + request - HTTP request object 
 # + return - A stream<json>
-function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
-        stream<json>|stream<Document>|error {
+function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
+        @tainted stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
 
