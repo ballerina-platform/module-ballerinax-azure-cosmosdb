@@ -114,7 +114,7 @@ public client class DataPlaneClient {
     # + maxItemCount - Optional. Maximum number of `Document` records in one returning page.
     # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add addtional capabilities to the 
     #                         request.
-    # + return - If successful, returns `stream<Document>` Else, returns `error`. 
+    # + return - If successful, returns `stream<Document>`. Else, returns `error`. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
             DocumentListOptions? documentListOptions = ()) returns @tainted stream<Document>|error { 
         http:Request request = new;

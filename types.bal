@@ -108,7 +108,8 @@ public type ExcludedPath record {|
 # + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon` 
 #              or `LineString`.
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for `Number`, 
-#               and 1-100 for `String`.Not applicable for `Point`, `Polygon`, and `LineString` data types.Default is -1.
+#               and 1-100 for `String`. Not applicable for `Point`, `Polygon`, and `LineString` data types. Default is 
+#               -1.
 public type Index record {|
     IndexType kind = HASH;
     IndexDataType dataType = STRING;

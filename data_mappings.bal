@@ -235,7 +235,7 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
 # Maps the JSON response returned from the request into record type of `Offer`.
 # 
 # + payload - A tuple which contains headers and JSON object returned from request
-# + return - An instance of record type `Offer`.
+# + return - An instance of record type `Offer`
 isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     return {
         id: <string>payload.id,
@@ -383,7 +383,7 @@ isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) 
 # Convert JSON array of excluded path information in to an array of type `ExcludedPath`.
 # 
 # + sourcePathArrayJsonObject - JSON object which contain the array of excluded path information
-# + return - An array of type `ExcludedPath`.
+# + return - An array of type `ExcludedPath`
 isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) returns @tainted ExcludedPath[] {
     ExcludedPath[] excludedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {

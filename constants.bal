@@ -19,7 +19,7 @@
 # + STRONG - Users are always guaranteed to read the latest committed write
 # + BOUNDED - Reads might lag behind writes behind at most K updates of an item or by T time interval
 # + SESSION - Reads are guaranteed to honor the consistent-prefix, monotonic reads, monotonic writes, read-your-writes, 
-#             and write-follows-reads guarantees in a single client session.
+#             and write-follows-reads guarantees in a single client session
 # + EVENTUAL - No ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge.
 public enum ConsistencyLevel {
     STRONG = "Strong",
