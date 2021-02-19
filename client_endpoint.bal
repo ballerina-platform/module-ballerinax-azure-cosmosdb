@@ -34,8 +34,8 @@ public client class DataPlaneClient {
 
     # Create a document inside a container.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container which database belongs to
+    # + databaseId - ID of the database to which container belongs to
+    # + containerId - ID of the container to which document belongs to
     # + document - A JSON document saved in the database
     # + partitionKey - The value of partition key field of the container 
     # + documentCreateOptions - Optional. The `DocumentCreateOptions` which can be used to add addtional capabilities to 
@@ -59,8 +59,8 @@ public client class DataPlaneClient {
 
     # Replace a database inside a container.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container to replace
+    # + databaseId - ID of the database to which container belongs to
+    # + containerId - ID of the document to replace
     # + document - A JSON document saved in the database
     # + partitionKey - The value of partition key field of the container 
     # + documentReplaceOptions - Optional. The `DocumentReplaceOptions` which can be used to add addtional capabilities 
@@ -85,8 +85,8 @@ public client class DataPlaneClient {
     # Get information about one database in a container.
     # 
     # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container which database belongs to
-    # + documentId - Id of the database to retrieve 
+    # + containerId - ID of the container which document belongs to
+    # + documentId - Id of the document to retrieve 
     # + partitionKey - The value of partition key field of the container
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
     #                         request.
@@ -107,9 +107,9 @@ public client class DataPlaneClient {
 
     # List information of all the documents in a container.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container to which, database belongs to
-    # + maxItemCount - Optional. Maximum number of database records in one returning page.
+    # + databaseId - ID of the database to which container belongs to
+    # + containerId - ID of the container to which, documents belongs to
+    # + maxItemCount - Optional. Maximum number of `Document` records in one returning page.
     # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `stream<Document>` Else, returns `error`. 
@@ -129,8 +129,8 @@ public client class DataPlaneClient {
 
     # Delete a database in a container.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container which database belongs to
+    # + databaseId - ID of the database  to which container belongs to
+    # + containerId - ID of the container which document belongs to
     # + documentId - ID of the document to delete
     # + partitionKey - The value of partition key field of the container
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
@@ -152,7 +152,7 @@ public client class DataPlaneClient {
 
     # Query documents inside a container.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which container belongs to
     # + containerId - ID of the container to query
     # + sqlQuery - A string containing the SQL query
     # + partitionKey - Optional. The value of partition key field of the container.
@@ -186,8 +186,8 @@ public client class DataPlaneClient {
     # A stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
     # collection as a single transaction.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container which stored procedure will be created 
+    # + databaseId - ID of the database to which container belongs to
+    # + containerId - ID of the container where, stored procedure will be created 
     # + storedProcedureId - A unique ID for the newly created stored procedure
     # + storedProcedure - A JavaScript function
     # + return - If successful, returns a `StoredProcedure`. Else returns `error`. 
@@ -211,7 +211,7 @@ public client class DataPlaneClient {
 
     # Replace a stored procedure in a container with new one.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which container belongs to
     # + containerId - ID of the container which existing stored procedure belongs to
     # + storedProcedureId - The ID of the stored procedure to be replaced
     # + storedProcedure - A JavaScript function
@@ -236,7 +236,7 @@ public client class DataPlaneClient {
 
     # List information of all stored Procedures in a container.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which container belongs to
     # + containerId - ID of the container which contain the stored procedures
     # + maxItemCount - Optional. Maximum number of stored procedure records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
@@ -259,7 +259,7 @@ public client class DataPlaneClient {
 
     # Delete a stored procedure in a container.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which container belongs to
     # + containerId - ID of the container which contain the stored procedure
     # + storedProcedureId - ID of the stored procedure to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
@@ -280,7 +280,7 @@ public client class DataPlaneClient {
 
     # Execute a stored procedure in a container.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which container belongs to
     # + containerId - ID of the container which contain the stored procedure
     # + storedProcedureId - ID of the stored procedure to execute
     # + storedProcedureOptions - Optional. A record of type `StoredProcedureOptions` to specify the additional 
