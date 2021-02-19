@@ -209,8 +209,8 @@ public type Permission record {|
 public type Offer record {|
     string id;
     *Commons;
-    OfferVersion offerVersion = USER_DEFINED;
-    string offerType = INVALID;
+    OfferVersion offerVersion;
+    OfferType offerType;
     map<json> content;
     string resourceResourceId;
     string resourceSelfLink;

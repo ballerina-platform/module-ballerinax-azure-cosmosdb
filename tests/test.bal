@@ -1148,6 +1148,7 @@ function testReplaceOfferWithOptionalParameter() {
         Offer replaceOfferBody = {
             offerVersion: "V2",
             content: {"offerThroughput": 600},
+            offerType: "Invalid",
             resourceSelfLink: resourceSelfLink,
             resourceResourceId: string `${container?.resourceId.toString()}`,
             id: <string>offerId,

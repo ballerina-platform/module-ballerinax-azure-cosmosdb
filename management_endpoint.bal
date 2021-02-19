@@ -73,9 +73,9 @@ public client class ManagementClient {
         return result;
     }
 
-    # Retrive information of a given database in an Azure Cosmos DB account.
+    # Get information of a given database in an Azure Cosmos DB account.
     # 
-    # + databaseId - ID of the database to retrieve information 
+    # + databaseId - ID of the database 
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `Database`. Else returns `error`.
@@ -91,9 +91,9 @@ public client class ManagementClient {
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # List information of all Databases in an Azure Cosmos DB account.
+    # List information of all databases in an Azure Cosmos DB account.
     # 
-    # + maxItemCount - Optional. Maximum number of database records in one returning page.
+    # + maxItemCount - Optional. Maximum number of `Database` records in one returning page.
     # + return - If successful, returns `stream<Database>`. else returns `error`. 
     remote function listDatabases(int? maxItemCount = ()) returns @tainted stream<Database>|error {
         http:Request request = new;
@@ -127,7 +127,7 @@ public client class ManagementClient {
 
     # Create a container inside the given database.
     # 
-    # + databaseId - ID of the database the container belongs to
+    # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the new container. Must be a unique value.
     # + partitionKey - A record of type `PartitionKey`
     # + indexingPolicy - Optional. A record of type `IndexingPolicy`.
@@ -161,7 +161,7 @@ public client class ManagementClient {
 
     # Create a container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
     # 
-    # + databaseId - ID of the database the container belongs to
+    # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the new container
     # + partitionKey - A record of type `PartitionKey`
     # + indexingPolicy - Optional. A record of type `IndexingPolicy`.
@@ -180,10 +180,10 @@ public client class ManagementClient {
         return result;
     }
 
-    # Retrive information about a container.
+    # Get information about a container.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container to retrive infromation
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `Container`. Else returns `error`.
@@ -201,7 +201,7 @@ public client class ManagementClient {
 
     # List information of all Containers.
     # 
-    # + databaseId - ID of the database where the containers belongs to
+    # + databaseId - ID of the database to which the containers belongs to
     # + maxItemCount - Optional. Maximum number of container records in one returning page.
     # + return - If successful, returns `stream<Container>`. Else returns `error`.
     remote function listContainers(string databaseId, int? maxItemCount = ()) returns @tainted stream<Container>|error {
@@ -217,7 +217,7 @@ public client class ManagementClient {
 
     # Delete a given Container.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
     #                           the request.
@@ -236,7 +236,7 @@ public client class ManagementClient {
 
     # Retrieve a list of partition key ranges for the container.
     # 
-    # + databaseId - ID of the database which container belongs to
+    # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where the partition key ranges are related to
     # + return - If successful, returns `stream<PartitionKeyRange>`. Else returns `error`.
     remote function listPartitionKeyRanges(string databaseId, string containerId) returns @tainted 
@@ -249,12 +249,12 @@ public client class ManagementClient {
         return <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
-    # Create a new User Defined Function inside a container.
-    # A user-defined function (UDF) is a side effect free piece of application logic written in JavaScript. 
+    # Create a new user defined function inside a container.
+    # A user defined function is a side effect free piece of application logic written in JavaScript. 
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container which user defined will be created
-    # + userDefinedFunctionId - A unique ID for the newly created User Defined Function
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container where, user defined function is created
+    # + userDefinedFunctionId - A unique ID for the newly created user defined function
     # + userDefinedFunction - A JavaScript function
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `error`. 
     remote function createUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
@@ -275,11 +275,11 @@ public client class ManagementClient {
         return mapJsonToUserDefinedFunction(jsonResponse);
     }
 
-    # Replace an existing User Defined Function in a container.
+    # Replace an existing user defined function in a container.
     # 
-    # + databaseId - ID of the database which container belongs to
-    # + containerId - ID of the container in which user defined function is created
-    # + userDefinedFunctionId - The ID of the User Defined Function to replace
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container which contains the existing user defined function
+    # + userDefinedFunctionId - The ID of the user defined function to replace
     # + userDefinedFunction - A JavaScript function
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `error`. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
@@ -300,11 +300,11 @@ public client class ManagementClient {
         return mapJsonToUserDefinedFunction(jsonResponse); 
     }
 
-    # Get a list of existing User Defined Functions inside a container.
+    # Get a list of existing user defined functions inside a container.
     # 
-    # + databaseId - ID of the database which user belongs to
-    # + containerId - ID of the container which user defined functions belongs to
-    # + maxItemCount - Optional. Maximum number of User Defined Function records in one returning page.
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container which contains the user defined functions
+    # + maxItemCount - Optional. Maximum number of `UserDefinedFunction` records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
     #                         the request.
     # + return - If successful, returns a `stream<UserDefinedFunction>`. Else returns `error`. 
@@ -322,10 +322,10 @@ public client class ManagementClient {
         return <stream<UserDefinedFunction>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
-    # Delete an existing User Defined Function inside a container.
+    # Delete an existing user defined function inside a container.
     # 
-    # + databaseId - ID of the database which container is created
-    # + containerId - ID of the container which user defined function is created
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container which contains the user defined function
     # + userDefinedFunctionid - Id of UDF to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
@@ -347,7 +347,7 @@ public client class ManagementClient {
     # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
     # creation, deletion, and replacement of a document. Triggers are written in JavaScript.
     #
-    # + databaseId - ID of the database where container is created
+    # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where trigger is created
     # + triggerId - A unique ID for the newly created trigger
     # + trigger - A JavaScript function
@@ -377,9 +377,9 @@ public client class ManagementClient {
 
     # Replace an existing trigger inside a container.
     # 
-    # + databaseId - ID of the database where container is created
-    # + containerId - ID of the container where trigger is created
-    # + triggerId - The of the trigger to be replaced
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container which contains the trigger
+    # + triggerId - The ID of the trigger to be replaced
     # + trigger - A JavaScript function
     # + triggerOperation - The specific operation in which trigger will be executed
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
@@ -406,8 +406,8 @@ public client class ManagementClient {
 
     # List existing triggers inside a container.
     # 
-    # + databaseId - ID of the database where the container is created
-    # + containerId - ID of the container where the triggers are created
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container which contains the triggers
     # + maxItemCount - Optional. Maximum number of `Trigger` records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
     #                         request.
@@ -428,8 +428,8 @@ public client class ManagementClient {
 
     # Delete an existing trigger inside a container.
     # 
-    # + databaseId - ID of the database where the container is created
-    # + containerId - ID of the container where the trigger is created 
+    # + databaseId - ID of the database to which the container belongs to
+    # + containerId - ID of the container which contains the trigger
     # + triggerId - ID of the trigger to be deleted
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
@@ -466,7 +466,7 @@ public client class ManagementClient {
 
     # Replace the ID of an existing User.
     # 
-    # + databaseId - ID of the database where the User is created
+    # + databaseId - ID of the database to which, the existing User belongs to
     # + userId - Old ID of the User
     # + newUserId - New ID for the User
     # + return - If successful, returns a `User`. Else returns `error`.
@@ -483,9 +483,9 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # To get information of a User.
+    # Get information of a User.
     # 
-    # + databaseId - ID of the database where the User is created
+    # + databaseId - ID of the database to which, the User belongs to
     # + userId - ID of User to get information
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities 
     #                         to the request.
@@ -502,9 +502,9 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # Lists Users in a specific database.
+    # List Users in a specific database.
     # 
-    # + databaseId - ID of the database where Users is created
+    # + databaseId - ID of the database to which, the User belongs to
     # + maxItemCount - Optional. Maximum number of User records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
     #                         the request.
@@ -524,7 +524,7 @@ public client class ManagementClient {
 
     # Delete a User.
     # 
-    # + databaseId - ID of the database where User is created
+    # + databaseId - ID of the database to which, the User belongs to
     # + userId - ID of User to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
@@ -543,8 +543,8 @@ public client class ManagementClient {
 
     # Create a permission for a User. 
     # 
-    # + databaseId - ID of the database where User is created
-    # + userId - ID of User to which the permission belongs
+    # + databaseId - ID of the database to which, the User belongs to
+    # + userId - ID of User to which, the permission is granted. Must be a unique value.
     # + permissionId - A unique ID for the newly created permission
     # + permissionMode - The mode to which the permission is scoped
     # + resourcePath - The resource this permission is allowing the User to access
@@ -575,7 +575,7 @@ public client class ManagementClient {
     # Replace an existing permission.
     # 
     # + databaseId - ID of the database where the User is created
-    # + userId - ID of User where the the permission is created
+    # + userId - ID of User to which, the permission is granted
     # + permissionId - The ID of the permission to be replaced
     # + permissionMode - The mode to which the permission is scoped
     # + resourcePath - The resource this permission is allowing the User to access
@@ -603,10 +603,10 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse); 
     }
 
-    # To get information of a permission.
+    # Get information of a permission.
     # 
     # + databaseId - ID of the database where the User is created
-    # + userId - ID of User where the the permission belongs to
+    # + userId - ID of User to which, the permission is granted
     # + permissionId - ID of the permission to get information
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities 
     #                         to the request.
@@ -624,10 +624,10 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Lists permissions belong to a User.
+    # List permissions belong to a User.
     # 
     # + databaseId - ID of the database where the User is created
-    # + userId - ID of User where the the permissions is created
+    # + userId - ID of User to which, the permission is granted
     # + maxItemCount - Optional. Maximum number of `Permission` records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
     #                         the request.
@@ -649,7 +649,7 @@ public client class ManagementClient {
     # Deletes a permission belongs to a User.
     # 
     # + databaseId - ID of the database where the User is created
-    # + userId - ID of User which the permission belongs to
+    # + userId - ID of User to which, the permission is granted
     # + permissionId - ID of the permission to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
     #                           capabilities to the request.
@@ -671,9 +671,10 @@ public client class ManagementClient {
     # Replace an existing offer.
     # 
     # + offer - A record of type `Offer`
-    # + offerType - Optional. Type of the offer.
+    # + offerType - Optional. Type of the offer. Indicates the performance level for `V1` offer version. This property 
+    #               should set to `Invalid` for V2 offer version.
     # + return - If successful, returns a `Offer`. Else returns `error`.
-    remote function replaceOffer(Offer offer, string? offerType = ()) returns @tainted Offer|error {
+    remote function replaceOffer(Offer offer) returns @tainted Offer|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offer.id]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
@@ -681,15 +682,12 @@ public client class ManagementClient {
         json jsonPaylod = {
             offerVersion: offer.offerVersion,
             content: offer.content,
+            offerType: offer.offerType,
             'resource: offer.resourceSelfLink,
             offerResourceId: offer.resourceResourceId,
             id: offer.id,
             _rid: offer?.resourceId
         };
-        if (offerType is string && offer.offerVersion == PRE_DEFINED) {
-            json selectedType = {offerType: offerType};
-            jsonPaylod = checkpanic jsonPaylod.mergeJson(selectedType);
-        }
         request.setJsonPayload(jsonPaylod);
 
         http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
@@ -715,7 +713,7 @@ public client class ManagementClient {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # Gets information of offers inside Azure Cosmos DB account.
+    # List information of offers inside Azure Cosmos DB account.
     # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
     # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
     # levels and pre-defined performance levels. 

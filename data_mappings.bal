@@ -243,7 +243,7 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
         selfReference: <string>payload._self,
         eTag: <string>payload._etag,
         offerVersion: let var offVersion = <string>payload.offerVersion in getOfferVersion(offVersion),
-        offerType: let var offType = <string>payload.offerType in getOfferVersion(offType),
+        offerType: let var offerType = <string>payload.offerType in getOfferType(offerType),
         content: <map<json>>payload.content,
         resourceSelfLink: <string>payload.'resource,
         resourceResourceId: <string>payload.offerResourceId
