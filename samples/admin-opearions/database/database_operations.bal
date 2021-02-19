@@ -30,52 +30,90 @@ public function main() {
 
     var uuid = createRandomUUIDWithoutHyphens();
     
-    string databaseId = "my__new_database";
-    string databaseIfNotExist = string `databasex_${uuid.toString()}`;
+    string databaseId = "my_database";
+    string databaseIfNotExistId = string `databasex_${uuid.toString()}`;
     string databaseManualId = string `databasem_${uuid.toString()}`;
     string databaseAutoScalingId = string `databasea_${uuid.toString()}`;
 
     log:print("Creating database");
-    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(databaseId);
+    var databaseResult = managementClient->createDatabase(databaseId); 
+    if (databaseResult is error) {
+        log:printError(databaseResult.message());
+    }
+    if (databaseResult is cosmosdb:Database) {
+        log:print(databaseResult.toString());
+    }
 
-    // Create database only if it does not exist
-    log:print("Creating database if it does not exist");
-    cosmosdb:Database? database2 = checkpanic managementClient->createDatabaseIfNotExist(databaseIfNotExist);
+    log:print("Creating database only if it does not exist");
+    var databaseIfNotExist = managementClient->createDatabaseIfNotExist(databaseIfNotExistId); 
+    if (databaseIfNotExist is error) {
+        log:printError(databaseIfNotExist.message());
+    }
+    if (databaseIfNotExist is cosmosdb:Database) {
+        log:print(databaseIfNotExist.toString());
+    }
 
-    // Create database with manual throughput
     log:print("Creating database with manual throughput");
-    
     int throughput = 600;
-    databaseResult = checkpanic managementClient->createDatabase(databaseManualId, throughput);
+    var databaseWithManualThroughput = managementClient->createDatabase(databaseManualId, throughput); 
+    if (databaseWithManualThroughput is error) {
+        log:printError(databaseWithManualThroughput.message());
+    }
+    if (databaseWithManualThroughput is cosmosdb:Database) {
+        log:print(databaseWithManualThroughput.toString());
+    }
 
-    // Create database with autoscaling throughput
     log:print("Creating database with autoscaling throughput");
-
     record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
-    databaseResult = checkpanic managementClient->createDatabase(databaseAutoScalingId, maxThroughput);
+    var databaseWithAutoThroughput = managementClient->createDatabase(databaseAutoScalingId, maxThroughput); 
+    if (databaseWithAutoThroughput is error) {
+        log:printError(databaseWithAutoThroughput.message());
+    }
+    if (databaseWithAutoThroughput is cosmosdb:Database) {
+        log:print(databaseWithAutoThroughput.toString());
+    }
 
-    // Database read
-    log:print("Reading database by id");
-    cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
-    string? etag = database?.eTag;
-    string? sessiontoken = database?.sessionToken;
+    string? etag;
+    string? sessiontoken;
+    log:print("Reading database by ID");
+    var databaseInfo = managementClient->getDatabase(databaseId);
+    if (databaseInfo is error) {
+        log:printError(databaseInfo.message());
+    }
+    if (databaseInfo is cosmosdb:Database) {
+        log:print(databaseInfo.toString());
+        etag = databaseInfo?.eTag;
+        sessiontoken = databaseInfo?.sessionToken;
+    }
   
-    // Database read with session level consistancy
-    log:print("Reading database with options");
+    log:print("Reading database with consistancy level option");
     cosmosdb:ResourceReadOptions options = {
         consistancyLevel: "Bounded"
     };
-    database = checkpanic managementClient->getDatabase(databaseId, options);
+    var databaseInfoWithDifferentConsistancy = managementClient->getDatabase(databaseId, options);
+    if (databaseInfoWithDifferentConsistancy is error) {
+        log:printError(databaseInfoWithDifferentConsistancy.message());
+    }
+    if (databaseInfoWithDifferentConsistancy is cosmosdb:Database) {
+        log:print(databaseInfoWithDifferentConsistancy.toString());
+    }
 
-    // Get a list of databases
     log:print("Getting list of databases");
-    stream<cosmosdb:Database> databaseList = checkpanic managementClient->listDatabases(10);
+    var databaseList = managementClient->listDatabases(10);
+    if (databaseList is error) {
+        log:printError(databaseList.message());
+    }
+    if (databaseList is stream<cosmosdb:Database>) {
+        error? e = databaseList.forEach(function (cosmosdb:Database database) {
+            log:print(database.toString());
+        });
+    }
 
     log:print("Deleting databases");
-    _ = checkpanic managementClient->deleteDatabase(databaseIfNotExist);
+    _ = checkpanic managementClient->deleteDatabase(databaseIfNotExistId);
     _ = checkpanic managementClient->deleteDatabase(databaseManualId);
     _ = checkpanic managementClient->deleteDatabase(databaseAutoScalingId);
-    log:print("Success!");
+    log:print("End!");
 }
 
 public function createRandomUUIDWithoutHyphens() returns string {

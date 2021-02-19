@@ -31,7 +31,6 @@ public function main() {
     string containerId = "my_container";
     var uuid = createRandomUUIDWithoutHyphens();
 
-    // Create trigger
     log:print("Creating a trigger");
     string triggerId = string `trigger_${uuid.toString()}`;
     string createTriggerBody = 
@@ -63,10 +62,16 @@ public function main() {
     }`;
     cosmosdb:TriggerOperation createTriggerOperationType = "All";
     cosmosdb:TriggerType createTriggerType = "Post";
-    cosmosdb:Trigger triggerCreationResult = checkpanic managementClient->createTrigger(databaseId, containerId, 
-            triggerId, createTriggerBody, createTriggerOperationType, createTriggerType);
 
-    // Replace trigger
+    var triggerCreationResult = managementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
+            createTriggerOperationType, createTriggerType); 
+    if (triggerCreationResult is error) {
+        log:printError(triggerCreationResult.message());
+    }
+    if (triggerCreationResult is cosmosdb:Trigger) {
+        log:print(triggerCreationResult.toString());
+    }
+
     log:print("Replacing a trigger");
     string replaceTriggerBody = 
     string `function replaceMetadata() {
@@ -98,17 +103,35 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
 
-    cosmosdb:Trigger triggerReplaceResult = checkpanic managementClient->replaceTrigger(databaseId, containerId, 
-            triggerId, replaceTriggerBody, replaceTriggerOperation, replaceTriggerType);
+    var triggerReplaceResult = managementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
+            replaceTriggerOperation, replaceTriggerType); 
+    if (triggerReplaceResult is error) {
+        log:printError(triggerReplaceResult.message());
+    }
+    if (triggerReplaceResult is cosmosdb:Trigger) {
+        log:print(triggerReplaceResult.toString());
+    }
 
-    // List triggers
     log:print("List available triggers");
-    stream<cosmosdb:Trigger> result5 = checkpanic managementClient->listTriggers(databaseId, containerId);
+    var triggerList = managementClient->listTriggers(databaseId, containerId);
+    if (triggerList is error) {
+        log:printError(triggerList.message());
+    }
+    if (triggerList is stream<cosmosdb:Trigger>) {
+        error? e = triggerList.forEach(function (cosmosdb:Trigger trigger) {
+            log:print(trigger.toString());
+        });
+    }
 
-    // Delete trigger
     log:print("Deleting trigger");
-    _ = checkpanic managementClient->deleteTrigger(databaseId, containerId, triggerId);
-    log:print("Success!");
+    var deletionResult = managementClient->deleteTrigger(databaseId, containerId, triggerId);
+    if (deletionResult is error) {
+        log:printError(deletionResult.message());
+    }
+    if (deletionResult is cosmosdb:DeleteResponse) {
+        log:print(deletionResult.toString());
+    }
+    log:print("End!");
 }
 
 public function createRandomUUIDWithoutHyphens() returns string {

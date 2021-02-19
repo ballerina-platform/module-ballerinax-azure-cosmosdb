@@ -37,16 +37,20 @@ public function main() {
     string containerAutoscalingId = string `containera_${uuid.toString()}`;
     string containerIfnotExistId = string `containerx_${uuid.toString()}`;
 
-    // Create a container
     log:print("Creating container");
     cosmosdb:PartitionKey partitionKey = {
         paths: ["/id"],
         keyVersion: 2
     };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(databaseId, containerId, 
-            partitionKey);
+ 
+    var containerResult = managementClient->createContainer(databaseId, containerId, partitionKey);
+    if (containerResult is error) {
+        log:printError(containerResult.message());
+    }
+    if (containerResult is cosmosdb:Container) {
+        log:print(containerResult.toString());
+    }
 
-    // Create container with indexing policy
     log:print("Creating container with indexing policy");   
     cosmosdb:IndexingPolicy indexingPolicy = {
         indexingMode: "consistent",
@@ -65,10 +69,16 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerWithIndexingId, 
-            partitionKeyWithIndexing, indexingPolicy);
 
-    //Create container with manual throughput policy
+    var containerWithOptionsResult = managementClient->createContainer(databaseId, containerWithIndexingId, 
+            partitionKeyWithIndexing, indexingPolicy);
+    if (containerWithOptionsResult is error) {
+        log:printError(containerWithOptionsResult.message());
+    }   
+    if (containerWithOptionsResult is cosmosdb:Container) {
+        log:print(containerWithOptionsResult.toString());
+    }
+
     log:print("Creating container with manual throughput policy");
     int throughput = 600;
     cosmosdb:PartitionKey partitionKeyManual = {
@@ -76,10 +86,16 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerManualId, partitionKeyManual,(), 
-            throughput);
 
-    //Create container with autoscaling throughput policy
+    var manualPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
+            partitionKeyManual, (), throughput);
+    if (manualPolicyContainer is error) {
+        log:printError(manualPolicyContainer.message());
+    }   
+    if (manualPolicyContainer is cosmosdb:Container) {
+        log:print(manualPolicyContainer.toString());
+    }
+
     log:print("Creating container with autoscaling throughput policy");
     record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
     cosmosdb:PartitionKey partitionKeyAutoscaling = {
@@ -90,37 +106,75 @@ public function main() {
     containerResult = checkpanic managementClient->createContainer(databaseId, containerAutoscalingId, 
             partitionKeyAutoscaling, (), maxThroughput);
 
-    //Create container if not exist
+    var autoPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
+            partitionKeyManual, (), throughput);
+    if (autoPolicyContainer is error) {
+        log:printError(autoPolicyContainer.message());
+    }   
+    if (autoPolicyContainer is cosmosdb:Container) {
+        log:print(autoPolicyContainer.toString());
+    }
+
     log:print("Creating container if not exist");
-    cosmosdb:PartitionKey partitionKey5 = {
+    cosmosdb:PartitionKey partitionKeyDefinition = {
         paths: ["/AccountNumber"],
         kind: "Hash",
         keyVersion: 2
     };
-    cosmosdb:Container? containerIfResult = checkpanic managementClient->createContainerIfNotExist(databaseId, 
-            containerIfnotExistId, partitionKey5);
+    var containerIfNotExistResult = managementClient->createContainer(databaseId, containerIfnotExistId, 
+            partitionKeyDefinition);
+    if (containerIfNotExistResult is error) {
+        log:printError(containerIfNotExistResult.message());
+    }   
+    if (containerIfNotExistResult is cosmosdb:Container) {
+        log:print(containerIfNotExistResult.toString());
+    }
 
-    // Read container info
+    string? etag;
+    string? sessiontoken;     
     log:print("Reading container info");
-    cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
-    string? etag = container?.eTag;
-    string? sessiontoken = container?.sessionToken;
-
-    // Read container info with options   
+    var existingContainer = managementClient->getContainer(databaseId, containerId);
+    if (existingContainer is error) {
+        log:printError(existingContainer.message());
+    }
+    if (existingContainer is cosmosdb:Container) {
+        log:print(existingContainer.toString());
+        etag = existingContainer?.eTag;
+        sessiontoken = existingContainer?.sessionToken;    
+    }
+    
     log:print("Reading container info with request options");
     cosmosdb:ResourceReadOptions options = {
         consistancyLevel: "Bounded"
     };
-    container = checkpanic managementClient->getContainer(databaseId, containerId, options);
+    var getContainerWithOptions = managementClient->getContainer(databaseId, containerId, options);
+    if (getContainerWithOptions is error) {
+        log:printError(getContainerWithOptions.message());
+    }
+    if (getContainerWithOptions is cosmosdb:Container) {
+        log:print(getContainerWithOptions.toString());
+    }
 
-    // Get a list of containers
     log:print("Getting list of containers");
-    stream<cosmosdb:Container> containerList = checkpanic managementClient->listContainers(databaseId, 2);
+    var containerList = managementClient->listContainers(databaseId, 2);
+    if (containerList is error) {
+        log:printError(containerList.message());
+    }
+    if (containerList is stream<cosmosdb:Container>) {
+        error? e = containerList.forEach(function (cosmosdb:Container container) {
+            log:print(container.toString());
+        });
+    }
 
-    // Delete a container
     log:print("Deleting the container");
-    _ = checkpanic managementClient->deleteContainer(databaseId, containerId);
-    log:print("Success!");
+    var deletionResult = managementClient->deleteContainer(databaseId, containerId);
+    if (deletionResult is error) {
+        log:printError(deletionResult.message());
+    }
+    if (deletionResult is cosmosdb:DeleteResponse) {
+        log:print(deletionResult.toString());
+    }
+    log:print("End!");
 }
 
 public function createRandomUUIDWithoutHyphens() returns string {
