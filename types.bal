@@ -75,12 +75,12 @@ public type Document record {|
 
 # Represent the parameters necessary to create an indexing policy when creating a container.
 # 
-# + indexingMode - Mode of indexing
+# + indexingMode - Mode of indexing. Can be `consistent` or `none`.
 # + automatic - Specify whether indexing is done automatically or not
 # + includedPaths - Array of type IncludedPath representing included paths
 # + excludedPaths - Array of type IncludedPath representing excluded paths
 public type IndexingPolicy record {|
-    string indexingMode;
+    IndexingMode indexingMode;
     boolean automatic = true;
     IncludedPath[] includedPaths?;
     ExcludedPath[] excludedPaths?;
@@ -104,9 +104,9 @@ public type ExcludedPath record {|
 
 # Represent the record type with necessary parameters to represent an index. 
 # 
-# + kind - Type of index. Can be `Hash`, `Range` or `Spatial`
+# + kind - Type of index. Can be `Hash`, `Range` or `Spatial`.
 # + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon` 
-#              or `LineString`
+#              or `LineString`.
 # + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for `Number`, 
 #               and 1-100 for `String`.Not applicable for `Point`, `Polygon`, and `LineString` data types.Default is -1.
 public type Index record {|
@@ -124,7 +124,7 @@ public type Index record {|
 public type PartitionKey record {|
     string[] paths = [];
     readonly string kind = PARTITIONING_ALGORITHM_TYPE_HASH;
-    int keyVersion = DEFAULT_PARTITION_KEY_VERSION;
+    int keyVersion = PARTITION_KEY_VERSION_1;
 |};
 
 # Represent the record type with necessary parameters to represent a stored procedure.
@@ -258,7 +258,7 @@ public type StoredProcedureOptions record {|
 |};
 
 # Represent the optional parameters which can be passed to the function when reading the information about other 
-# resources in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions etc.
+# resources in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions, etc.
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.

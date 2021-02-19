@@ -63,6 +63,14 @@ public enum IndexDataType {
     LINESTRING = "LineString"
 }
 
+# The mode of indexing for the container.
+# + CONSISTENT - The index is updated synchronously as you create, update or delete items
+# + NONE - Indexing is disabled on the container
+public enum IndexingMode {
+    CONSISTENT = "consistent",
+    NONE = "none"
+}
+
 # Type of operation that invokes the trigger.
 # 
 # + ALL - Trigger fires in all create, replace and delete operations
@@ -102,11 +110,12 @@ public enum OfferVersion {
     USER_DEFINED = "V2"
 }
 
-# The performance levels for a specific throughput level.
+# The performance levels for a specific throughput level. They depend on the Cosmos DB region which the container 
+# belongs to and partitioning nature of the container(ie: single partitioned or multiple partitioned).
 # 
-# + LEVEL_S1 - Performance level for pre-defined throughput level 
-# + LEVEL_S2 - Performance level for pre-defined throughput level
-# + LEVEL_S3 - Performance level for pre-defined throughput level
+# + LEVEL_S1 - Performance level allows a low throughput and specific amount of predefined storage  
+# + LEVEL_S2 - Performance level allows a medium throughput and specific amount of predefined storage 
+# + LEVEL_S3 - Performance level allows a high throughput and specific amount of predefined storage 
 # + INVALID - Performance level is set `Invalid` for `V2`, user-defined throughput levels
 public enum OfferType {
     LEVEL_S1 = "S1",
@@ -241,7 +250,7 @@ const int MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
 
 # Algorithm Used for partitioning
 const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
-const int DEFAULT_PARTITION_KEY_VERSION = 1;
+const int PARTITION_KEY_VERSION_1 = 1;
 
 # String constants
 const string SPACE_STRING = " ";

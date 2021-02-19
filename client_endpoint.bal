@@ -32,12 +32,12 @@ public client class DataPlaneClient {
         self.httpClient = new(self.baseUrl);
     }
 
-    # Create a Document inside a Container.
+    # Create a document inside a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which Document belongs to
-    # + document - A JSON document saved in the Database
-    # + partitionKey - The value of partition key field of the Container 
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which database belongs to
+    # + document - A JSON document saved in the database
+    # + partitionKey - The value of partition key field of the container 
     # + documentCreateOptions - Optional. The `DocumentCreateOptions` which can be used to add addtional capabilities to 
     #                           the request.
     # + return - If successful, returns `Document`. Else returns `error`.
@@ -57,12 +57,12 @@ public client class DataPlaneClient {
         return mapJsonToDocumentType(jsonResponse);
     }
 
-    # Replace a Document inside a Container.
+    # Replace a database inside a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which Document belongs to
-    # + document - A JSON document saved in the Database
-    # + partitionKey - The value of partition key field of the Container 
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container to replace
+    # + document - A JSON document saved in the database
+    # + partitionKey - The value of partition key field of the container 
     # + documentReplaceOptions - Optional. The `DocumentReplaceOptions` which can be used to add addtional capabilities 
     #                            to the request.
     # + return - If successful, returns a `Document`. Else returns `error`. 
@@ -82,12 +82,12 @@ public client class DataPlaneClient {
         return mapJsonToDocumentType(jsonResponse); 
     }
 
-    # Get information about one Document in a Container.
+    # Get information about one database in a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which Document belongs to
-    # + documentId - Id of the Document to retrieve 
-    # + partitionKey - The value of partition key field of the Container
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which database belongs to
+    # + documentId - Id of the database to retrieve 
+    # + partitionKey - The value of partition key field of the container
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `Document`. Else returns `error`.
@@ -105,11 +105,11 @@ public client class DataPlaneClient {
         return mapJsonToDocumentType(jsonResponse);
     }
 
-    # List information of all the Documents in a Container.
+    # List information of all the documents in a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which Document belongs to
-    # + maxItemCount - Optional. Maximum number of Document records in one returning page.
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container to which, database belongs to
+    # + maxItemCount - Optional. Maximum number of database records in one returning page.
     # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns `stream<Document>` Else, returns `error`. 
@@ -127,10 +127,10 @@ public client class DataPlaneClient {
         return <stream<Document>>check retrieveStream(self.httpClient, requestPath, request);
     }
 
-    # Delete a Document in a Container.
+    # Delete a database in a container.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which Document belongs to
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which database belongs to
     # + documentId - ID of the document to delete
     # + partitionKey - The value of partition key field of the container
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
@@ -150,10 +150,10 @@ public client class DataPlaneClient {
         return mapHeadersToResultType(response); 
     }
 
-    # Query a Documents inside a container.
+    # Query documents inside a container.
     # 
-    # + databaseId - ID of the database which Container belongs to
-    # + containerId - ID of the Container to query
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container to query
     # + sqlQuery - A string containing the SQL query
     # + partitionKey - Optional. The value of partition key field of the container.
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
@@ -182,13 +182,13 @@ public client class DataPlaneClient {
         return <stream<Document>> check getQueryResults(self.httpClient, requestPath, request);
     }
 
-    # Create a new Stored Procedure inside a Container.
+    # Create a new stored procedure inside a container.
     # A stored procedure is a piece of application logic written in JavaScript that is registered and executed against a 
     # collection as a single transaction.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which Stored Procedure will be created 
-    # + storedProcedureId - A unique ID for the newly created Stored Procedure
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which stored procedure will be created 
+    # + storedProcedureId - A unique ID for the newly created stored procedure
     # + storedProcedure - A JavaScript function
     # + return - If successful, returns a `StoredProcedure`. Else returns `error`. 
     remote function createStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
@@ -209,11 +209,11 @@ public client class DataPlaneClient {
         return mapJsonToStoredProcedure(jsonResponse);
     }
 
-    # Replace a Stored Procedure in a Container with new one.
+    # Replace a stored procedure in a container with new one.
     # 
-    # + databaseId - ID of the Database which Container belongs to
-    # + containerId - ID of the Container which existing Stored Procedure belongs to
-    # + storedProcedureId - The ID of the Stored Procedure to be replaced
+    # + databaseId - ID of the database which container belongs to
+    # + containerId - ID of the container which existing stored procedure belongs to
+    # + storedProcedureId - The ID of the stored procedure to be replaced
     # + storedProcedure - A JavaScript function
     # + return - If successful, returns a `StoredProcedure`. Else returns `error`. 
     remote function replaceStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
@@ -234,11 +234,11 @@ public client class DataPlaneClient {
         return mapJsonToStoredProcedure(jsonResponse);
     }
 
-    # List information of all Stored Procedures in a Container.
+    # List information of all stored Procedures in a container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedures
-    # + maxItemCount - Optional. Maximum number of Stored Procedure records in one returning page.
+    # + maxItemCount - Optional. Maximum number of stored procedure records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
     #                         request.
     # + return - If successful, returns a `stream<StoredProcedure>`. Else returns `error`. 
@@ -257,7 +257,7 @@ public client class DataPlaneClient {
         return <stream<StoredProcedure>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
-    # Delete a Stored Procedure in a Container.
+    # Delete a stored procedure in a container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure
@@ -278,7 +278,7 @@ public client class DataPlaneClient {
         return mapHeadersToResultType(response); 
     }
 
-    # Execute a Stored Procedure in a Container.
+    # Execute a stored procedure in a container.
     # 
     # + databaseId - ID of the database which container belongs to
     # + containerId - ID of the container which contain the stored procedure

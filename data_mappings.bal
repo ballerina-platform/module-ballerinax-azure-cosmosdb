@@ -61,7 +61,7 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 # + return - An instance of record type `IndexingPolicy`
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
-        indexingMode: <string>payload.indexingMode,
+        indexingMode: let var mode = <string>payload.indexingMode in getIndexingMode(mode),
         includedPaths: let var inPaths = <json[]>payload.includedPaths in convertToIncludedPathsArray(inPaths),
         excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths),
         automatic: <boolean>payload.automatic

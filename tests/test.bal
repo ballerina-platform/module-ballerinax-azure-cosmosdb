@@ -51,7 +51,7 @@ string newUserId = string `userr_${randomString.toString()}`;
 string permissionId = string `permission_${randomString.toString()}`;
 
 Database database = {id: ""};
-Container container = {id: "", indexingPolicy:{ indexingMode: ""}, partitionKey: {}};
+Container container = {id: "", indexingPolicy:{ indexingMode: NONE}, partitionKey: {}};
 
 @test:BeforeSuite
 function testCreateDatabase() {

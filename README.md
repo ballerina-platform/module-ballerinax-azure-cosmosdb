@@ -1480,7 +1480,7 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 
 ### Replace User ID
 From this sample you can replace the ID of an existing User. The only replaceable property is the ID of a User created 
-earlier. Although a User can have Permissions which are related to him, those will not be affected from this operation. 
+earlier. Although a User can have permissions which are related to him, those will not be affected from this operation. 
 For this, you have to provide the Database ID where the User is scoped into, the User ID you want to replace and the new 
 User ID which the older one is to be replaced with.
 ``` ballerina
@@ -1633,7 +1633,7 @@ Permissions in Cosmos DB have 3 primary properties:
     Cosmos DB, many things are resources such as `Databases`, `Containers`, `Documents`, and `Attachments`. Depending on 
     the granularity, multiple permissions can be created and assigned to a User based on the data they should be able to 
     have access to.
-When creating a Permission you should provide values for the above properties. Apart from that, as a Permission is 
+When creating a permission, you should provide values for the above properties. Apart from that, as a permission is 
 explicitly made referring to an existing User, User ID and the Database ID also should be specified. These primary 
 properties must be provided as parameters to the function. The created token is expired in one hour.
 ```ballerina
@@ -1676,8 +1676,8 @@ is 18000 seconds.
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/users-permissions/permission/create_permission.bal
 
 ### Replace Permission
-This operation has all the parameters similar to Create Permission. The only difference is that it only replaces an 
-existing Permission. Although it replaces a Permission you have to specify all the primary properties. But not not all 
+This operation has all the parameters similar to create permission. The only difference is that it only replaces an 
+existing permission. Although it replaces a permission you have to specify all the primary properties. But not not all 
 properties have to have changes. These primary properties are provided as function parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -1713,9 +1713,9 @@ public function main() {
 ```
 Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/master/samples/admin-operations/users-permissions/permission/replace_permission.bal
 
-### Get Permission
-From this sample you can get the basic information about a created Permission. For this, the the Database ID and the 
-User ID to which the permission belongs to and the Permission ID that, you want to get information about should be 
+### Get permission
+From this sample you can get the basic information about a created permission. For this, the the Database ID and the 
+User ID to which the permission belongs to and the permission ID that, you want to get information about should be 
 provided.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;

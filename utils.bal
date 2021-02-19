@@ -19,8 +19,8 @@ import ballerina/http;
 import ballerina/crypto;
 import ballerina/encoding;
 import ballerina/stringutils;
-import ballerina/lang.'string as str;
-import ballerina/lang.array as array;
+import ballerina/lang.'string;
+import ballerina/lang.array;
 
 # Extract the type of token used for accessing the Cosmos DB.
 # 
@@ -41,7 +41,7 @@ function getTokenType(string token) returns string {
 # + return - String representing the resource id
 isolated function getHost(string url) returns string {
     string replacedString = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
-    int? lastIndex = str:lastIndexOf(replacedString, FORWARD_SLASH);
+    int? lastIndex = 'string:lastIndexOf(replacedString, FORWARD_SLASH);
     if (lastIndex is int) {
         replacedString = replacedString.substring(0, lastIndex);
     }
@@ -59,7 +59,7 @@ isolated function getResourceType(string url) returns string {
     if (count % 2 != 0) {
         resourceType = urlParts[count];
         if (count > 1) {
-            int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+            int? lastIndex = 'string:lastIndexOf(url, FORWARD_SLASH);
         }
     } else {
         resourceType = urlParts[count - 1];
@@ -80,22 +80,22 @@ isolated function getResourceId(string url) returns string {
         if (count % 2 != 0) {
             resourceId = EMPTY_STRING;
         } else {
-            int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+            int? lastIndex = 'string:lastIndexOf(url, FORWARD_SLASH);
             if (lastIndex is int) {
-                resourceId = str:substring(url, lastIndex + 1);
+                resourceId = 'string:substring(url, lastIndex + 1);
             }
         }
         return resourceId.toLowerAscii();
     } else {
         if (count % 2 != 0) {
             if (count > 1) {
-                int? lastIndex = str:lastIndexOf(url, FORWARD_SLASH);
+                int? lastIndex = 'string:lastIndexOf(url, FORWARD_SLASH);
                 if (lastIndex is int) {
-                    resourceId = str:substring(url, 1, lastIndex);
+                    resourceId = 'string:substring(url, 1, lastIndex);
                 }
             }
         } else {
-            resourceId = str:substring(url, 1);
+            resourceId = 'string:substring(url, 1);
         }
         return resourceId;
     }
@@ -373,7 +373,7 @@ isolated function createStream(string path, json payload) returns @tainted strea
 # Get the enum value for a given string which represents the type of index.
 #
 # + kind - The index type
-# + return - An enum value of IndexType 
+# + return - An enum value of `IndexType`
 isolated function getIndexType(string kind) returns IndexType {
     match kind {
         "Range" => {
@@ -386,10 +386,23 @@ isolated function getIndexType(string kind) returns IndexType {
     return HASH;
 }
 
+# Get the enum value for a given string which represents the indexing mode of index.
+#
+# + mode - The indexing mode of container
+# + return - An enum value of `IndexingMode` 
+isolated function getIndexingMode(string mode) returns IndexingMode {
+    match mode {
+        "consistent" => {
+            return CONSISTENT;
+        }
+    }
+    return NONE;
+}
+
 # Get the enum value for a given string which represents the data type index is applied to.
 #
 # + dataType - The string representing the data type index have applied to
-# + return - An enum value of IndexDataType 
+# + return - An enum value of `IndexDataType` 
 isolated function getIndexDataType(string dataType) returns IndexDataType {
     match dataType {
         "Number" => {
@@ -411,7 +424,7 @@ isolated function getIndexDataType(string dataType) returns IndexDataType {
 # Get the enum value for a given string which represent the operation a trigger is applied to.
 #
 # + triggerOperation - The string representing the operation which is capable of firing the trigger
-# + return - An enum value of TriggerOperation 
+# + return - An enum value of `TriggerOperation` 
 isolated function getTriggerOperation(string triggerOperation) returns TriggerOperation {
     match triggerOperation {
         "Create" => {
@@ -430,7 +443,7 @@ isolated function getTriggerOperation(string triggerOperation) returns TriggerOp
 # Get the enum value for a given string which represent when the trigger is fired.
 #
 # + triggerType - The string representing when the trigger will be fired
-# + return - An enum value of TriggerType
+# + return - An enum value of `TriggerType`
 isolated function getTriggerType(string triggerType) returns TriggerType {
     match triggerType {
         "Post" => {
@@ -443,7 +456,7 @@ isolated function getTriggerType(string triggerType) returns TriggerType {
 # Get the enum value for a given string which represent the access rights for the specific permission.
 #
 # + permissionMode - The string representing the permisssionMode
-# + return - An enum value of PermisssionMode
+# + return - An enum value of `PermisssionMode`
 isolated function getPermisssionMode(string permissionMode) returns PermisssionMode {
     match permissionMode {
         "Read" => {
@@ -456,7 +469,7 @@ isolated function getPermisssionMode(string permissionMode) returns PermisssionM
 # Get the enum value for a given string which represent the offer version of a specific offer.
 #
 # + offerVersion - The string representing the offer version
-# + return - An enum value of PermisssionMode
+# + return - An enum value of `PermisssionMode`
 isolated function getOfferVersion(string offerVersion) returns OfferVersion {
     match offerVersion {
         "V1" => {
@@ -469,7 +482,7 @@ isolated function getOfferVersion(string offerVersion) returns OfferVersion {
 # Get the enum value for a given string which represent the offer type of a specific version.
 #
 # + offerType - The string representing the offer type
-# + return - An enum value of OfferType
+# + return - An enum value of `OfferType`
 isolated function getOfferType(string offerType) returns OfferType {
     match offerType {
         "S1" => {
