@@ -671,8 +671,6 @@ public client class ManagementClient {
     # Replace an existing offer.
     # 
     # + offer - A record of type `Offer`
-    # + offerType - Optional. Type of the offer. Indicates the performance level for `V1` offer version. This property 
-    #               should set to `Invalid` for V2 offer version.
     # + return - If successful, returns a `Offer`. Else returns `error`.
     remote function replaceOffer(Offer offer) returns @tainted Offer|error {
         http:Request request = new;
