@@ -492,10 +492,10 @@ function testGetOneDocumentWithRequestOptions() {
 function testQueryDocuments() {
     log:print("ACTION : queryDocuments()");
 
-    int partitionKey = 1234;
+    ResourceQueryOptions options = {partitionKey : 1234};
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, 10, partitionKey);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options, 10);
     if (result is stream<Document>) {
         var document = result.next();
     } else {
@@ -513,11 +513,10 @@ function testQueryDocumentsWithRequestOptions() {
     string query = string `SELECT * FROM ${containerId} f WHERE f.Address.City = 'Seattle'`;
 
     ResourceQueryOptions options = {
-        //sessionToken: "tag", 
         enableCrossPartition: true
     };
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, (), (), options);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
     if (result is stream<json>) {
         var document = result.next();
     } else {

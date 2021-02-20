@@ -479,7 +479,7 @@ isolated function getOfferVersion(string offerVersion) returns OfferVersion {
     return USER_DEFINED;
 }
 
-# Get the enum value for a given string which represent the offer type of a specific version.
+# Get the enum value for a given string which represent the offer type of a specific offer.
 #
 # + offerType - The string representing the offer type
 # + return - An enum value of `OfferType`
@@ -496,4 +496,17 @@ isolated function getOfferType(string offerType) returns OfferType {
         }
     }
     return INVALID;
+}
+
+# Get the const value for a given integer which represent the version of a specific partition key.
+#
+# + partitionKeyVersion - An integer representing the version of partition key
+# + return - An const value of `PartitionKeyVersion`
+isolated function getPartitionKeyVersion(int partitionKeyVersion) returns PartitionKeyVersion {
+    match partitionKeyVersion {
+        1 => {
+            return PARTITION_KEY_VERSION_2;
+        }
+    }
+    return PARTITION_KEY_VERSION_1;
 }

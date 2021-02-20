@@ -1,9 +1,9 @@
 The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed 
-multi-model database which is used for managing data across the world. The key purpose of the Azure Cosmos DB is to achieve 
-low latency and high availability while maintaining a flexible scalability. 
+multi-model database which is used for managing data across the world. The key purpose of the Azure Cosmos DB is to 
+achieve low latency and high availability while maintaining flexible scalability. 
 The Ballerina Cosmos DB connector allows you to connect to an Azure Cosmos DB resource from Ballerina and perform 
 various operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`,
-`User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`. 
+`User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`.
 
 ## Compatibility
 
@@ -17,17 +17,17 @@ various operations such as `find`, `create`, `read`, `update`, and `delete` oper
 There are two clients provided by Ballerina to interact with Cosmos DB.
 
 1. **cosmosdb:DataPlaneClient** - This connects to the running Cosmos DB databases and containers to execute data-plane 
-operations 
+operations.
 
    ```ballerina
     cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
         masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:DataPlaneClient coreClient = new(configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
    ```
 2. **cosmosdb:ManagementClient** - This connects to the running Cosmos DB databases and containers to execute 
-management-plane operations 
+management-plane operations.
 
    ```ballerina
     cosmosdb:Configuration configuration = {
@@ -39,9 +39,8 @@ management-plane operations
 
 ## Samples 
 ### Creating a Database
-For creating a database in Azure we have to provide a unique database ID which does not already exist in the specific 
-Cosmos DB account. This operation will return a record of type Database. This will contain the success as true if the 
-operation is successful.
+For creating a database in Azure we have to provide a unique database ID that does not already exist in the specific 
+Cosmos DB account. This operation will return a record of type Database. 
 
 ```ballerina
 import ballerina/log;
@@ -54,7 +53,14 @@ public function main() {
     };
     cosmosdb:ManagementClient managementClient = new(configuration);
 
-    cosmosdb:Database databaseResult = checkpanic managementClient->createDatabase(<DATABASE_ID>);
+    var result = managementClient->createDatabase(<DATABASE_ID>); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Database) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 
@@ -79,15 +85,21 @@ public function main() {
         kind :"Hash",
         'version: 2
     };
-    cosmosdb:Container containerResult = checkpanic managementClient->createContainer(<DATABASE_ID>, <CONTAINER_ID>, 
-            partitionKey);
+
+    var result = managementClient->createContainer(<DATABASE_ID>, <CONTAINER_ID>, partitionKey);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Container) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 ### Inserting a Document
-Azure Cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath 
-the connector, an item may refer to a document in the container. SQL API stores entities as JSON in a hierarchical 
-key-value document. The max document size in Cosmos DB is 2 MB.
-
+Azure Cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath the 
+connector, an item may refer to a document in the container. SQL API stores entities as JSON in a hierarchical key-value 
+document. The max document size in Cosmos DB is 2 MB.
 ```ballerina
 import ballerina/log;
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -97,7 +109,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:DataPlaneClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
     record {|string id; json...;|} documentBody = {
         id: "documentid1",
@@ -105,13 +117,21 @@ public function main() {
         accountNumber: 001234222
     };
 
-    cosmosdb:Document documentResult1 = checkpanic coreClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, documentBody, 
+    var result = azureCosmosClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, documentBody, 
             <VALUE_OF_PARTITIONKEY>); 
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
+    
 }
 ```
 ### List Documents
-Usually, Cosmos DB provides an array of JSON objects as the response for list operations. But, the connector 
-has handled this array and instead of that it provides streaming capabilities for these kinds of operations. Apart from 
+Usually, Cosmos DB provides an array of JSON objects as the response for list operations. But, the connector has handled 
+this array and instead of that, it provides streaming capabilities for these kinds of operations. Apart from 
 that, Cosmos DB originally allows pagination of results returned list operations.
 
 ```ballerina
@@ -123,13 +143,25 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:DataPlaneClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    stream<cosmosdb:Document> documentList = checkpanic coreClient->getDocumentList(<DATABASE_ID>, <CONTAINER_ID>);
+    var result = azureCosmosClient->getDocumentList(<DATABASE_ID>, <CONTAINER_ID>);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Document>) {
+        error? e = result.forEach(function (cosmosdb:Document document) {
+            log:print(document.toString());
+        });
+        log:print("Success!");
+    }
 }
 ```
 ### Get Document
-
+This operation allows to retrieve a document by it's ID. It returns a record type `Document`. Here, you have to provide 
+*Database ID*, *Container ID* where the document will be created and the **ID of the document** to retrieve. As the 
+partition key is mandatory in the container, for getDocument operation you need to provide the correct 
+**value for that partition key**.
 ```ballerina
 import ballerina/log;
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -139,15 +171,23 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:DataPlaneClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    cosmosdb:Document returnedDocument = checkpanic coreClient->getDocument(<DATABASE_ID>, <CONTAINER_ID>, 
-            <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
+    var result = azureCosmosClient->getDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:Document) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```
 
 ### Query Documents
-
+Ballerina connector for Azure COsmos DB allows the option to either provide a query as a normal ballerina string that 
+matches with the SQL queries compatible with the REST API. This example shows a query that will return all the data 
+inside a document such that the value for **/gender** equals 0.
 ```ballerina
 import ballerina/log;
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -157,21 +197,29 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:DataPlaneClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
-
-    stream<json> resultStream = checkpanic coreClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-            <MAX_ITEM_COUNT>, <VALUE_OF_PARTITIONKEY>);
-
-    error? e = resultStream.forEach(function (json document){
-                    log:printInfo(document);
-                });    
+ 
+    ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
+    var result = azureCosmosClient->queryDocuments(DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, options, 
+            <MAX_ITEM_COUNT>,);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is stream<cosmosdb:Document>) {
+        error? e = result.forEach(function (cosmosdb:Document document) {
+            log:print(document.toString());
+        });
+        log:print("Success!");
+    }   
 
 }
 ```
 ### Delete Document
-
+Using this connector, deletion of a document that exists inside a container is possible. You have to specify the 
+*Database ID*, *Container ID* where the document exists and the **ID of document** you want to delete. The 
+**value of the partition key** for that specific document should also be passed to the function.
 ```ballerina
 import ballerina/log;
 import ballerinax/azure_cosmosdb as cosmosdb;
@@ -181,9 +229,16 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         masterOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:DataPlaneClient coreClient = new (configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    _ = checkpanic coreClient->deleteDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
-
+    var result = azureCosmosClient->deleteDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, 
+            <VALUE_OF_PARTITIONKEY>);
+    if (result is error) {
+        log:printError(result.message());
+    }
+    if (result is cosmosdb:DeleteResponse) {
+        log:print(result.toString());
+        log:print("Success!");
+    }
 }
 ```

@@ -121,11 +121,12 @@ public type Index record {|
 # + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
 #           single value.
 # + kind - Algorithm used for partitioning. Only `Hash` is supported.
-# + keyVersion - Version of partition key. Default is `1`. To use the large partition key, set the version to 2. 
+# + keyVersion - Version of partition key. Default is *1*. To use a large partition key, set the version to 
+#                *2*. 
 public type PartitionKey record {|
     string[] paths = [];
     readonly string kind = PARTITIONING_ALGORITHM_TYPE_HASH;
-    int keyVersion = PARTITION_KEY_VERSION_1;
+    PartitionKeyVersion keyVersion = PARTITION_KEY_VERSION_1;
 |};
 
 # Represent the record type with necessary parameters to represent a stored procedure.
@@ -274,11 +275,14 @@ public type ResourceReadOptions record {|
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
-# + enableCrossPartition - Boolean value specifying whether to allow cross partitioning
+# + partitionKey - Optional. The value of partition key field of the container.
+# + enableCrossPartition - Boolean value specifying whether to allow cross partitioning. Default is `true` where, 
+#                          it allows to query across all logical partitions.
 public type ResourceQueryOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
-    boolean enableCrossPartition = false;
+    (int|float|decimal|string)? partitionKey = ();
+    boolean enableCrossPartition = true;
 |};
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
@@ -290,5 +294,3 @@ public type ResourceDeleteOptions record {|
 
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
         ResourceQueryOptions|ResourceDeleteOptions;
-
-type PartitionKeyValue int|float|decimal|string;

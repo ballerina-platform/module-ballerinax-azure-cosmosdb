@@ -158,19 +158,18 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to query
     # + sqlQuery - A string containing the SQL query
-    # + partitionKey - Optional. The value of partition key field of the container.
+    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add addtional capabilities to 
+    #                          the request.    
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
-    # + resourceQueryOptions - Optional. The `ResourceQueryOptions` which can be used to add addtional capabilities to 
-    #                          the request.
     # + return - If successful, returns a `stream<Document>`. Else returns `error`.
-    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, int? maxItemCount = (), 
-        (int|float|decimal|string)? partitionKey = (), ResourceQueryOptions? resourceQueryOptions = ()) returns 
-        @tainted stream<Document>|error { 
+    remote function queryDocuments(string databaseId, string containerId, string sqlQuery, 
+            ResourceQueryOptions resourceQueryOptions = {}, int? maxItemCount = ()) returns 
+            @tainted stream<Document>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
                 RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
+        setPartitionKeyHeader(request, resourceQueryOptions?.partitionKey);
         setOptionalHeaders(request, resourceQueryOptions);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());

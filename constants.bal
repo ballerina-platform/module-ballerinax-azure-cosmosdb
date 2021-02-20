@@ -131,6 +131,14 @@ public enum ChangeFeedOption {
     INCREMENTAL = "Incremental feed"
 }
 
+# Used for partition key
+const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
+const PARTITION_KEY_VERSION_1 = 1;
+const PARTITION_KEY_VERSION_2 = 2;
+
+# The version of the partition key
+public type PartitionKeyVersion  PARTITION_KEY_VERSION_1 | PARTITION_KEY_VERSION_2;
+
 # Indexing Policy
 const string INDEXING_TYPE_INCLUDE = "Include";
 const string INDEXING_TYPE_EXCLUDE = "Exclude";
@@ -247,10 +255,6 @@ const string STATUS_NOT_FOUND_STRING = "404";
 const int MIN_REQUEST_UNITS = 400;
 const int MIN_TIME_TO_LIVE_IN_SECONDS = 3600;
 const int MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
-
-# Algorithm Used for partitioning
-const string PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
-const int PARTITION_KEY_VERSION_1 = 1;
 
 # String constants
 const string SPACE_STRING = " ";

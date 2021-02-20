@@ -127,7 +127,7 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<js
 isolated function convertJsonToPartitionKeyType(json payload) returns @tainted PartitionKey {
     return {
         paths: let var paths = <json[]>payload.paths in convertToStringArray(paths),
-        keyVersion: <int>payload.'version
+        keyVersion: let var keyVersion = <int>payload.'version in getPartitionKeyVersion(keyVersion)
     };
 }
 
