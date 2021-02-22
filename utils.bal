@@ -14,13 +14,13 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/time;
-import ballerina/http;
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/stringutils;
+import ballerina/http;
 import ballerina/lang.'string;
 import ballerina/lang.array;
+import ballerina/stringutils;
+import ballerina/time;
 
 # Extract the type of token used for accessing the Cosmos DB.
 # 

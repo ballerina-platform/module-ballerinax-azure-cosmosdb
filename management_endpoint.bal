@@ -76,7 +76,7 @@ public client class ManagementClient {
     # Get information of a given database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database 
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
     #                         request.
     # + return - If successful, returns `Database`. Else returns `error`.
     remote function getDatabase(string databaseId, ResourceReadOptions? resourceReadOptions = ()) returns 
@@ -110,7 +110,7 @@ public client class ManagementClient {
     # Delete a given database in an Azure Cosmos DB account.
     # 
     # + databaseId - ID of the database to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities 
     #                           to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
@@ -184,7 +184,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
     #                         request.
     # + return - If successful, returns `Container`. Else returns `error`.
     remote function getContainer(string databaseId, string containerId, ResourceReadOptions? resourceReadOptions = ()) 
@@ -219,7 +219,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities to 
     #                           the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteContainer(string databaseId, string containerId, 
@@ -305,7 +305,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined functions
     # + maxItemCount - Optional. Maximum number of `UserDefinedFunction` records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request.
     # + return - If successful, returns a `stream<UserDefinedFunction>`. Else returns `error`. 
     remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
@@ -327,7 +327,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined function
     # + userDefinedFunctionid - Id of UDF to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
@@ -409,7 +409,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the triggers
     # + maxItemCount - Optional. Maximum number of `Trigger` records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
     #                         request.
     # + return - If successful, returns a `stream<Trigger>`. Else returns `error`. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
@@ -431,7 +431,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the trigger
     # + triggerId - ID of the trigger to be deleted
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
@@ -487,7 +487,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which, the User belongs to
     # + userId - ID of User to get information
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
     #                         to the request.
     # + return - If successful, returns a `User`. Else returns `error`.
     remote function getUser(string databaseId, string userId, ResourceReadOptions? resourceReadOptions = ()) returns 
@@ -506,7 +506,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which, the User belongs to
     # + maxItemCount - Optional. Maximum number of User records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request.
     # + return - If successful, returns a `stream<User>`. Else returns `error`.
     remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) 
@@ -526,7 +526,7 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which, the User belongs to
     # + userId - ID of User to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
@@ -610,7 +610,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the User is created
     # + userId - ID of User to which, the permission is granted
     # + permissionId - ID of the permission to get information
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
     #                         to the request.
     # + return - If successful, returns a `Permission`. Else returns `error`.
     remote function getPermission(string databaseId, string userId, string permissionId, 
@@ -631,7 +631,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the User is created
     # + userId - ID of User to which, the permission is granted
     # + maxItemCount - Optional. Maximum number of `Permission` records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request.
     # + return - If successful, returns a `stream<Permission>`. Else returns `error`.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), 
@@ -653,7 +653,7 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the User is created
     # + userId - ID of User to which, the permission is granted
     # + permissionId - ID of the permission to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deletePermission(string databaseId, string userId, string permissionId, 
@@ -698,7 +698,7 @@ public client class ManagementClient {
     # Get information about an offer.
     # 
     # + offerId - The ID of the offer
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
     #                         to the request.
     # + return - If successful, returns a `Offer`. Else returns `error`.
     remote function getOffer(string offerId, ResourceReadOptions? resourceReadOptions = ()) returns 
@@ -719,7 +719,7 @@ public client class ManagementClient {
     # levels and pre-defined performance levels. 
     # 
     # + maxItemCount - Optional. Maximum number of offer records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request.
     # + return - If successful, returns a `stream<Offer>` Else returns `error`.
     remote function listOffers(int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) returns 
@@ -739,7 +739,7 @@ public client class ManagementClient {
     # 
     # + sqlQuery - A string value containing SQL query
     # + maxItemCount - Optional. Maximum number of offers in one returning page.
-    # + resourceQueryOptions - Optional. The `ResourceQueryOptions` which can be used to add addtional capabilities to 
+    # + resourceQueryOptions - Optional. The `ResourceQueryOptions` which can be used to add additional capabilities to 
     #                          the request.
     # + return - If successful, returns a `stream<json>`. Else returns `error`.
     remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? resourceQueryOptions = ()) 

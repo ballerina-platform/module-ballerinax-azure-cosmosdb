@@ -38,7 +38,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container where, document is created
     # + document - A JSON document saved in the database
     # + partitionKey - The value of partition key field of the container 
-    # + documentCreateOptions - Optional. The `DocumentCreateOptions` which can be used to add addtional capabilities to 
+    # + documentCreateOptions - Optional. The `DocumentCreateOptions` which can be used to add additional capabilities to 
     #                           the request.
     # + return - If successful, returns `Document`. Else returns `error`.
     remote function createDocument(string databaseId, string containerId, record {|string id; json...;|} document, 
@@ -63,9 +63,9 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contains the existing document
     # + document - A JSON document which will replace the existing document
     # + partitionKey - The value of partition key field of the container 
-    # + documentReplaceOptions - Optional. The `DocumentReplaceOptions` which can be used to add addtional capabilities 
+    # + documentReplaceOptions - Optional. The `DocumentReplaceOptions` which can be used to add additional capabilities 
     #                            to the request.
-    # + return - If successful, returns a `Document`. Else returns `error`. 
+    # + return - If successful, returns a `Document`. Else returns `error`.
     remote function replaceDocument(string databaseId, string containerId, 
             @tainted record {|string id; json...;|} document, int|float|decimal|string partitionKey, 
             DocumentReplaceOptions? documentReplaceOptions = ()) 
@@ -89,7 +89,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contains the document
     # + documentId - Id of the document 
     # + partitionKey - The value of partition key field of the container
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
     #                         request.
     # + return - If successful, returns `Document`. Else returns `error`.
     remote function getDocument(string databaseId, string containerId, string documentId, 
@@ -112,7 +112,7 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the document
     # + maxItemCount - Optional. Maximum number of `Document` records in one returning page.
-    # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add addtional capabilities to the 
+    # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add additional capabilities to the 
     #                         request.
     # + return - If successful, returns `stream<Document>`. Else, returns `error`. 
     remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
@@ -135,7 +135,7 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contains the document
     # + documentId - ID of the document
     # + partitionKey - The value of partition key field of the container
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional capabilities to 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities to 
     #                           the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteDocument(string databaseId, string containerId, string documentId, 
@@ -158,7 +158,7 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to query
     # + sqlQuery - A string containing the SQL query
-    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add addtional capabilities to 
+    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to 
     #                          the request.    
     # + maxItemCount - Optional. Maximum number of documents in one returning page.
     # + return - If successful, returns a `stream<Document>`. Else returns `error`.
@@ -241,7 +241,7 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedures
     # + maxItemCount - Optional. Maximum number of stored procedure records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add addtional capabilities to the 
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
     #                         request.
     # + return - If successful, returns a `stream<StoredProcedure>`. Else returns `error`. 
     remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
@@ -264,7 +264,7 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedure
     # + storedProcedureId - ID of the stored procedure to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add addtional 
+    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 

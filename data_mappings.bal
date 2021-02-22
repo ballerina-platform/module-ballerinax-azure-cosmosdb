@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-import ballerina/lang.array;
 import ballerina/http;
+import ballerina/lang.array;
 
 # Maps the JSON response returned from the request into record type of `DeleteResponse`.
 # 

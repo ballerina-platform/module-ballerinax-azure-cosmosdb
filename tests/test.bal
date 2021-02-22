@@ -16,11 +16,12 @@
 
 import ballerina/test;
 import ballerina/config;
-import ballerina/system;
+import ballerina/java;
 import ballerina/log;
 import ballerina/runtime;
-import ballerina/java;
 import ballerina/stringutils;
+import ballerina/system;
+import ballerina/test;
 
 Configuration config = {
     baseUrl: config:getAsString("BASE_URL"),
