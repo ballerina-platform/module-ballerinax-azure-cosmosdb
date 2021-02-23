@@ -80,7 +80,7 @@ public type Document record {|
 # + includedPaths - Array of type IncludedPath representing included paths
 # + excludedPaths - Array of type IncludedPath representing excluded paths
 public type IndexingPolicy record {|
-    IndexingMode indexingMode;
+    IndexingMode indexingMode?;
     boolean automatic = true;
     IncludedPath[] includedPaths?;
     ExcludedPath[] excludedPaths?;

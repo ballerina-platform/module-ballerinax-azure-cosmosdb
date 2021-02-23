@@ -20,21 +20,21 @@ public type UserError distinct error;
 isolated function prepareAzureError(string message, error? err = (), int? status = ()) returns error {
     error azureError;
     if (status is int) {
-        return AzureError(message, status = status);
+        return error AzureError(message, status = status);
     }
     if (err is error){
-        return AzureError(message, err);
+        return error AzureError(message, err);
     }
-    return AzureError(message);
+    return error AzureError(message);
 }
 
 isolated function prepareUserError(string message, error? err = (), int? status = ()) returns error {
     error userError;
     if (status is int) {
-        return UserError(message, status = status);
+        return error UserError(message, status = status);
     }
     if (err is error){
-        return UserError(message, err);
+        return error UserError(message, err);
     }
-    return UserError(message);
+    return error UserError(message);
 }

@@ -29,7 +29,7 @@ public client class ManagementClient {
         self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.httpClient = new(self.baseUrl);
+        self.httpClient = checkpanic new(self.baseUrl);
     }
 
     # Create a database inside an Azure Cosmos DB account.
@@ -66,7 +66,7 @@ public client class ManagementClient {
             (int|record{|int maxThroughput;|})? throughputOption = ()) returns @tainted Database?|error {
         var result = self->createDatabase(databaseId, throughputOption);
         if result is error {
-            if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
+            if (result.detail()[STATUS] == http:STATUS_CONFLICT) {
                 return;
             }
         }
@@ -173,7 +173,7 @@ public client class ManagementClient {
             returns @tainted Container?|error { 
         var result = self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
         if result is error {
-            if (result.detail()[STATUS].toString() == http:STATUS_CONFLICT.toString()) {
+            if (result.detail()[STATUS] == http:STATUS_CONFLICT) {
                 return;
             }
         }

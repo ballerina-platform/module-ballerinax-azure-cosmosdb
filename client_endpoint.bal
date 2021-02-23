@@ -29,9 +29,9 @@ public client class DataPlaneClient {
         self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.httpClient = new(self.baseUrl);
+        self.httpClient = checkpanic new(self.baseUrl);
     }
-
+ 
     # Create a document inside a container.
     # 
     # + databaseId - ID of the database to which the container belongs to

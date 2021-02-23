@@ -23,7 +23,8 @@ import ballerina/lang.array;
 # + return - An instance of record type `DeleteResponse`
 isolated function mapHeadersToResultType(http:Response response) returns @tainted DeleteResponse {
     return {
-        sessionToken: response.getHeader(SESSION_TOKEN_HEADER)
+        sessionToken: let var header = response.getHeader(SESSION_TOKEN_HEADER) in header is string ? header : 
+                EMPTY_STRING
     };
 }
 
@@ -50,8 +51,10 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        indexingPolicy: let var indexing = <json>payload.indexingPolicy in mapJsonToIndexingPolicy(indexing),
-        partitionKey: let var partitionKey = <json>payload.partitionKey in convertJsonToPartitionKeyType(partitionKey)
+        indexingPolicy: let var indexing = payload.indexingPolicy in indexing is json ? 
+                mapJsonToIndexingPolicy(indexing) : {},
+        partitionKey: let var partitionKey = payload.partitionKey in partitionKey is json?
+                convertJsonToPartitionKeyType(partitionKey) : {}
     };
 }
 
@@ -61,10 +64,12 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 # + return - An instance of record type `IndexingPolicy`
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
-        indexingMode: let var mode = <string>payload.indexingMode in getIndexingMode(mode),
-        includedPaths: let var inPaths = <json[]>payload.includedPaths in convertToIncludedPathsArray(inPaths),
-        excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths),
-        automatic: <boolean>payload.automatic
+        indexingMode: let var mode = payload.indexingMode in mode is string ? getIndexingMode(mode) : NONE,
+        includedPaths: let var inPaths = payload.indexingPolicy in inPaths is json ? 
+                convertToIncludedPathsArray(<json[]>inPaths) : [],
+        excludedPaths: let var exPaths = payload.excludedPaths in exPaths is json ? 
+                convertToExcludedPathsArray(<json[]>exPaths) : [],
+        automatic: let var automatic = payload.automatic in automatic is boolean ? automatic : true
     };
 }
 
@@ -79,7 +84,8 @@ isolated function mapJsonToIncludedPathsType(json payload) returns @tainted Incl
     if (payload.indexes is error) {
         return includedPath;
     }
-    includedPath.indexes = let var indexes = <json[]>payload.indexes in convertToIndexArray(indexes);
+    includedPath.indexes = let var indexes = payload.indexes in indexes is json ? convertToIndexArray(<json[]>indexes) : 
+            [];
     return includedPath;
 }
 
@@ -126,8 +132,9 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<js
 # + return - An instance of record type `PartitionKey`
 isolated function convertJsonToPartitionKeyType(json payload) returns @tainted PartitionKey {
     return {
-        paths: let var paths = <json[]>payload.paths in convertToStringArray(paths),
-        keyVersion: let var keyVersion = <int>payload.'version in getPartitionKeyVersion(keyVersion)
+        paths: let var paths = payload.paths in paths is json ? convertToStringArray(<json[]>paths) : [],
+        keyVersion: let var keyVersion = payload.'version in keyVersion is int ? getPartitionKeyVersion(keyVersion) : 
+                PARTITION_KEY_VERSION_1
     };
 }
 
@@ -154,9 +161,9 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
 # + return - An instance of record type `Index`
 isolated function mapJsonToIndexType(json payload) returns Index {
     return {
-        kind: let var kind = <string>payload.kind in getIndexType(kind),
-        dataType: let var dataType = <string>payload.dataType in getIndexDataType(dataType),
-        precision: <int>payload.precision
+        kind: let var kind = payload.kind in kind is string ? getIndexType(kind) : HASH,
+        dataType: let var dataType = payload.dataType in dataType is string ?  getIndexDataType(dataType) : STRING,
+        precision: let var precision = payload.precision in precision is int ? precision : -1
     };
 }
 
@@ -199,8 +206,9 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         triggerFunction: let var func = payload.body in func is string ? func : EMPTY_STRING,
-        triggerOperation: let var oper = <string>payload.triggerOperation in getTriggerOperation(oper),
-        triggerType: let var triggerType = <string>payload.triggerType in getTriggerType(triggerType)
+        triggerOperation: let var oper = payload.triggerOperation in oper is string ? getTriggerOperation(oper) : ALL,
+        triggerType: let var triggerType = payload.triggerType in triggerType is string ? getTriggerType(triggerType) :
+                PRE
     };
 }
 
@@ -229,7 +237,8 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         token: let var token = payload._token in token is string? token : EMPTY_STRING,
-        permissionMode: let var mode = <string>payload.permissionMode in getPermisssionMode(mode),
+        permissionMode: let var mode = payload.permissionMode in mode is string ? getPermisssionMode(mode) : 
+                ALL_PERMISSION,
         resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
     };  
 }
@@ -244,8 +253,8 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        offerVersion: let var offVersion = <string>payload.offerVersion in getOfferVersion(offVersion),
-        offerType: let var offerType = <string>payload.offerType in getOfferType(offerType),
+        offerVersion: let var ver = payload.offerVersion in ver is string ? getOfferVersion(ver) : PRE_DEFINED,
+        offerType: let var otype = payload.offerType in otype is string ? getOfferType(otype) : INVALID,
         content: let var content = payload.content in content is map<json> ? content : {},
         resourceSelfLink: let var link = payload.'resource in link is string ? link : EMPTY_STRING,
         resourceResourceId: let var resId = payload.offerResourceId in resId is string ? resId : EMPTY_STRING

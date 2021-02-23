@@ -9,7 +9,7 @@ various operations such as `find`, `create`, `read`, `update`, and `delete` oper
 
 |                           |    Version                  |
 |:-------------------------:|:---------------------------:|
-| Ballerina Language        | Swan-Lake-Preview8          |
+| Ballerina Language        | Swan Lake Alpha 2           |
 | Cosmos DB API Version     | 2018-12-31                  |
 
 ## Cosmos DB Clients

@@ -89,7 +89,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 |                           | Version                     |
 |:-------------------------:|:---------------------------:|
 | Cosmos DB API Version     | 2018-12-31                  |
-| Ballerina Language        | Swan-Lake-Preview8          |
+| Ballerina Language        | Swan Lake Alpha 2           |
 | Java Development Kit (JDK)| 11                          |
 
 # Limitations
