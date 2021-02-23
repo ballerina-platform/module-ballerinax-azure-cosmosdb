@@ -126,7 +126,12 @@ public client class DataPlaneClient {
         }
         setOptionalHeaders(request, documentListOptions);
 
-        return <stream<Document>>check retrieveStream(self.httpClient, requestPath, request);
+        DocumentStream|error myStream = new DocumentStream(self.httpClient, requestPath, request);   
+        if myStream is DocumentStream {
+            return new stream<Document,error>(myStream);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        } 
     }
 
     # Delete a document in a container.

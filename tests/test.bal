@@ -294,6 +294,7 @@ function testGetAllContainers() {
     test:assertTrue(true);
 }
 
+// If we want to get information about offers, First we need to have any offers in the account. 
 @test:Config {
     groups: ["container"], 
     dependsOn: [
@@ -303,20 +304,22 @@ function testGetAllContainers() {
         testDeleteDocument, 
         testQueryDocuments, 
         testQueryDocumentsWithRequestOptions,
-        testGetAllStoredProcedures, 
-        testDeleteOneStoredProcedure, 
-        testListAllUDF, 
-        testDeleteUDF, 
-        testDeleteTrigger, 
         testGetOneDocumentWithRequestOptions, 
         testCreateDocumentWithRequestOptions, 
-        testGetDocumentListWithRequestOptions,
-        testCreatePermission,
-        testCreatePermissionWithTTL,
-        testGetPartitionKeyRanges
-        // "testReplaceOfferWithOptionalParameter",
-        // "testReplaceOffer",
-        
+        testGetDocumentListWithRequestOptions
+        // testGetAllStoredProcedures, 
+        // testDeleteOneStoredProcedure, 
+        // testListAllUDF, 
+        // testDeleteUDF, 
+        // testDeleteTrigger, 
+
+        // testCreatePermission,
+        // testCreatePermissionWithTTL,
+        // testGetPartitionKeyRanges
+        // testListOffers,
+        // testGetOffer,
+        // testReplaceOfferWithOptionalParameter,
+        // testReplaceOffer   
     ]
 }
 function testDeleteContainer() {
@@ -424,36 +427,44 @@ function testCreateDocumentWithRequestOptions() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: [testCreateDocument]
+    dependsOn: [testCreateDocument, testCreateDocumentWithRequestOptions]
 }
 function testGetDocumentList() {
     log:print("ACTION : getDocumentList()");
 
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is error) {
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId, 1);
+    if (result is stream<Document>) {
+        error? e = result.forEach(isolated function (Document document) {
+            log:print(document.toString());
+        });
+        test:assertTrue(true);
+    } else {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["document"],
-    dependsOn: [testCreateDocument]
+    dependsOn: [testCreateDocument, testCreateDocumentWithRequestOptions]
 }
 function testGetDocumentListWithRequestOptions() {
     log:print("ACTION : getDocumentListWithRequestOptions()");
 
-    DocumentListOptions options = {
-        consistancyLevel: EVENTUAL,
-        // changeFeedOption : "Incremental feed", 
-        sessionToken: "tag",
-        partitionKeyRangeId: "0"
-    };
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
-    if (result is error) {
+    // DocumentListOptions options = {
+    //     consistancyLevel: EVENTUAL,
+    //     // changeFeedOption : "Incremental feed", 
+    //     sessionToken: "tag",
+    //     partitionKeyRangeId: "0"
+    // };
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    if (result is stream<Document>) {
+        error? e = result.forEach(isolated function (Document document) {
+            log:print(document.toString());
+        });
+        test:assertTrue(true);
+    } else {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -539,7 +550,8 @@ function testQueryDocumentsWithRequestOptions() {
         testGetOneDocument, 
         testGetOneDocumentWithRequestOptions, 
         testQueryDocuments,
-        testGetDocumentList
+        testGetDocumentList,
+        testGetDocumentListWithRequestOptions
     ]
 }
 function testDeleteDocument() {
@@ -998,7 +1010,7 @@ function testCreatePermissionWithTTL() {
 function testReplacePermission() {
     log:print("ACTION : replacePermission()");
 
-    PermisssionMode permissionMode = "All";
+    PermisssionMode permissionMode = "Read";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
     var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
@@ -1176,16 +1188,17 @@ function testQueryOffer() {
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: [testCreatePermission],
+    dependsOn: [testCreatePermission, testReplacePermission],
     enable: false
 }
-function testGetContainerWithResourceoken() {
+function testGetContainerWithResourceToken() {
     log:print("ACTION : createCollection_Resource_Token()");
 
     string permissionDatabaseId = databaseId;
     string permissionUserId = newUserId;
     string userPermissionId = permissionId;
 
+    // The token should have 
     var result = azureCosmosManagementClient->getPermission(databaseId, permissionUserId, userPermissionId);
     if (result is error) {
         test:assertFail(msg = result.message());
@@ -1198,10 +1211,9 @@ function testGetContainerWithResourceoken() {
         ManagementClient managementClient = new (configdb);
 
         string containerId = container.id;
-
-        var resultdb = managementClient->getContainer(databaseId, containerId);
-        if (resultdb is error) {
-            test:assertFail(msg = resultdb.message());
+        var resultcontainer = managementClient->getContainer(databaseId, containerId);
+        if (resultcontainer is error) {
+            test:assertFail(msg = resultcontainer.message());
         } else {
             test:assertTrue(result.id == containerId);
         }
