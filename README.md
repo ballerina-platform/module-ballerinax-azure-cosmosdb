@@ -83,7 +83,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
     Java Development Kit (JDK) with version 11 is required.
 
 - Ballerina SLP8 installed. <br/>
-    Ballerina Swan Lake Preview Version 8 is required.
+    Ballerina Swan Lake Alpha 2 is required.
 
 # Supported Versions
 |                           | Version                     |

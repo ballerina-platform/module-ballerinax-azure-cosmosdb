@@ -1,12 +1,14 @@
 import ballerina/http;
 
 class DocumentStream {
-    Document[] currentEntries = [];
+    
+    private Document[] currentEntries = [];
+    private string continuationToken;
+
     int index = 0;
-    http:Client httpClient;
-    string path;
-    http:Request request;
-    string continuationToken;
+    private final http:Client httpClient;
+    private final string path;
+    private final http:Request request;
     
     function init(http:Client httpClient, string path, http:Request request) returns @tainted error? {
         self.httpClient = httpClient;
@@ -24,9 +26,9 @@ class DocumentStream {
         }
         // if (self.continuationToken != EMPTY_STRING) {
         //     self.index = 0;
-        //     // Fetch documents again when the continuation token is provided. But this function has a remote method call
-        //     // So it is not isolated.
-        //     self.currentEntries = check self.fetchDocuments(); 
+        //     // Fetch documents again when the continuation token is provided. But this function has a remote method 
+        //     // call So, it is not isolated.
+        //     self.currentEntries = check self.fetchDocuments(); /// Here is the problem
         //     record {| Document value; |} document = {value: self.currentEntries[self.index]};  
         //     self.index += 1;
         //     return document;

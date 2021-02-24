@@ -126,8 +126,8 @@ isolated function prepareUrl(string[] paths) returns string {
 # + httpVerb - The HTTP verb of the request the headers are set to
 # + requestPath - Request path for the request
 # + return - If successful, request will be appended with headers. Else returns error or nil.
-isolated function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, string requestPath) 
-        returns error? {
+isolated function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, 
+        string requestPath) returns error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
