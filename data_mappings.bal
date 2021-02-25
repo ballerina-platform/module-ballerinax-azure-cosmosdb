@@ -24,7 +24,7 @@ import ballerina/lang.array;
 isolated function mapHeadersToResultType(http:Response response) returns @tainted DeleteResponse {
     return {
         sessionToken: let var header = response.getHeader(SESSION_TOKEN_HEADER) in header is string ? header : 
-                EMPTY_STRING
+            EMPTY_STRING
     };
 }
 
@@ -52,9 +52,9 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         indexingPolicy: let var indexing = payload.indexingPolicy in indexing is json ? 
-                mapJsonToIndexingPolicy(indexing) : {},
-        partitionKey: let var partitionKey = payload.partitionKey in partitionKey is json?
-                convertJsonToPartitionKeyType(partitionKey) : {}
+            mapJsonToIndexingPolicy(indexing) : {},
+        partitionKey: let var partitionKey = payload.partitionKey in partitionKey is json ?
+            convertJsonToPartitionKeyType(partitionKey) : {}
     };
 }
 
@@ -66,9 +66,9 @@ isolated function mapJsonToIndexingPolicy(json payload) returns @tainted Indexin
     return {
         indexingMode: let var mode = payload.indexingMode in mode is string ? getIndexingMode(mode) : NONE,
         includedPaths: let var inPaths = payload.indexingPolicy in inPaths is json ? 
-                convertToIncludedPathsArray(<json[]>inPaths) : [],
+            convertToIncludedPathsArray(<json[]>inPaths) : [],
         excludedPaths: let var exPaths = payload.excludedPaths in exPaths is json ? 
-                convertToExcludedPathsArray(<json[]>exPaths) : [],
+            convertToExcludedPathsArray(<json[]>exPaths) : [],
         automatic: let var automatic = payload.automatic in automatic is boolean ? automatic : true
     };
 }
@@ -85,7 +85,7 @@ isolated function mapJsonToIncludedPathsType(json payload) returns @tainted Incl
         return includedPath;
     }
     includedPath.indexes = let var indexes = payload.indexes in indexes is json ? convertToIndexArray(<json[]>indexes) : 
-            [];
+        [];
     return includedPath;
 }
 
@@ -119,7 +119,7 @@ isolated function mapJsonToDocumentType(json payload) returns @tainted Document 
 # + return - Map of json which contains only the document
 isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<json> {
     final var keysToDelete = [JSON_KEY_ID, JSON_KEY_RESOURCE_ID, JSON_KEY_SELF_REFERENCE, JSON_KEY_ETAG, 
-            JSON_KEY_TIMESTAMP, JSON_KEY_ATTACHMENTS];
+        JSON_KEY_TIMESTAMP, JSON_KEY_ATTACHMENTS];
     foreach var keyValue in keysToDelete {
         _ = reponsePayload.removeIfHasKey(keyValue);
     }
@@ -134,7 +134,7 @@ isolated function convertJsonToPartitionKeyType(json payload) returns @tainted P
     return {
         paths: let var paths = payload.paths in paths is json ? convertToStringArray(<json[]>paths) : [],
         keyVersion: let var keyVersion = payload.'version in keyVersion is int ? getPartitionKeyVersion(keyVersion) : 
-                PARTITION_KEY_VERSION_1
+            PARTITION_KEY_VERSION_1
     };
 }
 
@@ -149,9 +149,9 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         minInclusive: let var minInclusive = payload.minInclusive in minInclusive is string ? minInclusive : 
-                EMPTY_STRING,
+            EMPTY_STRING,
         maxExclusive: let var maxExclusive = payload.maxExclusive in maxExclusive is string ? maxExclusive : 
-                EMPTY_STRING
+            EMPTY_STRING
     };
 }
 
@@ -208,7 +208,7 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
         triggerFunction: let var func = payload.body in func is string ? func : EMPTY_STRING,
         triggerOperation: let var oper = payload.triggerOperation in oper is string ? getTriggerOperation(oper) : ALL,
         triggerType: let var triggerType = payload.triggerType in triggerType is string ? getTriggerType(triggerType) :
-                PRE
+            PRE
     };
 }
 
@@ -238,7 +238,7 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         token: let var token = payload._token in token is string? token : EMPTY_STRING,
         permissionMode: let var mode = payload.permissionMode in mode is string ? getPermisssionMode(mode) : 
-                ALL_PERMISSION,
+            ALL_PERMISSION,
         resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
     };  
 }
@@ -408,8 +408,8 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
 # 
 # + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
 # + return - An array of type `PartitionKeyRange`
-isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns @tainted 
-        PartitionKeyRange[] {
+isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns 
+                                                  @tainted PartitionKeyRange[] {
     PartitionKeyRange[] partitionKeyRangesArray = [];
     foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
         PartitionKeyRange value = {

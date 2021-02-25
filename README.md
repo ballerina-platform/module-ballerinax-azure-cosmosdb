@@ -145,7 +145,7 @@ record {|string id; json...;|} document = {
 int valueOfPartitionKey = 0;
 
 cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document, 
-        valueOfPartitionKey);
+    valueOfPartitionKey);
 ```
 Notes: <br/> 
 - This document is created inside an already existing container with ID **my_container** and the container was created 
@@ -176,7 +176,7 @@ string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE 
 int partitionKeyValueMale = 0;
 int maxItemCount = 10;
 stream<Document> queryResult = check azureCosmosClient-> queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-        maxItemCount, partitionKeyValueMale);
+    maxItemCount, partitionKeyValueMale);
 
 error? e =  queryResult.forEach(function (Document record){
                 log:printInfo(record);
@@ -193,7 +193,7 @@ you have to give **my_database** and **my_container** as parameters. Apart from 
 delete **my_document** and **value of the partition key** of that document must be provided.
 ```ballerina
 cosmosdb:DeleteResponse = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", 
-        valueOfPartitionKey);
+    valueOfPartitionKey);
 ```
 
 ## Basic Database administration operations 
@@ -238,7 +238,7 @@ cosmosdb:PartitionKey partitionKeyDefinition = {
     keyVersion: 2
 };
 cosmosdb:Container containerResult = check managementClient-> createContainer("my_database", "my_container", 
-        partitionKeyDefinition);
+    partitionKeyDefinition);
 ```
 Notes: <br/> 
 -  We can set the version of the partition key - keyVersion, to 1 or 2. This is an optional field, if not specified the 
@@ -267,17 +267,18 @@ parameter to the function.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
-    // Assume partition key path of this container is set as /gender which is an int of 0 or 1
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
 
@@ -325,17 +326,18 @@ Refer more about replacing partition key values here: https://github.com/Azure/a
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
-    // Assume partition key path of this container is set as /gender which is an int of 0 or 1
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
     //We have to give the currently existing partition key of this document we can't replace that
@@ -381,17 +383,18 @@ partition key is mandatory in the container, for getDocument operation you need 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
-    // Assume partition key path of this container is set as /gender which is an int of 0 or 1
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
     int partitionKeyValue = 0;
@@ -425,13 +428,14 @@ exists as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -470,17 +474,18 @@ This sample shows how to delete a document which exists inside a container. You 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
-    // Assume partition key path of this container is set as /gender which is an int of 0 or 1
+    // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
     int partitionKeyValue = 0;
@@ -509,16 +514,18 @@ the Cosmos DB documentation, SQL queries can be written in different ways for qu
 connector allows the option to either provide a query as a normal ballerina string that matches with the SQL queries 
 compatible with the REST API. This sample shows a query that will return all the data inside a document such that the 
 value for **/gender** equals 0. 
+
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -528,7 +535,7 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     int maxItemCount = 10;
 
-    ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
+    cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, options, maxItemCount);
     if (result is error) {
         log:printError(result.message());
@@ -571,14 +578,15 @@ and the *Container ID* where the stored procedure will be saved in. Apart from t
 procedure and a JavaScript function that represents the stored procedure should be provided as parameters.  
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -593,7 +601,7 @@ public function main() {
                                         }`;
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, storedProcedureId, 
-            storedProcedureBody); 
+        storedProcedureBody); 
     if (result is error) {
         log:printError(result.message());
     }
@@ -614,14 +622,15 @@ function and returning it with re response to the caller. For this, you have to 
 function should also be passed as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -637,7 +646,7 @@ public function main() {
                                             }`;
 
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, existingStoredProcedureId, 
-            newStoredProcedureBody);
+        newStoredProcedureBody);
     if (result is error) {
         log:printError(result.message());
     }
@@ -655,14 +664,15 @@ contain a stream of `StoredProcedure` record types and several other important i
 *Database ID* and the *Container ID* as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -688,14 +698,15 @@ This sample shows how to delete a stored procedure that exists inside a containe
 *Database ID*, *Container ID* where the stored procedure exists and the *ID of the stored procedure* you want to delete.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -724,14 +735,15 @@ this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-
 This sample shows how to execute a stored procedure already existing inside a container.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -772,6 +784,17 @@ provide a **unique Database ID** that does not already exist in the specific Cos
 return a record of type `Database`. This will contain the success as true if the operation is successful.
 
 ```ballerina
+import ballerinax/azure_cosmosdb as cosmosdb;
+import ballerina/log;
+import ballerina/os;
+
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+};
+
+cosmosdb:ManagementClient managementClient = new(config);
+
 public function main() { 
     string databaseId = "my_database";
 
@@ -791,11 +814,12 @@ type.
 For example:
  
 ```ballerina
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
  
 public function main() {
     string databaseId = "my_database";
@@ -823,14 +847,15 @@ useful in query operations and creating offers. You have to pass the *Database I
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -854,14 +879,15 @@ stream, each element containing a record of type `Database`.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     log:print("Getting list of databases");
@@ -885,14 +911,15 @@ This operation can be used for deleting a database inside an Azure Cosmos DB acc
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -921,14 +948,15 @@ key in the creation of a container.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -967,14 +995,15 @@ along with the resourceId.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -999,14 +1028,15 @@ stream, each element containing a record of type `Container`.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1037,14 +1067,15 @@ deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1078,13 +1109,14 @@ parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1125,13 +1157,14 @@ JavaScript function which will replace the existing user defined function.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1169,13 +1202,14 @@ and *Container ID* as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1204,13 +1238,14 @@ delete.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
-import ballerina/config;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1242,14 +1277,15 @@ trigger is saved in. A *unique ID* for trigger and a JavaScript function should 
 Apart from that, you have to provide **type of trigger operation**, and **type of trigger**  as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1288,7 +1324,7 @@ public function main() {
     cosmosdb:TriggerType createTriggerType = "Post";
 
     var result = managementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
-            createTriggerOperationType, createTriggerType); 
+        createTriggerOperationType, createTriggerType); 
     if (result is error) {
         log:printError(result.message());
     }
@@ -1315,14 +1351,15 @@ As parameters, *ID of the trigger to be relaced* and a JavaScript function shoul
 parameters. (It is not mandatory to replace all parameters with a new value but all the values should be passed).
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1361,7 +1398,7 @@ public function main() {
     cosmosdb:TriggerType replaceTriggerType = "Post";
     
     var result = managementClient->replaceTrigger(databaseId, containerId, existingTriggerId, replaceTriggerBody, 
-            replaceTriggerOperation, replaceTriggerType); 
+        replaceTriggerOperation, replaceTriggerType); 
     if (result is error) {
         log:printError(result.message());
     }
@@ -1378,14 +1415,15 @@ From this sample, you can get a list of all the triggers inside a container. It 
 records of type `Trigger`. You have to provide the *Database ID* and *Container ID* as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1411,14 +1449,15 @@ This sample shows how to delete a trigger that exists inside a container. You ha
 *Container ID* where the trigger exists and the *ID of the trigger you want to delete*.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient azureCosmosManagementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -1454,14 +1493,15 @@ are the *Database ID* and a *unique ID* for the user. Here **my_database** and *
 respectively.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1487,14 +1527,15 @@ For this, you have to provide the *Database ID* where the User is scoped into, t
 the *New User ID* which the older one is to be replaced with.
 ``` ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1520,18 +1561,19 @@ scoped into and the* User ID* you want to get information about should be provid
 Database ID will be **my_database** and User ID will be **my_user** in this case.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
-    string userId = "my_new_user";
+    string userId = "my_user";
 
     log:print("Get user information");
     var result = managementClient->getUser(databaseId, userId);
@@ -1552,14 +1594,15 @@ which contains records of type `User`. You have to provide the *Database ID* whi
 argument.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1585,14 +1628,15 @@ connector supports this operation. For deleting a user the specific *Database ID
 User to delete* must be provided.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1640,14 +1684,15 @@ explicitly made referring to an existing user, *User ID* and the *Database ID* a
 properties must be provided as parameters to the function. By default created token is expired in one hour.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1660,7 +1705,7 @@ public function main() {
         
     log:print("Create permission for a user");
     var result = managementClient->createPermission(databaseId, userId, permissionId, permissionMode, 
-            <@untainted>permissionResource);
+        <@untainted>permissionResource);
     if (result is error) {
         log:printError(result.message());
     }
@@ -1684,14 +1729,15 @@ properties have to have changed. These primary properties are provided as functi
 should be the ID of the permission we want to replace.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1722,14 +1768,15 @@ From this sample, you can get the basic information about a created permission. 
 provided.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1755,14 +1802,15 @@ which contains records of type `Permission`. You have to provide the *Database I
 belong as parameters.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1788,15 +1836,15 @@ This Operation allows deleting a permission in the database. For deleting the pe
 ID* to which the permission belongs and the *ID of the Permission* to delete must be provided.
 ```ballerina
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
 
+cosmosdb:ManagementClient managementClient = new(config);
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";

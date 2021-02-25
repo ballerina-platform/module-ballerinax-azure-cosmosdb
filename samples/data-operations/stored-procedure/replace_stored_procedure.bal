@@ -15,14 +15,15 @@
 // under the License.
 
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -38,7 +39,7 @@ public function main() {
                                             }`;
 
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, existingStoredProcedureId, 
-            newStoredProcedureBody);
+        newStoredProcedureBody);
     if (result is error) {
         log:printError(result.message());
     }

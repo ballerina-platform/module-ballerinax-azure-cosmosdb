@@ -230,8 +230,8 @@ public type DocumentCreateOptions record {|
 
 # Represent the optional parameters which can be passed to the function when replacing a document.
 # 
-# + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
-#                       `Exclude`.
+# + indexingDirective - The option whether to include the document in the index. Allowed values are 'Include' or 
+#                       'Exclude'.
 public type DocumentReplaceOptions record {|
     IndexingDirective indexingDirective?;
 |};

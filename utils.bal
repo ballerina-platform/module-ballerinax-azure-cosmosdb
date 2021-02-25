@@ -127,7 +127,7 @@ isolated function prepareUrl(string[] paths) returns string {
 # + requestPath - Request path for the request
 # + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, 
-        string requestPath) returns error? {
+                                      string requestPath) returns error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
@@ -138,7 +138,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     string signature = "";
     if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
         signature = check generateMasterTokenSignature(httpVerb, getResourceType(requestPath), 
-                getResourceId(requestPath), token, tokenType, dateTime);
+            getResourceId(requestPath), token, tokenType, dateTime);
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
         signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
     } else {
@@ -172,8 +172,9 @@ isolated function setHeadersForQuery(http:Request request) returns error? {
 # + request - The http:Request to set the header
 # + throughputOption - Throughput parameter of type int or json
 # + return - If successful, request will be appended with headers. Else returns error or nil.
-isolated function setThroughputOrAutopilotHeader(http:Request request, (int|record{|int maxThroughput;|})? 
-        throughputOption = ()) returns error? {
+isolated function setThroughputOrAutopilotHeader(http:Request request, 
+                                                (int|record{|int maxThroughput;|})? throughputOption = ()) 
+                                                returns error? {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
@@ -221,8 +222,8 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 # + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
 # + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
-    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= 
-            MAX_TIME_TO_LIVE_IN_SECONDS) {
+    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds 
+        <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
         return prepareUserError(VALIDITY_PERIOD_ERROR);
@@ -232,7 +233,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # Get the current time(GMT) in the specific format.
 #
 # + return - If successful, returns string representing UTC date and time 
-#          (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error.
+#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error.
 isolated function getDateTime() returns string|error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
@@ -249,9 +250,9 @@ isolated function getDateTime() returns string|error {
 # + date - current GMT date and time
 # + return - If successful, returns string which is the hashed token signature. Else returns error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
-        string tokenType, string date) returns string|error {
+                                               string tokenType, string date) returns string|error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
-            + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
+        + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
     byte[] digest = check crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest);
@@ -295,7 +296,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 # + request - HTTP request object 
 # + return - A stream<json>
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
-        @tainted stream<json>|stream<Document>|error {
+                         @tainted stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
 
@@ -320,8 +321,8 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + path - Path to which API call is made
 # + request - HTTP request object 
 # + return - A stream<record{}>
-function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
-        stream<record{}>|error {
+function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns 
+                        @tainted stream<record{}>|error {
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
     json payload = check handleResponse(response);
     return check createStream(path, payload);

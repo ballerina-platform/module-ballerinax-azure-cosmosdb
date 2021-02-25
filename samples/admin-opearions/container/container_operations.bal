@@ -15,16 +15,17 @@
 // under the License.
 
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
+import ballerina/jballerina.java;
 import ballerina/log;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/os;
+import ballerina/regex;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
 
@@ -71,7 +72,7 @@ public function main() {
     };
 
     var containerWithOptionsResult = managementClient->createContainer(databaseId, containerWithIndexingId, 
-            partitionKeyWithIndexing, indexingPolicy);
+        partitionKeyWithIndexing, indexingPolicy);
     if (containerWithOptionsResult is error) {
         log:printError(containerWithOptionsResult.message());
     }   
@@ -88,7 +89,7 @@ public function main() {
     };
 
     var manualPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
-            partitionKeyManual, (), throughput);
+        partitionKeyManual, (), throughput);
     if (manualPolicyContainer is error) {
         log:printError(manualPolicyContainer.message());
     }   
@@ -104,10 +105,10 @@ public function main() {
         keyVersion: 2
     };
     containerResult = checkpanic managementClient->createContainer(databaseId, containerAutoscalingId, 
-            partitionKeyAutoscaling, (), maxThroughput);
+        partitionKeyAutoscaling, (), maxThroughput);
 
     var autoPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
-            partitionKeyManual, (), throughput);
+        partitionKeyManual, (), throughput);
     if (autoPolicyContainer is error) {
         log:printError(autoPolicyContainer.message());
     }   
@@ -122,7 +123,7 @@ public function main() {
         keyVersion: 2
     };
     var containerIfNotExistResult = managementClient->createContainer(databaseId, containerIfnotExistId, 
-            partitionKeyDefinition);
+        partitionKeyDefinition);
     if (containerIfNotExistResult is error) {
         log:printError(containerIfNotExistResult.message());
     }   
@@ -180,7 +181,7 @@ public function main() {
 public function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
+        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
         return "";

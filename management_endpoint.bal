@@ -38,7 +38,7 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns `Database`. Else returns `error`.
     remote function createDatabase(string databaseId, (int|record{|int maxThroughput;|})? throughputOption = ()) 
-            returns @tainted Database|error {
+                                   returns @tainted Database|error {
         // Creating a new request
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
@@ -63,7 +63,8 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns `Database` or `nil` if database already exists. Else returns `error`.
     remote function createDatabaseIfNotExist(string databaseId, 
-            (int|record{|int maxThroughput;|})? throughputOption = ()) returns @tainted Database?|error {
+                                            (int|record{|int maxThroughput;|})? throughputOption = ()) returns 
+                                             @tainted Database?|error {
         var result = self->createDatabase(databaseId, throughputOption);
         if result is error {
             if (result.detail()[STATUS] == http:STATUS_CONFLICT) {
@@ -80,7 +81,7 @@ public client class ManagementClient {
     #                         request.
     # + return - If successful, returns `Database`. Else returns `error`.
     remote function getDatabase(string databaseId, ResourceReadOptions? resourceReadOptions = ()) returns 
-            @tainted Database|error {
+                                @tainted Database|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -114,7 +115,7 @@ public client class ManagementClient {
     #                           to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
-            @tainted DeleteResponse|error {
+                                   @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -134,8 +135,9 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns `Container`. Else returns `error`.
     remote function createContainer(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|record{|int maxThroughput;|})? throughputOption = ()) 
-            returns @tainted Container|error { 
+                                    IndexingPolicy? indexingPolicy = (), 
+                                    (int|record{|int maxThroughput;|})? throughputOption = ()) returns 
+                                    @tainted Container|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
@@ -169,8 +171,9 @@ public client class ManagementClient {
     # + return - If successful, returns `Container` if a new container is created or `nil` if container already exists. 
     #            Else returns `error`.
     remote function createContainerIfNotExist(string databaseId, string containerId, PartitionKey partitionKey, 
-            IndexingPolicy? indexingPolicy = (), (int|record{|int maxThroughput;|})? throughputOption = ()) 
-            returns @tainted Container?|error { 
+                                              IndexingPolicy? indexingPolicy = (), 
+                                              (int|record{|int maxThroughput;|})? throughputOption = ()) returns 
+                                              @tainted Container?|error { 
         var result = self->createContainer(databaseId, containerId, partitionKey, indexingPolicy, throughputOption);
         if result is error {
             if (result.detail()[STATUS] == http:STATUS_CONFLICT) {
@@ -188,7 +191,7 @@ public client class ManagementClient {
     #                         request.
     # + return - If successful, returns `Container`. Else returns `error`.
     remote function getContainer(string databaseId, string containerId, ResourceReadOptions? resourceReadOptions = ()) 
-            returns @tainted Container|error {
+                                 returns @tainted Container|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -199,7 +202,7 @@ public client class ManagementClient {
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # List information of all Containers.
+    # List information of all containers.
     # 
     # + databaseId - ID of the database to which the containers belongs to
     # + maxItemCount - Optional. Maximum number of container records in one returning page.
@@ -215,7 +218,7 @@ public client class ManagementClient {
         return <stream<Container>> check retrieveStream(self.httpClient, requestPath, request);
     }
 
-    # Delete a given Container.
+    # Delete a given container.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to delete
@@ -223,7 +226,8 @@ public client class ManagementClient {
     #                           the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteContainer(string databaseId, string containerId, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error {
+                                    ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                    @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -240,10 +244,10 @@ public client class ManagementClient {
     # + containerId - ID of the container where the partition key ranges are related to
     # + return - If successful, returns `stream<PartitionKeyRange>`. Else returns `error`.
     remote function listPartitionKeyRanges(string databaseId, string containerId) returns 
-            @tainted stream<PartitionKeyRange>|error {
+                                           @tainted stream<PartitionKeyRange>|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_PK_RANGES]);
+            RESOURCE_TYPE_PK_RANGES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
 
         return <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, requestPath, request);
@@ -258,12 +262,12 @@ public client class ManagementClient {
     # + userDefinedFunction - A JavaScript function
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `error`. 
     remote function createUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
-            string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
+                                              string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_UDF]);
+            RESOURCE_TYPE_UDF]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-                
+
         json payload = {
             id: userDefinedFunctionId,
             body: userDefinedFunction
@@ -283,10 +287,10 @@ public client class ManagementClient {
     # + userDefinedFunction - A JavaScript function
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `error`. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
-            string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
+                                               string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_UDF, userDefinedFunctionId]);
+            RESOURCE_TYPE_UDF, userDefinedFunctionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
 
         json payload = {
@@ -309,10 +313,11 @@ public client class ManagementClient {
     #                         the request.
     # + return - If successful, returns a `stream<UserDefinedFunction>`. Else returns `error`. 
     remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
-            ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<UserDefinedFunction>|error { 
+                                             ResourceReadOptions? resourceReadOptions = ()) returns 
+                                             @tainted stream<UserDefinedFunction>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_UDF]);
+            RESOURCE_TYPE_UDF]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
@@ -331,10 +336,11 @@ public client class ManagementClient {
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error { 
+                                              ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                              @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_UDF, userDefinedFunctionid]);
+            RESOURCE_TYPE_UDF, userDefinedFunctionid]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
         setOptionalHeaders(request, resourceDeleteOptions);
 
@@ -356,10 +362,11 @@ public client class ManagementClient {
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a `Trigger`. Else returns `error`. 
     remote function createTrigger(string databaseId, string containerId, string triggerId, string trigger, 
-            TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Trigger|error { 
+                                  TriggerOperation triggerOperation, TriggerType triggerType) returns 
+                                  @tainted Trigger|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_TRIGGER]);
+            RESOURCE_TYPE_TRIGGER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
 
         json payload = {
@@ -385,10 +392,11 @@ public client class ManagementClient {
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a `Trigger`. Else returns `error`. 
     remote function replaceTrigger(string databaseId, string containerId, string triggerId, string trigger, 
-            TriggerOperation triggerOperation, TriggerType triggerType) returns @tainted Trigger|error {
+                                   TriggerOperation triggerOperation, TriggerType triggerType) returns 
+                                   @tainted Trigger|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_TRIGGER, triggerId]);
+            RESOURCE_TYPE_TRIGGER, triggerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
 
         json payload = {
@@ -413,10 +421,10 @@ public client class ManagementClient {
     #                         request.
     # + return - If successful, returns a `stream<Trigger>`. Else returns `error`. 
     remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
-            ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<Trigger>|error { 
+                                 ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<Trigger>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_TRIGGER]);
+            RESOURCE_TYPE_TRIGGER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
@@ -435,10 +443,11 @@ public client class ManagementClient {
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error {
+                                  ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                  @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
-                RESOURCE_TYPE_TRIGGER, triggerId]);
+            RESOURCE_TYPE_TRIGGER, triggerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
         setOptionalHeaders(request, resourceDeleteOptions);
 
@@ -491,7 +500,7 @@ public client class ManagementClient {
     #                         to the request.
     # + return - If successful, returns a `User`. Else returns `error`.
     remote function getUser(string databaseId, string userId, ResourceReadOptions? resourceReadOptions = ()) returns 
-            @tainted User|error {
+                            @tainted User|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -510,7 +519,7 @@ public client class ManagementClient {
     #                         the request.
     # + return - If successful, returns a `stream<User>`. Else returns `error`.
     remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) 
-            returns @tainted stream<User>|error { 
+                              returns @tainted stream<User>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -530,7 +539,7 @@ public client class ManagementClient {
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
-            returns @tainted DeleteResponse|error {
+                               returns @tainted DeleteResponse|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
@@ -551,11 +560,11 @@ public client class ManagementClient {
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a `Permission`. Else returns `error`.
     remote function createPermission(string databaseId, string userId, string permissionId, 
-            PermisssionMode permissionMode, string resourcePath, int? validityPeriodInSeconds = ()) returns 
-            @tainted Permission|error {
+                                     PermisssionMode permissionMode, string resourcePath, 
+                                     int? validityPeriodInSeconds = ()) returns @tainted Permission|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                RESOURCE_TYPE_PERMISSION]);
+            RESOURCE_TYPE_PERMISSION]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
         if (validityPeriodInSeconds is int) {
             check setExpiryHeader(request, validityPeriodInSeconds);
@@ -583,11 +592,11 @@ public client class ManagementClient {
     # + validityPeriodInSeconds - Optional. Validity period of the permission.
     # + return - If successful, returns a `Permission`. Else returns `error`.
     remote function replacePermission(string databaseId, string userId, string permissionId, 
-            PermisssionMode permissionMode, string resourcePath, int? validityPeriodInSeconds = ()) returns 
-            @tainted Permission|error { 
+                                      PermisssionMode permissionMode, string resourcePath, 
+                                      int? validityPeriodInSeconds = ()) returns @tainted Permission|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                RESOURCE_TYPE_PERMISSION, permissionId]);
+            RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_PUT, requestPath);
         if (validityPeriodInSeconds is int) {
             check setExpiryHeader(request, validityPeriodInSeconds);
@@ -614,10 +623,10 @@ public client class ManagementClient {
     #                         to the request.
     # + return - If successful, returns a `Permission`. Else returns `error`.
     remote function getPermission(string databaseId, string userId, string permissionId, 
-            ResourceReadOptions? resourceReadOptions = ()) returns @tainted Permission|error { 
+                                  ResourceReadOptions? resourceReadOptions = ()) returns @tainted Permission|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                RESOURCE_TYPE_PERMISSION, permissionId]);
+            RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -635,10 +644,11 @@ public client class ManagementClient {
     #                         the request.
     # + return - If successful, returns a `stream<Permission>`. Else returns `error`.
     remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), 
-            ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<Permission>|error { 
+                                    ResourceReadOptions? resourceReadOptions = ()) returns 
+                                    @tainted stream<Permission>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                RESOURCE_TYPE_PERMISSION]);
+            RESOURCE_TYPE_PERMISSION]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
         if (maxItemCount is int) {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
@@ -657,10 +667,11 @@ public client class ManagementClient {
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
     remote function deletePermission(string databaseId, string userId, string permissionId, 
-            ResourceDeleteOptions? resourceDeleteOptions = ()) returns @tainted DeleteResponse|error { 
+                                     ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                     @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
-                RESOURCE_TYPE_PERMISSION, permissionId]);
+            RESOURCE_TYPE_PERMISSION, permissionId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_DELETE, requestPath);
         setOptionalHeaders(request, resourceDeleteOptions);
 
@@ -702,7 +713,7 @@ public client class ManagementClient {
     #                         to the request.
     # + return - If successful, returns a `Offer`. Else returns `error`.
     remote function getOffer(string offerId, ResourceReadOptions? resourceReadOptions = ()) returns 
-            @tainted Offer|error {
+                             @tainted Offer|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -723,7 +734,7 @@ public client class ManagementClient {
     #                         the request.
     # + return - If successful, returns a `stream<Offer>` Else returns `error`.
     remote function listOffers(int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) returns 
-            @tainted stream<Offer>|error { 
+                               @tainted stream<Offer>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
@@ -743,7 +754,7 @@ public client class ManagementClient {
     #                          the request.
     # + return - If successful, returns a `stream<json>`. Else returns `error`.
     remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? resourceQueryOptions = ()) 
-            returns @tainted stream<json>|error { 
+                               returns @tainted stream<json>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);

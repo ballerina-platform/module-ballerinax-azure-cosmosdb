@@ -18,20 +18,13 @@ import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/lang.runtime;
 import ballerina/lang.'string;
+import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
 
-configurable string baseURL = ?;
-configurable string masterToken = ?;
-
-// Configuration config = {
-//     baseUrl: config:getAsString("BASE_URL"),
-//     masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
-// };
-
 Configuration config = {
-    baseUrl: baseURL,
-    masterOrResourceToken: masterToken
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 DataPlaneClient azureCosmosClient = new(config);
@@ -306,16 +299,17 @@ function testGetAllContainers() {
         testQueryDocumentsWithRequestOptions,
         testGetOneDocumentWithRequestOptions, 
         testCreateDocumentWithRequestOptions, 
-        testGetDocumentListWithRequestOptions
-        // testGetAllStoredProcedures, 
-        // testDeleteOneStoredProcedure, 
-        // testListAllUDF, 
-        // testDeleteUDF, 
-        // testDeleteTrigger, 
+        testGetDocumentListWithRequestOptions,
+        testGetAllStoredProcedures, 
+        testDeleteOneStoredProcedure, 
+        testListAllUDF, 
+        testDeleteUDF, 
+        testDeleteTrigger, 
 
-        // testCreatePermission,
-        // testCreatePermissionWithTTL,
-        // testGetPartitionKeyRanges
+        testCreatePermission,
+        testCreatePermissionWithTTL,
+        testGetPartitionKeyRanges
+
         // testListOffers,
         // testGetOffer,
         // testReplaceOfferWithOptionalParameter,
@@ -434,9 +428,6 @@ function testGetDocumentList() {
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, 1);
     if (result is stream<Document>) {
-        error? e = result.forEach(isolated function (Document document) {
-            log:print(document.toString());
-        });
         test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
@@ -450,17 +441,14 @@ function testGetDocumentList() {
 function testGetDocumentListWithRequestOptions() {
     log:print("ACTION : getDocumentListWithRequestOptions()");
 
-    // DocumentListOptions options = {
-    //     consistancyLevel: EVENTUAL,
-    //     // changeFeedOption : "Incremental feed", 
-    //     sessionToken: "tag",
-    //     partitionKeyRangeId: "0"
-    // };
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    DocumentListOptions options = {
+        consistancyLevel: EVENTUAL,
+        // changeFeedOption : "Incremental feed", 
+        sessionToken: "tag",
+        partitionKeyRangeId: "0"
+    };
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
     if (result is stream<Document>) {
-        error? e = result.forEach(isolated function (Document document) {
-            log:print(document.toString());
-        });
         test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
@@ -1204,7 +1192,7 @@ function testGetContainerWithResourceToken() {
         test:assertFail(msg = result.message());
     } else {
         Configuration configdb = {
-            baseUrl: baseURL,
+            baseUrl: os:getEnv("BASE_URL"),
             masterOrResourceToken: result?.token.toString()
         };
 

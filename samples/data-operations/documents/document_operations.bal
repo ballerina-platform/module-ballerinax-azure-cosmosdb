@@ -15,17 +15,18 @@
 // under the License.
 
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/log;
-import ballerina/config;
 import ballerina/io;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/jballerina.java;
+import ballerina/log;
+import ballerina/os;
+import ballerina/regex;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -76,10 +77,10 @@ public function main() {
     };
 
     cosmosdb:Document documentCreateResult = checkpanic azureCosmosClient->createDocument(databaseId, containerId, 
-            documentWithIndexing, partitionKeyValue, indexingOptions);
+        documentWithIndexing, partitionKeyValue, indexingOptions);
 
     var documentResultWithIndexing = azureCosmosClient->createDocument(databaseId, containerId, documentWithIndexing, 
-            partitionKeyValue, indexingOptions); 
+        partitionKeyValue, indexingOptions); 
     if (documentResultWithIndexing is error) {
         log:printError(documentResultWithIndexing.message());
     }
@@ -109,7 +110,7 @@ public function main() {
     };
     
     var documentUpsertResult = azureCosmosClient->createDocument(databaseId, containerId, upsertDocument, 
-            partitionKeyValue, upsertOptions); 
+        partitionKeyValue, upsertOptions); 
     if (documentUpsertResult is error) {
         log:printError(documentUpsertResult.message());
     }
@@ -154,7 +155,7 @@ public function main() {
         consistancyLevel: "Eventual"
     };
     var returnedDocumentWithOptions = azureCosmosClient->getDocument(databaseId, containerId, documentId, 
-            partitionKeyValue, options);
+        partitionKeyValue, options);
     if (returnedDocumentWithOptions is error) {
         log:printError(returnedDocumentWithOptions.message());
     }
@@ -206,7 +207,7 @@ public function closeRc(io:ReadableCharacterChannel rc) {
 public function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
+        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
         return "";
