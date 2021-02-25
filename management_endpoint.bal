@@ -32,7 +32,7 @@ public client class ManagementClient {
         self.httpClient = checkpanic new(self.baseUrl);
     }
 
-    # Create a database inside an Azure Cosmos DB account.
+    # Create a database.
     # 
     # + databaseId - ID of the new database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int or json.
@@ -57,7 +57,7 @@ public client class ManagementClient {
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # Create a database inside an Azure Cosmos DB account only if the specified database ID does not exist already.
+    # Create a database only if the specified database ID does not exist already.
     # 
     # + databaseId - ID of the new database. Must be a unique value.
     # + throughputOption - Optional. Throughput parameter of type int or json.
@@ -74,11 +74,11 @@ public client class ManagementClient {
         return result;
     }
 
-    # Get information of a given database in an Azure Cosmos DB account.
+    # Get information of a given database.
     # 
     # + databaseId - ID of the database 
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
-    #                         request.
+    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request.
     # + return - If successful, returns `Database`. Else returns `error`.
     remote function getDatabase(string databaseId, ResourceReadOptions? resourceReadOptions = ()) returns 
                                 @tainted Database|error {
@@ -92,7 +92,7 @@ public client class ManagementClient {
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # List information of all databases in an Azure Cosmos DB account.
+    # List information of all databases.
     # 
     # + maxItemCount - Optional. Maximum number of `Database` records in one returning page.
     # + return - If successful, returns `stream<Database>`. else returns `error`. 
@@ -105,10 +105,11 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        return <stream<Database>>check retrieveStream(self.httpClient, requestPath, request);
+        Database[] initialArray = [];
+        return <stream<Database>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
-    # Delete a given database in an Azure Cosmos DB account.
+    # Delete a given database.
     # 
     # + databaseId - ID of the database to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities 
@@ -161,7 +162,7 @@ public client class ManagementClient {
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # Create a container inside an Azure Cosmos DB account only if the specified container ID does not exist already.
+    # Create a container only if the specified container ID does not exist already.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the new container
@@ -215,10 +216,11 @@ public client class ManagementClient {
             request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
         }
 
-        return <stream<Container>> check retrieveStream(self.httpClient, requestPath, request);
+        Container[] initialArray = [];
+        return <stream<Container>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
-    # Delete a given container.
+    # Delete a container.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to delete
@@ -250,16 +252,17 @@ public client class ManagementClient {
             RESOURCE_TYPE_PK_RANGES]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_GET, requestPath);
 
-        return <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, requestPath, request);
+        PartitionKeyRange[] initialArray = [];
+        return <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
-    # Create a new user defined function inside a container.
-    # A user defined function is a side effect free piece of application logic written in JavaScript. 
+    # Create a new user defined function. A user defined function is a side effect free piece of application logic 
+    # written in JavaScript. 
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where, user defined function is created
     # + userDefinedFunctionId - A unique ID for the newly created user defined function
-    # + userDefinedFunction - A JavaScript function
+    # + userDefinedFunction - A JavaScript function represented as a string
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `error`. 
     remote function createUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
                                               string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
@@ -279,12 +282,12 @@ public client class ManagementClient {
         return mapJsonToUserDefinedFunction(jsonResponse);
     }
 
-    # Replace an existing user defined function in a container.
+    # Replace an existing user defined function.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the existing user defined function
     # + userDefinedFunctionId - The ID of the user defined function to replace
-    # + userDefinedFunction - A JavaScript function
+    # + userDefinedFunction - A JavaScript function represented as a string
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `error`. 
     remote function replaceUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionId, 
                                                string userDefinedFunction) returns @tainted UserDefinedFunction|error { 
@@ -304,7 +307,7 @@ public client class ManagementClient {
         return mapJsonToUserDefinedFunction(jsonResponse); 
     }
 
-    # Get a list of existing user defined functions inside a container.
+    # Get a list of existing user defined functions.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined functions
@@ -324,10 +327,11 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        return <stream<UserDefinedFunction>> check retrieveStream(self.httpClient, requestPath, request);
+        UserDefinedFunction[] initialArray = [];
+        return <stream<UserDefinedFunction>> check retrieveStream(self.httpClient, requestPath, request, initialArray); 
     }
 
-    # Delete an existing user defined function inside a container.
+    # Delete an existing user defined function.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined function
@@ -349,14 +353,13 @@ public client class ManagementClient {
         return mapHeadersToResultType(response); 
     }
 
-    # Create a trigger inside a container. 
-    # Triggers are pieces of application logic that can be executed before (pre-triggers) and after (post-triggers) 
-    # creation, deletion, and replacement of a document. Triggers are written in JavaScript.
+    # Create a trigger. Triggers are pieces of application logic that can be executed before (pre-triggers) and 
+    # after (post-triggers) creation, deletion, and replacement of a document. Triggers are written in JavaScript.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where trigger is created
     # + triggerId - A unique ID for the newly created trigger
-    # + trigger - A JavaScript function
+    # + trigger - A JavaScript function represented as a string
     # + triggerOperation - The specific operation in which trigger will be executed can be `All`, `Create`, `Replace` or 
     #                      `Delete`
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
@@ -382,12 +385,12 @@ public client class ManagementClient {
         return mapJsonToTrigger(jsonResponse);
     }
 
-    # Replace an existing trigger inside a container.
+    # Replace an existing trigger.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the trigger
     # + triggerId - The ID of the trigger to be replaced
-    # + trigger - A JavaScript function
+    # + trigger - A JavaScript function represented as a string
     # + triggerOperation - The specific operation in which trigger will be executed
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a `Trigger`. Else returns `error`. 
@@ -412,7 +415,7 @@ public client class ManagementClient {
         return mapJsonToTrigger(jsonResponse);
     }
 
-    # List existing triggers inside a container.
+    # List existing triggers.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the triggers
@@ -431,10 +434,11 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        return <stream<Trigger>> check retrieveStream(self.httpClient, requestPath, request);
+        Trigger[] initialArray = [];
+        return <stream<Trigger>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
-    # Delete an existing trigger inside a container.
+    # Delete an existing trigger.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the trigger
@@ -456,10 +460,10 @@ public client class ManagementClient {
         return mapHeadersToResultType(response); 
     }
 
-    # Create a User for a given database.
+    # Create a user for a given database.
     # 
-    # + databaseId - ID of the database where the User is created.
-    # + userId - ID of the new User. Must be a unique value.
+    # + databaseId - ID of the database where the user is created.
+    # + userId - ID of the new user. Must be a unique value.
     # + return - If successful, returns a `User`. Else returns `error`.
     remote function createUser(string databaseId, string userId) returns @tainted User|error {
         http:Request request = new;
@@ -473,11 +477,11 @@ public client class ManagementClient {
         return mapJsonToUserType(check handleResponse(response));
     }
 
-    # Replace the ID of an existing User.
+    # Replace the ID of an existing user.
     # 
-    # + databaseId - ID of the database to which, the existing User belongs to
-    # + userId - Old ID of the User
-    # + newUserId - New ID for the User
+    # + databaseId - ID of the database to which, the existing user belongs to
+    # + userId - Old ID of the user
+    # + newUserId - New ID for the user
     # + return - If successful, returns a `User`. Else returns `error`.
     remote function replaceUserId(string databaseId, string userId, string newUserId) returns @tainted User|error {
         http:Request request = new;
@@ -492,10 +496,10 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # Get information of a User.
+    # Get information of a user.
     # 
-    # + databaseId - ID of the database to which, the User belongs to
-    # + userId - ID of User to get information
+    # + databaseId - ID of the database to which, the user belongs to
+    # + userId - ID of user
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
     #                         to the request.
     # + return - If successful, returns a `User`. Else returns `error`.
@@ -511,10 +515,10 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # List Users in a specific database.
+    # List users of a specific database.
     # 
-    # + databaseId - ID of the database to which, the User belongs to
-    # + maxItemCount - Optional. Maximum number of User records in one returning page.
+    # + databaseId - ID of the database to which, the user belongs to
+    # + maxItemCount - Optional. Maximum number of user records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request.
     # + return - If successful, returns a `stream<User>`. Else returns `error`.
@@ -528,13 +532,14 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        return <stream<User>> check retrieveStream(self.httpClient, requestPath, request);
+        User[] initialArray = [];
+        return <stream<User>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
-    # Delete a User.
+    # Delete a user.
     # 
-    # + databaseId - ID of the database to which, the User belongs to
-    # + userId - ID of User to delete
+    # + databaseId - ID of the database to which, the user belongs to
+    # + userId - ID of the user to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
     # + return - If successful, returns `DeleteResponse`. Else returns `error`.
@@ -550,14 +555,14 @@ public client class ManagementClient {
         return mapHeadersToResultType(response); 
     }
 
-    # Create a permission for a User. 
+    # Create a permission for a user. 
     # 
-    # + databaseId - ID of the database to which, the User belongs to
-    # + userId - ID of User to which, the permission is granted. Must be a unique value.
+    # + databaseId - ID of the database to which, the user belongs to
+    # + userId - ID of user to which, the permission is granted. Must be a unique value.
     # + permissionId - A unique ID for the newly created permission
     # + permissionMode - The mode to which the permission is scoped
-    # + resourcePath - The resource this permission is allowing the User to access
-    # + validityPeriodInSeconds - Optional. Validity period of the permission.
+    # + resourcePath - The resource this permission is allowing the user to access
+    # + validityPeriodInSeconds - Optional. Validity period of the permission in seconds.
     # + return - If successful, returns a `Permission`. Else returns `error`.
     remote function createPermission(string databaseId, string userId, string permissionId, 
                                      PermisssionMode permissionMode, string resourcePath, 
@@ -584,12 +589,12 @@ public client class ManagementClient {
 
     # Replace an existing permission.
     # 
-    # + databaseId - ID of the database where the User is created
-    # + userId - ID of User to which, the permission is granted
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user to which, the permission is granted
     # + permissionId - The ID of the permission to be replaced
     # + permissionMode - The mode to which the permission is scoped
-    # + resourcePath - The resource this permission is allowing the User to access
-    # + validityPeriodInSeconds - Optional. Validity period of the permission.
+    # + resourcePath - The resource this permission is allowing the user to access
+    # + validityPeriodInSeconds - Optional. Validity period of the permission in seconds.
     # + return - If successful, returns a `Permission`. Else returns `error`.
     remote function replacePermission(string databaseId, string userId, string permissionId, 
                                       PermisssionMode permissionMode, string resourcePath, 
@@ -616,9 +621,9 @@ public client class ManagementClient {
 
     # Get information of a permission.
     # 
-    # + databaseId - ID of the database where the User is created
-    # + userId - ID of User to which, the permission is granted
-    # + permissionId - ID of the permission to get information
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user to which, the permission is granted
+    # + permissionId - ID of the permission
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
     #                         to the request.
     # + return - If successful, returns a `Permission`. Else returns `error`.
@@ -635,10 +640,10 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # List permissions belong to a User.
+    # List permissions belong to a user.
     # 
-    # + databaseId - ID of the database where the User is created
-    # + userId - ID of User to which, the permission is granted
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user to which, the permissions are granted
     # + maxItemCount - Optional. Maximum number of `Permission` records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request.
@@ -655,13 +660,14 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        return <stream<Permission>> check retrieveStream(self.httpClient, requestPath, request);
+        Permission[] initialArray = [];
+        return <stream<Permission>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
-    # Deletes a permission belongs to a User.
+    # Deletes a permission belongs to a user.
     # 
-    # + databaseId - ID of the database where the User is created
-    # + userId - ID of User to which, the permission is granted
+    # + databaseId - ID of the database where the user is created
+    # + userId - ID of user to which, the permission is granted
     # + permissionId - ID of the permission to delete
     # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
     #                           capabilities to the request.
@@ -724,10 +730,9 @@ public client class ManagementClient {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # List information of offers inside Azure Cosmos DB account.
-    # Each Azure Cosmos DB collection is provisioned with an associated performance level represented as an 
-    # Offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined performance 
-    # levels and pre-defined performance levels. 
+    # List information of offers. Each Azure Cosmos DB collection is provisioned with an associated performance level 
+    # represented as an offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined
+    # performance levels and pre-defined performance levels. 
     # 
     # + maxItemCount - Optional. Maximum number of offer records in one returning page.
     # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
@@ -743,7 +748,8 @@ public client class ManagementClient {
         }
         setOptionalHeaders(request, resourceReadOptions);
 
-        return <stream<Offer>> check retrieveStream(self.httpClient, requestPath, request);
+        Offer[] initialArray = [];
+        return <stream<Offer>> check retrieveStream(self.httpClient, requestPath, request, initialArray);
     }
 
     # Perform queries on offer resources.

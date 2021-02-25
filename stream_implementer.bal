@@ -24,6 +24,8 @@ class DocumentStream {
             self.index += 1;
             return document;
         }
+        // This code block is for retrieving the next batch of records when the initial batch is finished. It has some
+        // error.
         // if (self.continuationToken != EMPTY_STRING) {
         //     self.index = 0;
         //     // Fetch documents again when the continuation token is provided. But this function has a remote method 
@@ -44,8 +46,10 @@ class DocumentStream {
             EMPTY_STRING;
         json payload = check handleResponse(response);
         if (payload.Documents is json) {
+            Document[] documents = [];
             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-            return convertToDocumentArray(array);
+            convertToDocumentArray(documents,array);
+            return documents;
         } else {
             return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }

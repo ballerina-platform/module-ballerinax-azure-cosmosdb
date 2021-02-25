@@ -17,8 +17,8 @@
 import ballerina/crypto;
 import ballerina/encoding;
 import ballerina/http;
-import ballerina/lang.'string;
 import ballerina/lang.array;
+import ballerina/lang.'string;
 import ballerina/regex;
 import ballerina/time;
 
@@ -299,15 +299,16 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
                          @tainted stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
+    string newContinuationHeader = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? 
+        header : EMPTY_STRING;
 
     if (payload.Documents is json) {
+        Document[] documents = [];
         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-        //json[] array = <json[]>payload.Documents;
-        Document[] documents = convertToDocumentArray(array);
+        convertToDocumentArray(documents, array);
         return (<@untainted>documents).toStream();
     } else if (payload.Offers is json) {
         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-        //json[] array = <json[]>payload.Offers;
         return array.toStream();
     }
     else {
@@ -321,11 +322,18 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + path - Path to which API call is made
 # + request - HTTP request object 
 # + return - A stream<record{}>
-function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns 
-                        @tainted stream<record{}>|error {
+function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
+                        @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
+    if (continuationHeader is string) {
+        request.setHeader(CONTINUATION_HEADER, continuationHeader);
+    }
+
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
+    string newContinuationHeader = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? 
+        header : EMPTY_STRING;
+
     json payload = check handleResponse(response);
-    return check createStream(path, payload);
+    return check createStream(azureCosmosClient, path, request, payload, array, newContinuationHeader);
 }
 
 # Create a stream from the array obtained from the request call.
@@ -333,42 +341,91 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 # + path - Path to which API call is made
 # + payload - JSON payload returned from the response
 # + return - A stream<record{}> or error
-isolated function createStream(string path, json payload) returns @tainted stream<record{}>|error {
-    record{}[] finalArray = [];
-    if (payload.Databases is json) {
-        json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
-        finalArray = convertToDatabaseArray(array);
-    } else if (payload.DocumentCollections is json) {
-        json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
-        finalArray = convertToContainerArray(array);
-    } else if (payload.Documents is json) {
-        json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-        finalArray = convertToDocumentArray(array);
-    } else if (payload.StoredProcedures is json) {
-        json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
-        finalArray = convertToStoredProcedureArray(array);
-    } else if (payload.UserDefinedFunctions is json) {
-        json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
-        finalArray = convertsToUserDefinedFunctionArray(array);
-    } else if (payload.Triggers is json) {
-        json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
-        finalArray = convertToTriggerArray(array);
-    } else if (payload.Users is json) {
-        json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
-        finalArray = convertToUserArray(array);
-    } else if (payload.Permissions is json) {
-        json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
-        finalArray = convertToPermissionArray(array);
-    } else if (payload.PartitionKeyRanges is json) {
-        json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
-        finalArray = convertToPartitionKeyRangeArray(array);
-    } else if (payload.Offers is json) {
-        json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
-        finalArray = convertToOfferArray(array);
+function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload, 
+                      record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
+                      @tainted stream<record{}>|error {
+    var arrayType = typeof initalArray;
+    record{}[] finalArray = initalArray;
+
+    if (arrayType is typedesc<Offer[]>) {
+        if (payload.Offers is json) {
+            json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
+            convertToOfferArray(<Offer[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Document[]>) {
+        if (payload.Documents is json) {
+            json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+            convertToDocumentArray(<Document[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Database[]>) {
+        if (payload.Databases is json) {
+            json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
+            convertToDatabaseArray(<Database[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Container[]>) {
+        if (payload.DocumentCollections is json) {
+            json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
+            convertToContainerArray(<Container[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<StoredProcedure[]>) {
+        if (payload.StoredProcedures is json) {
+            json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
+            convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }     
+    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
+        if (payload.UserDefinedFunctions is json) {
+            json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
+            convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Trigger[]>) {
+        if (payload.Triggers is json) {
+            json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
+            convertToTriggerArray(<Trigger[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<User[]>) {
+        if (payload.Users is json) {
+            json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
+            convertToUserArray(<User[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Permission[]>) {
+        if (payload.Permissions is json) {
+            json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
+            convertToPermissionArray(<Permission[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
+        if (payload.PartitionKeyRanges is json) {
+            json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
+            convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
     } else {
         return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
-    return (<@untainted>finalArray).toStream();
+
+    stream<record{}> newStream = (<@untainted>finalArray).toStream();
+    if (continuationHeader != EMPTY_STRING) {
+        newStream = check retrieveStream(azureCosmosClient, path, request, <@untainted>finalArray, continuationHeader);
+    }
+    return newStream;
 }
 
 # Get the enum value for a given string which represents the type of index.

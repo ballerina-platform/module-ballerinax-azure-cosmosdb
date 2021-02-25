@@ -263,119 +263,103 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
 
 # Convert JSON array of database information in to an array of type `Database`.
 # 
+# + databases - The initial array of database records we need to append new elements to
 # + sourceDatabaseArrayJsonObject - JSON object which contain the array of database information
-# + return - An array of type `Database`
-isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns Database[] {
-    Database[] databases = [];
+isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) {
     foreach json databaseObject in sourceDatabaseArrayJsonObject {
         Database database = mapJsonToDatabaseType(databaseObject);
         array:push(databases, database);
     }
-    return databases;
 }
 
 # Convert JSON array of container information in to an array of type `Container`.
 # 
+# + containers - The initial array of container records we need to append new elements to
 # + sourceContainerArrayJsonObject - JSON object which contain the array of container information
-# + return - An array of type `Container`
-isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject) returns Container[] {
-    Container[] containers = [];
+isolated function convertToContainerArray(Container[] containers, json[] sourceContainerArrayJsonObject) {
     foreach json jsonCollection in sourceContainerArrayJsonObject {
         Container container = mapJsonToContainerType(jsonCollection);
         array:push(containers, container);
     }
-    return containers;
 }
 
 # Convert JSON array of document information in to an array of type `Document`.
 # 
+# + documents - The initial array of document records we need to append new elements to
 # + sourceDocumentArrayJsonObject - JSON object which contain the array of document information
-# + return - An array of type `Document`
-isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns Document[] {
-    Document[] documents = [];
+isolated function convertToDocumentArray(Document[] documents, json[] sourceDocumentArrayJsonObject) {
     foreach json documentObject in sourceDocumentArrayJsonObject {
         Document document = mapJsonToDocumentType(documentObject);
         array:push(documents, document);
     }
-    return documents;
 }
 
 # Convert JSON array of stored procedure information in to an array of type `StoredProcedure`.
 # 
+# + storedProcedures - The initial array of stored procedure records that we need to append new elements to to
 # + sourceStoredProcedureArrayJsonObject - JSON object which contain the array of stored procedure information
-# + return - An array of type `StoredProcedure`
-isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArrayJsonObject) returns StoredProcedure[] {
-    StoredProcedure[] storedProcedures = [];
+isolated function convertToStoredProcedureArray(StoredProcedure[] storedProcedures, 
+                                                json[] sourceStoredProcedureArrayJsonObject) {
     foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
         StoredProcedure storedProcedure = mapJsonToStoredProcedure(storedProcedureObject);
         array:push(storedProcedures, storedProcedure);
     }
-    return storedProcedures;
 }
 
 # Convert JSON array of user defined function information in to an array of type `UserDefinedFunction`.
 # 
+# + userDefinedFunctions - The initial array of user defined function records that we need to append new elements to
 # + sourceUdfArrayJsonObject - JSON object which contain the array of user defined function information
-# + return - An array of type `UserDefinedFunction`
-isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns UserDefinedFunction[] {
-    UserDefinedFunction[] userDefinedFunctions = [];
+isolated function convertsToUserDefinedFunctionArray(UserDefinedFunction[] userDefinedFunctions, 
+                                                     json[] sourceUdfArrayJsonObject) {
     foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
         UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction(userDefinedFunctionObject);
         array:push(userDefinedFunctions, userDefinedFunction);
     }
-    return userDefinedFunctions;
 }
 
 # Convert JSON array of trigger information in to an array of type `Trigger`.
 # 
+# + triggers - The initial array of trigger records that we need to append new elements to
 # + sourceTriggerArrayJsonObject - JSON object which contain the array of trigger information
-# + return - An array of type `Trigger`
-isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns Trigger[] {
-    Trigger[] triggers = [];
+isolated function convertToTriggerArray(Trigger[] triggers, json[] sourceTriggerArrayJsonObject) {
     foreach json triggerObject in sourceTriggerArrayJsonObject {
         Trigger trigger = mapJsonToTrigger(triggerObject);
         array:push(triggers, trigger);
     }
-    return triggers;
 }
 
 # Convert JSON array of user information in to an array of type `User`.
 # 
+# + users - The initial array of users records that we need to append new elements to
 # + sourceUserArrayJsonObject - JSON object which contain the array of user information
-# + return - An array of type `User`
-isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns User[] {
-    User[] users = [];
+isolated function convertToUserArray(User[] users, json[] sourceUserArrayJsonObject) {
     foreach json userObject in sourceUserArrayJsonObject {
         User user = mapJsonToUserType(userObject);
         array:push(users, user);
     }
-    return users;
 }
 
 # Convert JSON array of permission information in to an array of type `Permission`.
 # 
+# + permissions - The initial array of permission records that we need to append new elements to
 # + sourcePermissionArrayJsonObject - JSON object which contain the array of permission information
-# + return - An array of type `Permission`
-isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns Permission[] {
-    Permission[] permissions = [];
+isolated function convertToPermissionArray(Permission[] permissions, json[] sourcePermissionArrayJsonObject) {
     foreach json permissionObject in sourcePermissionArrayJsonObject {
         Permission permission = mapJsonToPermissionType(permissionObject);
         array:push(permissions, permission);
     }
-    return permissions;
 }
 
 # Convert JSON array of offer infromation in to an array of type `Offer`.
 # 
+# + offers - The initial array of offer records that we need to append new elements to
 # + sourceOfferArrayJsonObject - JSON object which contain the array of offer information
-# + return - An array of type `Offer`
-isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns Offer[] {
-    Offer[] offers = [];
+isolated function convertToOfferArray(Offer[] offers, json[] sourceOfferArrayJsonObject) {
     foreach json offerObject in sourceOfferArrayJsonObject {
         Offer offer = mapJsonToOfferType(offerObject);
         array:push(offers, offer);
     }
-    return offers;
 }
 
 # Convert JSON array of included path information in to an array of type `IncludedPath`.
@@ -407,10 +391,8 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
 # Convert JSON array of partition key ranges in to an array of type `PartitionKeyRange`.
 # 
 # + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
-# + return - An array of type `PartitionKeyRange`
-isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns 
-                                                  @tainted PartitionKeyRange[] {
-    PartitionKeyRange[] partitionKeyRangesArray = [];
+isolated function convertToPartitionKeyRangeArray(PartitionKeyRange[] partitionKeyRangesArray , 
+                                                  json[] sourcePrtitionKeyArrayJsonObject) {
     foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
         PartitionKeyRange value = {
             id: let var id = jsonPartitionKey.id in id is string ? id : EMPTY_STRING,
@@ -419,7 +401,6 @@ isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJ
         };
         array:push(partitionKeyRangesArray, value);
     }
-    return partitionKeyRangesArray;
 }
 
 # Convert JSON array of indexes in to an array of type `Index`.
