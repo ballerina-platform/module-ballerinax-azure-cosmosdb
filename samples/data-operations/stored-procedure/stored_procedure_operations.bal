@@ -15,16 +15,17 @@
 // under the License.
 
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
 import ballerina/log;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/jballerina.java;
+import ballerina/regex;
+import ballerina/os;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
+
+cosmosdb:DataPlaneClient azureCosmosClient = new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -40,7 +41,7 @@ public function main() {
                                         }`;
     
     var storedProcedureCreateResult = azureCosmosClient->createStoredProcedure(databaseId, containerId, 
-            storedProcedureId, storedProcedureBody); 
+        storedProcedureId, storedProcedureBody); 
     if (storedProcedureCreateResult is error) {
         log:printError(storedProcedureCreateResult.message());
     }
@@ -56,7 +57,7 @@ public function main() {
                                             }`;
 
     var storedProcedureReplaceResult = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, 
-            storedProcedureId, newStoredProcedureBody);
+        storedProcedureId, newStoredProcedureBody);
     if (storedProcedureReplaceResult is error) {
         log:printError(storedProcedureReplaceResult.message());
     }
@@ -102,7 +103,7 @@ public function main() {
 public function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
+        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
         return "";

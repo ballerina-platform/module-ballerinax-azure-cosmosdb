@@ -54,8 +54,8 @@ public type Database record {|
 # Represents the elements representing information about a container.
 # 
 # + id - User generated unique ID for the container
-# + indexingPolicy - Record of type IndexingPolicy
-# + partitionKey - Record of type PartitionKey
+# + indexingPolicy - Record of type `IndexingPolicy`
+# + partitionKey - Record of type `PartitionKey`
 public type Container record {|
     string id;
     *Commons;
@@ -76,11 +76,12 @@ public type Document record {|
 # Represent the parameters necessary to create an indexing policy when creating a container.
 # 
 # + indexingMode - Mode of indexing. Can be `consistent` or `none`.
-# + automatic - Specify whether indexing is done automatically or not
-# + includedPaths - Array of type IncludedPath representing included paths
-# + excludedPaths - Array of type IncludedPath representing excluded paths
+# + automatic - Specify whether indexing is done automatically or not. Must be `true` if indexing must be automatic and 
+#               `false` otherwise.
+# + includedPaths - Array of type `IncludedPath` representing included paths
+# + excludedPaths - Array of type `IncludedPath` representing excluded paths
 public type IndexingPolicy record {|
-    IndexingMode indexingMode;
+    IndexingMode indexingMode?;
     boolean automatic = true;
     IncludedPath[] includedPaths?;
     ExcludedPath[] excludedPaths?;
@@ -89,7 +90,7 @@ public type IndexingPolicy record {|
 # Represent the necessary parameters of included path type.
 # 
 # + path - Path to which the indexing behavior applies to
-# + indexes - Array of type Index, representing index values
+# + indexes - Array of type `Index`, representing index values
 public type IncludedPath record {|
     string path;
     Index[] indexes = [];
@@ -118,11 +119,11 @@ public type Index record {|
 
 # Represent the record type with necessary parameters to represent a partition key.
 # 
-# + paths - Array of paths using which data within the collection can be partitioned. The array must contain only a 
+# + paths - Array of paths using which, data within the collection can be partitioned. The array must contain only a 
 #           single value.
-# + kind - Algorithm used for partitioning. Only `Hash` is supported.
-# + keyVersion - Version of partition key. Default is *1*. To use a large partition key, set the version to 
-#                *2*. 
+# + kind - Algorithm used for partitioning. Only **Hash** is supported.
+# + keyVersion - Version of partition key. Default is **1**. To use a large partition key, set the version to 
+#                **2**. 
 public type PartitionKey record {|
     string[] paths = [];
     readonly string kind = PARTITIONING_ALGORITHM_TYPE_HASH;
@@ -132,7 +133,7 @@ public type PartitionKey record {|
 # Represent the record type with necessary parameters to represent a stored procedure.
 # 
 # + id - User generated unique ID for the stored procedure
-# + storedProcedure - JavaScript function
+# + storedProcedure - A JavaScript function, respresented as a string
 public type StoredProcedure record {|
     string id;
     *Commons;
@@ -142,7 +143,7 @@ public type StoredProcedure record {|
 # Represent the record type with necessary parameters to represent a user defined function.
 # 
 # + id - User generated unique ID for the user defined function
-# + userDefinedFunction - JavaScript function
+# + userDefinedFunction - A JavaScript function, respresented as a string
 public type UserDefinedFunction record {|
     string id;
     *Commons;
@@ -152,7 +153,7 @@ public type UserDefinedFunction record {|
 # Represent the record type with necessary parameters to represent a trigger.
 # 
 # + id - User generated unique ID for the trigger
-# + triggerFunction - JavaScript function
+# + triggerFunction - A JavaScript function, respresented as a string
 # + triggerOperation - Type of operation that invokes the trigger. Can be `All`, `Create`, `Replace` or `Delete`. 
 # + triggerType - When the trigger is fired, `Pre` or `Post`
 public type Trigger record {|
@@ -205,7 +206,7 @@ public type Permission record {|
 # + offerVersion - Offer version, This value can be `V1` for pre-defined throughput levels and `V2` for user-defined 
 #                  throughput levels
 # + offerType - Optional. Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
-# + content - Information about the offer
+# + content - Information about the offer. For `V2` offers, it contains the throughput of the collection.
 # + resourceResourceId - The resource id(_rid) of the collection
 # + resourceSelfLink - The self-link(_self) of the collection
 public type Offer record {|
@@ -222,7 +223,7 @@ public type Offer record {|
 # 
 # + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
 #                       `Exclude`.
-# + isUpsertRequest - A boolean value which specify if the request is an upsert request
+# + isUpsertRequest - A boolean value which specify whether the request is an upsert request
 public type DocumentCreateOptions record {|
     IndexingDirective indexingDirective?;
     boolean isUpsertRequest = false;
@@ -230,8 +231,8 @@ public type DocumentCreateOptions record {|
 
 # Represent the optional parameters which can be passed to the function when replacing a document.
 # 
-# + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
-#                       `Exclude`.
+# + indexingDirective - The option whether to include the document in the index. Allowed values are 'Include' or 
+#                       'Exclude'.
 public type DocumentReplaceOptions record {|
     IndexingDirective indexingDirective?;
 |};
@@ -239,7 +240,7 @@ public type DocumentReplaceOptions record {|
 # Represent the optional parameters which can be passed to the function when listing information about the documents.
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
-#                      The override must be the same or weaker than the account’s configured consistency level.
+#                      The override must be the same or weaker than the Cosmos DB account’s configured consistency level.
 # + sessionToken - Echo the latest read value of `session token header` to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
 # + partitionKeyRangeId - The partition key range ID for reading data
@@ -264,7 +265,7 @@ public type StoredProcedureOptions record {|
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
-# + sessionToken - Echo the latest read value of `session token header` to acquire session level consistency
+# + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency
 public type ResourceReadOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
@@ -274,7 +275,7 @@ public type ResourceReadOptions record {|
 # 
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
-# + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency 
+# + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency 
 # + partitionKey - Optional. The value of partition key field of the container.
 # + enableCrossPartition - Boolean value specifying whether to allow cross partitioning. Default is `true` where, 
 #                          it allows to query across all logical partitions.
@@ -287,7 +288,7 @@ public type ResourceQueryOptions record {|
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
 # 
-# + sessionToken - Echo the latest read value of sessionTokenHeader to acquire session level consistency
+# + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency
 public type ResourceDeleteOptions record {|
     string sessionToken?;
 |};

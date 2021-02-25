@@ -13,7 +13,7 @@ jobs:
               uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
               with:
                   args:
-                      build -c --skip-tests
+                      build -c
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
                   MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}

@@ -15,16 +15,17 @@
 // under the License.
 
 import ballerinax/azure_cosmosdb as cosmosdb;
+import ballerina/jballerina.java;
 import ballerina/log;
-import ballerina/config;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/os;
+import ballerina/regex;
 
-cosmosdb:Configuration configuration = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new (configuration);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -49,7 +50,7 @@ public function main() {
                                             }`;
 
     var udfCreateResult = managementClient->createUserDefinedFunction(databaseId, containerId, udfId, 
-            userDefinedFunctionBody);
+        userDefinedFunctionBody);
     if (udfCreateResult is error) {
         log:printError(udfCreateResult.message());
     }
@@ -69,7 +70,7 @@ public function main() {
                                                         return income * 0.4;
                                                 }`;
     var udfReplaceResult = managementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, 
-            newUserDefinedFunctionBody);
+        newUserDefinedFunctionBody);
     if (udfReplaceResult is error) {
         log:printError(udfReplaceResult.message());
     }
@@ -102,7 +103,7 @@ public function main() {
 public function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
+        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
         return "";

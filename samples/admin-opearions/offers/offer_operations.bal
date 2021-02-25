@@ -15,16 +15,17 @@
 // under the License.
 
 import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/config;
+import ballerina/jballerina.java;
 import ballerina/log;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/os;
+import ballerina/regex;
 
-cosmosdb:Configuration managementConfig = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
-cosmosdb:ManagementClient managementClient = new(managementConfig);
+
+cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     string databaseId = "my_database";
@@ -47,7 +48,7 @@ public function main() {
 
         log:print("Replace offer");   
         string resourceSelfLink = 
-                string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
+            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         cosmosdb:Offer replaceOfferBody = {
             offerVersion: "V2",
             offerType: "Invalid",
@@ -65,7 +66,7 @@ public function main() {
     // Query offers
     log:print("Query offers");
     string offersInContainerQuery = 
-            string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
+        string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
     stream<json> result = checkpanic managementClient->queryOffer(<@untainted>offersInContainerQuery, maximumItemCount);
     log:print("Success!");
@@ -74,7 +75,7 @@ public function main() {
 public function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
+        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
         return "";

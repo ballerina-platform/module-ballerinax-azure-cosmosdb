@@ -24,6 +24,7 @@ hs_err_pid*
 
 #Ballerina configuartion file
 *.conf
+Config.toml
 
 #Target folder of ballerina project
 /target

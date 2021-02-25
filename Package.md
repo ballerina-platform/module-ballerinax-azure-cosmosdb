@@ -1,3 +1,7 @@
+Connects to Azure Cosmos DB from Ballerina.
+
+## Module Overview
+
 The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed 
 multi-model database which is used for managing data across the world. The key purpose of the Azure Cosmos DB is to 
 achieve low latency and high availability while maintaining flexible scalability. 
@@ -9,15 +13,14 @@ various operations such as `find`, `create`, `read`, `update`, and `delete` oper
 
 |                           |    Version                  |
 |:-------------------------:|:---------------------------:|
-| Ballerina Language        | Swan-Lake-Preview8          |
+| Ballerina Language        | Swan Lake Alpha 2           |
 | Cosmos DB API Version     | 2018-12-31                  |
 
 ## Cosmos DB Clients
 
 There are two clients provided by Ballerina to interact with Cosmos DB.
 
-1. **cosmosdb:DataPlaneClient** - This connects to the running Cosmos DB databases and containers to execute data-plane 
-operations.
+1. **cosmosdb:DataPlaneClient** - This connects to the running Cosmos DB databases and containers to execute data-plane operations.
 
    ```ballerina
     cosmosdb:Configuration configuration = {
@@ -26,8 +29,7 @@ operations.
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
    ```
-2. **cosmosdb:ManagementClient** - This connects to the running Cosmos DB databases and containers to execute 
-management-plane operations.
+2. **cosmosdb:ManagementClient** - This connects to the running Cosmos DB databases and containers to execute management-plane operations.
 
    ```ballerina
     cosmosdb:Configuration configuration = {
@@ -118,7 +120,7 @@ public function main() {
     };
 
     var result = azureCosmosClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, documentBody, 
-            <VALUE_OF_PARTITIONKEY>); 
+        <VALUE_OF_PARTITIONKEY>); 
     if (result is error) {
         log:printError(result.message());
     }
@@ -173,7 +175,8 @@ public function main() {
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    var result = azureCosmosClient->getDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, <VALUE_OF_PARTITIONKEY>);
+    var result = azureCosmosClient->getDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, 
+        <VALUE_OF_PARTITIONKEY>);
     if (result is error) {
         log:printError(result.message());
     }
@@ -201,8 +204,8 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
  
     ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    var result = azureCosmosClient->queryDocuments(DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, options, 
-            <MAX_ITEM_COUNT>,);
+    var result = azureCosmosClient->queryDocuments(DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
+        options, <MAX_ITEM_COUNT>,);
     if (result is error) {
         log:printError(result.message());
     }
@@ -231,7 +234,7 @@ public function main() {
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
     var result = azureCosmosClient->deleteDocument(<DATABASE_ID>, <CONTAINER_ID>, <DOCUMENT_ID>, 
-            <VALUE_OF_PARTITIONKEY>);
+        <VALUE_OF_PARTITIONKEY>);
     if (result is error) {
         log:printError(result.message());
     }

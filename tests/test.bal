@@ -14,17 +14,17 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/test;
-import ballerina/config;
-import ballerina/system;
+import ballerina/jballerina.java;
 import ballerina/log;
-import ballerina/runtime;
-import ballerina/java;
-import ballerina/stringutils;
+import ballerina/lang.runtime;
+import ballerina/lang.'string;
+import ballerina/os;
+import ballerina/regex;
+import ballerina/test;
 
 Configuration config = {
-    baseUrl: config:getAsString("BASE_URL"),
-    masterOrResourceToken: config:getAsString("MASTER_OR_RESOURCE_TOKEN")
+    baseUrl: os:getEnv("BASE_URL"),
+    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 DataPlaneClient azureCosmosClient = new(config);
@@ -59,6 +59,7 @@ function testCreateDatabase() {
 
     var result = azureCosmosManagementClient->createDatabase(databaseId);
     if (result is Database) {
+        test:assertTrue(result.id == databaseId);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -75,7 +76,7 @@ function testCreateDatabaseUsingInvalidId() {
     if (result is Database) {
         test:assertFail(msg = "Database created with '' id value");
     } else {
-        var output = "";
+        test:assertTrue(true);
     }
 }
 
@@ -87,7 +88,7 @@ function testCreateDatabaseIfNotExist() {
 
     var result = azureCosmosManagementClient->createDatabaseIfNotExist(createDatabaseExistId);
     if (result is Database?) {
-  
+        test:assertTrue(result?.id == createDatabaseExistId || result is ());
     } else {
         test:assertFail(msg = result.message());
     }
@@ -103,7 +104,7 @@ function testCreateDatabaseIfExist() {
     if (result is Database) {
         test:assertFail(msg = "Database with non unique id is created");
     } else {
-        var output = "";
+        test:assertTrue(true);
     }
 }
 
@@ -117,6 +118,7 @@ function testCreateDatabaseWithManualThroughput() {
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseManualId, throughput);
     if (result is Database) {
+        test:assertTrue(result.id == createDatabaseManualId);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -134,7 +136,7 @@ function testCreateDatabaseWithInvalidManualThroughput() {
     if (result is Database) {
         test:assertFail(msg = "Database created without validating user input");
     } else {
-        var output = "";
+        test:assertTrue(true);
     }
 }
 
@@ -148,6 +150,7 @@ function testCreateDBWithAutoscalingThroughput() {
 
     var result = azureCosmosManagementClient->createDatabase(createDatabaseAutoId, maxThroughput);
     if (result is Database) {
+        test:assertTrue(result.id == createDatabaseAutoId);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -161,7 +164,7 @@ function testListAllDatabases() {
 
     var result = azureCosmosManagementClient->listDatabases(6);
     if (result is stream<Database>) {
-        var databaseStream = result.next();
+        test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -170,12 +173,13 @@ function testListAllDatabases() {
 @test:Config {
     groups: ["database"]
 }
-function testListOneDatabase() {
+function testGetOneDatabase() {
     log:print("ACTION : listOneDatabase()");
 
     var result = azureCosmosManagementClient->getDatabase(databaseId);
     if (result is Database) {
         database = <@untainted>result;
+        test:assertTrue(result.id == databaseId);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -193,6 +197,7 @@ function testCreateContainer() {
     };
     var result = azureCosmosManagementClient->createContainer(databaseId, containerId, pk);
     if (result is Container) {
+        test:assertTrue(result.id == containerId);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -200,7 +205,7 @@ function testCreateContainer() {
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testCreateCollectionWithManualThroughputAndIndexingPolicy() {
     log:print("ACTION : createCollectionWithManualThroughputAndIndexingPolicy()");
@@ -225,16 +230,16 @@ function testCreateCollectionWithManualThroughputAndIndexingPolicy() {
     };
 
     var result = azureCosmosManagementClient->createContainer(databaseId, containerWithOptionsId, pk, ip);
-    if (result is Container) {
-        var output = "";
+    if (result is error) {
+        test:assertFail("Container with options is not created");
     } else {
-        test:assertFail("SUccessfully created");
+        test:assertTrue(result.id == containerWithOptionsId);
     }
 }
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["testGetOneContainer"]
+    dependsOn: [testGetOneContainer]
 }
 function testCreateContainerIfNotExist() {
     log:print("ACTION : createContainerIfNotExist()");
@@ -246,25 +251,26 @@ function testCreateContainerIfNotExist() {
     };
 
     var result = azureCosmosManagementClient->createContainerIfNotExist(databaseId, containerIfNotExistId, pk);
-    if (result is Container?) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result?.id == containerIfNotExistId || result is ());
     }
 }
 
 @test:Config {
     groups: ["container"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testGetOneContainer() {
     log:print("ACTION : getOneContainer()");
 
     var result = azureCosmosManagementClient->getContainer(databaseId, containerId);
-    if (result is Container) {
-        container = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        container = <@untainted>result;
+        test:assertTrue(result.id == containerId);
     }
 }
 
@@ -275,52 +281,54 @@ function testGetAllContainers() {
     log:print("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
-    if (result is stream<Container>) {
-        var container = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
+// If we want to get information about offers, First we need to have any offers in the account. 
 @test:Config {
     groups: ["container"], 
     dependsOn: [
-        "testGetOneContainer", 
-        "testGetAllContainers",
-        "testGetDocumentList", 
-        "testDeleteDocument", 
-        "testQueryDocuments", 
-        "testQueryDocumentsWithRequestOptions",
-        "testGetAllStoredProcedures", 
-        "testDeleteOneStoredProcedure", 
-        "testListAllUDF", 
-        "testDeleteUDF", 
-        "testDeleteTrigger", 
-        "testGetOneDocumentWithRequestOptions", 
-        "testCreateDocumentWithRequestOptions", 
-        "testGetDocumentListWithRequestOptions",
-        "testCreatePermission",
-        "testCreatePermissionWithTTL",
-        "testGetPartitionKeyRanges"
-        // "testReplaceOfferWithOptionalParameter",
-        // "testReplaceOffer",
-        
+        testGetOneContainer, 
+        testGetAllContainers,
+        testGetDocumentList, 
+        testDeleteDocument, 
+        testQueryDocuments, 
+        testQueryDocumentsWithRequestOptions,
+        testGetOneDocumentWithRequestOptions, 
+        testCreateDocumentWithRequestOptions, 
+        testGetDocumentListWithRequestOptions,
+        testGetAllStoredProcedures, 
+        testDeleteOneStoredProcedure, 
+        testListAllUDF, 
+        testDeleteUDF, 
+        testDeleteTrigger, 
+
+        testCreatePermission,
+        testCreatePermissionWithTTL,
+        testGetPartitionKeyRanges
+
+        // testListOffers,
+        // testGetOffer,
+        // testReplaceOfferWithOptionalParameter,
+        // testReplaceOffer   
     ]
 }
 function testDeleteContainer() {
     log:print("ACTION : deleteContainer()");
 
     var result = azureCosmosManagementClient->deleteContainer(databaseId, containerId);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
-        test:assertFail(result.message());
+    if (result is error) {
+        test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testCreateDocument() {
     log:print("ACTION : createDocument()");
@@ -353,16 +361,16 @@ function testCreateDocument() {
     };
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, valueOfPartitionKey);
-    if (result is Document) {
-
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == documentId);
     }
 }
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testCreateDocumentWithRequestOptions() {
     log:print("ACTION : createDocumentWithRequestOptions()");
@@ -402,10 +410,10 @@ function testCreateDocumentWithRequestOptions() {
     };
 
     var result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, valueOfPartitionKey, options);
-    if (result is Document) {
-
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == newDocumentId);
     }
 }
 
@@ -413,14 +421,14 @@ function testCreateDocumentWithRequestOptions() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateDocument"]
+    dependsOn: [testCreateDocument, testCreateDocumentWithRequestOptions]
 }
 function testGetDocumentList() {
     log:print("ACTION : getDocumentList()");
 
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId, 1);
     if (result is stream<Document>) {
-        var oneElement = result.next(); 
+        test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -428,7 +436,7 @@ function testGetDocumentList() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateDocument"]
+    dependsOn: [testCreateDocument, testCreateDocumentWithRequestOptions]
 }
 function testGetDocumentListWithRequestOptions() {
     log:print("ACTION : getDocumentListWithRequestOptions()");
@@ -441,7 +449,7 @@ function testGetDocumentListWithRequestOptions() {
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
     if (result is stream<Document>) {
-        var singleDocument = result.next();
+        test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
     }
@@ -449,23 +457,23 @@ function testGetDocumentListWithRequestOptions() {
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateDocument"]
+    dependsOn: [testCreateDocument]
 }
 function testGetOneDocument() {
     log:print("ACTION : GetOneDocument()");
 
     int valueOfPartitionKey = 1234;
     var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, valueOfPartitionKey);
-    if (result is Document) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == documentId);
     }
 }
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateDocument"]
+    dependsOn: [testCreateDocument]
 }
 function testGetOneDocumentWithRequestOptions() {
     log:print("ACTION : GetOneDocumentWithRequestOptions()");
@@ -478,34 +486,33 @@ function testGetOneDocumentWithRequestOptions() {
     };
 
     var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, valueOfPartitionKey, options);
-    if (result is Document) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == documentId);
     }
 }
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testQueryDocuments() {
     log:print("ACTION : queryDocuments()");
 
-    ResourceQueryOptions options = {partitionKey : 1234};
+    ResourceQueryOptions options = {partitionKey : 1234, enableCrossPartition: false};
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options, 10);
-    if (result is stream<Document>) {
-        var document = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["document"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testQueryDocumentsWithRequestOptions() {
     log:print("ACTION : queryDocumentsWithRequestOptions()");
@@ -517,38 +524,37 @@ function testQueryDocumentsWithRequestOptions() {
     };
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<json>) {
-        var document = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["document"], 
     dependsOn: [
-        "testCreateContainer", 
-        "testCreateDocument", 
-        "testGetOneDocument", 
-        "testGetOneDocumentWithRequestOptions", 
-        "testQueryDocuments",
-        "testGetDocumentList"
+        testCreateContainer, 
+        testCreateDocument, 
+        testGetOneDocument, 
+        testGetOneDocumentWithRequestOptions, 
+        testQueryDocuments,
+        testGetDocumentList,
+        testGetDocumentListWithRequestOptions
     ]
 }
 function testDeleteDocument() {
     log:print("ACTION : deleteDocument()");
 
     var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testCreateStoredProcedure() {
     log:print("ACTION : createStoredProcedure()");
@@ -560,16 +566,16 @@ function testCreateStoredProcedure() {
                                         }`;
 
     var result = azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, createSprocBody);
-    if (result is StoredProcedure) {
-        //storedPrcedure = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == sprocId);
     }
 }
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["testCreateStoredProcedure", "testGetAllStoredProcedures"]
+    dependsOn: [testCreateStoredProcedure, testGetAllStoredProcedures]
 }
 function testReplaceStoredProcedure() {
     log:print("ACTION : replaceStoredProcedure()");
@@ -581,17 +587,16 @@ function testReplaceStoredProcedure() {
                                     }`;
 
     var result = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, sprocId, replaceSprocBody);
-    if (result is StoredProcedure) {
-        //storedPrcedure = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == sprocId);
     }
 }
 
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["testReplaceStoredProcedure"
-]
+    dependsOn: [testReplaceStoredProcedure]
 }
 function testExecuteOneStoredProcedure() {
     log:print("ACTION : executeOneStoredProcedure()");
@@ -602,49 +607,46 @@ function testExecuteOneStoredProcedure() {
     };
 
     var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, sprocId, options);
-    if (result is json) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
+
 @test:Config {
     groups: ["storedProcedure"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testGetAllStoredProcedures() {
     log:print("ACTION : getAllStoredProcedures()");
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<StoredProcedure>) {
-        var oneElement = result.next();
-    
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["storedProcedure"],
     dependsOn: [
-        "testCreateStoredProcedure", 
-        "testExecuteOneStoredProcedure"
+        testCreateStoredProcedure, 
+        testExecuteOneStoredProcedure
     ]
 }
 function testDeleteOneStoredProcedure() {
     log:print("ACTION : deleteOneStoredProcedure()");
 
     var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, sprocId);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testCreateUDF() {
     log:print("ACTION : createUDF()");
@@ -663,16 +665,16 @@ function testCreateUDF() {
                                             }`;
 
     var result = azureCosmosManagementClient->createUserDefinedFunction(databaseId, containerId, udfId, createUDFBody);
-    if (result is UserDefinedFunction) {
-        //udf = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == udfId);
     }
 }
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["testCreateContainer", "testCreateUDF"]
+    dependsOn: [testCreateContainer, testCreateUDF]
 }
 function testReplaceUDF() {
     log:print("ACTION : replaceUDF()");
@@ -689,46 +691,44 @@ function testReplaceUDF() {
                                                 }`;
 
     var result = azureCosmosManagementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, replace);
-    if (result is UserDefinedFunction) {
-        //udf = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == udfId);
     }
 }
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["testCreateContainer", "testCreateUDF"]
+    dependsOn: [testCreateContainer, testCreateUDF]
 }
 function testListAllUDF() {
     log:print("ACTION : listAllUDF()");
 
     var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is stream<UserDefinedFunction>) {
-        var userDefinedFunction = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["userDefinedFunction"],
-    dependsOn: ["testReplaceUDF", "testListAllUDF"]
+    dependsOn: [testReplaceUDF, testListAllUDF]
 }
 function testDeleteUDF() {
     log:print("ACTION : deleteUDF()");
 
     var result = azureCosmosManagementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testCreateTrigger() {
     log:print("ACTION : createTrigger()");
@@ -766,16 +766,16 @@ function testCreateTrigger() {
 
     var result = azureCosmosManagementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
             createTriggerOperation, createTriggerType);
-    if (result is Trigger) {
-        //trigger = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == triggerId);
     }
 }
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["testCreateTrigger"]
+    dependsOn: [testCreateTrigger]
 }
 function testReplaceTrigger() {
     log:print("ACTION : replaceTrigger()");
@@ -813,58 +813,55 @@ function testReplaceTrigger() {
 
     var result = azureCosmosManagementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
             replaceTriggerOperation, replaceTriggerType);
-    if (result is Trigger) {
-        //trigger = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == triggerId);
     }
 }
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["testCreateTrigger"]
+    dependsOn: [testCreateTrigger]
 }
 function testListTriggers() {
     log:print("ACTION : listTriggers()");
 
     var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
-    if (result is stream<Trigger>) {
-        var doc = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["trigger"],
-    dependsOn: ["testReplaceTrigger", "testListTriggers"]
+    dependsOn: [testReplaceTrigger, testListTriggers]
 }
 function testDeleteTrigger() {
     log:print("ACTION : deleteTrigger()");
 
     var result = azureCosmosManagementClient->deleteTrigger(databaseId, containerId, triggerId);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
-//------------------------------------------MANAMGEMENT_PLANE-----------------------------------------------------------
+//------------------------------------------MANAMGEMENT_PLANE---------------------------------------------------------//
 
 @test:Config {
     groups: ["partitionKey"],
-    dependsOn: ["testCreateContainer"]
+    dependsOn: [testCreateContainer]
 }
 function testGetPartitionKeyRanges() {
     log:print("ACTION : GetPartitionKeyRanges()");
 
     var result = azureCosmosManagementClient->listPartitionKeyRanges(databaseId, containerId);
-    if (result is stream<PartitionKeyRange>) {
-        var partitionKeyRanges = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
@@ -874,39 +871,39 @@ function testCreateUser() {
     log:print("ACTION : createUser()");
 
     var result = azureCosmosManagementClient->createUser(databaseId, userId);
-    if (result is User) {
-        //testuser = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == userId);
     }
 }
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["testCreateUser"]
+    dependsOn: [testCreateUser]
 }
 function testReplaceUserId() {
     log:print("ACTION : replaceUserId()");
     var result = azureCosmosManagementClient->replaceUserId(databaseId, userId, newUserId);
-    if (result is User) {
-        //testuser = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == newUserId);
     }
 }
 
 @test:Config {
     groups: ["user"],
-    dependsOn: ["testCreateUser", "testReplaceUserId"]
+    dependsOn: [testCreateUser, testReplaceUserId]
 }
 function testGetUser() {
     log:print("ACTION : getUser()");
 
     var result = azureCosmosManagementClient->getUser(databaseId, newUserId);
-    if (result is User) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == newUserId);
     }
 }
 
@@ -917,63 +914,63 @@ function testListUsers() {
     log:print("ACTION : listUsers()");
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
-    if (result is stream<User>) {
-        var doc = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["user"],
     dependsOn: 
     [           
-        "testDeletePermission",
-        "testReplaceUserId",
-        "testGetUser",
-        "testCreatePermission",
-        "testListPermissions"
+        testDeletePermission,
+        testReplaceUserId,
+        testGetUser,
+        testCreatePermission,
+        testCreatePermissionWithTTL,
+        testListPermissions
     ]
 }
 function testDeleteUser() {
     log:print("ACTION : deleteUser()");
 
     var result = azureCosmosManagementClient->deleteUser(databaseId, newUserId);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "testListOneDatabase", 
-        "testReplaceUserId"
+        testReplaceUserId,
+        testGetOneDatabase, 
+        testGetOneContainer
     ]
 }
 function testCreatePermission() {
     log:print("ACTION : createPermission()");
 
     PermisssionMode permissionMode = "All";
-    string permissionResource = 
-            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
+    string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
             permissionResource);
-    if (result is Permission) {
-        //permission = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == permissionId);
     }
 }
 
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "testReplaceUserId",
-        "testListOneDatabase"
+        testReplaceUserId,
+        testGetOneDatabase,
+        testGetOneContainer
     ]
 }
 function testCreatePermissionWithTTL() {
@@ -982,41 +979,40 @@ function testCreatePermissionWithTTL() {
     var uuid = createRandomUUIDWithoutHyphens();
     string newPermissionId = string `permission_${uuid.toString()}`;
     PermisssionMode permissionMode = "Read";
-    string permissionResource = 
-            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
+    string permissionResource = string `dbs/${database.id}/colls/${container.id}/`;
     int validityPeriod = 9000;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode, 
             permissionResource, validityPeriod);
-    if (result is Permission) {
-        //permission = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == newPermissionId);
     }
 }
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["testCreatePermission"]
+    dependsOn: [testCreatePermission]
 }
 function testReplacePermission() {
     log:print("ACTION : replacePermission()");
 
-    PermisssionMode permissionMode = "All";
+    PermisssionMode permissionMode = "Read";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
     var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
             permissionResource);
-    if (result is Permission) {
-        //permission = <@untainted>result;
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == permissionId);
     }
 }
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["testCreatePermission"]
+    dependsOn: [testCreatePermission]
 }
 function testListPermissions() {
     log:print("ACTION : listPermissions()");
@@ -1024,43 +1020,40 @@ function testListPermissions() {
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
     if (result is error) {
         test:assertFail(msg = result.message());
-    } else {
-        var output = "";
-        var permission = result.next();
     }
+    test:assertTrue(true);
 }
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["testCreatePermission"]
+    dependsOn: [testCreatePermission]
 }
 function testGetPermission() {
     log:print("ACTION : getPermission()");
 
     var result = azureCosmosManagementClient->getPermission(databaseId, newUserId, permissionId);
-    if (result is Permission) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
+    } else {
+        test:assertTrue(result.id == permissionId);
     }
 }
 
 @test:Config {
     groups: ["permission"],
     dependsOn: [
-        "testReplacePermission",
-        "testGetPermission"
+        testReplacePermission,
+        testGetPermission
     ]
 }
 function testDeletePermission() {
     log:print("ACTION : deletePermission()");
 
     var result = azureCosmosManagementClient->deletePermission(databaseId, newUserId, permissionId);
-    if (result is DeleteResponse) {
-        var output = "";
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
 }
 
 string? offerId = "";
@@ -1077,7 +1070,7 @@ function testListOffers() {
     if (result is stream<Offer>) {
         var offer = result.next();
         offerId = <@untainted>offer?.value?.id;
-        runtime:sleep(1000);
+        runtime:sleep(1);
         resourceId = offer?.value?.resourceId;
     } else {
         test:assertFail(msg = result.message());
@@ -1086,7 +1079,7 @@ function testListOffers() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: ["testListOffers"],
+    dependsOn: [testListOffers],
     enable: false
 }
 function testGetOffer() {
@@ -1094,10 +1087,10 @@ function testGetOffer() {
 
     if (offerId is string && offerId != "") {
         var result = azureCosmosManagementClient->getOffer(<string>offerId);
-        if (result is Offer) {
-            var output = "";
-        } else {
+        if (result is error) {
             test:assertFail(msg = result.message());
+        } else {
+            test:assertTrue(result.id == offerId);
         }
     } else {
         test:assertFail(msg = "Offer id is invalid");
@@ -1124,10 +1117,10 @@ function testReplaceOffer() {
             resourceId: <string>resourceId
         };
         var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
-        if (result is Offer) {
-            var output = "";
-        } else {
+        if (result is error) {
             test:assertFail(msg = result.message());
+        } else {
+            test:assertTrue(result.id == offerId);
         }
     } else {
         test:assertFail(msg = "Offer id and resource ID are invalid");
@@ -1154,10 +1147,10 @@ function testReplaceOfferWithOptionalParameter() {
             resourceId: <string>resourceId
         };
         var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
-        if (result is Offer) {
-            var output = "";
-        } else {
+        if (result is error) {
             test:assertFail(msg = result.message());
+        } else {
+            test:assertTrue(result.id == offerId);
         }
     } else {
         test:assertFail(msg = "Offer id and resource ID are invalid");
@@ -1166,7 +1159,7 @@ function testReplaceOfferWithOptionalParameter() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: ["testCreateContainer"],
+    dependsOn: [testCreateContainer],
     enable: false
 }
 function testQueryOffer() {
@@ -1174,43 +1167,43 @@ function testQueryOffer() {
     string offerQuery = 
             string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
-    if (result is stream<json>) {
-        var offer = result.next();
-    } else {
+    if (result is error) {
         test:assertFail(msg = result.message());
     }
+    test:assertTrue(true);
+
 }
 
 @test:Config {
     groups: ["permission"],
-    dependsOn: ["testCreatePermission"],
+    dependsOn: [testCreatePermission, testReplacePermission],
     enable: false
 }
-function testGetCollection_Resource_Token() {
+function testGetContainerWithResourceToken() {
     log:print("ACTION : createCollection_Resource_Token()");
 
     string permissionDatabaseId = databaseId;
     string permissionUserId = newUserId;
     string userPermissionId = permissionId;
 
+    // The token should have 
     var result = azureCosmosManagementClient->getPermission(databaseId, permissionUserId, userPermissionId);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
         Configuration configdb = {
-            baseUrl: getConfigValue("BASE_URL"),
+            baseUrl: os:getEnv("BASE_URL"),
             masterOrResourceToken: result?.token.toString()
         };
 
         ManagementClient managementClient = new (configdb);
 
         string containerId = container.id;
-
-        var resultdb = managementClient->getContainer(databaseId, containerId);
-        if (resultdb is error) {
-            test:assertFail(msg = resultdb.message());
+        var resultcontainer = managementClient->getContainer(databaseId, containerId);
+        if (resultcontainer is error) {
+            test:assertFail(msg = resultcontainer.message());
         } else {
-            var output = "";
+            test:assertTrue(result.id == containerId);
         }
     }
 }
@@ -1229,17 +1222,13 @@ function afterFunc() {
     }
 }
 
-isolated function getConfigValue(string key) returns string {
-    return (system:getEnv(key) != "") ? system:getEnv(key) : config:getAsString(key);
-}
-
 # Create a random UUID removing the unnecessary hyphens which will interrupt querying opearations.
 # 
 # + return - A string UUID without hyphens
 public function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = stringutils:replace(stringUUID, "-", "");
+        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
         return "";

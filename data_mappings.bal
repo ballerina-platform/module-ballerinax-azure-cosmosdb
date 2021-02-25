@@ -14,8 +14,8 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-import ballerina/lang.array;
 import ballerina/http;
+import ballerina/lang.array;
 
 # Maps the JSON response returned from the request into record type of `DeleteResponse`.
 # 
@@ -23,7 +23,8 @@ import ballerina/http;
 # + return - An instance of record type `DeleteResponse`
 isolated function mapHeadersToResultType(http:Response response) returns @tainted DeleteResponse {
     return {
-        sessionToken: response.getHeader(SESSION_TOKEN_HEADER)
+        sessionToken: let var header = response.getHeader(SESSION_TOKEN_HEADER) in header is string ? header : 
+            EMPTY_STRING
     };
 }
 
@@ -50,8 +51,10 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        indexingPolicy: let var indexing = <json>payload.indexingPolicy in mapJsonToIndexingPolicy(indexing),
-        partitionKey: let var partitionKey = <json>payload.partitionKey in convertJsonToPartitionKeyType(partitionKey)
+        indexingPolicy: let var indexing = payload.indexingPolicy in indexing is json ? 
+            mapJsonToIndexingPolicy(indexing) : {},
+        partitionKey: let var partitionKey = payload.partitionKey in partitionKey is json ?
+            convertJsonToPartitionKeyType(partitionKey) : {}
     };
 }
 
@@ -61,10 +64,12 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 # + return - An instance of record type `IndexingPolicy`
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
-        indexingMode: let var mode = <string>payload.indexingMode in getIndexingMode(mode),
-        includedPaths: let var inPaths = <json[]>payload.includedPaths in convertToIncludedPathsArray(inPaths),
-        excludedPaths: let var exPaths = <json[]>payload.excludedPaths in convertToExcludedPathsArray(exPaths),
-        automatic: <boolean>payload.automatic
+        indexingMode: let var mode = payload.indexingMode in mode is string ? getIndexingMode(mode) : NONE,
+        includedPaths: let var inPaths = payload.indexingPolicy in inPaths is json ? 
+            convertToIncludedPathsArray(<json[]>inPaths) : [],
+        excludedPaths: let var exPaths = payload.excludedPaths in exPaths is json ? 
+            convertToExcludedPathsArray(<json[]>exPaths) : [],
+        automatic: let var automatic = payload.automatic in automatic is boolean ? automatic : true
     };
 }
 
@@ -79,7 +84,8 @@ isolated function mapJsonToIncludedPathsType(json payload) returns @tainted Incl
     if (payload.indexes is error) {
         return includedPath;
     }
-    includedPath.indexes = let var indexes = <json[]>payload.indexes in convertToIndexArray(indexes);
+    includedPath.indexes = let var indexes = payload.indexes in indexes is json ? convertToIndexArray(<json[]>indexes) : 
+        [];
     return includedPath;
 }
 
@@ -113,7 +119,7 @@ isolated function mapJsonToDocumentType(json payload) returns @tainted Document 
 # + return - Map of json which contains only the document
 isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<json> {
     final var keysToDelete = [JSON_KEY_ID, JSON_KEY_RESOURCE_ID, JSON_KEY_SELF_REFERENCE, JSON_KEY_ETAG, 
-            JSON_KEY_TIMESTAMP, JSON_KEY_ATTACHMENTS];
+        JSON_KEY_TIMESTAMP, JSON_KEY_ATTACHMENTS];
     foreach var keyValue in keysToDelete {
         _ = reponsePayload.removeIfHasKey(keyValue);
     }
@@ -126,8 +132,9 @@ isolated function mapJsonToDocumentBody(map<json> reponsePayload) returns map<js
 # + return - An instance of record type `PartitionKey`
 isolated function convertJsonToPartitionKeyType(json payload) returns @tainted PartitionKey {
     return {
-        paths: let var paths = <json[]>payload.paths in convertToStringArray(paths),
-        keyVersion: let var keyVersion = <int>payload.'version in getPartitionKeyVersion(keyVersion)
+        paths: let var paths = payload.paths in paths is json ? convertToStringArray(<json[]>paths) : [],
+        keyVersion: let var keyVersion = payload.'version in keyVersion is int ? getPartitionKeyVersion(keyVersion) : 
+            PARTITION_KEY_VERSION_1
     };
 }
 
@@ -142,9 +149,9 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         minInclusive: let var minInclusive = payload.minInclusive in minInclusive is string ? minInclusive : 
-                EMPTY_STRING,
+            EMPTY_STRING,
         maxExclusive: let var maxExclusive = payload.maxExclusive in maxExclusive is string ? maxExclusive : 
-                EMPTY_STRING
+            EMPTY_STRING
     };
 }
 
@@ -154,9 +161,9 @@ isolated function mapJsonToPartitionKeyRange(json payload) returns @tainted Part
 # + return - An instance of record type `Index`
 isolated function mapJsonToIndexType(json payload) returns Index {
     return {
-        kind: let var kind = <string>payload.kind in getIndexType(kind),
-        dataType: let var dataType = <string>payload.dataType in getIndexDataType(dataType),
-        precision: <int>payload.precision
+        kind: let var kind = payload.kind in kind is string ? getIndexType(kind) : HASH,
+        dataType: let var dataType = payload.dataType in dataType is string ?  getIndexDataType(dataType) : STRING,
+        precision: let var precision = payload.precision in precision is int ? precision : -1
     };
 }
 
@@ -199,8 +206,9 @@ isolated function mapJsonToTrigger(json payload) returns @tainted Trigger {
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         triggerFunction: let var func = payload.body in func is string ? func : EMPTY_STRING,
-        triggerOperation: let var oper = <string>payload.triggerOperation in getTriggerOperation(oper),
-        triggerType: let var triggerType = <string>payload.triggerType in getTriggerType(triggerType)
+        triggerOperation: let var oper = payload.triggerOperation in oper is string ? getTriggerOperation(oper) : ALL,
+        triggerType: let var triggerType = payload.triggerType in triggerType is string ? getTriggerType(triggerType) :
+            PRE
     };
 }
 
@@ -229,7 +237,8 @@ isolated function mapJsonToPermissionType(json payload) returns @tainted Permiss
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
         token: let var token = payload._token in token is string? token : EMPTY_STRING,
-        permissionMode: let var mode = <string>payload.permissionMode in getPermisssionMode(mode),
+        permissionMode: let var mode = payload.permissionMode in mode is string ? getPermisssionMode(mode) : 
+            ALL_PERMISSION,
         resourcePath: let var resourcePath = payload.'resource in resourcePath is string ? resourcePath : EMPTY_STRING
     };  
 }
@@ -244,8 +253,8 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        offerVersion: let var offVersion = <string>payload.offerVersion in getOfferVersion(offVersion),
-        offerType: let var offerType = <string>payload.offerType in getOfferType(offerType),
+        offerVersion: let var ver = payload.offerVersion in ver is string ? getOfferVersion(ver) : PRE_DEFINED,
+        offerType: let var otype = payload.offerType in otype is string ? getOfferType(otype) : INVALID,
         content: let var content = payload.content in content is map<json> ? content : {},
         resourceSelfLink: let var link = payload.'resource in link is string ? link : EMPTY_STRING,
         resourceResourceId: let var resId = payload.offerResourceId in resId is string ? resId : EMPTY_STRING
@@ -254,119 +263,103 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
 
 # Convert JSON array of database information in to an array of type `Database`.
 # 
+# + databases - The initial array of database records we need to append new elements to
 # + sourceDatabaseArrayJsonObject - JSON object which contain the array of database information
-# + return - An array of type `Database`
-isolated function convertToDatabaseArray(json[] sourceDatabaseArrayJsonObject) returns Database[] {
-    Database[] databases = [];
+isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) {
     foreach json databaseObject in sourceDatabaseArrayJsonObject {
         Database database = mapJsonToDatabaseType(databaseObject);
         array:push(databases, database);
     }
-    return databases;
 }
 
 # Convert JSON array of container information in to an array of type `Container`.
 # 
+# + containers - The initial array of container records we need to append new elements to
 # + sourceContainerArrayJsonObject - JSON object which contain the array of container information
-# + return - An array of type `Container`
-isolated function convertToContainerArray(json[] sourceContainerArrayJsonObject) returns Container[] {
-    Container[] containers = [];
+isolated function convertToContainerArray(Container[] containers, json[] sourceContainerArrayJsonObject) {
     foreach json jsonCollection in sourceContainerArrayJsonObject {
         Container container = mapJsonToContainerType(jsonCollection);
         array:push(containers, container);
     }
-    return containers;
 }
 
 # Convert JSON array of document information in to an array of type `Document`.
 # 
+# + documents - The initial array of document records we need to append new elements to
 # + sourceDocumentArrayJsonObject - JSON object which contain the array of document information
-# + return - An array of type `Document`
-isolated function convertToDocumentArray(json[] sourceDocumentArrayJsonObject) returns Document[] {
-    Document[] documents = [];
+isolated function convertToDocumentArray(Document[] documents, json[] sourceDocumentArrayJsonObject) {
     foreach json documentObject in sourceDocumentArrayJsonObject {
         Document document = mapJsonToDocumentType(documentObject);
         array:push(documents, document);
     }
-    return documents;
 }
 
 # Convert JSON array of stored procedure information in to an array of type `StoredProcedure`.
 # 
+# + storedProcedures - The initial array of stored procedure records that we need to append new elements to to
 # + sourceStoredProcedureArrayJsonObject - JSON object which contain the array of stored procedure information
-# + return - An array of type `StoredProcedure`
-isolated function convertToStoredProcedureArray(json[] sourceStoredProcedureArrayJsonObject) returns StoredProcedure[] {
-    StoredProcedure[] storedProcedures = [];
+isolated function convertToStoredProcedureArray(StoredProcedure[] storedProcedures, 
+                                                json[] sourceStoredProcedureArrayJsonObject) {
     foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
         StoredProcedure storedProcedure = mapJsonToStoredProcedure(storedProcedureObject);
         array:push(storedProcedures, storedProcedure);
     }
-    return storedProcedures;
 }
 
 # Convert JSON array of user defined function information in to an array of type `UserDefinedFunction`.
 # 
+# + userDefinedFunctions - The initial array of user defined function records that we need to append new elements to
 # + sourceUdfArrayJsonObject - JSON object which contain the array of user defined function information
-# + return - An array of type `UserDefinedFunction`
-isolated function convertsToUserDefinedFunctionArray(json[] sourceUdfArrayJsonObject) returns UserDefinedFunction[] {
-    UserDefinedFunction[] userDefinedFunctions = [];
+isolated function convertsToUserDefinedFunctionArray(UserDefinedFunction[] userDefinedFunctions, 
+                                                     json[] sourceUdfArrayJsonObject) {
     foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
         UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction(userDefinedFunctionObject);
         array:push(userDefinedFunctions, userDefinedFunction);
     }
-    return userDefinedFunctions;
 }
 
 # Convert JSON array of trigger information in to an array of type `Trigger`.
 # 
+# + triggers - The initial array of trigger records that we need to append new elements to
 # + sourceTriggerArrayJsonObject - JSON object which contain the array of trigger information
-# + return - An array of type `Trigger`
-isolated function convertToTriggerArray(json[] sourceTriggerArrayJsonObject) returns Trigger[] {
-    Trigger[] triggers = [];
+isolated function convertToTriggerArray(Trigger[] triggers, json[] sourceTriggerArrayJsonObject) {
     foreach json triggerObject in sourceTriggerArrayJsonObject {
         Trigger trigger = mapJsonToTrigger(triggerObject);
         array:push(triggers, trigger);
     }
-    return triggers;
 }
 
 # Convert JSON array of user information in to an array of type `User`.
 # 
+# + users - The initial array of users records that we need to append new elements to
 # + sourceUserArrayJsonObject - JSON object which contain the array of user information
-# + return - An array of type `User`
-isolated function convertToUserArray(json[] sourceUserArrayJsonObject) returns User[] {
-    User[] users = [];
+isolated function convertToUserArray(User[] users, json[] sourceUserArrayJsonObject) {
     foreach json userObject in sourceUserArrayJsonObject {
         User user = mapJsonToUserType(userObject);
         array:push(users, user);
     }
-    return users;
 }
 
 # Convert JSON array of permission information in to an array of type `Permission`.
 # 
+# + permissions - The initial array of permission records that we need to append new elements to
 # + sourcePermissionArrayJsonObject - JSON object which contain the array of permission information
-# + return - An array of type `Permission`
-isolated function convertToPermissionArray(json[] sourcePermissionArrayJsonObject) returns Permission[] {
-    Permission[] permissions = [];
+isolated function convertToPermissionArray(Permission[] permissions, json[] sourcePermissionArrayJsonObject) {
     foreach json permissionObject in sourcePermissionArrayJsonObject {
         Permission permission = mapJsonToPermissionType(permissionObject);
         array:push(permissions, permission);
     }
-    return permissions;
 }
 
 # Convert JSON array of offer infromation in to an array of type `Offer`.
 # 
+# + offers - The initial array of offer records that we need to append new elements to
 # + sourceOfferArrayJsonObject - JSON object which contain the array of offer information
-# + return - An array of type `Offer`
-isolated function convertToOfferArray(json[] sourceOfferArrayJsonObject) returns Offer[] {
-    Offer[] offers = [];
+isolated function convertToOfferArray(Offer[] offers, json[] sourceOfferArrayJsonObject) {
     foreach json offerObject in sourceOfferArrayJsonObject {
         Offer offer = mapJsonToOfferType(offerObject);
         array:push(offers, offer);
     }
-    return offers;
 }
 
 # Convert JSON array of included path information in to an array of type `IncludedPath`.
@@ -398,10 +391,8 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
 # Convert JSON array of partition key ranges in to an array of type `PartitionKeyRange`.
 # 
 # + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
-# + return - An array of type `PartitionKeyRange`
-isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJsonObject) returns @tainted 
-        PartitionKeyRange[] {
-    PartitionKeyRange[] partitionKeyRangesArray = [];
+isolated function convertToPartitionKeyRangeArray(PartitionKeyRange[] partitionKeyRangesArray , 
+                                                  json[] sourcePrtitionKeyArrayJsonObject) {
     foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
         PartitionKeyRange value = {
             id: let var id = jsonPartitionKey.id in id is string ? id : EMPTY_STRING,
@@ -410,7 +401,6 @@ isolated function convertToPartitionKeyRangeArray(json[] sourcePrtitionKeyArrayJ
         };
         array:push(partitionKeyRangesArray, value);
     }
-    return partitionKeyRangesArray;
 }
 
 # Convert JSON array of indexes in to an array of type `Index`.

@@ -14,20 +14,20 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerina/time;
-import ballerina/http;
 import ballerina/crypto;
 import ballerina/encoding;
-import ballerina/stringutils;
-import ballerina/lang.'string;
+import ballerina/http;
 import ballerina/lang.array;
+import ballerina/lang.'string;
+import ballerina/regex;
+import ballerina/time;
 
 # Extract the type of token used for accessing the Cosmos DB.
 # 
 # + token - The token provided by the user to access Cosmos DB
 # + return - A string value which represents the type of token
-function getTokenType(string token) returns string {
-    boolean ifContain = stringutils:contains(token, TOKEN_TYPE_RESOURCE);
+isolated function getTokenType(string token) returns string {
+    boolean ifContain = 'string:includes(token, TOKEN_TYPE_RESOURCE);
     if (ifContain) {
         return TOKEN_TYPE_RESOURCE;
     } else {
@@ -40,7 +40,7 @@ function getTokenType(string token) returns string {
 # + url - The Base URL given by the user from which we want to extract host
 # + return - String representing the resource id
 isolated function getHost(string url) returns string {
-    string replacedString = stringutils:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
+    string replacedString = regex:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
     int? lastIndex = 'string:lastIndexOf(replacedString, FORWARD_SLASH);
     if (lastIndex is int) {
         replacedString = replacedString.substring(0, lastIndex);
@@ -54,7 +54,7 @@ isolated function getHost(string url) returns string {
 # + return - String representing the resource type
 isolated function getResourceType(string url) returns string {
     string resourceType = EMPTY_STRING;
-    string[] urlParts = stringutils:split(url, FORWARD_SLASH);
+    string[] urlParts = regex:split(url, FORWARD_SLASH);
     int count = urlParts.length() - 1;
     if (count % 2 != 0) {
         resourceType = urlParts[count];
@@ -73,7 +73,7 @@ isolated function getResourceType(string url) returns string {
 # + return - String representing the resource id
 isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
-    string[] urlParts = stringutils:split(url, FORWARD_SLASH);
+    string[] urlParts = regex:split(url, FORWARD_SLASH);
     int count = urlParts.length() - 1;
     string resourceType = getResourceType(url);
     if (resourceType == RESOURCE_TYPE_OFFERS) {
@@ -126,8 +126,8 @@ isolated function prepareUrl(string[] paths) returns string {
 # + httpVerb - The HTTP verb of the request the headers are set to
 # + requestPath - Request path for the request
 # + return - If successful, request will be appended with headers. Else returns error or nil.
-function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, string requestPath) 
-        returns error? {
+isolated function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, 
+                                      string requestPath) returns error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
@@ -138,7 +138,7 @@ function setMandatoryHeaders(http:Request request, string host, string token, st
     string signature = "";
     if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
         signature = check generateMasterTokenSignature(httpVerb, getResourceType(requestPath), 
-                getResourceId(requestPath), token, tokenType, dateTime);
+            getResourceId(requestPath), token, tokenType, dateTime);
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
         signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
     } else {
@@ -172,8 +172,9 @@ isolated function setHeadersForQuery(http:Request request) returns error? {
 # + request - The http:Request to set the header
 # + throughputOption - Throughput parameter of type int or json
 # + return - If successful, request will be appended with headers. Else returns error or nil.
-isolated function setThroughputOrAutopilotHeader(http:Request request, (int|record{|int maxThroughput;|})? 
-        throughputOption = ()) returns error? {
+isolated function setThroughputOrAutopilotHeader(http:Request request, 
+                                                (int|record{|int maxThroughput;|})? throughputOption = ()) 
+                                                returns error? {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
@@ -221,8 +222,8 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 # + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
 # + return - If successful, request will be appended with headers. Else returns error or nil.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
-    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds <= 
-            MAX_TIME_TO_LIVE_IN_SECONDS) {
+    if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds 
+        <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
         return prepareUserError(VALIDITY_PERIOD_ERROR);
@@ -232,7 +233,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # Get the current time(GMT) in the specific format.
 #
 # + return - If successful, returns string representing UTC date and time 
-#          (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error.
+#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error.
 isolated function getDateTime() returns string|error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
@@ -249,11 +250,11 @@ isolated function getDateTime() returns string|error {
 # + date - current GMT date and time
 # + return - If successful, returns string which is the hashed token signature. Else returns error.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
-        string tokenType, string date) returns string|error {
+                                               string tokenType, string date) returns string|error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
-            + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
+        + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
-    byte[] digest = crypto:hmacSha256(payload.toBytes(), decodedArray);
+    byte[] digest = check crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = array:toBase64(digest);
     string authorizationString = string `type=${tokenType}&ver=${TOKEN_VERSION}&sig=${signature}`;
     return check encoding:encodeUriComponent(authorizationString, "UTF-8");
@@ -268,7 +269,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_CREATED) {
         return jsonResponse;
     }
-    string message = <string>jsonResponse.message;
+    string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
     return prepareAzureError(message, (), httpResponse.statusCode);
 }
 
@@ -283,22 +284,10 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
         return;
     } else {
         json jsonResponse = check httpResponse.getJsonPayload();
-        string message = <string>jsonResponse.message;
+        string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
         return prepareAzureError(message, (), httpResponse.statusCode);
     }
 }
-
-# Get the value of an HTTP header if it exists.
-# 
-# + httpResponse - The http:Response returned from an HTTP request
-# + headerName - Name of the header
-# + return - String value of specific header or nil if header does not exist
-isolated function getHeaderIfExist(http:Response httpResponse, string headerName) returns @tainted string? {
-    if (httpResponse.hasHeader(headerName)) {
-        return httpResponse.getHeader(headerName);
-    } 
-    return;
-} 
 
 # Get a stream of JSON documents which is returned as query results.
 # 
@@ -307,17 +296,20 @@ isolated function getHeaderIfExist(http:Response httpResponse, string headerName
 # + request - HTTP request object 
 # + return - A stream<json>
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
-        @tainted stream<json>|stream<Document>|error {
+                         @tainted stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
+    string newContinuationHeader = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? 
+        header : EMPTY_STRING;
 
     if (payload.Documents is json) {
-        json[] array = <json[]>payload.Documents;
-        Document[] documents = convertToDocumentArray(<json[]>payload.Documents);
+        Document[] documents = [];
+        json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+        convertToDocumentArray(documents, array);
         return (<@untainted>documents).toStream();
     } else if (payload.Offers is json) {
-        json[] array = <json[]>payload.Offers;
-        return (<@untainted>array).toStream();
+        json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+        return array.toStream();
     }
     else {
         return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
@@ -330,11 +322,18 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + path - Path to which API call is made
 # + request - HTTP request object 
 # + return - A stream<record{}>
-function retrieveStream(http:Client azureCosmosClient, string path, http:Request request) returns @tainted 
-        stream<record{}>|error {
+function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
+                        @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
+    if (continuationHeader is string) {
+        request.setHeader(CONTINUATION_HEADER, continuationHeader);
+    }
+
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
+    string newContinuationHeader = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? 
+        header : EMPTY_STRING;
+
     json payload = check handleResponse(response);
-    return check createStream(path, payload);
+    return check createStream(azureCosmosClient, path, request, payload, array, newContinuationHeader);
 }
 
 # Create a stream from the array obtained from the request call.
@@ -342,32 +341,91 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 # + path - Path to which API call is made
 # + payload - JSON payload returned from the response
 # + return - A stream<record{}> or error
-isolated function createStream(string path, json payload) returns @tainted stream<record{}>|error {
-    record{}[] finalArray = [];
-    if (payload.Databases is json) {
-        finalArray = convertToDatabaseArray(<json[]>payload.Databases);
-    } else if (payload.DocumentCollections is json) {
-        finalArray = convertToContainerArray(<json[]>payload.DocumentCollections);
-    } else if (payload.Documents is json) {
-        finalArray = convertToDocumentArray(<json[]>payload.Documents);
-    } else if (payload.StoredProcedures is json) {
-        finalArray = convertToStoredProcedureArray( <json[]>payload.StoredProcedures);
-    } else if (payload.UserDefinedFunctions is json) {
-        finalArray = convertsToUserDefinedFunctionArray(<json[]>payload.UserDefinedFunctions);
-    } else if (payload.Triggers is json) {
-        finalArray = convertToTriggerArray(<json[]>payload.Triggers);
-    } else if (payload.Users is json) {
-        finalArray = convertToUserArray(<json[]>payload.Users);
-    } else if (payload.Permissions is json) {
-        finalArray = convertToPermissionArray(<json[]>payload.Permissions);
-    } else if (payload.PartitionKeyRanges is json) {
-        finalArray = convertToPartitionKeyRangeArray(<json[]>payload.PartitionKeyRanges);
-    } else if (payload.Offers is json) {
-        finalArray = convertToOfferArray(<json[]>payload.Offers);
+function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload, 
+                      record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
+                      @tainted stream<record{}>|error {
+    var arrayType = typeof initalArray;
+    record{}[] finalArray = initalArray;
+
+    if (arrayType is typedesc<Offer[]>) {
+        if (payload.Offers is json) {
+            json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
+            convertToOfferArray(<Offer[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Document[]>) {
+        if (payload.Documents is json) {
+            json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+            convertToDocumentArray(<Document[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Database[]>) {
+        if (payload.Databases is json) {
+            json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
+            convertToDatabaseArray(<Database[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Container[]>) {
+        if (payload.DocumentCollections is json) {
+            json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
+            convertToContainerArray(<Container[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<StoredProcedure[]>) {
+        if (payload.StoredProcedures is json) {
+            json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
+            convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }     
+    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
+        if (payload.UserDefinedFunctions is json) {
+            json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
+            convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Trigger[]>) {
+        if (payload.Triggers is json) {
+            json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
+            convertToTriggerArray(<Trigger[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<User[]>) {
+        if (payload.Users is json) {
+            json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
+            convertToUserArray(<User[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<Permission[]>) {
+        if (payload.Permissions is json) {
+            json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
+            convertToPermissionArray(<Permission[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
+    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
+        if (payload.PartitionKeyRanges is json) {
+            json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
+            convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
+        } else {
+            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        }
     } else {
         return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
-    return (<@untainted>finalArray).toStream();
+
+    stream<record{}> newStream = (<@untainted>finalArray).toStream();
+    if (continuationHeader != EMPTY_STRING) {
+        newStream = check retrieveStream(azureCosmosClient, path, request, <@untainted>finalArray, continuationHeader);
+    }
+    return newStream;
 }
 
 # Get the enum value for a given string which represents the type of index.
