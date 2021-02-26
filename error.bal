@@ -14,7 +14,10 @@
 // specific language governing permissions and limitations
 // under the License. 
 
+# The errors which will come from the Azure API call itself.  
 public type AzureError distinct error;
+
+# The errors which occur when providing an invalid value.  
 public type UserError distinct error;
 
 isolated function prepareAzureError(string message, error? err = (), int? status = ()) returns error {

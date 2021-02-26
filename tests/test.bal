@@ -15,9 +15,9 @@
 // under the License.
 
 import ballerina/jballerina.java;
-import ballerina/log;
 import ballerina/lang.runtime;
 import ballerina/lang.'string;
+import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
@@ -323,7 +323,6 @@ function testDeleteContainer() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -507,7 +506,6 @@ function testQueryDocuments() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -527,7 +525,6 @@ function testQueryDocumentsWithRequestOptions() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -610,7 +607,6 @@ function testExecuteOneStoredProcedure() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -624,7 +620,6 @@ function testGetAllStoredProcedures() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -709,7 +704,6 @@ function testListAllUDF() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -765,7 +759,7 @@ function testCreateTrigger() {
     TriggerType createTriggerType = "Post";
 
     var result = azureCosmosManagementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
-            createTriggerOperation, createTriggerType);
+        createTriggerOperation, createTriggerType);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -812,7 +806,7 @@ function testReplaceTrigger() {
     TriggerType replaceTriggerType = "Post";
 
     var result = azureCosmosManagementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
-            replaceTriggerOperation, replaceTriggerType);
+        replaceTriggerOperation, replaceTriggerType);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -831,7 +825,6 @@ function testListTriggers() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -861,7 +854,6 @@ function testGetPartitionKeyRanges() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -917,7 +909,6 @@ function testListUsers() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -957,7 +948,7 @@ function testCreatePermission() {
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
-            permissionResource);
+        permissionResource);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -983,7 +974,7 @@ function testCreatePermissionWithTTL() {
     int validityPeriod = 9000;
 
     var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode, 
-            permissionResource, validityPeriod);
+        permissionResource, validityPeriod);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -1002,7 +993,7 @@ function testReplacePermission() {
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
     var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
-            permissionResource);
+        permissionResource);
     if (result is error) {
         test:assertFail(msg = result.message());
     } else {
@@ -1021,7 +1012,6 @@ function testListPermissions() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 @test:Config {
@@ -1053,7 +1043,6 @@ function testDeletePermission() {
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 string? offerId = "";
@@ -1106,7 +1095,7 @@ function testReplaceOffer() {
 
     if (offerId is string && offerId != "" && resourceId is string && resourceId != "") {
         string resourceSelfLink = 
-                string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
+            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         Offer replaceOfferBody = {
             offerVersion: "V2",
             offerType: "Invalid",
@@ -1136,7 +1125,7 @@ function testReplaceOfferWithOptionalParameter() {
 
     if (offerId is string && offerId != "" && resourceId is string && resourceId != "") {
         string resourceSelfLink = 
-                string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
+            string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         Offer replaceOfferBody = {
             offerVersion: "V2",
             content: {"offerThroughput": 600},
@@ -1165,12 +1154,11 @@ function testReplaceOfferWithOptionalParameter() {
 function testQueryOffer() {
     log:print("ACTION : queryOffer()");
     string offerQuery = 
-            string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
+        string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
     if (result is error) {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 
 }
 
@@ -1186,7 +1174,6 @@ function testGetContainerWithResourceToken() {
     string permissionUserId = newUserId;
     string userPermissionId = permissionId;
 
-    // The token should have 
     var result = azureCosmosManagementClient->getPermission(databaseId, permissionUserId, userPermissionId);
     if (result is error) {
         test:assertFail(msg = result.message());
@@ -1225,13 +1212,13 @@ function afterFunc() {
 # Create a random UUID removing the unnecessary hyphens which will interrupt querying opearations.
 # 
 # + return - A string UUID without hyphens
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
         return stringUUID;
     } else {
-        return "";
+        return EMPTY_STRING;
     }
 }
 

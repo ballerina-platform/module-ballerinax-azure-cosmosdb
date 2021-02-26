@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -30,14 +30,15 @@ public function main() {
     string containerId = "my_container";
 
     log:print("List  user defined functions");
-    var result = managementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is error) {
-        log:printError(result.message());
-    }
+    stream<cosmosdb:UserDefinedFunction>|error result = managementClient->listUserDefinedFunctions(databaseId, 
+        containerId);
+
     if (result is stream<cosmosdb:UserDefinedFunction>) {
         error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
             log:print(udf.toString());
         });
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

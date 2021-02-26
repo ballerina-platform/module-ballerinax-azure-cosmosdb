@@ -3,18 +3,15 @@ Connects to Azure Cosmos DB from Ballerina.
 ## Module Overview
 
 The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed 
-multi-model database which is used for managing data across the world. The key purpose of the Azure Cosmos DB is to 
-achieve low latency and high availability while maintaining flexible scalability. 
-The Ballerina Cosmos DB connector allows you to connect to an Azure Cosmos DB resource from Ballerina and perform 
-various operations such as `find`, `create`, `read`, `update`, and `delete` operations of `Databases`, `Containers`,
-`User Defined Functions`, `Tiggers`, `Stored Procedures`, `Users`, `Permissions` and `Offers`.
+multi-model database which is used for managing data across the world. The Ballerina Cosmos DB connector allows you to 
+connect to an Azure Cosmos DB resource from Ballerina and perform various operations such as `find`, `create`, `read`, 
+`update`, and `delete` operations of `Databases`, `Containers`,`User Defined Functions`, `Triggers`, `Stored Procedures`, 
+`Users`, `Permissions` and `Offers`.
 
 ## Compatibility
 
-|                           |    Version                  |
-|:-------------------------:|:---------------------------:|
-| Ballerina Language        | Swan Lake Alpha 2           |
-| Cosmos DB API Version     | 2018-12-31                  |
+Ballerina Language Version   **Swan Lake Alpha 2**  
+Cosmos DB API Version        **2018-12-31**
 
 ## Cosmos DB Clients
 
@@ -161,7 +158,7 @@ public function main() {
 ```
 ### Get Document
 This operation allows to retrieve a document by it's ID. It returns a record type `Document`. Here, you have to provide 
-*Database ID*, *Container ID* where the document will be created and the **ID of the document** to retrieve. As the 
+*Database ID*, *Container ID* where the document will be created and the *ID of the document* to retrieve. As the 
 partition key is mandatory in the container, for getDocument operation you need to provide the correct 
 **value for that partition key**.
 ```ballerina
@@ -220,7 +217,7 @@ public function main() {
 ```
 ### Delete Document
 Using this connector, deletion of a document that exists inside a container is possible. You have to specify the 
-*Database ID*, *Container ID* where the document exists and the **ID of document** you want to delete. The 
+*Database ID*, *Container ID* where the document exists and the *ID of document* you want to delete. The 
 **value of the partition key** for that specific document should also be passed to the function.
 ```ballerina
 import ballerina/log;

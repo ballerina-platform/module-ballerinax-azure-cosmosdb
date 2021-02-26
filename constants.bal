@@ -64,6 +64,7 @@ public enum IndexDataType {
 }
 
 # The mode of indexing for the container.
+# 
 # + CONSISTENT - The index is updated synchronously as you create, update or delete items
 # + NONE - Indexing is disabled on the container
 public enum IndexingMode {
@@ -132,12 +133,13 @@ public enum ChangeFeedOption {
     INCREMENTAL = "Incremental feed"
 }
 
-# The version of the partition key if it is smaller than 100 bytes
+# The version of the partition key if it is smaller than 100 bytes.
 public const PARTITION_KEY_VERSION_1 = 1;
 
-# The version of the partition key if it is larger than 100 bytes
+# The version of the partition key if it is larger than 100 bytes.
 public const PARTITION_KEY_VERSION_2 = 2;
 
+# The version of the partition key.
 public type PartitionKeyVersion  PARTITION_KEY_VERSION_1 | PARTITION_KEY_VERSION_2;
 
 # Used for partition key
@@ -256,9 +258,9 @@ const STATUS = "status";
 const STATUS_NOT_FOUND_STRING = "404";
 
 # Numeric constants
-const int MIN_REQUEST_UNITS = 400;
-const int MIN_TIME_TO_LIVE_IN_SECONDS = 3600;
-const int MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
+const MIN_REQUEST_UNITS = 400;
+const MIN_TIME_TO_LIVE_IN_SECONDS = 3600;
+const MAX_TIME_TO_LIVE_IN_SECONDS = 18000;
 
 # String constants
 const SPACE_STRING = " ";

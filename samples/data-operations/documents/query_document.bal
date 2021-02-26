@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -34,14 +34,15 @@ public function main() {
     int maxItemCount = 10;
 
     cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, options, maxItemCount);
-    if (result is error) {
-        log:printError(result.message());
-    }
+    stream<cosmosdb:Document>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
+        options, maxItemCount);
+
     if (result is stream<cosmosdb:Document>) {
         error? e = result.forEach(function (cosmosdb:Document document) {
             log:print(document.toString());
         });
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

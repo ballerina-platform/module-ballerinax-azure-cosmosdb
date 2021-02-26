@@ -86,11 +86,11 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
     Ballerina Swan Lake Alpha 2 is required.
 
 # Supported Versions
-|                           | Version                     |
-|:-------------------------:|:---------------------------:|
-| Cosmos DB API Version     | 2018-12-31                  |
-| Ballerina Language        | Swan Lake Alpha 2           |
-| Java Development Kit (JDK)| 11                          |
+|                            | Version               |
+|----------------------------|-----------------------|
+| Ballerina Language Version | **Swan Lake Alpha 2** |
+| Cosmos DB API Version      | **2018-12-31**        |
+| Java Development Kit (JDK) | 11                    |
 
 # Limitations
 - Only data plane operations are supported from the connector. (Some Management plane operations are not supported)
@@ -265,9 +265,9 @@ parameters. As the partition key is made mandatory for the container, the value 
 parameter to the function.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -324,9 +324,9 @@ value for a document. It should be the same value as the old document.
 Refer more about replacing partition key values here: https://github.com/Azure/azure-sdk-for-js/issues/6324
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -381,9 +381,9 @@ This sample shows how to get a document by its ID. It returns ta record of type 
 partition key is mandatory in the container, for getDocument operation you need to provide the correct 
 **value for that partition key**.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -426,9 +426,9 @@ This sample shows how you can get a list of all the documents. For this operatio
 represented using the `Document` record type. You have to provide the *Database ID* and *Container ID* where the document 
 exists as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -472,9 +472,9 @@ This sample shows how to delete a document which exists inside a container. You 
 *Container ID* where the document exists and the **ID of document** you want to delete. The 
 **value of the partition key** for that specific document should also passed to the function.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -516,9 +516,9 @@ compatible with the REST API. This sample shows a query that will return all the
 value for **/gender** equals 0. 
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -577,9 +577,9 @@ response appending a string inside the function to the response body. For this, 
 and the *Container ID* where the stored procedure will be saved in. Apart from that, a *unique ID* for the stored 
 procedure and a JavaScript function that represents the stored procedure should be provided as parameters.  
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -621,9 +621,9 @@ function and returning it with re response to the caller. For this, you have to 
 *Container ID* where the stored procedure is saved in. The ID of the stored procedure to replace and any JavaScript 
 function should also be passed as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -663,9 +663,9 @@ From this sample, you can get a list of all the stored procedures inside a conta
 contain a stream of `StoredProcedure` record types and several other important information. You have to provide the 
 *Database ID* and the *Container ID* as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -697,9 +697,9 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This sample shows how to delete a stored procedure that exists inside a container. You have to specify the 
 *Database ID*, *Container ID* where the stored procedure exists and the *ID of the stored procedure* you want to delete.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -734,9 +734,9 @@ this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-
 <br/>
 This sample shows how to execute a stored procedure already existing inside a container.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -752,7 +752,7 @@ public function main() {
 
     log:print("Executing stored procedure");
     cosmosdb:StoredProcedureOptions options = {
-        parameters: ["Sachi"]
+        parameters: ["Tim"]
     };
 
     var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
@@ -784,9 +784,9 @@ provide a **unique Database ID** that does not already exist in the specific Cos
 return a record of type `Database`. This will contain the success as true if the operation is successful.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -846,9 +846,9 @@ It returns a record of type `Database`. We can use this result to refer to a dat
 useful in query operations and creating offers. You have to pass the *Database ID* as a parameter for this function.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -878,9 +878,9 @@ When there is a need to list down all the databases available inside a Cosmos DB
 stream, each element containing a record of type `Database`.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -910,9 +910,9 @@ This operation can be used for deleting a database inside an Azure Cosmos DB acc
 `DeleteResponse` if the database is deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -947,9 +947,9 @@ in this implementation of the connector strictly supports the partition key, it 
 key in the creation of a container. 
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -994,9 +994,9 @@ returns a record type `Container` which contains the ID of the container, The in
 along with the resourceId.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1027,9 +1027,9 @@ When there is a need to list-down all the containers available inside a database
 stream, each element containing a record of type `Container`.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1066,9 +1066,9 @@ This operation can be used for deleting a container inside a database. It return
 deleted successfully or else returns an error in case there is a problem.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1107,9 +1107,9 @@ In this operation, you have to provide the *Database ID* and the *Container ID* 
 saved in. Apart from that, a *unique ID for user defined function and a JavaScript function should be provided as 
 parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1155,9 +1155,9 @@ the user defined function is saved in and you should pass the *ID of the user de
 JavaScript function which will replace the existing user defined function.
 
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1200,9 +1200,9 @@ From this sample, you can get a list of all the user defined functions inside a 
 contain a stream, each element containing a record of type  `UserDefinedFunction`. You have to provide the *Database ID* 
 and *Container ID* as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1236,9 +1236,9 @@ This sample shows how to delete a user defined function which exists inside a co
 *Database ID*, *Container ID* where the user defined function exists and the *ID of the user defined function you want to 
 delete.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1276,9 +1276,9 @@ document in the container. For this operation, you have to provide the *Database
 trigger is saved in. A *unique ID* for trigger and a JavaScript function should be provided to the **trigger function**. 
 Apart from that, you have to provide **type of trigger operation**, and **type of trigger**  as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1346,13 +1346,13 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 ### Replace Trigger
 This sample shows how you can replace an existing trigger with a new one. Here, the name of the trigger is updated to a 
 new one. When replacing, you have to provide the *Database ID* and the *Container ID* where the trigger is saved in. 
-As parameters, *ID of the trigger to be relaced* and a JavaScript function should be provided to the 
+As parameters, *ID of the trigger to be replaced* and a JavaScript function should be provided to the 
 **trigger function**. Apart from that, you have to provide **type of trigger operation**, and **type of trigger**  as 
 parameters. (It is not mandatory to replace all parameters with a new value but all the values should be passed).
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1414,9 +1414,9 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 From this sample, you can get a list of all the triggers inside a container. It will return a stream, which contains 
 records of type `Trigger`. You have to provide the *Database ID* and *Container ID* as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1448,9 +1448,9 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This sample shows how to delete a trigger that exists inside a container. You have to specify the *Database ID*, 
 *Container ID* where the trigger exists and the *ID of the trigger you want to delete*.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1492,9 +1492,9 @@ this operation, an instance of User for a specific database is created. The thin
 are the *Database ID* and a *unique ID* for the user. Here **my_database** and **my_user** are provided as parameters 
 respectively.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1526,9 +1526,9 @@ earlier. Although the saved user can have **permissions** that are related, thos
 For this, you have to provide the *Database ID* where the User is scoped into, the *User ID* you want to replace, and 
 the *New User ID* which the older one is to be replaced with.
 ``` ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1560,9 +1560,9 @@ From this sample, you can get the basic information about a created User. For th
 scoped into and the* User ID* you want to get information about should be provided. Referring to earlier samples, the 
 Database ID will be **my_database** and User ID will be **my_user** in this case.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1593,9 +1593,9 @@ From this operation, you can get a list of all the users who are scoped into a g
 which contains records of type `User`. You have to provide the *Database ID* which in this case **my_database** as the 
 argument.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1627,9 +1627,9 @@ The Common User management operations of databases usually have the option to de
 connector supports this operation. For deleting a user the specific *Database ID* User is scoped to and the *ID of the 
 User to delete* must be provided.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1683,9 +1683,9 @@ When creating permission, you should provide values for the above properties. Ap
 explicitly made referring to an existing user, *User ID* and the *Database ID* also should be specified. These primary 
 properties must be provided as parameters to the function. By default created token is expired in one hour.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1728,9 +1728,9 @@ existing permission. Although it replaces permission, you have to specify all th
 properties have to have changed. These primary properties are provided as function parameters. The *Permission ID* 
 should be the ID of the permission we want to replace.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1767,9 +1767,9 @@ From this sample, you can get the basic information about a created permission. 
 *User ID* to which the permission belongs and the *permission ID* that, you want to get information about should be 
 provided.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1801,9 +1801,9 @@ From this operation, you can get a list of all the permissions that belong to a 
 which contains records of type `Permission`. You have to provide the *Database ID* and the *User ID* the permissions 
 belong as parameters.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -1835,9 +1835,9 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 This Operation allows deleting a permission in the database. For deleting the permission, the specific *Database ID*, *User 
 ID* to which the permission belongs and the *ID of the Permission* to delete must be provided.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),

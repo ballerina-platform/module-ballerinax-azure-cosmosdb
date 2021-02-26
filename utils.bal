@@ -299,8 +299,8 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
                          @tainted stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
-    string newContinuationHeader = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? 
-        header : EMPTY_STRING;
+    string newContinuationHeader = let var header = 
+        response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
 
     if (payload.Documents is json) {
         Document[] documents = [];
@@ -318,9 +318,11 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 
 # Make a request call to the azure endpoint to get a list of resources.
 # 
-# + azureCosmosClient - Client which calls the azure endpoint
+# + azureCosmosClient - The http:Client object which is used to call azure endpoints
 # + path - Path to which API call is made
-# + request - HTTP request object 
+# + request - The http:Request object which makes the remote method call
+# + array - Initial recory array which will be filled in every request call
+# + continuationHeader - The continuation header which is use to obtain next pages
 # + return - A stream<record{}>
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
                         @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
@@ -329,8 +331,8 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
     }
 
     http:Response response = <http:Response> check azureCosmosClient->get(path, request);
-    string newContinuationHeader = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? 
-        header : EMPTY_STRING;
+    string newContinuationHeader = let var header = 
+        response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
 
     json payload = check handleResponse(response);
     return check createStream(azureCosmosClient, path, request, payload, array, newContinuationHeader);
@@ -338,8 +340,12 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 
 # Create a stream from the array obtained from the request call.
 # 
+# + azureCosmosClient - The http:Client object which is used to call azure endpoints
 # + path - Path to which API call is made
+# + request - The http:Request object which makes the remote method call
 # + payload - JSON payload returned from the response
+# + initalArray - Initial recory array which will be filled in every request call
+# + continuationHeader - The continuation header which is use to obtain next pages
 # + return - A stream<record{}> or error
 function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload, 
                       record{}[] initalArray, @tainted string? continuationHeader = ()) returns 

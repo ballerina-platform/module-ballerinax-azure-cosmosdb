@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -49,13 +49,13 @@ public function main() {
                                                     return income * 0.4;
                                             }`;
 
-    var udfCreateResult = managementClient->createUserDefinedFunction(databaseId, containerId, udfId, 
-        userDefinedFunctionBody);
-    if (udfCreateResult is error) {
-        log:printError(udfCreateResult.message());
-    }
+    cosmosdb:UserDefinedFunction|error udfCreateResult = managementClient->createUserDefinedFunction(databaseId, 
+        containerId, udfId, userDefinedFunctionBody);
+
     if (udfCreateResult is cosmosdb:UserDefinedFunction) {
         log:print(udfCreateResult.toString());
+    } else {
+        log:printError(udfCreateResult.message());
     }
 
     log:print("Replacing a user defined function");
@@ -69,38 +69,40 @@ public function main() {
                                                     else
                                                         return income * 0.4;
                                                 }`;
-    var udfReplaceResult = managementClient->replaceUserDefinedFunction(databaseId, containerId, udfId, 
-        newUserDefinedFunctionBody);
-    if (udfReplaceResult is error) {
-        log:printError(udfReplaceResult.message());
-    }
+    cosmosdb:UserDefinedFunction|error udfReplaceResult = managementClient->replaceUserDefinedFunction(databaseId, 
+        containerId, udfId, newUserDefinedFunctionBody);
+
     if (udfReplaceResult is cosmosdb:UserDefinedFunction) {
         log:print(udfReplaceResult.toString());
+    } else {
+        log:printError(udfReplaceResult.message());
     }
 
     log:print("List  user defined functions(udf)s");
-    var udfList = managementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (udfList is error) {
-        log:printError(udfList.message());
-    }
+    stream<cosmosdb:UserDefinedFunction>|error udfList = managementClient->listUserDefinedFunctions(databaseId, 
+        containerId);
+
     if (udfList is stream<cosmosdb:UserDefinedFunction>) {
         error? e = udfList.forEach(function (cosmosdb:UserDefinedFunction udf) {
             log:print(udf.toString());
         });
+    } else {
+        log:printError(udfList.message());
     }
 
     log:print("Delete user defined function");
-    var deletionResult = managementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
-    if (deletionResult is error) {
-        log:printError(deletionResult.message());
-    }
+    cosmosdb:DeleteResponse|error deletionResult = managementClient->deleteUserDefinedFunction(databaseId, containerId, 
+        udfId);
+
     if (deletionResult is cosmosdb:DeleteResponse) {
         log:print(deletionResult.toString());
+    } else {
+        log:printError(deletionResult.message());
     }
     log:print("End!");
 }
 
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);

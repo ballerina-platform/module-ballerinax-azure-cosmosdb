@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -33,12 +33,13 @@ public function main() {
     int partitionKeyValue = 0;
     
     log:print("Deleting the document");
-    var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
-    if (result is error) {
-        log:printError(result.message());
-    }
+    cosmosdb:DeleteResponse|error result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 
+        partitionKeyValue);
+
     if (result is cosmosdb:DeleteResponse) {
         log:print(result.toString());
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

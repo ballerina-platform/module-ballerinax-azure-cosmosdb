@@ -51,10 +51,10 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
         resourceId: let var resourceId = payload._rid in resourceId is string ? resourceId : EMPTY_STRING,
         selfReference: let var selfReference = payload._self in selfReference is string ? selfReference : EMPTY_STRING,
         eTag: let var eTag = payload._etag in eTag is string ? eTag : EMPTY_STRING,
-        indexingPolicy: let var indexing = payload.indexingPolicy in indexing is json ? 
-            mapJsonToIndexingPolicy(indexing) : {},
-        partitionKey: let var partitionKey = payload.partitionKey in partitionKey is json ?
-            convertJsonToPartitionKeyType(partitionKey) : {}
+        indexingPolicy: let var indexing = 
+            payload.indexingPolicy in indexing is json ? mapJsonToIndexingPolicy(indexing) : {},
+        partitionKey: let var partitionKey = 
+            payload.partitionKey in partitionKey is json ? convertJsonToPartitionKeyType(partitionKey) : {}
     };
 }
 
@@ -65,10 +65,10 @@ isolated function mapJsonToContainerType(json payload) returns @tainted Containe
 isolated function mapJsonToIndexingPolicy(json payload) returns @tainted IndexingPolicy {
     return {
         indexingMode: let var mode = payload.indexingMode in mode is string ? getIndexingMode(mode) : NONE,
-        includedPaths: let var inPaths = payload.indexingPolicy in inPaths is json ? 
-            convertToIncludedPathsArray(<json[]>inPaths) : [],
-        excludedPaths: let var exPaths = payload.excludedPaths in exPaths is json ? 
-            convertToExcludedPathsArray(<json[]>exPaths) : [],
+        includedPaths: let var inPaths = 
+            payload.indexingPolicy in inPaths is json ? convertToIncludedPathsArray(<json[]>inPaths) : [],
+        excludedPaths: let var exPaths = 
+            payload.excludedPaths in exPaths is json ? convertToExcludedPathsArray(<json[]>exPaths) : [],
         automatic: let var automatic = payload.automatic in automatic is boolean ? automatic : true
     };
 }
@@ -84,8 +84,9 @@ isolated function mapJsonToIncludedPathsType(json payload) returns @tainted Incl
     if (payload.indexes is error) {
         return includedPath;
     }
+    Index[] indexArray = [];
     includedPath.indexes = let var indexes = payload.indexes in indexes is json ? convertToIndexArray(<json[]>indexes) : 
-        [];
+        indexArray;
     return includedPath;
 }
 

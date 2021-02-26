@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -32,12 +32,12 @@ public function main() {
 
     log:print("Deleting trigger");
     
-    var result = managementClient->deleteTrigger(databaseId, containerId, triggerId);
-    if (result is error) {
-        log:printError(result.message());
-    }
+    cosmosdb:DeleteResponse|error result = managementClient->deleteTrigger(databaseId, containerId, triggerId);
+
     if (result is cosmosdb:DeleteResponse) {
         log:print(result.toString());
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

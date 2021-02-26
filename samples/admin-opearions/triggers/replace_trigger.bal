@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -61,13 +61,13 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
     
-    var result = managementClient->replaceTrigger(databaseId, containerId, existingTriggerId, replaceTriggerBody, 
-        replaceTriggerOperation, replaceTriggerType); 
-    if (result is error) {
-        log:printError(result.message());
-    }
+    cosmosdb:Trigger|error result = managementClient->replaceTrigger(databaseId, containerId, existingTriggerId, 
+        replaceTriggerBody, replaceTriggerOperation, replaceTriggerType); 
+
     if (result is cosmosdb:Trigger) {
         log:print(result.toString());
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

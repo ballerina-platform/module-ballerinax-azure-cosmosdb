@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -27,14 +27,14 @@ cosmosdb:ManagementClient managementClient = new(config);
 
 public function main() {
     log:print("Getting list of databases");
-    var result = managementClient->listDatabases(10);
-    if (result is error) {
-        log:printError(result.message());
-    }
+    stream<cosmosdb:Database>|error result = managementClient->listDatabases(10);
+
     if (result is stream<cosmosdb:Database>) {
         error? e = result.forEach(function (cosmosdb:Database database) {
             log:print(database.toString());
         });
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

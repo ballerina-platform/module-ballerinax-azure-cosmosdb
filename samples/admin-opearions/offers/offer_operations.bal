@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -72,7 +72,7 @@ public function main() {
     log:print("Success!");
 }
 
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);

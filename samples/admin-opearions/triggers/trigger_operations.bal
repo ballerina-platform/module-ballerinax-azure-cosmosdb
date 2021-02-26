@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/log;
 import ballerina/jballerina.java;
-import ballerina/regex;
+import ballerina/log;
 import ballerina/os;
+import ballerina/regex;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -64,13 +64,13 @@ public function main() {
     cosmosdb:TriggerOperation createTriggerOperationType = "All";
     cosmosdb:TriggerType createTriggerType = "Post";
 
-    var triggerCreationResult = managementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
-        createTriggerOperationType, createTriggerType); 
-    if (triggerCreationResult is error) {
-        log:printError(triggerCreationResult.message());
-    }
+    cosmosdb:Trigger|error triggerCreationResult = managementClient->createTrigger(databaseId, containerId, triggerId, 
+        createTriggerBody, createTriggerOperationType, createTriggerType); 
+
     if (triggerCreationResult is cosmosdb:Trigger) {
         log:print(triggerCreationResult.toString());
+    } else {
+        log:printError(triggerCreationResult.message());
     }
 
     log:print("Replacing a trigger");
@@ -104,38 +104,38 @@ public function main() {
     cosmosdb:TriggerOperation replaceTriggerOperation = "All";
     cosmosdb:TriggerType replaceTriggerType = "Post";
 
-    var triggerReplaceResult = managementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
-        replaceTriggerOperation, replaceTriggerType); 
-    if (triggerReplaceResult is error) {
-        log:printError(triggerReplaceResult.message());
-    }
+    cosmosdb:Trigger|error triggerReplaceResult = managementClient->replaceTrigger(databaseId, containerId, triggerId, 
+        replaceTriggerBody, replaceTriggerOperation, replaceTriggerType); 
+
     if (triggerReplaceResult is cosmosdb:Trigger) {
         log:print(triggerReplaceResult.toString());
+    } else {
+        log:printError(triggerReplaceResult.message());
     }
 
     log:print("List available triggers");
-    var triggerList = managementClient->listTriggers(databaseId, containerId);
-    if (triggerList is error) {
-        log:printError(triggerList.message());
-    }
+    stream<cosmosdb:Trigger>|error triggerList = managementClient->listTriggers(databaseId, containerId);
+
     if (triggerList is stream<cosmosdb:Trigger>) {
         error? e = triggerList.forEach(function (cosmosdb:Trigger trigger) {
             log:print(trigger.toString());
         });
+    } else {
+        log:printError(triggerList.message());
     }
 
     log:print("Deleting trigger");
-    var deletionResult = managementClient->deleteTrigger(databaseId, containerId, triggerId);
-    if (deletionResult is error) {
-        log:printError(deletionResult.message());
-    }
+    cosmosdb:DeleteResponse|error deletionResult = managementClient->deleteTrigger(databaseId, containerId, triggerId);
+
     if (deletionResult is cosmosdb:DeleteResponse) {
         log:print(deletionResult.toString());
+    } else {
+        log:printError(deletionResult.message());
     }
     log:print("End!");
 }
 
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);

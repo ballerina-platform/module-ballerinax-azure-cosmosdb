@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -30,14 +30,14 @@ public function main() {
     string userId = "my_user";
 
     log:print("List permissions");
-    var result = managementClient->listPermissions(databaseId, userId);
-    if (result is error) {
-        log:printError(result.message());
-    }
+    stream<cosmosdb:Permission>|error result = managementClient->listPermissions(databaseId, userId);
+
     if (result is stream<cosmosdb:Permission>) {
         error? e = result.forEach(function (cosmosdb:Permission permission) {
             log:print(permission.toString());
         });
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }

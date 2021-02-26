@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/log;
 import ballerina/jballerina.java;
-import ballerina/regex;
+import ballerina/log;
 import ballerina/os;
+import ballerina/regex;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -38,17 +38,47 @@ public function main() {
 
     log:print("Creating user");
     string userId = string `user_${uuid.toString()}`;
-    cosmosdb:User userCreationResult = checkpanic managementClient->createUser(databaseId, userId);
+    cosmosdb:User|error userCreationResult = managementClient->createUser(databaseId, userId);
+
+    if (userCreationResult is cosmosdb:User) {
+        log:print(userCreationResult.toString());
+        log:print("Success!");
+    } else {
+        log:printError(userCreationResult.message());
+    }
 
     log:print("Replace user id");
-    string newReplaceId = string `user_${uuid.toString()}`;
-    cosmosdb:User userReplaceResult = checkpanic managementClient->replaceUserId(databaseId, userId, newReplaceId);
+    string newUserId = string `user_${uuid.toString()}`;
+    cosmosdb:User|error userReplaceResult = managementClient->replaceUserId(databaseId, userId, newUserId);
+
+    if (userReplaceResult is cosmosdb:User) {
+        log:print(userReplaceResult.toString());
+        log:print("Success!");
+    } else {
+        log:printError(userReplaceResult.message());
+    }
 
     log:print("Get user information");
-    cosmosdb:User user  = checkpanic managementClient->getUser(databaseId, userId);
+    cosmosdb:User|error user = managementClient->getUser(databaseId, userId);
+
+    if (user is cosmosdb:User) {
+        log:print(user.toString());
+        log:print("Success!");
+    } else {
+        log:printError(user.message());
+    }
 
     log:print("List users");
-    stream<cosmosdb:User> result5 = checkpanic managementClient->listUsers(databaseId);
+    stream<cosmosdb:User>|error userList = managementClient->listUsers(databaseId);
+
+    if (userList is stream<cosmosdb:User>) {
+        error? e = userList.forEach(function (cosmosdb:User user) {
+            log:print(user.toString());
+        });
+        log:print("Success!");
+    } else {
+        log:printError(userList.message());
+    }
 
     //------------------------------------------------Permissions-------------------------------------------------------
 
@@ -58,9 +88,15 @@ public function main() {
     string permissionResource = 
         string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
         
-    log:print("Create permission for a user");
-    cosmosdb:Permission permission  = checkpanic managementClient->createPermission(databaseId, userId, permissionId, 
+    cosmosdb:Permission|error permission = managementClient->createPermission(databaseId, userId, permissionId, 
         permissionMode, <@untainted>permissionResource);
+
+    if (permission is cosmosdb:Permission) {
+        log:print(permission.toString());
+        log:print("Success!");
+    } else {
+        log:printError(permission.message());
+    }
 
     // Create permission with time to live
     // 
@@ -83,23 +119,63 @@ public function main() {
     log:print("Replace permission");
     cosmosdb:PermisssionMode permissionModeReplace = "All";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
-    permission = checkpanic managementClient->replacePermission(databaseId, userId, permissionId, permissionModeReplace, 
-        permissionResourceReplace);
+
+    permission = managementClient->replacePermission(databaseId, userId, permissionId, 
+        permissionModeReplace, permissionResourceReplace);
+
+    if (permission is cosmosdb:Permission) {
+        log:print(permission.toString());
+        log:print("Success!");
+    } else {
+        log:printError(permission.message());
+    }
+
     log:print("List permissions");
-    stream<cosmosdb:Permission> permissionList = checkpanic managementClient->listPermissions(databaseId, userId);
+    stream<cosmosdb:Permission>|error permissionList = managementClient->listPermissions(databaseId, userId);
+
+    if (permissionList is stream<cosmosdb:Permission>) {
+        error? e = permissionList.forEach(function (cosmosdb:Permission permission) {
+            log:print(permission.toString());
+        });
+        log:print("Success!");
+    } else {
+        log:printError(permissionList.message());
+    }
 
     log:print("Get intormation about one permission");
-    permission = checkpanic managementClient->getPermission(databaseId, userId, permissionId);
+    permission = managementClient->getPermission(databaseId, userId, permissionId);
+
+    if (permission is cosmosdb:Permission) {
+        log:print(permission.toString());
+        log:print("Success!");
+    } else {
+        log:printError(permission.message());
+    }
 
     log:print("Delete permission");
-    _ = checkpanic managementClient->deletePermission(databaseId, userId, permissionId);
+    cosmosdb:DeleteResponse|error deleteResponse = managementClient->deletePermission(databaseId, userId, permissionId);
+
+    if (deleteResponse is cosmosdb:DeleteResponse) {
+        log:print(deleteResponse.toString());
+        log:print("Success!");
+    } else {
+        log:printError(deleteResponse.message());
+    }
 
     log:print("Delete user");
-    _ = checkpanic  managementClient->deleteUser(databaseId, userId);
+    deleteResponse = managementClient->deleteUser(databaseId, userId);
+
+    if (deleteResponse is cosmosdb:DeleteResponse) {
+        log:print(deleteResponse.toString());
+        log:print("Success!");
+    } else {
+        log:printError(deleteResponse.message());
+    }
+
     log:print("Success!");
 }
 
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);

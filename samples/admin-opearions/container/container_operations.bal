@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -44,12 +44,11 @@ public function main() {
         keyVersion: 2
     };
  
-    var containerResult = managementClient->createContainer(databaseId, containerId, partitionKey);
-    if (containerResult is error) {
-        log:printError(containerResult.message());
-    }
+    cosmosdb:Container|error containerResult = managementClient->createContainer(databaseId, containerId, partitionKey);
     if (containerResult is cosmosdb:Container) {
         log:print(containerResult.toString());
+    } else {
+        log:printError(containerResult.message());
     }
 
     log:print("Creating container with indexing policy");   
@@ -71,14 +70,14 @@ public function main() {
         keyVersion: 2
     };
 
-    var containerWithOptionsResult = managementClient->createContainer(databaseId, containerWithIndexingId, 
-        partitionKeyWithIndexing, indexingPolicy);
-    if (containerWithOptionsResult is error) {
-        log:printError(containerWithOptionsResult.message());
-    }   
+    cosmosdb:Container|error containerWithOptionsResult = managementClient->createContainer(databaseId, 
+        containerWithIndexingId, partitionKeyWithIndexing, indexingPolicy);
+  
     if (containerWithOptionsResult is cosmosdb:Container) {
         log:print(containerWithOptionsResult.toString());
-    }
+    } else {
+        log:printError(containerWithOptionsResult.message());
+    } 
 
     log:print("Creating container with manual throughput policy");
     int throughput = 600;
@@ -88,14 +87,13 @@ public function main() {
         keyVersion: 2
     };
 
-    var manualPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
-        partitionKeyManual, (), throughput);
-    if (manualPolicyContainer is error) {
-        log:printError(manualPolicyContainer.message());
-    }   
+    cosmosdb:Container|error manualPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
+        partitionKeyManual, (), throughput); 
     if (manualPolicyContainer is cosmosdb:Container) {
         log:print(manualPolicyContainer.toString());
-    }
+    } else {
+        log:printError(manualPolicyContainer.message());
+    }  
 
     log:print("Creating container with autoscaling throughput policy");
     record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
@@ -104,17 +102,14 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    containerResult = checkpanic managementClient->createContainer(databaseId, containerAutoscalingId, 
-        partitionKeyAutoscaling, (), maxThroughput);
 
-    var autoPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
-        partitionKeyManual, (), throughput);
-    if (autoPolicyContainer is error) {
-        log:printError(autoPolicyContainer.message());
-    }   
+    cosmosdb:Container|error autoPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
+        partitionKeyManual, (), maxThroughput);  
     if (autoPolicyContainer is cosmosdb:Container) {
         log:print(autoPolicyContainer.toString());
-    }
+    } else {
+        log:printError(autoPolicyContainer.message());
+    } 
 
     log:print("Creating container if not exist");
     cosmosdb:PartitionKey partitionKeyDefinition = {
@@ -122,63 +117,62 @@ public function main() {
         kind: "Hash",
         keyVersion: 2
     };
-    var containerIfNotExistResult = managementClient->createContainer(databaseId, containerIfnotExistId, 
-        partitionKeyDefinition);
-    if (containerIfNotExistResult is error) {
-        log:printError(containerIfNotExistResult.message());
-    }   
-    if (containerIfNotExistResult is cosmosdb:Container) {
+    cosmosdb:Container?|error containerIfNotExistResult = managementClient->createContainer(databaseId, 
+        containerIfnotExistId, partitionKeyDefinition);
+    if (containerIfNotExistResult is cosmosdb:Container?) {
         log:print(containerIfNotExistResult.toString());
-    }
+    } else {
+        log:printError(containerIfNotExistResult.message());
+    } 
 
     string? etag;
     string? sessiontoken;     
     log:print("Reading container info");
-    var existingContainer = managementClient->getContainer(databaseId, containerId);
-    if (existingContainer is error) {
-        log:printError(existingContainer.message());
-    }
+    cosmosdb:Container|error existingContainer = managementClient->getContainer(databaseId, containerId);
+
     if (existingContainer is cosmosdb:Container) {
         log:print(existingContainer.toString());
         etag = existingContainer?.eTag;
         sessiontoken = existingContainer?.sessionToken;    
+    } else {
+        log:printError(existingContainer.message());
     }
     
     log:print("Reading container info with request options");
     cosmosdb:ResourceReadOptions options = {
         consistancyLevel: "Bounded"
     };
-    var getContainerWithOptions = managementClient->getContainer(databaseId, containerId, options);
-    if (getContainerWithOptions is error) {
-        log:printError(getContainerWithOptions.message());
-    }
+    cosmosdb:Container|error getContainerWithOptions = managementClient->getContainer(databaseId, containerId, options);
+
     if (getContainerWithOptions is cosmosdb:Container) {
         log:print(getContainerWithOptions.toString());
+    } else {
+        log:printError(getContainerWithOptions.message());
     }
 
     log:print("Getting list of containers");
-    var containerList = managementClient->listContainers(databaseId, 2);
-    if (containerList is error) {
-        log:printError(containerList.message());
-    }
+    stream<cosmosdb:Container>|error containerList = managementClient->listContainers(databaseId, 2);
+
     if (containerList is stream<cosmosdb:Container>) {
         error? e = containerList.forEach(function (cosmosdb:Container container) {
             log:print(container.toString());
         });
+    } else {
+        log:printError(containerList.message());
     }
 
     log:print("Deleting the container");
-    var deletionResult = managementClient->deleteContainer(databaseId, containerId);
-    if (deletionResult is error) {
-        log:printError(deletionResult.message());
-    }
+    cosmosdb:DeleteResponse|error deletionResult = managementClient->deleteContainer(databaseId, containerId);
+
     if (deletionResult is cosmosdb:DeleteResponse) {
         log:print(deletionResult.toString());
+    } else{
+        log:printError(deletionResult.message());
     }
     log:print("End!");
 }
 
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);

@@ -14,11 +14,11 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
-import ballerina/log;
 import ballerina/jballerina.java;
-import ballerina/regex;
+import ballerina/log;
 import ballerina/os;
+import ballerina/regex;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -40,13 +40,13 @@ public function main() {
                                             response.setBody("Hello,  World");
                                         }`;
     
-    var storedProcedureCreateResult = azureCosmosClient->createStoredProcedure(databaseId, containerId, 
-        storedProcedureId, storedProcedureBody); 
-    if (storedProcedureCreateResult is error) {
-        log:printError(storedProcedureCreateResult.message());
-    }
+    cosmosdb:StoredProcedure|error storedProcedureCreateResult = azureCosmosClient->createStoredProcedure(databaseId, 
+        containerId, storedProcedureId, storedProcedureBody); 
+
     if (storedProcedureCreateResult is cosmosdb:StoredProcedure) {
         log:print(storedProcedureCreateResult.toString());
+    } else {
+        log:printError(storedProcedureCreateResult.message());
     }
 
     log:print("Replacing stored procedure");
@@ -56,24 +56,24 @@ public function main() {
                                                 response.setBody("Hello, " + personToGreet);
                                             }`;
 
-    var storedProcedureReplaceResult = azureCosmosClient->replaceStoredProcedure(databaseId, containerId, 
-        storedProcedureId, newStoredProcedureBody);
-    if (storedProcedureReplaceResult is error) {
-        log:printError(storedProcedureReplaceResult.message());
-    }
+    cosmosdb:StoredProcedure|error storedProcedureReplaceResult = azureCosmosClient->replaceStoredProcedure(databaseId, 
+        containerId, storedProcedureId, newStoredProcedureBody);
+
     if (storedProcedureReplaceResult is cosmosdb:StoredProcedure) {
         log:print(storedProcedureReplaceResult.toString());
+    } else {
+        log:printError(storedProcedureReplaceResult.message());
     }
 
     log:print("List stored procedures");
-    var spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (spList is error) {
-        log:printError(spList.message());
-    }
+    stream<cosmosdb:StoredProcedure>|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+
     if (spList is stream<cosmosdb:StoredProcedure>) {
         error? e = spList.forEach(function (cosmosdb:StoredProcedure procedure) {
             log:print(procedure.toString());
         });
+    } else {
+        log:printError(spList.message());
     }
 
     log:print("Executing stored procedure");
@@ -81,26 +81,27 @@ public function main() {
         parameters: ["Sachi"]
     };
 
-    var result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
-    if (result is error) {
-        log:printError(result.message());
-    }
+    json|error result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
+
     if (result is json) {
         log:print(result.toString());
+    } else {
+        log:printError(result.message());
     }
 
     log:print("Deleting stored procedure");
-    var deletionResult = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
-    if (deletionResult is error) {
-        log:printError(deletionResult.message());
-    }
+    cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, 
+        storedProcedureId);
+
     if (deletionResult is cosmosdb:DeleteResponse) {
         log:print(deletionResult.toString());
+    } else {
+        log:printError(deletionResult.message());
     }
     log:print("End!");
 }
 
-public function createRandomUUIDWithoutHyphens() returns string {
+function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);

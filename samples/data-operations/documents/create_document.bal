@@ -14,9 +14,9 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
 import ballerina/log;
 import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
@@ -47,12 +47,13 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    var result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, partitionKeyValue); 
-    if (result is error) {
-        log:printError(result.message());
-    }
+    cosmosdb:Document|error result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, 
+        partitionKeyValue); 
+
     if (result is cosmosdb:Document) {
         log:print(result.toString());
         log:print("Success!");
+    } else {
+        log:printError(result.message());
     }
 }
