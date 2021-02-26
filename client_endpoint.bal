@@ -171,7 +171,7 @@ public client class DataPlaneClient {
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, 
                                    ResourceQueryOptions resourceQueryOptions = {}, 
                                    int? maxItemCount = ()) returns 
-        @tainted stream<Document>|error { 
+                                   @tainted stream<Document>|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);

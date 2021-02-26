@@ -287,7 +287,8 @@ function testGetAllContainers() {
     test:assertTrue(true);
 }
 
-// If we want to get information about offers, First we need to have any offers in the account. 
+// If we want to get information about offers, First we need to have any offers in the account. So enable them when 
+// using  a provisioned throughput account
 @test:Config {
     groups: ["container"], 
     dependsOn: [
@@ -308,12 +309,12 @@ function testGetAllContainers() {
 
         testCreatePermission,
         testCreatePermissionWithTTL,
-        testGetPartitionKeyRanges
+        testGetPartitionKeyRanges,
 
-        // testListOffers,
-        // testGetOffer,
-        // testReplaceOfferWithOptionalParameter,
-        // testReplaceOffer   
+        testListOffers,
+        testGetOffer,
+        testReplaceOfferWithOptionalParameter,
+        testReplaceOffer   
     ]
 }
 function testDeleteContainer() {
@@ -1049,8 +1050,7 @@ string? offerId = "";
 string? resourceId = "";
 
 @test:Config {
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 } 
 function testListOffers() {
     log:print("ACTION : listOffers()");
@@ -1068,8 +1068,7 @@ function testListOffers() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: [testListOffers],
-    enable: false
+    dependsOn: [testListOffers]
 }
 function testGetOffer() {
     log:print("ACTION : getOffer()");
@@ -1087,8 +1086,7 @@ function testGetOffer() {
 }
 
 @test:Config {
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 }
 function testReplaceOffer() {
     log:print("ACTION : replaceOffer()");
@@ -1117,8 +1115,7 @@ function testReplaceOffer() {
 }
 
 @test:Config {
-    groups: ["offer"],
-    enable: false
+    groups: ["offer"]
 }
 function testReplaceOfferWithOptionalParameter() {
     log:print("ACTION : replaceOfferWithOptionalParameter()");
@@ -1148,8 +1145,7 @@ function testReplaceOfferWithOptionalParameter() {
 
 @test:Config {
     groups: ["offer"],
-    dependsOn: [testCreateContainer],
-    enable: false
+    dependsOn: [testCreateContainer]
 }
 function testQueryOffer() {
     log:print("ACTION : queryOffer()");

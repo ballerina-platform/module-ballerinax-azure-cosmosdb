@@ -133,13 +133,13 @@ public enum ChangeFeedOption {
     INCREMENTAL = "Incremental feed"
 }
 
-# The version of the partition key if it is smaller than 100 bytes.
+# The version of the partition key if it is smaller than 100 bytes
 public const PARTITION_KEY_VERSION_1 = 1;
 
-# The version of the partition key if it is larger than 100 bytes.
+# The version of the partition key if it is larger than 100 bytes
 public const PARTITION_KEY_VERSION_2 = 2;
 
-# The version of the partition key.
+# The version of the partition key
 public type PartitionKeyVersion  PARTITION_KEY_VERSION_1 | PARTITION_KEY_VERSION_2;
 
 # Used for partition key

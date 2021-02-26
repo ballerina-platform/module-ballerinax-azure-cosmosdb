@@ -1,8 +1,8 @@
 Ballerina Connector For Azure Cosmos DB
 ===================
 
-[![Build Status](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/workflows/CI/badge.svg)](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/actions?query=workflow%3ACI)
-[![GitHub Last Commit](https://img.shields.io/github/last-commit/sachinira/module-ballerinax-azure-cosmosdb/feature7)](https://github.com/sachinira/module-ballerinax-azure-cosmosdb/commits/feature7)
+[![Build Status](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions?query=workflow%3ACI)
+[![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-azure-cosmosdb.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/commits/master)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Connects to Microsoft Azure Cosmos DB using Ballerina.
