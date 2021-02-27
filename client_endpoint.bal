@@ -44,7 +44,7 @@ public client class DataPlaneClient {
     remote function createDocument(string databaseId, string containerId, record {|string id; json...;|} document, 
                                    int|float|decimal|string partitionKey, 
                                    DocumentCreateOptions? documentCreateOptions = ()) returns 
-        @tainted Document|error { 
+                                   @tainted Document|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
@@ -70,8 +70,8 @@ public client class DataPlaneClient {
     remote function replaceDocument(string databaseId, string containerId, 
                                     @tainted record {|string id; json...;|} document, 
                                     int|float|decimal|string partitionKey, 
-        DocumentReplaceOptions? documentReplaceOptions = ()) 
-        returns @tainted Document|error {
+                                    DocumentReplaceOptions? documentReplaceOptions = ()) 
+                                    returns @tainted Document|error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, document.id]);
@@ -97,7 +97,7 @@ public client class DataPlaneClient {
     remote function getDocument(string databaseId, string containerId, string documentId, 
                                 int|float|decimal|string partitionKey, 
                                 ResourceReadOptions? resourceReadOptions = ()) returns 
-        @tainted Document|error { 
+                                @tainted Document|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -146,7 +146,7 @@ public client class DataPlaneClient {
     remote function deleteDocument(string databaseId, string containerId, string documentId, 
                                    int|float|decimal|string partitionKey, 
                                    ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
-        @tainted DeleteResponse|error { 
+                                   @tainted DeleteResponse|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
