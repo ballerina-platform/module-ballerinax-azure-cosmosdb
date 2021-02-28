@@ -1,0 +1,30 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Deployment
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    build:
+
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Ballerina Build
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
+              with:
+                  args:
+                      build -c --skip-tests
+              env:
+                  BASE_URL: ${{ secrets.BASE_URL }}
+                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
+            - name: Ballerina Push
+              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
+              with:
+                  args:
+                      push 
+              env:
+                  BALLERINA_CENTRAL_ACCESS_TOKEN: ${{ secrets.BALLERINA_CENTRAL_ACCESS_TOKEN }}
