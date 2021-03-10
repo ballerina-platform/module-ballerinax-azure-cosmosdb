@@ -18,7 +18,6 @@ import ballerina/crypto;
 import ballerina/encoding;
 import ballerina/http;
 import ballerina/lang.array;
-import ballerina/lang.'string;
 import ballerina/regex;
 import ballerina/time;
 
@@ -27,7 +26,7 @@ import ballerina/time;
 # + token - The token provided by the user to access Cosmos DB
 # + return - A string value which represents the type of token
 isolated function getTokenType(string token) returns string {
-    boolean ifContain = 'string:includes(token, TOKEN_TYPE_RESOURCE);
+    boolean ifContain = token.includes(TOKEN_TYPE_RESOURCE);
     if (ifContain) {
         return TOKEN_TYPE_RESOURCE;
     } else {
@@ -41,7 +40,7 @@ isolated function getTokenType(string token) returns string {
 # + return - String representing the resource id
 isolated function getHost(string url) returns string {
     string replacedString = regex:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
-    int? lastIndex = 'string:lastIndexOf(replacedString, FORWARD_SLASH);
+    int? lastIndex = replacedString.lastIndexOf(FORWARD_SLASH);
     if (lastIndex is int) {
         replacedString = replacedString.substring(0, lastIndex);
     }
@@ -59,7 +58,7 @@ isolated function getResourceType(string url) returns string {
     if (count % 2 != 0) {
         resourceType = urlParts[count];
         if (count > 1) {
-            int? lastIndex = 'string:lastIndexOf(url, FORWARD_SLASH);
+            int? lastIndex = url.lastIndexOf(FORWARD_SLASH);
         }
     } else {
         resourceType = urlParts[count - 1];
@@ -80,22 +79,22 @@ isolated function getResourceId(string url) returns string {
         if (count % 2 != 0) {
             resourceId = EMPTY_STRING;
         } else {
-            int? lastIndex = 'string:lastIndexOf(url, FORWARD_SLASH);
+            int? lastIndex = url.lastIndexOf(FORWARD_SLASH);
             if (lastIndex is int) {
-                resourceId = 'string:substring(url, lastIndex + 1);
+                resourceId = url.substring(lastIndex + 1);
             }
         }
         return resourceId.toLowerAscii();
     } else {
         if (count % 2 != 0) {
             if (count > 1) {
-                int? lastIndex = 'string:lastIndexOf(url, FORWARD_SLASH);
+                int? lastIndex = url.lastIndexOf(FORWARD_SLASH);
                 if (lastIndex is int) {
-                    resourceId = 'string:substring(url, 1, lastIndex);
+                    resourceId = url.substring(1, lastIndex);
                 }
             }
         } else {
-            resourceId = 'string:substring(url, 1);
+            resourceId = url.substring(1);
         }
         return resourceId;
     }
@@ -126,7 +125,7 @@ isolated function prepareUrl(string[] paths) returns string {
 # + httpVerb - The HTTP verb of the request the headers are set to
 # + requestPath - Request path for the request
 # + return - If successful, request will be appended with headers. Else returns error or nil.
-isolated function setMandatoryHeaders(http:Request request, string host, string token, string httpVerb, 
+isolated function setMandatoryHeaders(http:Request request, string host, string token, http:HttpOperation httpVerb, 
                                       string requestPath) returns error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
     request.setHeader(HOST_HEADER, host);
@@ -255,7 +254,7 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
         + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
     byte[] digest = check crypto:hmacSha256(payload.toBytes(), decodedArray);
-    string signature = array:toBase64(digest);
+    string signature = digest.toBase64();
     string authorizationString = string `type=${tokenType}&ver=${TOKEN_VERSION}&sig=${signature}`;
     return check encoding:encodeUriComponent(authorizationString, "UTF-8");
 }
@@ -310,8 +309,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
     } else if (payload.Offers is json) {
         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
         return array.toStream();
-    }
-    else {
+    } else {
         return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
 }

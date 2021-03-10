@@ -15,7 +15,6 @@
 // under the License. 
 
 import ballerina/http;
-import ballerina/lang.array;
 
 # Maps the JSON response returned from the request into record type of `DeleteResponse`.
 # 
@@ -269,7 +268,7 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
 isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) {
     foreach json databaseObject in sourceDatabaseArrayJsonObject {
         Database database = mapJsonToDatabaseType(databaseObject);
-        array:push(databases, database);
+        databases.push(database);
     }
 }
 
@@ -280,7 +279,7 @@ isolated function convertToDatabaseArray(Database[] databases, json[] sourceData
 isolated function convertToContainerArray(Container[] containers, json[] sourceContainerArrayJsonObject) {
     foreach json jsonCollection in sourceContainerArrayJsonObject {
         Container container = mapJsonToContainerType(jsonCollection);
-        array:push(containers, container);
+        containers.push(container);
     }
 }
 
@@ -291,7 +290,7 @@ isolated function convertToContainerArray(Container[] containers, json[] sourceC
 isolated function convertToDocumentArray(Document[] documents, json[] sourceDocumentArrayJsonObject) {
     foreach json documentObject in sourceDocumentArrayJsonObject {
         Document document = mapJsonToDocumentType(documentObject);
-        array:push(documents, document);
+        documents.push(document);
     }
 }
 
@@ -303,7 +302,7 @@ isolated function convertToStoredProcedureArray(StoredProcedure[] storedProcedur
                                                 json[] sourceStoredProcedureArrayJsonObject) {
     foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
         StoredProcedure storedProcedure = mapJsonToStoredProcedure(storedProcedureObject);
-        array:push(storedProcedures, storedProcedure);
+        storedProcedures.push(storedProcedure);
     }
 }
 
@@ -315,7 +314,7 @@ isolated function convertsToUserDefinedFunctionArray(UserDefinedFunction[] userD
                                                      json[] sourceUdfArrayJsonObject) {
     foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
         UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction(userDefinedFunctionObject);
-        array:push(userDefinedFunctions, userDefinedFunction);
+        userDefinedFunctions.push(userDefinedFunction);
     }
 }
 
@@ -326,7 +325,7 @@ isolated function convertsToUserDefinedFunctionArray(UserDefinedFunction[] userD
 isolated function convertToTriggerArray(Trigger[] triggers, json[] sourceTriggerArrayJsonObject) {
     foreach json triggerObject in sourceTriggerArrayJsonObject {
         Trigger trigger = mapJsonToTrigger(triggerObject);
-        array:push(triggers, trigger);
+        triggers.push(trigger);
     }
 }
 
@@ -337,7 +336,7 @@ isolated function convertToTriggerArray(Trigger[] triggers, json[] sourceTrigger
 isolated function convertToUserArray(User[] users, json[] sourceUserArrayJsonObject) {
     foreach json userObject in sourceUserArrayJsonObject {
         User user = mapJsonToUserType(userObject);
-        array:push(users, user);
+        users.push(user);
     }
 }
 
@@ -348,7 +347,7 @@ isolated function convertToUserArray(User[] users, json[] sourceUserArrayJsonObj
 isolated function convertToPermissionArray(Permission[] permissions, json[] sourcePermissionArrayJsonObject) {
     foreach json permissionObject in sourcePermissionArrayJsonObject {
         Permission permission = mapJsonToPermissionType(permissionObject);
-        array:push(permissions, permission);
+        permissions.push(permission);
     }
 }
 
@@ -359,7 +358,7 @@ isolated function convertToPermissionArray(Permission[] permissions, json[] sour
 isolated function convertToOfferArray(Offer[] offers, json[] sourceOfferArrayJsonObject) {
     foreach json offerObject in sourceOfferArrayJsonObject {
         Offer offer = mapJsonToOfferType(offerObject);
-        array:push(offers, offer);
+        offers.push(offer);
     }
 }
 
@@ -371,7 +370,7 @@ isolated function convertToIncludedPathsArray(json[] sourcePathArrayJsonObject) 
     IncludedPath[] includedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {
         IncludedPath includedPath = mapJsonToIncludedPathsType(jsonPathObject);
-        array:push(includedPaths, includedPath);
+        includedPaths.push(includedPath);
     }
     return includedPaths;
 }
@@ -384,7 +383,7 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
     ExcludedPath[] excludedPaths = [];
     foreach json jsonPathObject in sourcePathArrayJsonObject {
         ExcludedPath excludedPath = mapJsonToExcludedPathsType(jsonPathObject);
-        array:push(excludedPaths, excludedPath);
+        excludedPaths.push(excludedPath);
     }
     return excludedPaths;
 }
@@ -400,7 +399,7 @@ isolated function convertToPartitionKeyRangeArray(PartitionKeyRange[] partitionK
             minInclusive: let var min = jsonPartitionKey.minInclusive in min is string ? min : EMPTY_STRING,
             maxExclusive: let var max = jsonPartitionKey.maxExclusive in max is string ? max : EMPTY_STRING
         };
-        array:push(partitionKeyRangesArray, value);
+        partitionKeyRangesArray.push(value);
     }
 }
 
@@ -412,7 +411,7 @@ isolated function convertToIndexArray(json[] sourceIndexArrayJsonObject) returns
     Index[] indexes = [];
     foreach json indexObject in sourceIndexArrayJsonObject {
         Index index = mapJsonToIndexType(indexObject);
-        array:push(indexes, index);
+        indexes.push(index);
     }
     return indexes;
 }
@@ -424,7 +423,7 @@ isolated function convertToIndexArray(json[] sourceIndexArrayJsonObject) returns
 isolated function convertToStringArray(json[] sourceArrayJsonObject) returns @tainted string[] {
     string[] strings = [];
     foreach json stringObject in sourceArrayJsonObject {
-        array:push(strings, stringObject.toString());
+        strings.push(stringObject.toString());
     }
     return strings;
 }
