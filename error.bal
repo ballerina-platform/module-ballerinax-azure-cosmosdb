@@ -15,29 +15,36 @@
 // under the License. 
 
 # The errors which will come from the Azure API call itself.  
-public type AzureError distinct error;
+public type PayloadAccessError distinct error;
 
 # The errors which occur when providing an invalid value.  
-public type UserError distinct error;
+public type IoError distinct error;
 
-isolated function prepareAzureError(string message, error? err = (), int? status = ()) returns error {
-    error azureError;
-    if (status is int) {
-        return error AzureError(message, status = status);
-    }
-    if (err is error){
-        return error AzureError(message, err);
-    }
-    return error AzureError(message);
-}
+type HttpDetail record {
+    int status; 
+};
 
-isolated function prepareUserError(string message, error? err = (), int? status = ()) returns error {
-    error userError;
-    if (status is int) {
-        return error UserError(message, status = status);
-    }
-    if (err is error){
-        return error UserError(message, err);
-    }
-    return error UserError(message);
-}
+type Error PayloadAccessError|IoError|error<HttpDetail>;
+
+
+// isolated function prepareAzureError(string message, error? err = (), int? status = ()) returns error {
+//     error azureError;
+//     if (status is int) {
+//         return error AzureError(message, status = status);
+//     }
+//     if (err is error){
+//         return error AzureError(message, err);
+//     }
+//     return error AzureError(message);
+// }
+
+// isolated function prepareUserError(string message, error? err = (), int? status = ()) returns error {
+//     error userError;
+//     if (status is int) {
+//         return error UserError(message, status = status);
+//     }
+//     if (err is error){
+//         return error UserError(message, err);
+//     }
+//     return error UserError(message);
+// }

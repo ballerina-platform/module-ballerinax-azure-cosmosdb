@@ -107,7 +107,7 @@ isolated function getResourceId(string url) returns string {
 isolated function prepareUrl(string[] paths) returns string {
     string url = EMPTY_STRING;
     if (paths.length() > 0) {
-        foreach var path in paths {
+        foreach string path in paths {
             if (!path.startsWith(FORWARD_SLASH)) {
                 url = url + FORWARD_SLASH;
             }
@@ -124,7 +124,7 @@ isolated function prepareUrl(string[] paths) returns string {
 # + token - Master or resource token
 # + httpVerb - The HTTP verb of the request the headers are set to
 # + requestPath - Request path for the request
-# + return - If successful, request will be appended with headers. Else returns error or nil.
+# + return - If successful, request will be appended with headers. Else returns `error`.
 isolated function setMandatoryHeaders(http:Request request, string host, string token, http:HttpOperation httpVerb, 
                                       string requestPath) returns error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
@@ -141,7 +141,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
         signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
     } else {
-        return prepareUserError(NULL_RESOURCE_TYPE_ERROR);
+        return error IoError(NULL_RESOURCE_TYPE_ERROR);
     }
     request.setHeader(http:AUTH_HEADER, signature);
 }
@@ -160,7 +160,7 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # Set the required headers related to query operations.
 #
 # + request - The http:Request to set the header
-# + return - Returns error
+# + return - If successful, request will be appended with headers. Else returns `error`
 isolated function setHeadersForQuery(http:Request request) returns error? {
     check request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, TRUE);
@@ -170,7 +170,7 @@ isolated function setHeadersForQuery(http:Request request) returns error? {
 #
 # + request - The http:Request to set the header
 # + throughputOption - Throughput parameter of type int or json
-# + return - If successful, request will be appended with headers. Else returns error or nil.
+# + return - If successful, request will be appended with headers. Else returns `error`.
 isolated function setThroughputOrAutopilotHeader(http:Request request, 
                                                 (int|record{|int maxThroughput;|})? throughputOption = ()) 
                                                 returns error? {
@@ -178,7 +178,7 @@ isolated function setThroughputOrAutopilotHeader(http:Request request,
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
         } else {
-            return prepareUserError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            return error IoError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
     } else if (throughputOption is record{|int maxThroughput;|}) {
         request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
@@ -219,20 +219,20 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 #
 # + request - The http:Request to set the header
 # + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
-# + return - If successful, request will be appended with headers. Else returns error or nil.
+# + return - If successful, request will be appended with headers. Else returns `error`.
 isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
     if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds 
         <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
-        return prepareUserError(VALIDITY_PERIOD_ERROR);
+        return error IoError(VALIDITY_PERIOD_ERROR);
     }
 }
 
 # Get the current time(GMT) in the specific format.
 #
-# + return - If successful, returns string representing UTC date and time 
-#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns error.
+# + return - If successful, returns `string` representing UTC date and time 
+#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns `error`.
 isolated function getDateTime() returns string|error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
@@ -247,7 +247,7 @@ isolated function getDateTime() returns string|error {
 # + token - master or resource token
 # + tokenType - denotes the type of token: master or resource
 # + date - current GMT date and time
-# + return - If successful, returns string which is the hashed token signature. Else returns error.
+# + return - If successful, returns `string` which is the hashed token signature. Else returns `error`.
 isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
                                                string tokenType, string date) returns string|error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
@@ -262,20 +262,20 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 # Handle success or error responses to requests and extract the JSON payload.
 #
 # + httpResponse - The http:Response returned from an HTTP request
-# + return - If successful, returns json. Else returns error. 
+# + return - If successful, returns `json`. Else returns `error`. 
 isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
     json jsonResponse = check httpResponse.getJsonPayload();
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_CREATED) {
         return jsonResponse;
     }
     string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
-    return prepareAzureError(message, (), httpResponse.statusCode);
+    return error(message, status = httpResponse.statusCode);
 }
 
 # Handle success or error responses to requests which does not need to return a payload.
 # 
 # + httpResponse - The http:Response returned from an HTTP request
-# + return - If successful, returns true. Else returns error or nil. 
+# + return - If successful, returns `nil`. Else returns `error`. 
 isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @tainted error? {
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
@@ -284,7 +284,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
     } else {
         json jsonResponse = check httpResponse.getJsonPayload();
         string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
-        return prepareAzureError(message, (), httpResponse.statusCode);
+        return error(message, status = httpResponse.statusCode);
     }
 }
 
@@ -293,7 +293,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 # + azureCosmosClient - Client which calls the azure endpoint
 # + path - Path to which API call is made
 # + request - HTTP request object 
-# + return - A stream<json>
+# + return - A `stream<json> or stream<Document>`. Else returns `error`
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
                          @tainted stream<json>|stream<Document>|error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
@@ -310,7 +310,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
         return array.toStream();
     } else {
-        return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
     }
 }
 
@@ -321,7 +321,7 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + request - The http:Request object which makes the remote method call
 # + array - Initial recory array which will be filled in every request call
 # + continuationHeader - The continuation header which is use to obtain next pages
-# + return - A stream<record{}>
+# + return - A `stream<record{}>` if successful. Else returns`error`.
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
                         @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
     if (continuationHeader is string) {
@@ -344,7 +344,7 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 # + payload - JSON payload returned from the response
 # + initalArray - Initial recory array which will be filled in every request call
 # + continuationHeader - The continuation header which is use to obtain next pages
-# + return - A stream<record{}> or error
+# + return - A `<record{}>` if successful. Else returns `error`
 function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload, 
                       record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
                       @tainted stream<record{}>|error {
@@ -356,73 +356,73 @@ function createStream(http:Client azureCosmosClient, string path, http:Request r
             json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
             convertToOfferArray(<Offer[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Document[]>) {
         if (payload.Documents is json) {
             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
             convertToDocumentArray(<Document[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Database[]>) {
         if (payload.Databases is json) {
             json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
             convertToDatabaseArray(<Database[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Container[]>) {
         if (payload.DocumentCollections is json) {
             json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
             convertToContainerArray(<Container[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<StoredProcedure[]>) {
         if (payload.StoredProcedures is json) {
             json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
             convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }     
     } else if (arrayType is typedesc<UserDefinedFunction[]>) {
         if (payload.UserDefinedFunctions is json) {
             json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
             convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Trigger[]>) {
         if (payload.Triggers is json) {
             json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
             convertToTriggerArray(<Trigger[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<User[]>) {
         if (payload.Users is json) {
             json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
             convertToUserArray(<User[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<Permission[]>) {
         if (payload.Permissions is json) {
             json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
             convertToPermissionArray(<Permission[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else if (arrayType is typedesc<PartitionKeyRange[]>) {
         if (payload.PartitionKeyRanges is json) {
             json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
             convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     } else {
-        return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+        return error PayloadAccessError(INVALID_RECORD_TYPE_ERROR);
     }
 
     stream<record{}> newStream = (<@untainted>finalArray).toStream();

@@ -25,11 +25,11 @@ public client class DataPlaneClient {
     private string masterOrResourceToken;
     private string host;
 
-    public function init(Configuration azureConfig) {
+    public function init(Configuration azureConfig) returns error? {
         self.baseUrl = azureConfig.baseUrl;
         self.masterOrResourceToken = azureConfig.masterOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.httpClient = checkpanic new(self.baseUrl);
+        self.httpClient = check new(self.baseUrl);
     }
  
     # Create a document.
@@ -294,19 +294,19 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedure
     # + storedProcedureId - ID of the stored procedure to execute
-    # + storedProcedureOptions - Optional. A record of type `StoredProcedureOptions` to specify the additional 
+    # + storedProcedureExecuteOptions - Optional. A record of type `StoredProcedureExecuteOptions` to specify the additional 
     #                            parameters.
     # + return - If successful, returns `json` with the output from the executed function. Else returns `error`. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                           StoredProcedureOptions? storedProcedureOptions = ()) returns 
+                                           StoredProcedureExecuteOptions? storedProcedureExecuteOptions = ()) returns 
                                            @tainted json|error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
         check setMandatoryHeaders(request, self.host, self.masterOrResourceToken, http:HTTP_POST, requestPath);
-        setPartitionKeyHeader(request, storedProcedureOptions?.partitionKey);
+        setPartitionKeyHeader(request, storedProcedureExecuteOptions?.partitionKey);
 
-        string parameters = let var param = storedProcedureOptions?.parameters in param is string[] ? param.toString() : 
+        string parameters = let var param = storedProcedureExecuteOptions?.parameters in param is string[] ? param.toString() : 
             EMPTY_ARRAY_STRING;
         request.setTextPayload(parameters);
 

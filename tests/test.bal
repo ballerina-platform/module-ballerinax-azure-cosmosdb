@@ -22,20 +22,20 @@ import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
 
-Configuration config = {
-    baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
-};
-
-// configurable string baseURL = ?;
-// configurable string masterToken = ?;
-
 // Configuration config = {
-//     baseUrl: baseURL,
-//     masterOrResourceToken: masterToken
+//     baseUrl: os:getEnv("BASE_URL"),
+//     masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 // };
 
-DataPlaneClient azureCosmosClient = new(config);
+configurable string baseURL = ?;
+configurable string masterToken = ?;
+
+Configuration config = {
+    baseUrl: baseURL,
+    masterOrResourceToken: masterToken
+};
+
+DataPlaneClient azureCosmosClient = check new (config);
 ManagementClient azureCosmosManagementClient = new(config);
 
 var randomString = createRandomUUIDWithoutHyphens();
@@ -608,7 +608,7 @@ function testExecuteOneStoredProcedure() {
     log:print("ACTION : executeOneStoredProcedure()");
 
     string[] arrayofparameters = ["Sachi"];
-    StoredProcedureOptions options = {
+    StoredProcedureExecuteOptions options = {
         parameters: arrayofparameters
     };
 

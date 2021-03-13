@@ -67,7 +67,7 @@ class DocumentStream {
             convertToDocumentArray(documents,array);
             return documents;
         } else {
-            return prepareAzureError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     }
 }
