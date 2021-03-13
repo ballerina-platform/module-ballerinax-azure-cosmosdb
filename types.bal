@@ -17,10 +17,10 @@
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account
-# + masterOrResourceToken - The token used to make the request call authorized
+# + primaryKeyOrResourceToken - The token used to make the request call authorized
 public type Configuration record {|
     string baseUrl;
-    string masterOrResourceToken;
+    string primaryKeyOrResourceToken;
 |};
 
 # Represents matadata headers which will return for a delete request.

@@ -53,7 +53,7 @@ class DocumentStream {
         // }
     }
 
-    function fetchDocuments() returns @tainted Document[]|error {
+    function fetchDocuments() returns @tainted Document[]|Error {
         if (self.continuationToken != EMPTY_STRING) {
             self.request.setHeader(CONTINUATION_HEADER, self.continuationToken);
         }

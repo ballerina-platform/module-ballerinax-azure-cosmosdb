@@ -14,37 +14,21 @@
 // specific language governing permissions and limitations
 // under the License. 
 
+# The map which contains extra HTTP status code detail of an error.
+#
+# + status - The HTTP status code of the error  
+public type HttpDetail record {
+    int status; 
+};
+
 # The errors which will come from the Azure API call itself.  
 public type PayloadAccessError distinct error;
+
+# The payload access errors where the error detail contains the HTTP status.  
+public type PayloadAccessErrorWithStatus error<HttpDetail>;
 
 # The errors which occur when providing an invalid value.  
 public type IoError distinct error;
 
-type HttpDetail record {
-    int status; 
-};
-
-type Error PayloadAccessError|IoError|error<HttpDetail>;
-
-
-// isolated function prepareAzureError(string message, error? err = (), int? status = ()) returns error {
-//     error azureError;
-//     if (status is int) {
-//         return error AzureError(message, status = status);
-//     }
-//     if (err is error){
-//         return error AzureError(message, err);
-//     }
-//     return error AzureError(message);
-// }
-
-// isolated function prepareUserError(string message, error? err = (), int? status = ()) returns error {
-//     error userError;
-//     if (status is int) {
-//         return error UserError(message, status = status);
-//     }
-//     if (err is error){
-//         return error UserError(message, err);
-//     }
-//     return error UserError(message);
-// }
+# The union of all types of errors in the connector.  
+public type Error PayloadAccessError|PayloadAccessErrorWithStatus|IoError|error;

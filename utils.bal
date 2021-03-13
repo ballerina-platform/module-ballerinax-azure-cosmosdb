@@ -124,9 +124,9 @@ isolated function prepareUrl(string[] paths) returns string {
 # + token - Master or resource token
 # + httpVerb - The HTTP verb of the request the headers are set to
 # + requestPath - Request path for the request
-# + return - If successful, request will be appended with headers. Else returns `error`.
+# + return - If successful, request will be appended with headers. Else returns `Error`.
 isolated function setMandatoryHeaders(http:Request request, string host, string token, http:HttpOperation httpVerb, 
-                                      string requestPath) returns error? {
+                                      string requestPath) returns Error? {
     request.setHeader(API_VERSION_HEADER, API_VERSION);
     request.setHeader(HOST_HEADER, host);
     request.setHeader(ACCEPT_HEADER, ACCEPT_ALL);
@@ -134,9 +134,9 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     string tokenType = getTokenType(token);
     string dateTime = check getDateTime();
     request.setHeader(DATE_HEADER, dateTime);
-    string signature = "";
+    string signature = EMPTY_STRING;
     if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
-        signature = check generateMasterTokenSignature(httpVerb, getResourceType(requestPath), 
+        signature = check generatePrimaryKeySignature(httpVerb, getResourceType(requestPath), 
             getResourceId(requestPath), token, tokenType, dateTime);
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
         signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
@@ -160,8 +160,8 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 # Set the required headers related to query operations.
 #
 # + request - The http:Request to set the header
-# + return - If successful, request will be appended with headers. Else returns `error`
-isolated function setHeadersForQuery(http:Request request) returns error? {
+# + return - If successful, request will be appended with headers. Else returns `Error`
+isolated function setHeadersForQuery(http:Request request) returns Error? {
     check request.setContentType(CONTENT_TYPE_QUERY);
     request.setHeader(ISQUERY_HEADER, TRUE);
 }
@@ -170,10 +170,10 @@ isolated function setHeadersForQuery(http:Request request) returns error? {
 #
 # + request - The http:Request to set the header
 # + throughputOption - Throughput parameter of type int or json
-# + return - If successful, request will be appended with headers. Else returns `error`.
+# + return - If successful, request will be appended with headers. Else returns `Error`.
 isolated function setThroughputOrAutopilotHeader(http:Request request, 
                                                 (int|record{|int maxThroughput;|})? throughputOption = ()) 
-                                                returns error? {
+                                                returns Error? {
     if (throughputOption is int) {
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
@@ -219,8 +219,8 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 #
 # + request - The http:Request to set the header
 # + validityPeriodInSeconds - An integer specifying the Time To Live value for a permission token
-# + return - If successful, request will be appended with headers. Else returns `error`.
-isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns error? {
+# + return - If successful, request will be appended with headers. Else returns `Error`.
+isolated function setExpiryHeader(http:Request request, int validityPeriodInSeconds) returns Error? {
     if (validityPeriodInSeconds >= MIN_TIME_TO_LIVE_IN_SECONDS && validityPeriodInSeconds 
         <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
@@ -232,8 +232,8 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # Get the current time(GMT) in the specific format.
 #
 # + return - If successful, returns `string` representing UTC date and time 
-#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns `error`.
-isolated function getDateTime() returns string|error {
+#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns `Error`.
+isolated function getDateTime() returns string|Error {
     time:Time currentTime = time:currentTime();
     time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
     return check time:format(timeWithZone, TIME_ZONE_FORMAT);
@@ -247,9 +247,9 @@ isolated function getDateTime() returns string|error {
 # + token - master or resource token
 # + tokenType - denotes the type of token: master or resource
 # + date - current GMT date and time
-# + return - If successful, returns `string` which is the hashed token signature. Else returns `error`.
-isolated function generateMasterTokenSignature(string verb, string resourceType, string resourceId, string token, 
-                                               string tokenType, string date) returns string|error {
+# + return - If successful, returns `string` which is the hashed token signature. Else returns `Error`.
+isolated function generatePrimaryKeySignature(string verb, string resourceType, string resourceId, string token, 
+                                               string tokenType, string date) returns string|Error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
         + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
@@ -262,21 +262,21 @@ isolated function generateMasterTokenSignature(string verb, string resourceType,
 # Handle success or error responses to requests and extract the JSON payload.
 #
 # + httpResponse - The http:Response returned from an HTTP request
-# + return - If successful, returns `json`. Else returns `error`. 
-isolated function handleResponse(http:Response httpResponse) returns @tainted json|error {
+# + return - If successful, returns `json`. Else returns `Error`. 
+isolated function handleResponse(http:Response httpResponse) returns @tainted json|Error {
     json jsonResponse = check httpResponse.getJsonPayload();
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_CREATED) {
         return jsonResponse;
     }
     string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
-    return error(message, status = httpResponse.statusCode);
+    return error PayloadAccessErrorWithStatus(message, status = httpResponse.statusCode);
 }
 
 # Handle success or error responses to requests which does not need to return a payload.
 # 
 # + httpResponse - The http:Response returned from an HTTP request
-# + return - If successful, returns `nil`. Else returns `error`. 
-isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @tainted error? {
+# + return - If successful, returns `nil`. Else returns `Error`. 
+isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @tainted Error? {
     if (httpResponse.statusCode is http:STATUS_OK|http:STATUS_NO_CONTENT) {
         //If status is 200 the resource is replaced, 201 resource is created, request is successful returns true. 
         // Else Returns error.
@@ -284,7 +284,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
     } else {
         json jsonResponse = check httpResponse.getJsonPayload();
         string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
-        return error(message, status = httpResponse.statusCode);
+        return error PayloadAccessErrorWithStatus(message, status = httpResponse.statusCode);
     }
 }
 
@@ -293,9 +293,9 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 # + azureCosmosClient - Client which calls the azure endpoint
 # + path - Path to which API call is made
 # + request - HTTP request object 
-# + return - A `stream<json> or stream<Document>`. Else returns `error`
+# + return - A `stream<json> or stream<Document>`. Else returns `Error`
 function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
-                         @tainted stream<json>|stream<Document>|error {
+                         @tainted stream<json>|stream<Document>|Error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
     string newContinuationHeader = let var header = 
@@ -321,9 +321,9 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + request - The http:Request object which makes the remote method call
 # + array - Initial recory array which will be filled in every request call
 # + continuationHeader - The continuation header which is use to obtain next pages
-# + return - A `stream<record{}>` if successful. Else returns`error`.
+# + return - A `stream<record{}>` if successful. Else returns`Error`.
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
-                        @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|error {
+                        @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|Error {
     if (continuationHeader is string) {
         request.setHeader(CONTINUATION_HEADER, continuationHeader);
     }
@@ -344,10 +344,10 @@ function retrieveStream(http:Client azureCosmosClient, string path, http:Request
 # + payload - JSON payload returned from the response
 # + initalArray - Initial recory array which will be filled in every request call
 # + continuationHeader - The continuation header which is use to obtain next pages
-# + return - A `<record{}>` if successful. Else returns `error`
+# + return - A `<record{}>` if successful. Else returns `Error`
 function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload, 
                       record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
-                      @tainted stream<record{}>|error {
+                      @tainted stream<record{}>|Error {
     var arrayType = typeof initalArray;
     record{}[] finalArray = initalArray;
 
