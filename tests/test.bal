@@ -22,9 +22,17 @@ import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
 
+// Configuration config = {
+//     baseUrl: os:getEnv("BASE_URL"),
+//     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+// };
+
+configurable string baseURL = ?;
+configurable string primaryKey = ?;
+
 Configuration config = {
-    baseUrl: os:getEnv("BASE_URL"),
-    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    baseUrl: baseURL,
+    primaryKeyOrResourceToken: primaryKey
 };
 
 DataPlaneClient azureCosmosClient = check new (config);
