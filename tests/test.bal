@@ -22,17 +22,12 @@ import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
 
-// Configuration config = {
-//     baseUrl: os:getEnv("BASE_URL"),
-//     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
-// };
-
 configurable string baseURL = ?;
 configurable string primaryKey = ?;
 
 Configuration config = {
-    baseUrl: baseURL,
-    primaryKeyOrResourceToken: primaryKey
+    baseUrl: os:getEnv("BASE_URL"),
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 DataPlaneClient azureCosmosClient = check new (config);
@@ -434,7 +429,7 @@ function testCreateDocumentWithRequestOptions() {
 function testGetDocumentList() {
     log:print("ACTION : getDocumentList()");
 
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId, 1);
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId, maxItemCount = 1);
     if (result is stream<Document>) {
         test:assertTrue(true);
     } else {
@@ -455,7 +450,7 @@ function testGetDocumentListWithRequestOptions() {
         sessionToken: "tag",
         partitionKeyRangeId: "0"
     };
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId, 10, options);
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
     if (result is stream<Document>) {
         test:assertTrue(true);
     } else {
@@ -508,10 +503,10 @@ function testGetOneDocumentWithRequestOptions() {
 function testQueryDocuments() {
     log:print("ACTION : queryDocuments()");
 
-    ResourceQueryOptions options = {partitionKey : 1234, enableCrossPartition: false};
+    ResourceQueryOptions options = {partitionKey : 1234, enableCrossPartition: false, maxItemCount: 10};
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
-    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options, 10);
+    var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
     if (result is Error) {
         test:assertFail(msg = result.message());
     }
@@ -1063,7 +1058,7 @@ string? resourceId = "";
 function testListOffers() {
     log:print("ACTION : listOffers()");
 
-    var result = azureCosmosManagementClient->listOffers(3);
+    var result = azureCosmosManagementClient->listOffers(maxItemCount = 3);
     if (result is stream<Offer>) {
         var offer = result.next();
         offerId = <@untainted>offer?.value?.id;
@@ -1159,7 +1154,7 @@ function testQueryOffer() {
     log:print("ACTION : queryOffer()");
     string offerQuery = 
         string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
-    var result = azureCosmosManagementClient->queryOffer(offerQuery, 20);
+    var result = azureCosmosManagementClient->queryOffer(offerQuery, maxItemCount = 20);
     if (result is Error) {
         test:assertFail(msg = result.message());
     }

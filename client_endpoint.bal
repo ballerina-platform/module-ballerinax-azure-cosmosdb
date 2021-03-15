@@ -38,13 +38,12 @@ public client class DataPlaneClient {
     # + containerId - ID of the container where, document is created
     # + document - A JSON document to be saved in the database
     # + partitionKey - The specific value related to the partition key field of the container 
-    # + documentCreateOptions - Optional. The `DocumentCreateOptions` which can be used to add additional 
-    #                           capabilities to the request.
+    # + documentCreateOptions - The `DocumentCreateOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `Document`. Else returns `Error`.
     remote function createDocument(string databaseId, string containerId, record {|string id; json...;|} document, 
                                    int|float|decimal|string partitionKey, 
-                                   DocumentCreateOptions? documentCreateOptions = ()) returns 
-                                   @tainted Document|Error { 
+                                   *DocumentCreateOptions documentCreateOptions) returns @tainted Document|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
@@ -64,14 +63,13 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contains the existing document
     # + document - A JSON document which will replace the existing document
     # + partitionKey - The specific value related to the partition key field of the container 
-    # + documentReplaceOptions - Optional. The `DocumentReplaceOptions` which can be used to add additional capabilities 
-    #                            to the request.
+    # + documentReplaceOptions - The `DocumentReplaceOptions` which can be used to add additional capabilities to the 
+    #                            request
     # + return - If successful, returns a `Document`. Else returns `Error`.
     remote function replaceDocument(string databaseId, string containerId, 
                                     @tainted record {|string id; json...;|} document, 
                                     int|float|decimal|string partitionKey, 
-                                    DocumentReplaceOptions? documentReplaceOptions = ()) 
-                                    returns @tainted Document|Error {
+                                    *DocumentReplaceOptions documentReplaceOptions) returns @tainted Document|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, document.id]);
@@ -91,13 +89,11 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contains the document
     # + documentId - Id of the document 
     # + partitionKey - The value of partition key field of the container
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `Document`. Else returns `Error`.
     remote function getDocument(string databaseId, string containerId, string documentId, 
                                 int|float|decimal|string partitionKey, 
-                                ResourceReadOptions? resourceReadOptions = ()) returns 
-                                @tainted Document|Error { 
+                                *ResourceReadOptions resourceReadOptions) returns @tainted Document|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -114,19 +110,16 @@ public client class DataPlaneClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the document
-    # + maxItemCount - Optional. Maximum number of `Document` records in one returning page.
-    # + documentListOptions - Optional. The `DocumentListOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + documentListOptions - The `DocumentListOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `stream<Document>`. Else, returns `Error`. 
-    remote function getDocumentList(string databaseId, string containerId, int? maxItemCount = (), 
-                                    DocumentListOptions? documentListOptions = ()) 
+    remote function getDocumentList(string databaseId, string containerId, *DocumentListOptions documentListOptions)
                                     returns @tainted stream<Document>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (documentListOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, documentListOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, documentListOptions);
 
@@ -140,13 +133,12 @@ public client class DataPlaneClient {
     # + containerId - ID of the container which contains the document
     # + documentId - ID of the document
     # + partitionKey - The specific value related to the partition key field of the container
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities 
-    #                           to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     remote function deleteDocument(string databaseId, string containerId, string documentId, 
                                    int|float|decimal|string partitionKey, 
-                                   ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
-                                   @tainted DeleteResponse|Error { 
+                                   *ResourceDeleteOptions resourceDeleteOptions) returns @tainted DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -164,22 +156,19 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to query
     # + sqlQuery - A string containing the SQL query
-    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to 
-    #                          the request.    
-    # + maxItemCount - Optional. Maximum number of documents in one returning page.
+    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the 
+    #                          request
     # + return - If successful, returns a `stream<Document>`. Else returns `Error`.
     remote function queryDocuments(string databaseId, string containerId, string sqlQuery, 
-                                   ResourceQueryOptions resourceQueryOptions = {}, 
-                                   int? maxItemCount = ()) returns 
-                                   @tainted stream<Document>|Error { 
+                                   *ResourceQueryOptions resourceQueryOptions) returns @tainted stream<Document>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, resourceQueryOptions?.partitionKey);
         setOptionalHeaders(request, resourceQueryOptions);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceQueryOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceQueryOptions?.maxItemCount.toString());
         }
         json payload = {
             query: sqlQuery,
@@ -246,20 +235,18 @@ public client class DataPlaneClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedures
-    # + maxItemCount - Optional. Maximum number of stored procedure records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `stream<StoredProcedure>`. Else returns `Error`. 
-    remote function listStoredProcedures(string databaseId, string containerId, int? maxItemCount = (), 
-                                         ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function listStoredProcedures(string databaseId, string containerId, 
+                                         *ResourceReadOptions resourceReadOptions) returns 
                                          @tainted stream<StoredProcedure>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES]);
         
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceReadOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceReadOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -272,11 +259,11 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedure
     # + storedProcedureId - ID of the stored procedure to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
-    #                           capabilities to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     remote function deleteStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                          ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                          *ResourceDeleteOptions resourceDeleteOptions) returns 
                                           @tainted DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -294,11 +281,11 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedure
     # + storedProcedureId - ID of the stored procedure to execute
-    # + storedProcedureExecuteOptions - Optional. A record of type `StoredProcedureExecuteOptions` to specify the additional 
-    #                            parameters.
+    # + storedProcedureExecuteOptions - A record of type `StoredProcedureExecuteOptions` to specify the additional 
+    #                            parameters
     # + return - If successful, returns `json` with the output from the executed function. Else returns `Error`. 
     remote function executeStoredProcedure(string databaseId, string containerId, string storedProcedureId, 
-                                           StoredProcedureExecuteOptions? storedProcedureExecuteOptions = ()) returns 
+                                           *StoredProcedureExecuteOptions storedProcedureExecuteOptions) returns 
                                            @tainted json|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -306,9 +293,7 @@ public client class DataPlaneClient {
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, storedProcedureExecuteOptions?.partitionKey);
 
-        string parameters = let var param = storedProcedureExecuteOptions?.parameters in param is string[] ? param.toString() : 
-            EMPTY_ARRAY_STRING;
-        request.setTextPayload(parameters);
+        request.setTextPayload(storedProcedureExecuteOptions?.parameters.toString());
 
         http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
         return check handleResponse(response);

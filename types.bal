@@ -244,11 +244,13 @@ public type DocumentReplaceOptions record {|
 # + sessionToken - Echo the latest read value of `session token header` to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
 # + partitionKeyRangeId - The partition key range ID for reading data
+# + maxItemCount - The maximum number of results which are included in a page
 public type DocumentListOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
     ChangeFeedOption changeFeedOption?;
     string partitionKeyRangeId?;
+    int maxItemCount?;
 |};
 
 # The options which can be passed for execution of stored procedures.
@@ -266,9 +268,11 @@ public type StoredProcedureExecuteOptions record {|
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency
+# + maxItemCount - The maximum number of results which are included in a page
 public type ResourceReadOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
+    int maxItemCount?;
 |};
 
 # Represent the optional parameters which can be passed to the function when querying containers.
@@ -279,11 +283,13 @@ public type ResourceReadOptions record {|
 # + enableCrossPartition - Boolean value specifying whether to allow cross partitioning. Default is `true` where, 
 #                          it allows to query across all logical partitions.
 # + partitionKey - Optional. The value of partition key field of the container.
+# + maxItemCount - The maximum number of results which are included in a page
 public type ResourceQueryOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
     boolean enableCrossPartition = true;
     (int|float|decimal|string)? partitionKey = ();
+    int maxItemCount?;
 |};
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.

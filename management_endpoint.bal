@@ -77,10 +77,9 @@ public client class ManagementClient {
     # Get information of a given database.
     # 
     # + databaseId - ID of the database 
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `Database`. Else returns `Error`.
-    remote function getDatabase(string databaseId, ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function getDatabase(string databaseId, *ResourceReadOptions resourceReadOptions) returns 
                                 @tainted Database|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
@@ -112,10 +111,10 @@ public client class ManagementClient {
     # Delete a given database.
     # 
     # + databaseId - ID of the database to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities 
-    #                           to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
-    remote function deleteDatabase(string databaseId, ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+    remote function deleteDatabase(string databaseId, *ResourceDeleteOptions resourceDeleteOptions) returns 
                                    @tainted DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
@@ -188,10 +187,9 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
-    #                         request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `Container`. Else returns `Error`.
-    remote function getContainer(string databaseId, string containerId, ResourceReadOptions? resourceReadOptions = ()) 
+    remote function getContainer(string databaseId, string containerId, *ResourceReadOptions resourceReadOptions) 
                                  returns @tainted Container|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
@@ -224,11 +222,11 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional capabilities to 
-    #                           the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     remote function deleteContainer(string databaseId, string containerId, 
-                                    ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                    *ResourceDeleteOptions resourceDeleteOptions) returns 
                                     @tainted DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
@@ -311,19 +309,17 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined functions
-    # + maxItemCount - Optional. Maximum number of `UserDefinedFunction` records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `stream<UserDefinedFunction>`. Else returns `Error`. 
-    remote function listUserDefinedFunctions(string databaseId, string containerId, int? maxItemCount = (), 
-                                             ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function listUserDefinedFunctions(string databaseId, string containerId, 
+                                            *ResourceReadOptions resourceReadOptions) returns 
                                              @tainted stream<UserDefinedFunction>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_UDF]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceReadOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceReadOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -336,11 +332,11 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined function
     # + userDefinedFunctionid - Id of UDF to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
-    #                           capabilities to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     remote function deleteUserDefinedFunction(string databaseId, string containerId, string userDefinedFunctionid, 
-                                              ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                              *ResourceDeleteOptions resourceDeleteOptions) returns 
                                               @tainted DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -419,18 +415,16 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the triggers
-    # + maxItemCount - Optional. Maximum number of `Trigger` records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to the 
-    #                         request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to therequest
     # + return - If successful, returns a `stream<Trigger>`. Else returns `Error`. 
-    remote function listTriggers(string databaseId, string containerId, int? maxItemCount = (), 
-                                 ResourceReadOptions? resourceReadOptions = ()) returns @tainted stream<Trigger>|Error { 
+    remote function listTriggers(string databaseId, string containerId, *ResourceReadOptions resourceReadOptions) 
+                                 returns @tainted stream<Trigger>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_TRIGGER]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceReadOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceReadOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -443,11 +437,11 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the trigger
     # + triggerId - ID of the trigger to be deleted
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
-    #                           capabilities to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     remote function deleteTrigger(string databaseId, string containerId, string triggerId, 
-                                  ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                  *ResourceDeleteOptions resourceDeleteOptions) returns 
                                   @tainted DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -500,10 +494,9 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which, the user belongs to
     # + userId - ID of user
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
-    #                         to the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `User`. Else returns `Error`.
-    remote function getUser(string databaseId, string userId, ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function getUser(string databaseId, string userId, *ResourceReadOptions resourceReadOptions) returns 
                             @tainted User|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
@@ -518,17 +511,16 @@ public client class ManagementClient {
     # List users of a specific database.
     # 
     # + databaseId - ID of the database to which, the user belongs to
-    # + maxItemCount - Optional. Maximum number of user records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
     # + return - If successful, returns a `stream<User>`. Else returns `Error`.
-    remote function listUsers(string databaseId, int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) 
+    remote function listUsers(string databaseId, *ResourceReadOptions resourceReadOptions) 
                               returns @tainted stream<User>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceReadOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceReadOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -540,10 +532,10 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which, the user belongs to
     # + userId - ID of the user to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
-    #                           capabilities to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional 
+    #                           capabilities to the request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
-    remote function deleteUser(string databaseId, string userId, ResourceDeleteOptions? resourceDeleteOptions = ()) 
+    remote function deleteUser(string databaseId, string userId, *ResourceDeleteOptions resourceDeleteOptions) 
                                returns @tainted DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
@@ -624,11 +616,10 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permission is granted
     # + permissionId - ID of the permission
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
-    #                         to the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `Permission`. Else returns `Error`.
     remote function getPermission(string databaseId, string userId, string permissionId, 
-                                  ResourceReadOptions? resourceReadOptions = ()) returns @tainted Permission|Error { 
+                                  *ResourceReadOptions resourceReadOptions) returns @tainted Permission|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION, permissionId]);
@@ -644,19 +635,16 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permissions are granted
-    # + maxItemCount - Optional. Maximum number of `Permission` records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `stream<Permission>`. Else returns `Error`.
-    remote function listPermissions(string databaseId, string userId, int? maxItemCount = (), 
-                                    ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function listPermissions(string databaseId, string userId, *ResourceReadOptions resourceReadOptions) returns 
                                     @tainted stream<Permission>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceReadOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceReadOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -669,11 +657,11 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permission is granted
     # + permissionId - ID of the permission to delete
-    # + resourceDeleteOptions - Optional. The `ResourceDeleteOptions` which can be used to add additional 
-    #                           capabilities to the request.
+    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
+    #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     remote function deletePermission(string databaseId, string userId, string permissionId, 
-                                     ResourceDeleteOptions? resourceDeleteOptions = ()) returns 
+                                     *ResourceDeleteOptions resourceDeleteOptions) returns 
                                      @tainted DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
@@ -715,10 +703,9 @@ public client class ManagementClient {
     # Get information about an offer.
     # 
     # + offerId - The ID of the offer
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities 
-    #                         to the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `Offer`. Else returns `Error`.
-    remote function getOffer(string offerId, ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function getOffer(string offerId, *ResourceReadOptions resourceReadOptions) returns 
                              @tainted Offer|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
@@ -734,17 +721,15 @@ public client class ManagementClient {
     # represented as an offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined
     # performance levels and pre-defined performance levels. 
     # 
-    # + maxItemCount - Optional. Maximum number of offer records in one returning page.
-    # + resourceReadOptions - Optional. The `ResourceReadOptions` which can be used to add additional capabilities to 
-    #                         the request.
+    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `stream<Offer>` Else returns `Error`.
-    remote function listOffers(int? maxItemCount = (), ResourceReadOptions? resourceReadOptions = ()) returns 
+    remote function listOffers(*ResourceReadOptions resourceReadOptions) returns 
                                @tainted stream<Offer>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceReadOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceReadOptions?.maxItemCount.toString());
         }
         setOptionalHeaders(request, resourceReadOptions);
 
@@ -755,18 +740,17 @@ public client class ManagementClient {
     # Perform queries on offer resources.
     # 
     # + sqlQuery - A string value containing SQL query
-    # + maxItemCount - Optional. Maximum number of offers in one returning page.
-    # + resourceQueryOptions - Optional. The `ResourceQueryOptions` which can be used to add additional capabilities to 
-    #                          the request.
+    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the 
+    #                          request
     # + return - If successful, returns a `stream<json>`. Else returns `Error`.
-    remote function queryOffer(string sqlQuery, int? maxItemCount = (), ResourceQueryOptions? resourceQueryOptions = ()) 
+    remote function queryOffer(string sqlQuery, *ResourceQueryOptions resourceQueryOptions) 
                                returns @tainted stream<json>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
         setOptionalHeaders(request, resourceQueryOptions);
-        if (maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, maxItemCount.toString());
+        if (resourceQueryOptions?.maxItemCount is int) {
+            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceQueryOptions?.maxItemCount.toString());
         }
 
         request.setJsonPayload({query: sqlQuery});
