@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/crypto;
-import ballerina/encoding;
+import ballerina/url;
 import ballerina/http;
 import ballerina/lang.array;
 import ballerina/regex;
@@ -139,7 +139,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
         signature = check generatePrimaryKeySignature(httpVerb, getResourceType(requestPath), 
             getResourceId(requestPath), token, tokenType, dateTime);
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
-        signature = check encoding:encodeUriComponent(token, UTF8_URL_ENCODING);
+        signature = check url:encode(token, UTF8_URL_ENCODING);
     } else {
         return error IoError(NULL_RESOURCE_TYPE_ERROR);
     }
@@ -234,8 +234,8 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # + return - If successful, returns `string` representing UTC date and time 
 #            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns `Error`.
 isolated function getDateTime() returns string|Error {
-    time:Time currentTime = time:currentTime();
-    time:Time timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
+    time:Utc currentTime = time:utcNow(); 
+    time:Utc timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
     return check time:format(timeWithZone, TIME_ZONE_FORMAT);
 }
 
@@ -256,7 +256,7 @@ isolated function generatePrimaryKeySignature(string verb, string resourceType, 
     byte[] digest = check crypto:hmacSha256(payload.toBytes(), decodedArray);
     string signature = digest.toBase64();
     string authorizationString = string `type=${tokenType}&ver=${TOKEN_VERSION}&sig=${signature}`;
-    return check encoding:encodeUriComponent(authorizationString, "UTF-8");
+    return check url:encode(authorizationString, "UTF-8");
 }
 
 # Handle success or error responses to requests and extract the JSON payload.

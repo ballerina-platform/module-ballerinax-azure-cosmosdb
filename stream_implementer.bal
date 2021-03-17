@@ -42,22 +42,22 @@ class DocumentStream {
         }
         // This code block is for retrieving the next batch of records when the initial batch is finished. It has some
         // error.
-        // if (self.continuationToken != EMPTY_STRING) {
-        //     self.index = 0;
-        //     // Fetch documents again when the continuation token is provided. But this function has a remote method 
-        //     // call So, it is not isolated.
-        //     self.currentEntries = check self.fetchDocuments(); /// Here is the problem
-        //     record {| Document value; |} document = {value: self.currentEntries[self.index]};  
-        //     self.index += 1;
-        //     return document;
-        // }
+        if (self.continuationToken != EMPTY_STRING) {
+            self.index = 0;
+            // Fetch documents again when the continuation token is provided. But this function has a remote method 
+            // call So, it is not isolated.
+            self.currentEntries = check self.fetchDocuments(); /// Here is the problem
+            record {| Document value; |} document = {value: self.currentEntries[self.index]};  
+            self.index += 1;
+            return document;
+        }
     }
 
     function fetchDocuments() returns @tainted Document[]|Error {
         if (self.continuationToken != EMPTY_STRING) {
             self.request.setHeader(CONTINUATION_HEADER, self.continuationToken);
         }
-        http:Response response = <http:Response> check self.httpClient->get(self.path, self.request);
+        http:Response response = check self.httpClient->get(self.path, self.request);
         self.continuationToken = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? header : 
             EMPTY_STRING;
         json payload = check handleResponse(response);

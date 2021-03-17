@@ -58,7 +58,7 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, documentCreateOptions);
         request.setJsonPayload(document);
 
-        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
+        http:Response response = check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -88,7 +88,7 @@ public client class DataPlaneClient {
         setOptionalHeaders(request, documentReplaceOptions);
         request.setJsonPayload(<@untainted>document);
         
-        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
+        http:Response response = check self.httpClient->put(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return mapJsonToDocumentType(jsonResponse); 
     }
@@ -115,7 +115,7 @@ public client class DataPlaneClient {
         setPartitionKeyHeader(request, partitionKey);
         setOptionalHeaders(request, resourceReadOptions);
 
-        http:Response response = <http:Response> check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return mapJsonToDocumentType(jsonResponse);
     }
@@ -169,7 +169,7 @@ public client class DataPlaneClient {
         setPartitionKeyHeader(request, partitionKey);
         setOptionalHeaders(request, resourceDeleteOptions);
 
-        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        http:Response response = check self.httpClient->delete(requestPath, request);
         check handleHeaderOnlyResponse(response);
         return mapHeadersToResultType(response); 
     }
@@ -233,7 +233,7 @@ public client class DataPlaneClient {
         };
         request.setJsonPayload(payload); 
 
-        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
+        http:Response response = check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return mapJsonToStoredProcedure(jsonResponse);
     }
@@ -262,7 +262,7 @@ public client class DataPlaneClient {
         };
         request.setJsonPayload(<@untainted>payload);
 
-        http:Response response = <http:Response> check self.httpClient->put(requestPath, request);
+        http:Response response = check self.httpClient->put(requestPath, request);
         json jsonResponse = check handleResponse(response);
         return mapJsonToStoredProcedure(jsonResponse);
     }
@@ -315,7 +315,7 @@ public client class DataPlaneClient {
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_DELETE, requestPath);
         setOptionalHeaders(request, resourceDeleteOptions);
 
-        http:Response response = <http:Response> check self.httpClient->delete(requestPath, request);
+        http:Response response = check self.httpClient->delete(requestPath, request);
         check handleHeaderOnlyResponse(response);
         return mapHeadersToResultType(response); 
     }
@@ -343,7 +343,7 @@ public client class DataPlaneClient {
 
         request.setTextPayload(storedProcedureExecuteOptions?.parameters.toString());
 
-        http:Response response = <http:Response> check self.httpClient->post(requestPath, request);
+        http:Response response = check self.httpClient->post(requestPath, request);
         return check handleResponse(response);
     }
 }
