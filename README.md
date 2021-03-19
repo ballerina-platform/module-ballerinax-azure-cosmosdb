@@ -21,7 +21,7 @@ maintaining flexible scalability. Cosmos DB is a super-set of Azure Document DB 
 - Automatic updates and patching.
 - Capacity management with serverless, automatic scaling options. 
 
-![connecting to Cosmos DB](resources/multi-model.png)
+![connecting to Cosmos DB](docs/images/multi-model.png)
 
 # Connector Overview
 Azure Cosmos DB Ballerina connector is a connector for connecting to Azure Cosmos DB via Ballerina language easily. 
@@ -37,7 +37,7 @@ experience in querying, setting up a database, and managing it because most/majo
 familiarity with the use of SQL. For version 0.1.0 of this connector, version 2018-12-31 of Azure Cosmos DB Core REST 
 API is used.
 
-![connecting to Cosmos DB](resources/connector.gif)
+![connecting to Cosmos DB](docs/images/connector.gif)
 
 # Prerequisites
 - Azure Account to access Azure portal. <br/>
@@ -77,7 +77,7 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
     When the Azure Cosmos DB account is created, it automatically creates the Connection Strings and URI. Using the 
     portal you can obtain them easily. <br/>
     
-        ![Obtaining Credentials](resources/cred.png)
+        ![Obtaining Credentials](docs/images/cred.png)
 
 - Java 11 installed. <br/>
     Java Development Kit (JDK) with version 11 is required.
