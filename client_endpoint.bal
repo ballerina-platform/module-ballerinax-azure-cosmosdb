@@ -108,14 +108,13 @@ public client class DataPlaneClient {
                                 @display {label: "Partition key"} int|float|decimal|string partitionKey, 
                                 @display {label: "Optional header parameters"} *ResourceReadOptions resourceReadOptions) 
                                 returns @tainted @display {label: "Document"} Document|Error { 
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
-        check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        setPartitionKeyHeader(request, partitionKey);
-        setOptionalHeaders(request, resourceReadOptions);
+        map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
+        headerMap = setGetPartitionKeyHeader(headerMap, partitionKey);
+        headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        http:Response response = check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, headerMap);
         json jsonResponse = check handleResponse(response);
         return mapJsonToDocumentType(jsonResponse);
     }

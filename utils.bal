@@ -146,6 +146,31 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     request.setHeader(http:AUTH_HEADER, signature);
 }
 
+isolated function setMandatoryGetHeaders(string host, string token, http:HttpOperation httpVerb, 
+                                         string requestPath) returns map<string>|Error {
+    string tokenType = getTokenType(token);
+    string dateTime = check getDateTime();
+    string signature = EMPTY_STRING;
+    if (tokenType.toLowerAscii() == TOKEN_TYPE_MASTER) {
+        signature = check generatePrimaryKeySignature(httpVerb, getResourceType(requestPath), 
+            getResourceId(requestPath), token, tokenType, dateTime);
+    } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
+        signature = check url:encode(token, UTF8_URL_ENCODING);
+    } else {
+        return error IoError(NULL_RESOURCE_TYPE_ERROR);
+    }
+
+    return {
+        [API_VERSION_HEADER] : API_VERSION,
+        [HOST_HEADER] : host,
+        [ACCEPT_HEADER] : ACCEPT_ALL,
+        [http:CONNECTION] : CONNECTION_KEEP_ALIVE,
+        [DATE_HEADER] : dateTime,
+        [http:AUTH_HEADER] : signature
+    };
+
+}
+
 # Set the optional header related to partitionkey value.
 #
 # + request - The http:Request to set the header
@@ -155,6 +180,15 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
         request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKeyValue.toString()}]`);
     }
     return;
+}
+
+
+isolated function setGetPartitionKeyHeader(map<string> headerMap, (int|float|decimal|string)? partitionKeyValue) returns 
+                                           map<string> {
+    if (partitionKeyValue is (int|float|decimal|string)) {
+        headerMap[PARTITION_KEY_HEADER] = string `[${partitionKeyValue.toString()}]`;
+    }
+    return headerMap;
 }
 
 # Set the required headers related to query operations.
@@ -215,6 +249,31 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
     }
 }
 
+isolated function setOptionalGetHeaders(map<string> headerMap, Options? requestOptions) returns map<string> {
+    if (requestOptions?.indexingDirective is IndexingDirective) {
+        headerMap[INDEXING_DIRECTIVE_HEADER] =  <string>requestOptions?.indexingDirective;
+    }
+    if (requestOptions?.consistancyLevel is ConsistencyLevel) {
+        headerMap[CONSISTANCY_LEVEL_HEADER] =  <string>requestOptions?.consistancyLevel;
+    }
+    if (requestOptions?.sessionToken is string) {
+        headerMap[SESSION_TOKEN_HEADER] =  <string>requestOptions?.sessionToken;
+    }
+    if (requestOptions?.changeFeedOption is ChangeFeedOption) {
+        headerMap[A_IM_HEADER] =  <string>requestOptions?.changeFeedOption;
+    }
+    if (requestOptions?.partitionKeyRangeId is string) {
+        headerMap[PARTITIONKEY_RANGE_HEADER] =  <string>requestOptions?.partitionKeyRangeId;
+    }
+    if (requestOptions?.enableCrossPartition == true) {
+        headerMap[IS_ENABLE_CROSS_PARTITION_HEADER] = TRUE;
+    }
+    if (requestOptions?.isUpsertRequest == true) {
+        headerMap[IS_UPSERT_HEADER] = TRUE;
+    }
+    return headerMap;
+}
+
 # Set the optional header specifying Time To Live for token.
 #
 # + request - The http:Request to set the header
@@ -249,7 +308,7 @@ isolated function getDateTime() returns string|Error {
 # + date - current GMT date and time
 # + return - If successful, returns `string` which is the hashed token signature. Else returns `Error`.
 isolated function generatePrimaryKeySignature(string verb, string resourceType, string resourceId, string token, 
-                                               string tokenType, string date) returns string|Error {
+                                              string tokenType, string date) returns string|Error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
         + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 
@@ -324,11 +383,11 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # + return - A `stream<record{}>` if successful. Else returns`Error`.
 function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
                         @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|Error {
-    if (continuationHeader is string) {
-        request.setHeader(CONTINUATION_HEADER, continuationHeader);
+    map<string> headerMap = {};
+    if (continuationHeader is string && continuationHeader != EMPTY_STRING) {
+        headerMap[CONTINUATION_HEADER] = continuationHeader;
     }
-
-    http:Response response = <http:Response> check azureCosmosClient->get(path, request);
+    http:Response response = check azureCosmosClient->get(path, headerMap);
     string newContinuationHeader = let var header = 
         response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
 

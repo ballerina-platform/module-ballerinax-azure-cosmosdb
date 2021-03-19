@@ -89,12 +89,12 @@ public client class ManagementClient {
     remote function getDatabase(@display {label: "Database id"} string databaseId, 
                                 @display {label: "Optional header parameters"} *ResourceReadOptions resourceReadOptions) 
                                 returns @tainted @display {label: "Database"} Database|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
-        check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, resourceReadOptions);
+        map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
+            requestPath);
+        headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        http:Response response = check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, headerMap);
         json jsonResponse = check handleResponse(response);
         return mapJsonToDatabaseType(jsonResponse);
     }
@@ -216,12 +216,12 @@ public client class ManagementClient {
                                  @display {label: "Container id"} string containerId, 
                                  @display {label: "Optional header parameters"} *ResourceReadOptions resourceReadOptions) 
                                  returns @tainted @display {label: "Container"} Container|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
-        check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, resourceReadOptions);
+        map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
+            requestPath);
+        headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        http:Response response = check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, headerMap);
         json jsonResponse = check handleResponse(response);
         return mapJsonToContainerType(jsonResponse);
     }
@@ -577,12 +577,12 @@ public client class ManagementClient {
                             @display {label: "User id"} string userId, 
                             @display {label: "Optional header parameters"} *ResourceReadOptions resourceReadOptions) 
                             returns @tainted @display {label: "User"} User|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
-        check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, resourceReadOptions);
+        map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
+            requestPath);
+        headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        http:Response response = check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, headerMap);
         json jsonResponse = check handleResponse(response);
         return mapJsonToUserType(jsonResponse);
     }
@@ -721,13 +721,13 @@ public client class ManagementClient {
                                   @display {label: "Permission id"} string permissionId, 
                                   @display {label: "Optional header parameters"} *ResourceReadOptions resourceReadOptions) 
                                   returns @tainted @display {label: "Permission"} Permission|Error { 
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION, permissionId]);
-        check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, resourceReadOptions);
+        map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
+            requestPath);
+        headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        http:Response response = check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, headerMap);
         json jsonResponse = check handleResponse(response);
         return mapJsonToPermissionType(jsonResponse);
     }
@@ -820,12 +820,12 @@ public client class ManagementClient {
     remote function getOffer(@display {label: "Offer id"} string offerId, 
                              @display {label: "Optional header parameters"} *ResourceReadOptions resourceReadOptions) 
                              returns @tainted @display {label: "Offer"} Offer|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
-        check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, requestPath);
-        setOptionalHeaders(request, resourceReadOptions);
+        map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
+            requestPath);
+        headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        http:Response response = check self.httpClient->get(requestPath, request);
+        http:Response response = check self.httpClient->get(requestPath, headerMap);
         json jsonResponse = check handleResponse(response);
         return mapJsonToOfferType(jsonResponse);
     }

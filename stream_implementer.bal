@@ -24,12 +24,10 @@ class DocumentStream {
     int index = 0;
     private final http:Client httpClient;
     private final string path;
-    private final http:Request request;
     
-    function init(http:Client httpClient, string path, http:Request request) returns @tainted error? {
+    function init(http:Client httpClient, string path) returns @tainted error? {
         self.httpClient = httpClient;
         self.path = path;
-        self.request = request;
         self.continuationToken = EMPTY_STRING;
         self.currentEntries = check self.fetchDocuments();
     }
@@ -54,10 +52,12 @@ class DocumentStream {
     }
 
     function fetchDocuments() returns @tainted Document[]|Error {
+        map<string> headerMap = {};
         if (self.continuationToken != EMPTY_STRING) {
-            self.request.setHeader(CONTINUATION_HEADER, self.continuationToken);
+            //self.request.setHeader(CONTINUATION_HEADER, self.continuationToken);
+            headerMap[CONTINUATION_HEADER] = self.continuationToken;
         }
-        http:Response response = check self.httpClient->get(self.path, self.request);
+        http:Response response = check self.httpClient->get(self.path, headerMap);
         self.continuationToken = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? header : 
             EMPTY_STRING;
         json payload = check handleResponse(response);
