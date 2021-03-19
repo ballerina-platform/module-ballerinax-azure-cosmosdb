@@ -161,14 +161,13 @@ isolated function setMandatoryGetHeaders(string host, string token, http:HttpOpe
     }
 
     return {
-        [API_VERSION_HEADER] : API_VERSION,
-        [HOST_HEADER] : host,
-        [ACCEPT_HEADER] : ACCEPT_ALL,
+        API_VERSION_HEADER : API_VERSION,
+        HOST_HEADER : host,
+        ACCEPT_HEADER : ACCEPT_ALL,
         [http:CONNECTION] : CONNECTION_KEEP_ALIVE,
-        [DATE_HEADER] : dateTime,
+        DATE_HEADER : dateTime,
         [http:AUTH_HEADER] : signature
     };
-
 }
 
 # Set the optional header related to partitionkey value.
