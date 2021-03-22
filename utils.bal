@@ -249,7 +249,7 @@ isolated function getDateTime() returns string|Error {
 # + date - current GMT date and time
 # + return - If successful, returns `string` which is the hashed token signature. Else returns `Error`.
 isolated function generatePrimaryKeySignature(string verb, string resourceType, string resourceId, string token, 
-                                               string tokenType, string date) returns string|Error {
+                                              string tokenType, string date) returns string|Error {
     string payload = string `${verb.toLowerAscii()}${NEW_LINE}${resourceType.toLowerAscii()}${NEW_LINE}${resourceId}`
         + string `${NEW_LINE}${date.toLowerAscii()}${NEW_LINE}${EMPTY_STRING}${NEW_LINE}`;
     byte[] decodedArray = check array:fromBase64(token); 

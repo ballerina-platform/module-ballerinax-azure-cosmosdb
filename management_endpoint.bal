@@ -19,7 +19,7 @@ import ballerina/http;
 # Azure Cosmos DB Client Object for management operations.
 # 
 # + httpClient - the HTTP Client
-@display {label: "Azure Cosmos DB Management Client"} 
+@display {label: "Azure Cosmos DB Management Client", iconPath: "AzureCosmosDBLogo.png"} 
 public client class ManagementClient {
     private http:Client httpClient;
     private string baseUrl;

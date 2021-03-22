@@ -34,3 +34,9 @@ Config.toml
 
 #resource folder in tests folder
 /tests/resources
+
+# resources
+/resources
+
+# .idea file
+*.idea
