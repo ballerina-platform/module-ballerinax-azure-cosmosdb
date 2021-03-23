@@ -37,3 +37,9 @@ Config.toml
 
 # resources folder
 /resources
+
+# idea files
+*.idea
+
+# Dependencies
+Dependencies.toml

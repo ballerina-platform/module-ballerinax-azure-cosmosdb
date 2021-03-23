@@ -17,6 +17,7 @@
 import ballerina/crypto;
 import ballerina/url;
 import ballerina/http;
+import ballerina/jballerina.java;
 import ballerina/lang.array;
 import ballerina/regex;
 import ballerina/time;
@@ -146,8 +147,8 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     request.setHeader(http:AUTH_HEADER, signature);
 }
 
-isolated function setMandatoryGetHeaders(string host, string token, http:HttpOperation httpVerb, 
-                                         string requestPath) returns map<string>|Error {
+isolated function setMandatoryGetHeaders(string host, string token, http:HttpOperation httpVerb, string requestPath) 
+                                         returns map<string>|Error {
     string tokenType = getTokenType(token);
     string dateTime = check getDateTime();
     string signature = EMPTY_STRING;
@@ -161,11 +162,11 @@ isolated function setMandatoryGetHeaders(string host, string token, http:HttpOpe
     }
 
     return {
-        API_VERSION_HEADER : API_VERSION,
-        HOST_HEADER : host,
-        ACCEPT_HEADER : ACCEPT_ALL,
+        [API_VERSION_HEADER] : API_VERSION,
+        [HOST_HEADER] : host,
+        [ACCEPT_HEADER] : ACCEPT_ALL,
         [http:CONNECTION] : CONNECTION_KEEP_ALIVE,
-        DATE_HEADER : dateTime,
+        [DATE_HEADER] : dateTime,
         [http:AUTH_HEADER] : signature
     };
 }
@@ -292,9 +293,20 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # + return - If successful, returns `string` representing UTC date and time 
 #            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns `Error`.
 isolated function getDateTime() returns string|Error {
-    time:Utc currentTime = time:utcNow(); 
-    time:Utc timeWithZone = check time:toTimeZone(currentTime, GMT_ZONE);
-    return check time:format(timeWithZone, TIME_ZONE_FORMAT);
+    [int, decimal] & readonly currentTime = time:utcNow(); 
+    string time = check utcToString(currentTime, TIME_ZONE_FORMAT);
+    return check utcToString(currentTime, TIME_ZONE_FORMAT) + " GMT";
+}
+
+isolated function utcToString(time:Utc utc, string pattern) returns string|error {
+    [int, decimal][epochSeconds, lastSecondFraction] = utc;
+    int nanoAdjustments = <int>(lastSecondFraction * 1000000000);
+    var instant = ofEpochSecond(epochSeconds, nanoAdjustments);
+    var zoneId = getZoneId(java:fromString("Z"));
+    var zonedDateTime = atZone(instant, zoneId);
+    var dateTimeFormatter = ofPattern(java:fromString(pattern));
+    handle formatString = format(zonedDateTime, dateTimeFormatter);
+    return formatString.toBalString();
 }
 
 # To construct the hashed token signature for a token to set 'Authorization' header.
@@ -352,8 +364,8 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 # + path - Path to which API call is made
 # + request - HTTP request object 
 # + return - A `stream<json> or stream<Document>`. Else returns `Error`
-function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
-                         @tainted stream<json>|stream<Document>|Error {
+isolated function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
+                                  @tainted stream<json>|stream<Document>|Error {
     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
     json payload = check handleResponse(response);
     string newContinuationHeader = let var header = 
@@ -376,36 +388,37 @@ function getQueryResults(http:Client azureCosmosClient, string path, http:Reques
 # 
 # + azureCosmosClient - The http:Client object which is used to call azure endpoints
 # + path - Path to which API call is made
-# + request - The http:Request object which makes the remote method call
+# + headerMap - The map of strings which contain the headers necessary for the call
 # + array - Initial recory array which will be filled in every request call
 # + continuationHeader - The continuation header which is use to obtain next pages
 # + return - A `stream<record{}>` if successful. Else returns`Error`.
-function retrieveStream(http:Client azureCosmosClient, string path, http:Request request, @tainted record{}[] array, 
-                        @tainted string? continuationHeader = ()) returns @tainted stream<record{}>|Error {
-    map<string> headerMap = {};
+isolated function retrieveStream(http:Client azureCosmosClient, string path, map<string> headerMap, 
+                                 @tainted record{}[] array, @tainted string? continuationHeader = ()) returns 
+                                 @tainted stream<record{}>|Error {
     if (continuationHeader is string && continuationHeader != EMPTY_STRING) {
         headerMap[CONTINUATION_HEADER] = continuationHeader;
     }
+
     http:Response response = check azureCosmosClient->get(path, headerMap);
     string newContinuationHeader = let var header = 
         response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
 
     json payload = check handleResponse(response);
-    return check createStream(azureCosmosClient, path, request, payload, array, newContinuationHeader);
+    return check createStream(azureCosmosClient, path, headerMap, payload, array, newContinuationHeader);
 }
 
 # Create a stream from the array obtained from the request call.
 # 
 # + azureCosmosClient - The http:Client object which is used to call azure endpoints
 # + path - Path to which API call is made
-# + request - The http:Request object which makes the remote method call
+# + headerMap - The map of strings which contain the headers necessary for the call
 # + payload - JSON payload returned from the response
 # + initalArray - Initial recory array which will be filled in every request call
 # + continuationHeader - The continuation header which is use to obtain next pages
 # + return - A `<record{}>` if successful. Else returns `Error`
-function createStream(http:Client azureCosmosClient, string path, http:Request request, json payload, 
-                      record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
-                      @tainted stream<record{}>|Error {
+isolated function createStream(http:Client azureCosmosClient, string path, map<string> headerMap, json payload, 
+                               record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
+                               @tainted stream<record{}>|Error {
     var arrayType = typeof initalArray;
     record{}[] finalArray = initalArray;
 
@@ -485,7 +498,7 @@ function createStream(http:Client azureCosmosClient, string path, http:Request r
 
     stream<record{}> newStream = (<@untainted>finalArray).toStream();
     if (continuationHeader != EMPTY_STRING) {
-        newStream = check retrieveStream(azureCosmosClient, path, request, <@untainted>finalArray, continuationHeader);
+        newStream = check retrieveStream(azureCosmosClient, path, headerMap, <@untainted>finalArray, continuationHeader);
     }
     return newStream;
 }

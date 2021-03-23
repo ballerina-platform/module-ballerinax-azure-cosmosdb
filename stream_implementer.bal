@@ -25,7 +25,7 @@ class DocumentStream {
     private final http:Client httpClient;
     private final string path;
     
-    function init(http:Client httpClient, string path) returns @tainted error? {
+    isolated function  init(http:Client httpClient, string path) returns @tainted error? {
         self.httpClient = httpClient;
         self.path = path;
         self.continuationToken = EMPTY_STRING;
@@ -51,10 +51,9 @@ class DocumentStream {
         }
     }
 
-    function fetchDocuments() returns @tainted Document[]|Error {
+    isolated function fetchDocuments() returns @tainted Document[]|Error {
         map<string> headerMap = {};
         if (self.continuationToken != EMPTY_STRING) {
-            //self.request.setHeader(CONTINUATION_HEADER, self.continuationToken);
             headerMap[CONTINUATION_HEADER] = self.continuationToken;
         }
         http:Response response = check self.httpClient->get(self.path, headerMap);

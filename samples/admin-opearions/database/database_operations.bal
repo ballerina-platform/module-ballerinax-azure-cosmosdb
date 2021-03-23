@@ -22,7 +22,7 @@ import ballerina/regex;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);

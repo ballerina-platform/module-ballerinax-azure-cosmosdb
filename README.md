@@ -7,13 +7,30 @@ Ballerina Connector For Azure Cosmos DB
 
 Connects to Microsoft Azure Cosmos DB using Ballerina.
 
-# What is Azure Cosmos DB?
+- [Azure Cosmos DB Connecter](#markdown-navigation)
+    - [Introduction](#introduction)
+        - [What is Azure Cosmos DB](#what-is-azure-cosmos-db-?)
+        - [Key features of Azure Cosmos DB](#key-features-of-azure-cosmos-db)
+        - [Connector Overview](#connector-overview)
+    - [Prerequisites](#prerequisites)
+        - [Obtaining tokens](#obtaining-tokens)
+        - [Add project configurations file](#add-project-configurations-file)
+    - [Supported versions & limitations](#supported-versions-&-limitations)
+    - [Quickstarts](#quickstarts)
+    - [Samples](#samples)
+    - [Building from the Source](#building-from-the-source)
+    - [Contributing to Ballerina](#contributing-to-ballerina)
+    - [Code of Conduct](#code-of-conduct)
+    - [Useful Links](#useful-links)
+
+# Introduction
+## What is Azure Cosmos DB?
 [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/) is Microsoft’s highly scalable NoSQL database in 
 the Azure technology stack. It is called a globally distributed multi-model database which is used for managing data 
 across the world. The key purpose of the Azure Cosmos DB is to achieve low latency and high availability while 
 maintaining flexible scalability. Cosmos DB is a super-set of Azure Document DB and is available in all Azure regions.
 
-# Key features of Azure Cosmos DB 
+## Key features of Azure Cosmos DB 
 - Has a guaranteed low latency that is backed by a comprehensive set of Service Level Agreements (SLAs).
 - Five different types of Consistency levels: Strong, Bounded Staleness, Session, Consistent Prefix, and Eventual.
 - Multi-model approach which provides the ability to use document, key-value, wide-column, or graph-based data. 
@@ -23,7 +40,7 @@ maintaining flexible scalability. Cosmos DB is a super-set of Azure Document DB 
 
 ![connecting to Cosmos DB](docs/images/multi-model.png)
 
-# Connector Overview
+## Connector Overview
 Azure Cosmos DB Ballerina connector is a connector for connecting to Azure Cosmos DB via Ballerina language easily. 
 It provides the capability to connect to Azure Cosmos DB and to execute basic database operations like Create, Read, 
 Update and Delete Databases and Containers, Executing SQL queries to query Containers, etc. Apart from this, it allows 
@@ -40,6 +57,7 @@ API is used.
 ![connecting to Cosmos DB](docs/images/connector.gif)
 
 # Prerequisites
+## Obtaining tokens
 - Azure Account to access Azure portal. <br/>
 https://docs.microsoft.com/en-us/learn/modules/create-an-azure-account/
 
@@ -85,14 +103,27 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 - Ballerina SLP8 installed. <br/>
     Ballerina Swan Lake Alpha 2 is required.
 
-# Supported Versions
+## Add project configurations file
+
+Add the project configuration file by creating a `Config.toml` file under the root path of the project structure.
+This file should have following configurations. Add the tokens obtained in the previous step to the `Config.toml` file.
+
+#### Config.toml
+```ballerina
+[ballerinax.azure_cosmosdb]
+baseURL = <BASE_URL>,
+primaryKey = <MASTER_OR_RESOURCE_TOKEN>
+```
+
+# Supported versions & limitations
+## Supported Versions
 |                            | Version               |
 |----------------------------|-----------------------|
-| Ballerina Language Version | **Swan Lake Alpha 2** |
+| Ballerina Language Version | **Swan Lake Alpha 3** |
 | Cosmos DB API Version      | **2018-12-31**        |
 | Java Development Kit (JDK) | 11                    |
 
-# Limitations
+## Limitations
 - Only data plane operations are supported from the connector. (Some Management plane operations are not supported)
 - Changing the type of throughput in Databases (Auto Scaling -> Manual) is not allowed.
 - Only Core(SQL) API is supported.
@@ -111,7 +142,7 @@ Cosmos DB Account.
 ```ballerina
 cosmosdb:Configuration configuration = {
     baseUrl: <BASE_URL>,
-    masterOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
+    primaryKeyOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
 };
 ```
 Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`
@@ -208,7 +239,7 @@ Cosmos DB Account.
 ```ballerina
 cosmosdb:Configuration configuration = {
     baseUrl: <BASE_URL>,
-    masterOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
+    primaryKeyOrResourceToken: <MASTER_OR_RESOURCE_TOKEN>
 };
 ```
 Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-Token`
@@ -271,7 +302,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -330,7 +361,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -387,7 +418,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -432,7 +463,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -478,7 +509,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -522,7 +553,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -583,7 +614,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -627,7 +658,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -669,7 +700,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -703,7 +734,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -740,7 +771,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:DataPlaneClient azureCosmosClient = new (config);
@@ -791,7 +822,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -817,7 +848,7 @@ For example:
 ```ballerina
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -853,7 +884,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -885,7 +916,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -917,7 +948,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -954,7 +985,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1001,7 +1032,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1034,7 +1065,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1073,7 +1104,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1114,7 +1145,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1162,7 +1193,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1207,7 +1238,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1243,7 +1274,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1283,7 +1314,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1357,7 +1388,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1421,7 +1452,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1455,7 +1486,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1499,7 +1530,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1533,7 +1564,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1567,7 +1598,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1600,7 +1631,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1634,7 +1665,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1690,7 +1721,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1735,7 +1766,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1774,7 +1805,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1808,7 +1839,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);
@@ -1841,7 +1872,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
 cosmosdb:ManagementClient managementClient = new(config);

@@ -182,7 +182,7 @@ const ITEM_COUNT_HEADER = "x-ms-item-count";
 
 # Time Zone
 const GMT_ZONE = "Europe/London";
-const TIME_ZONE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+const TIME_ZONE_FORMAT = "E, dd MMM yyyy HH:mm:ss";
 
 # Resources
 const RESOURCE_TYPE_DATABASES = "dbs";

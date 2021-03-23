@@ -10,7 +10,7 @@ connect to an Azure Cosmos DB resource from Ballerina and perform various operat
 
 ## Compatibility
 
-Ballerina Language Version   **Swan Lake Alpha 2**  
+Ballerina Language Version   **Swan Lake Alpha 3**  
 Cosmos DB API Version        **2018-12-31**
 
 ## Cosmos DB Clients
@@ -22,7 +22,7 @@ There are two clients provided by Ballerina to interact with Cosmos DB.
    ```ballerina
     cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
-        masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
+        primaryKeyOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
    ```
@@ -31,7 +31,7 @@ There are two clients provided by Ballerina to interact with Cosmos DB.
    ```ballerina
     cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
-        masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
+        primaryKeyOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
     cosmosdb:ManagementClient managementClient = new(configuration);
    ```
@@ -48,7 +48,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:ManagementClient managementClient = new(configuration);
 
@@ -75,7 +75,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:ManagementClient managementClient = new(configuration);
 
@@ -106,7 +106,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -140,7 +140,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -168,7 +168,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -194,7 +194,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -226,7 +226,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
