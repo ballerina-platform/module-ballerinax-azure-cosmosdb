@@ -25,7 +25,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -36,17 +36,17 @@ public function main() {
     cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
 
-    log:print("List the offers in the current cosmos db account");   
-    stream<cosmosdb:Offer> offerList = checkpanic managementClient->listOffers(10);
+    log:printInfo("List the offers in the current cosmos db account");   
+    stream<cosmosdb:Offer> offerList = checkpanic managementClient->listOffers(maxItemCount = 10);
     var offer = offerList.next();
     string? offerId = <@untainted>offer?.value?.id;
     string? resourceId = offer?.value?.resourceId;
 
     if (offerId is string && resourceId is string) {
-        log:print("Get information about one offer");   
+        log:printInfo("Get information about one offer");   
         cosmosdb:Offer result3 = checkpanic managementClient->getOffer(offerId);
 
-        log:print("Replace offer");   
+        log:printInfo("Replace offer");   
         string resourceSelfLink = 
             string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}/`;
         cosmosdb:Offer replaceOfferBody = {
@@ -64,12 +64,13 @@ public function main() {
     // Replace Offer updating optional parameters
 
     // Query offers
-    log:print("Query offers");
+    log:printInfo("Query offers");
     string offersInContainerQuery = 
         string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
-    stream<json> result = checkpanic managementClient->queryOffer(<@untainted>offersInContainerQuery, maximumItemCount);
-    log:print("Success!");
+    stream<json> result = checkpanic managementClient->queryOffer(<@untainted>offersInContainerQuery, 
+        maxItemCount = maximumItemCount);
+    log:printInfo("Success!");
 }
 
 function createRandomUUIDWithoutHyphens() returns string {

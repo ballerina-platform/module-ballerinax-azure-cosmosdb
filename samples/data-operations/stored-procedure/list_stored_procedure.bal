@@ -23,20 +23,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List stored procedure");
+    log:printInfo("List stored procedure");
     stream<cosmosdb:StoredProcedure>|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
 
     if (result is stream<cosmosdb:StoredProcedure>) {
         error? e = result.forEach(function (cosmosdb:StoredProcedure procedure) {
-            log:print(procedure.toString());
+            log:printInfo(procedure.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

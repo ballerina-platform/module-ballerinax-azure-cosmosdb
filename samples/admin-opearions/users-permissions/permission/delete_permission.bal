@@ -23,18 +23,18 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
     string permissionId = "my_permission";
     
-    log:print("Delete permission");
+    log:printInfo("Delete permission");
     cosmosdb:DeleteResponse|error result = managementClient->deletePermission(databaseId, userId, permissionId);
 
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

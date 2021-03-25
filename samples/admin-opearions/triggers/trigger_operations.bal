@@ -25,14 +25,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     var uuid = createRandomUUIDWithoutHyphens();
 
-    log:print("Creating a trigger");
+    log:printInfo("Creating a trigger");
     string triggerId = string `trigger_${uuid.toString()}`;
     string createTriggerBody = 
     string `function updateMetadata() {
@@ -68,12 +68,12 @@ public function main() {
         createTriggerBody, createTriggerOperationType, createTriggerType); 
 
     if (triggerCreationResult is cosmosdb:Trigger) {
-        log:print(triggerCreationResult.toString());
+        log:printInfo(triggerCreationResult.toString());
     } else {
         log:printError(triggerCreationResult.message());
     }
 
-    log:print("Replacing a trigger");
+    log:printInfo("Replacing a trigger");
     string replaceTriggerBody = 
     string `function replaceMetadata() {
         var context = getContext();
@@ -108,31 +108,31 @@ public function main() {
         replaceTriggerBody, replaceTriggerOperation, replaceTriggerType); 
 
     if (triggerReplaceResult is cosmosdb:Trigger) {
-        log:print(triggerReplaceResult.toString());
+        log:printInfo(triggerReplaceResult.toString());
     } else {
         log:printError(triggerReplaceResult.message());
     }
 
-    log:print("List available triggers");
+    log:printInfo("List available triggers");
     stream<cosmosdb:Trigger>|error triggerList = managementClient->listTriggers(databaseId, containerId);
 
     if (triggerList is stream<cosmosdb:Trigger>) {
         error? e = triggerList.forEach(function (cosmosdb:Trigger trigger) {
-            log:print(trigger.toString());
+            log:printInfo(trigger.toString());
         });
     } else {
         log:printError(triggerList.message());
     }
 
-    log:print("Deleting trigger");
+    log:printInfo("Deleting trigger");
     cosmosdb:DeleteResponse|error deletionResult = managementClient->deleteTrigger(databaseId, containerId, triggerId);
 
     if (deletionResult is cosmosdb:DeleteResponse) {
-        log:print(deletionResult.toString());
+        log:printInfo(deletionResult.toString());
     } else {
         log:printError(deletionResult.message());
     }
-    log:print("End!");
+    log:printInfo("End!");
 }
 
 function createRandomUUIDWithoutHyphens() returns string {

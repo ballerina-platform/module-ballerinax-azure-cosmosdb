@@ -152,7 +152,7 @@ You can now make the connection configuration using the `Master-Token` or `Resou
 the Cosmos DB Account. For continuing with the data plane operations in Cosmos DB, you have to make use of the
 `DataPlaneClient` provided by the ballerina connector. For this, the connection configuration above is being used.
 ```ballerina
-cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
 ```
 ### Step 4: Create a document
 Now, with all the above steps followed you can create a new document inside the Cosmos container. As Cosmos DB is 
@@ -191,7 +191,7 @@ access the returned results.
 ```ballerina
 stream<cosmosdb:Document> documentList = check azureCosmosClient-> getDocumentList("my_database", "my_container");
 error? e = documentList.forEach(function (cosmosdb:Document document) {
-    log:print(document.toString());
+    log:printInfo(document.toString());
 });
 }
 ```
@@ -247,7 +247,7 @@ Notes: <br/> You have to specify the `Base URI` and `Master-Token` or `Resource-
 ### Step 3: Initialize the Cosmos DB Management Plane Client
 For executing management plane operations, the `ManagementClient` should be configured.
 ```ballerina
-cosmosdb:ManagementClient managementClient = new(configuration);
+cosmosdb:ManagementClient managementClient = check new (configuration);
 ```
 
 ### Step 4: Create a database
@@ -305,7 +305,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -313,7 +313,7 @@ public function main() {
     string containerId = "my_container";
     string documentId = "my_document";
 
-    log:print("Create a new document");
+    log:printInfo("Create a new document");
     record {|string id; json...;|} documentBody = {
         id: documentId,
         "FirstName": "Alan",
@@ -334,8 +334,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -364,7 +364,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -374,7 +374,7 @@ public function main() {
     //We have to give the currently existing partition key of this document we can't replace that
     int partitionKeyValue = 0; 
 
-    log:print("Replacing document");
+    log:printInfo("Replacing document");
     record {|string id; json...;|} documentBody = {
         id: documentId,
         "FirstName": "Alan",
@@ -394,8 +394,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -421,7 +421,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -430,14 +430,14 @@ public function main() {
     string documentId = "my_document";
     int partitionKeyValue = 0;
     
-    log:print("Read the document by id");
+    log:printInfo("Read the document by id");
     var result = azureCosmosClient->getDocument(databaseId, containerId, documentId, partitionKeyValue);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -466,22 +466,22 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Getting list of documents");
+    log:printInfo("Getting list of documents");
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Document>) {
         error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+            log:printInfo(document.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -512,7 +512,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -521,14 +521,14 @@ public function main() {
     string documentId = "my_document";
     int partitionKeyValue = 0;
     
-    log:print("Deleting the document");
+    log:printInfo("Deleting the document");
     var result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -556,13 +556,13 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Query1 - Select all from the container where gender 0");
+    log:printInfo("Query1 - Select all from the container where gender 0");
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     int maxItemCount = 10;
 
@@ -573,9 +573,9 @@ public function main() {
     }
     if (result is stream<cosmosdb:Document>) {
         error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+            log:printInfo(document.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -617,14 +617,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
     
-    log:print("Creating stored procedure");
+    log:printInfo("Creating stored procedure");
     string storedProcedureBody = string `function (){
                                             var context = getContext();
                                             var response = context.getResponse();
@@ -637,8 +637,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:StoredProcedure) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -661,7 +661,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -669,7 +669,7 @@ public function main() {
     string existingStoredProcedureId = "my_stored_procedure";
 
     // Replace stored procedure
-    log:print("Replacing stored procedure");
+    log:printInfo("Replacing stored procedure");
     string newStoredProcedureBody = string `function heloo(personToGreet){
                                                 var context = getContext();
                                                 var response = context.getResponse();
@@ -682,8 +682,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:StoredProcedure) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -703,22 +703,22 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List stored procedure");
+    log:printInfo("List stored procedure");
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:StoredProcedure>) {
         error? e = result.forEach(function (cosmosdb:StoredProcedure procedure) {
-            log:print(procedure.toString());
+            log:printInfo(procedure.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -737,21 +737,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
     
-    log:print("Deleting stored procedure");
+    log:printInfo("Deleting stored procedure");
     var result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, storedProcedureId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -774,14 +774,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
 
-    log:print("Executing stored procedure");
+    log:printInfo("Executing stored procedure");
     cosmosdb:StoredProcedureOptions options = {
         parameters: ["Tim"]
     };
@@ -791,8 +791,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is json) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -825,19 +825,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
 
-    log:print("Creating database");
+    log:printInfo("Creating database");
     var result = managementClient->createDatabase(databaseId); 
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Database) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -851,7 +851,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
  
 public function main() {
     string databaseId = "my_database";
@@ -887,19 +887,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
 
-    log:print("Reading database by id");
+    log:printInfo("Reading database by id");
     var result = managementClient->getDatabase(databaseId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Database) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -919,19 +919,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
-    log:print("Getting list of databases");
+    log:printInfo("Getting list of databases");
     var result = managementClient->listDatabases(10);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Database>) {
         error? e = result.forEach(function (cosmosdb:Database database) {
-            log:print(database.toString());
+            log:printInfo(database.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -951,19 +951,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
 
-    log:print("Deleting database");
+    log:printInfo("Deleting database");
     var result = managementClient->deleteDatabase(databaseId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -988,13 +988,13 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Creating container");
+    log:printInfo("Creating container");
     cosmosdb:PartitionKey partitionKey = {
         paths: ["/gender"],
         keyVersion: 2
@@ -1005,8 +1005,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Container) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1035,20 +1035,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Reading container info");
+    log:printInfo("Reading container info");
     var result = managementClient->getContainer(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Container) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1068,21 +1068,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
 
-    log:print("Getting list of containers");
+    log:printInfo("Getting list of containers");
     var result = managementClient->listContainers(databaseId, 2);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Container>) {
         error? e = result.forEach(function (cosmosdb:Container container) {
-            log:print(container.toString());
+            log:printInfo(container.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1107,20 +1107,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Deleting the container");
+    log:printInfo("Deleting the container");
     var result = managementClient->deleteContainer(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1148,14 +1148,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string udfId = "my_udf";
 
-    log:print("Creating a user defined function");
+    log:printInfo("Creating a user defined function");
     string userDefinedFunctionBody = string `function tax(income){
                                                 if (income == undefined)
                                                     throw 'no input';
@@ -1173,8 +1173,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:UserDefinedFunction) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1196,14 +1196,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string udfId = "my_udf";
 
-    log:print("Replacing a user defined function");
+    log:printInfo("Replacing a user defined function");
     string newUserDefinedFuncBody = string `function taxIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
@@ -1220,8 +1220,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:UserDefinedFunction) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1241,22 +1241,22 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List  user defined functions");
+    log:printInfo("List  user defined functions");
     var result = managementClient->listUserDefinedFunctions(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:UserDefinedFunction>) {
         error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
-            log:print(udf.toString());
+            log:printInfo(udf.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1277,21 +1277,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string udfId = "my_udf";
     
-    log:print("Delete user defined function");
+    log:printInfo("Delete user defined function");
     var result = managementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1317,14 +1317,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string triggerId = "my_trigger";
     
-    log:print("Creating a trigger");
+    log:printInfo("Creating a trigger");
     string createTriggerBody = 
     string `function updateMetadata() {
         var context = getContext();
@@ -1361,8 +1361,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Trigger) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1391,14 +1391,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string existingTriggerId = "my_trigger";
 
-    log:print("Replacing a trigger");
+    log:printInfo("Replacing a trigger");
     string replaceTriggerBody = 
     string `function replaceFunction() {
         var context = getContext();
@@ -1435,8 +1435,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Trigger) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1455,22 +1455,22 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List available triggers");
+    log:printInfo("List available triggers");
     var result = managementClient->listTriggers(databaseId, containerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Trigger>) {
         error? e = result.forEach(function (cosmosdb:Trigger trigger) {
-            log:print(trigger.toString());
+            log:printInfo(trigger.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1489,22 +1489,22 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string triggerId = "my_trigger";
 
-    log:print("Deleting trigger");
+    log:printInfo("Deleting trigger");
     
     var result = managementClient->deleteTrigger(databaseId, containerId, triggerId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1533,20 +1533,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
 
-    log:print("Creating user");
+    log:printInfo("Creating user");
     var result = managementClient->createUser(databaseId, userId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:User) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1567,21 +1567,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string oldUserId = "my_user";
     string newUserId = "my_new_user";
 
-    log:print("Replace user id");
+    log:printInfo("Replace user id");
     var result = managementClient->replaceUserId(databaseId, oldUserId, newUserId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:User) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1601,20 +1601,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
 
-    log:print("Get user information");
+    log:printInfo("Get user information");
     var result = managementClient->getUser(databaseId, userId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:User) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1634,21 +1634,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
 
-    log:print("List users");
+    log:printInfo("List users");
     var result = managementClient->listUsers(databaseId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:User>) {
         error? e = result.forEach(function (cosmosdb:User user) {
-            log:print(user.toString());
+            log:printInfo(user.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1668,20 +1668,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_new_user";
     
-    log:print("Delete user");
+    log:printInfo("Delete user");
     var result = managementClient->deleteUser(databaseId, userId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1724,7 +1724,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1735,15 +1735,15 @@ public function main() {
     cosmosdb:PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
-    log:print("Create permission for a user");
+    log:printInfo("Create permission for a user");
     var result = managementClient->createPermission(databaseId, userId, permissionId, permissionMode, 
         <@untainted>permissionResource);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Permission) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1769,7 +1769,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -1780,15 +1780,15 @@ public function main() {
     cosmosdb:PermisssionMode permissionModeReplace = "Read";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
-    log:print("Replace permission");
+    log:printInfo("Replace permission");
     var result = managementClient->replacePermission(databaseId, userId, permissionId, permissionModeReplace, 
         permissionResourceReplace);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Permission) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1808,21 +1808,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
     string permissionId = "my_permission";
 
-    log:print("Get intormation about one permission");
+    log:printInfo("Get intormation about one permission");
     var result = managementClient->getPermission(databaseId, userId, permissionId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Permission) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1842,22 +1842,22 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
 
-    log:print("List permissions");
+    log:printInfo("List permissions");
     var result = managementClient->listPermissions(databaseId, userId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is stream<cosmosdb:Permission>) {
         error? e = result.forEach(function (cosmosdb:Permission permission) {
-            log:print(permission.toString());
+            log:printInfo(permission.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -1875,20 +1875,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
     string permissionId = "my_permission";
     
-    log:print("Delete permission");
+    log:printInfo("Delete permission");
     var result = managementClient->deletePermission(databaseId, userId, permissionId);
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```

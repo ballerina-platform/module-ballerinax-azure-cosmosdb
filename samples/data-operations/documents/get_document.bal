@@ -23,7 +23,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -32,13 +32,13 @@ public function main() {
     string documentId = "my_document";
     int partitionKeyValue = 0;
     
-    log:print("Read the document by id");
+    log:printInfo("Read the document by id");
     cosmosdb:Document|error result = azureCosmosClient->getDocument(databaseId, containerId, documentId, 
         partitionKeyValue);
 
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

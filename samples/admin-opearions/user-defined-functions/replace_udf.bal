@@ -23,14 +23,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string udfId = "my_udf";
 
-    log:print("Replacing a user defined function");
+    log:printInfo("Replacing a user defined function");
     string newUserDefinedFuncBody = string `function taxIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
@@ -46,8 +46,8 @@ public function main() {
         udfId, newUserDefinedFuncBody);
 
     if (result is cosmosdb:UserDefinedFunction) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

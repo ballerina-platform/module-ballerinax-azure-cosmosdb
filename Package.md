@@ -24,7 +24,7 @@ There are two clients provided by Ballerina to interact with Cosmos DB.
         baseUrl : <BASE_URL>,
         primaryKeyOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
    ```
 2. **cosmosdb:ManagementClient** - This connects to the running Cosmos DB databases and containers to execute management-plane operations.
 
@@ -33,7 +33,7 @@ There are two clients provided by Ballerina to interact with Cosmos DB.
         baseUrl : <BASE_URL>,
         primaryKeyOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:ManagementClient managementClient = new(configuration);
+    cosmosdb:ManagementClient managementClient = check new (configuration);
    ```
 
 ## Samples 
@@ -50,15 +50,15 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         primaryKeyOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:ManagementClient managementClient = new(configuration);
+    cosmosdb:ManagementClient managementClient = check new (configuration);
 
     var result = managementClient->createDatabase(<DATABASE_ID>); 
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Database) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -77,7 +77,7 @@ public function main() {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
         primaryKeyOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:ManagementClient managementClient = new(configuration);
+    cosmosdb:ManagementClient managementClient = check new (configuration);
 
     cosmosdb:PartitionKey partitionKey = {
         paths: ["/accountNumber"],
@@ -90,8 +90,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Container) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -122,8 +122,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
     
 }
@@ -150,9 +150,9 @@ public function main() {
     }
     if (result is stream<cosmosdb:Document>) {
         error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+            log:printInfo(document.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }
 }
 ```
@@ -178,8 +178,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -208,9 +208,9 @@ public function main() {
     }
     if (result is stream<cosmosdb:Document>) {
         error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+            log:printInfo(document.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     }   
 
 }
@@ -236,8 +236,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```

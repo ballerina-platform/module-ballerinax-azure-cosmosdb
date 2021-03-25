@@ -23,19 +23,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string udfId = "my_udf";
     
-    log:print("Delete user defined function");
+    log:printInfo("Delete user defined function");
     cosmosdb:DeleteResponse|error result = managementClient->deleteUserDefinedFunction(databaseId, containerId, udfId);
 
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

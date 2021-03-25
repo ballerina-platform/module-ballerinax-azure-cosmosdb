@@ -23,7 +23,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
@@ -34,13 +34,13 @@ public function main() {
     cosmosdb:PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${databaseId}/colls/${containerId}`;
         
-    log:print("Create permission for a user");
+    log:printInfo("Create permission for a user");
     cosmosdb:Permission|error result = managementClient->createPermission(databaseId, userId, permissionId, 
         permissionMode, <@untainted>permissionResource);
 
     if (result is cosmosdb:Permission) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

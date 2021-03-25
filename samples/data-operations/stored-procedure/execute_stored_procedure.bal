@@ -23,23 +23,23 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
 
-    log:print("Executing stored procedure");
-    cosmosdb:StoredProcedureOptions options = {
+    log:printInfo("Executing stored procedure");
+    cosmosdb:StoredProcedureExecuteOptions options = {
         parameters: ["Sachi"]
     };
 
     json|error result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
 
     if (result is json) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

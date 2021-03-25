@@ -23,17 +23,17 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
-    log:print("Getting list of databases");
+    log:printInfo("Getting list of databases");
     stream<cosmosdb:Database>|error result = managementClient->listDatabases(10);
 
     if (result is stream<cosmosdb:Database>) {
         error? e = result.forEach(function (cosmosdb:Database database) {
-            log:print(database.toString());
+            log:printInfo(database.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

@@ -23,20 +23,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Getting list of documents");
+    log:printInfo("Getting list of documents");
     stream<cosmosdb:Document>|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
 
     if (result is stream<cosmosdb:Document>) {
         error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+            log:printInfo(document.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

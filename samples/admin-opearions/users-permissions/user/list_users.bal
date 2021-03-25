@@ -23,19 +23,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
 
-    log:print("List users");
+    log:printInfo("List users");
     stream<cosmosdb:User>|error result = managementClient->listUsers(databaseId);
 
     if (result is stream<cosmosdb:User>) {
         error? e = result.forEach(function (cosmosdb:User user) {
-            log:print(user.toString());
+            log:printInfo(user.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

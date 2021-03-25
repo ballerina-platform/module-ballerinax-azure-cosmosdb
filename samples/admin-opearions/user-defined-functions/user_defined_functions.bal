@@ -25,7 +25,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -35,7 +35,7 @@ public function main() {
     // Using UDFs, you can extend Azure Cosmos DB's query language. 
     // UDFs are a great way to express complex business logic in a query's projection.
 
-    log:print("Creating a user defined function");
+    log:printInfo("Creating a user defined function");
     string udfId = string `udf_${uuid.toString()}`;
     string userDefinedFunctionBody = string `function tax(income){
                                                 if (income == undefined)
@@ -53,12 +53,12 @@ public function main() {
         containerId, udfId, userDefinedFunctionBody);
 
     if (udfCreateResult is cosmosdb:UserDefinedFunction) {
-        log:print(udfCreateResult.toString());
+        log:printInfo(udfCreateResult.toString());
     } else {
         log:printError(udfCreateResult.message());
     }
 
-    log:print("Replacing a user defined function");
+    log:printInfo("Replacing a user defined function");
     string newUserDefinedFunctionBody = string `function taxIncome(income){
                                                     if (income == undefined)
                                                         throw 'no input';
@@ -73,33 +73,33 @@ public function main() {
         containerId, udfId, newUserDefinedFunctionBody);
 
     if (udfReplaceResult is cosmosdb:UserDefinedFunction) {
-        log:print(udfReplaceResult.toString());
+        log:printInfo(udfReplaceResult.toString());
     } else {
         log:printError(udfReplaceResult.message());
     }
 
-    log:print("List  user defined functions(udf)s");
+    log:printInfo("List  user defined functions(udf)s");
     stream<cosmosdb:UserDefinedFunction>|error udfList = managementClient->listUserDefinedFunctions(databaseId, 
         containerId);
 
     if (udfList is stream<cosmosdb:UserDefinedFunction>) {
         error? e = udfList.forEach(function (cosmosdb:UserDefinedFunction udf) {
-            log:print(udf.toString());
+            log:printInfo(udf.toString());
         });
     } else {
         log:printError(udfList.message());
     }
 
-    log:print("Delete user defined function");
+    log:printInfo("Delete user defined function");
     cosmosdb:DeleteResponse|error deletionResult = managementClient->deleteUserDefinedFunction(databaseId, containerId, 
         udfId);
 
     if (deletionResult is cosmosdb:DeleteResponse) {
-        log:print(deletionResult.toString());
+        log:printInfo(deletionResult.toString());
     } else {
         log:printError(deletionResult.message());
     }
-    log:print("End!");
+    log:printInfo("End!");
 }
 
 function createRandomUUIDWithoutHyphens() returns string {

@@ -25,7 +25,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
 
@@ -38,7 +38,7 @@ public function main() {
     string containerAutoscalingId = string `containera_${uuid.toString()}`;
     string containerIfnotExistId = string `containerx_${uuid.toString()}`;
 
-    log:print("Creating container");
+    log:printInfo("Creating container");
     cosmosdb:PartitionKey partitionKey = {
         paths: ["/id"],
         keyVersion: 2
@@ -46,12 +46,12 @@ public function main() {
  
     cosmosdb:Container|error containerResult = managementClient->createContainer(databaseId, containerId, partitionKey);
     if (containerResult is cosmosdb:Container) {
-        log:print(containerResult.toString());
+        log:printInfo(containerResult.toString());
     } else {
         log:printError(containerResult.message());
     }
 
-    log:print("Creating container with indexing policy");   
+    log:printInfo("Creating container with indexing policy");   
     cosmosdb:IndexingPolicy indexingPolicy = {
         indexingMode: "consistent",
         automatic: true,
@@ -74,12 +74,12 @@ public function main() {
         containerWithIndexingId, partitionKeyWithIndexing, indexingPolicy);
   
     if (containerWithOptionsResult is cosmosdb:Container) {
-        log:print(containerWithOptionsResult.toString());
+        log:printInfo(containerWithOptionsResult.toString());
     } else {
         log:printError(containerWithOptionsResult.message());
     } 
 
-    log:print("Creating container with manual throughput policy");
+    log:printInfo("Creating container with manual throughput policy");
     int throughput = 600;
     cosmosdb:PartitionKey partitionKeyManual = {
         paths: ["/AccountNumber"],
@@ -90,12 +90,12 @@ public function main() {
     cosmosdb:Container|error manualPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
         partitionKeyManual, (), throughput); 
     if (manualPolicyContainer is cosmosdb:Container) {
-        log:print(manualPolicyContainer.toString());
+        log:printInfo(manualPolicyContainer.toString());
     } else {
         log:printError(manualPolicyContainer.message());
     }  
 
-    log:print("Creating container with autoscaling throughput policy");
+    log:printInfo("Creating container with autoscaling throughput policy");
     record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
     cosmosdb:PartitionKey partitionKeyAutoscaling = {
         paths: ["/id"],
@@ -106,12 +106,12 @@ public function main() {
     cosmosdb:Container|error autoPolicyContainer = managementClient->createContainer(databaseId, containerManualId, 
         partitionKeyManual, (), maxThroughput);  
     if (autoPolicyContainer is cosmosdb:Container) {
-        log:print(autoPolicyContainer.toString());
+        log:printInfo(autoPolicyContainer.toString());
     } else {
         log:printError(autoPolicyContainer.message());
     } 
 
-    log:print("Creating container if not exist");
+    log:printInfo("Creating container if not exist");
     cosmosdb:PartitionKey partitionKeyDefinition = {
         paths: ["/AccountNumber"],
         kind: "Hash",
@@ -120,56 +120,56 @@ public function main() {
     cosmosdb:Container?|error containerIfNotExistResult = managementClient->createContainer(databaseId, 
         containerIfnotExistId, partitionKeyDefinition);
     if (containerIfNotExistResult is cosmosdb:Container?) {
-        log:print(containerIfNotExistResult.toString());
+        log:printInfo(containerIfNotExistResult.toString());
     } else {
         log:printError(containerIfNotExistResult.message());
     } 
 
     string? etag;
     string? sessiontoken;     
-    log:print("Reading container info");
+    log:printInfo("Reading container info");
     cosmosdb:Container|error existingContainer = managementClient->getContainer(databaseId, containerId);
 
     if (existingContainer is cosmosdb:Container) {
-        log:print(existingContainer.toString());
+        log:printInfo(existingContainer.toString());
         etag = existingContainer?.eTag;
         sessiontoken = existingContainer?.sessionToken;    
     } else {
         log:printError(existingContainer.message());
     }
     
-    log:print("Reading container info with request options");
+    log:printInfo("Reading container info with request options");
     cosmosdb:ResourceReadOptions options = {
         consistancyLevel: "Bounded"
     };
     cosmosdb:Container|error getContainerWithOptions = managementClient->getContainer(databaseId, containerId, options);
 
     if (getContainerWithOptions is cosmosdb:Container) {
-        log:print(getContainerWithOptions.toString());
+        log:printInfo(getContainerWithOptions.toString());
     } else {
         log:printError(getContainerWithOptions.message());
     }
 
-    log:print("Getting list of containers");
+    log:printInfo("Getting list of containers");
     stream<cosmosdb:Container>|error containerList = managementClient->listContainers(databaseId, 2);
 
     if (containerList is stream<cosmosdb:Container>) {
         error? e = containerList.forEach(function (cosmosdb:Container container) {
-            log:print(container.toString());
+            log:printInfo(container.toString());
         });
     } else {
         log:printError(containerList.message());
     }
 
-    log:print("Deleting the container");
+    log:printInfo("Deleting the container");
     cosmosdb:DeleteResponse|error deletionResult = managementClient->deleteContainer(databaseId, containerId);
 
     if (deletionResult is cosmosdb:DeleteResponse) {
-        log:print(deletionResult.toString());
+        log:printInfo(deletionResult.toString());
     } else{
         log:printError(deletionResult.message());
     }
-    log:print("End!");
+    log:printInfo("End!");
 }
 
 function createRandomUUIDWithoutHyphens() returns string {

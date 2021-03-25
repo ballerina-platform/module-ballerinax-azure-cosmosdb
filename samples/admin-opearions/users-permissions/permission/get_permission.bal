@@ -23,19 +23,19 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() { 
     string databaseId = "my_database";
     string userId = "my_user";
     string permissionId = "my_permission";
 
-    log:print("Get intormation about one permission");
+    log:printInfo("Get intormation about one permission");
     cosmosdb:Permission|error result = managementClient->getPermission(databaseId, userId, permissionId);
 
     if (result is cosmosdb:Permission) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

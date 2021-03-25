@@ -25,7 +25,7 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -36,53 +36,53 @@ public function main() {
     cosmosdb:Database database = checkpanic managementClient->getDatabase(databaseId);
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
 
-    log:print("Creating user");
+    log:printInfo("Creating user");
     string userId = string `user_${uuid.toString()}`;
     cosmosdb:User|error userCreationResult = managementClient->createUser(databaseId, userId);
 
     if (userCreationResult is cosmosdb:User) {
-        log:print(userCreationResult.toString());
-        log:print("Success!");
+        log:printInfo(userCreationResult.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(userCreationResult.message());
     }
 
-    log:print("Replace user id");
+    log:printInfo("Replace user id");
     string newUserId = string `user_${uuid.toString()}`;
     cosmosdb:User|error userReplaceResult = managementClient->replaceUserId(databaseId, userId, newUserId);
 
     if (userReplaceResult is cosmosdb:User) {
-        log:print(userReplaceResult.toString());
-        log:print("Success!");
+        log:printInfo(userReplaceResult.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(userReplaceResult.message());
     }
 
-    log:print("Get user information");
+    log:printInfo("Get user information");
     cosmosdb:User|error user = managementClient->getUser(databaseId, userId);
 
     if (user is cosmosdb:User) {
-        log:print(user.toString());
-        log:print("Success!");
+        log:printInfo(user.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(user.message());
     }
 
-    log:print("List users");
+    log:printInfo("List users");
     stream<cosmosdb:User>|error userList = managementClient->listUsers(databaseId);
 
     if (userList is stream<cosmosdb:User>) {
         error? e = userList.forEach(function (cosmosdb:User user) {
-            log:print(user.toString());
+            log:printInfo(user.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(userList.message());
     }
 
     //------------------------------------------------Permissions-------------------------------------------------------
 
-    log:print("Create permission for a user");
+    log:printInfo("Create permission for a user");
     string permissionId = string `permission_${uuid.toString()}`;
     cosmosdb:PermisssionMode permissionMode = "All";
     string permissionResource = 
@@ -92,8 +92,8 @@ public function main() {
         permissionMode, <@untainted>permissionResource);
 
     if (permission is cosmosdb:Permission) {
-        log:print(permission.toString());
-        log:print("Success!");
+        log:printInfo(permission.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(permission.message());
     }
@@ -116,7 +116,7 @@ public function main() {
     //     io:println("Permission is not created ", result7.message());
     // }
 
-    log:print("Replace permission");
+    log:printInfo("Replace permission");
     cosmosdb:PermisssionMode permissionModeReplace = "All";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
@@ -124,55 +124,55 @@ public function main() {
         permissionModeReplace, permissionResourceReplace);
 
     if (permission is cosmosdb:Permission) {
-        log:print(permission.toString());
-        log:print("Success!");
+        log:printInfo(permission.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(permission.message());
     }
 
-    log:print("List permissions");
+    log:printInfo("List permissions");
     stream<cosmosdb:Permission>|error permissionList = managementClient->listPermissions(databaseId, userId);
 
     if (permissionList is stream<cosmosdb:Permission>) {
         error? e = permissionList.forEach(function (cosmosdb:Permission permission) {
-            log:print(permission.toString());
+            log:printInfo(permission.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(permissionList.message());
     }
 
-    log:print("Get intormation about one permission");
+    log:printInfo("Get intormation about one permission");
     permission = managementClient->getPermission(databaseId, userId, permissionId);
 
     if (permission is cosmosdb:Permission) {
-        log:print(permission.toString());
-        log:print("Success!");
+        log:printInfo(permission.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(permission.message());
     }
 
-    log:print("Delete permission");
+    log:printInfo("Delete permission");
     cosmosdb:DeleteResponse|error deleteResponse = managementClient->deletePermission(databaseId, userId, permissionId);
 
     if (deleteResponse is cosmosdb:DeleteResponse) {
-        log:print(deleteResponse.toString());
-        log:print("Success!");
+        log:printInfo(deleteResponse.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(deleteResponse.message());
     }
 
-    log:print("Delete user");
+    log:printInfo("Delete user");
     deleteResponse = managementClient->deleteUser(databaseId, userId);
 
     if (deleteResponse is cosmosdb:DeleteResponse) {
-        log:print(deleteResponse.toString());
-        log:print("Success!");
+        log:printInfo(deleteResponse.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(deleteResponse.message());
     }
 
-    log:print("Success!");
+    log:printInfo("Success!");
 }
 
 function createRandomUUIDWithoutHyphens() returns string {

@@ -26,14 +26,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     var uuid = createRandomUUIDWithoutHyphens();
     
-    log:print("Create a new document");
+    log:printInfo("Create a new document");
     string documentId = string `document_${uuid.toString()}`;
     record {|string id; json...;|} documentBody = {
         id: documentId,
@@ -53,12 +53,12 @@ public function main() {
         partitionKeyValue); 
 
     if (documentResult is cosmosdb:Document) {
-        log:print(documentResult.toString());
+        log:printInfo(documentResult.toString());
     } else {
         log:printError(documentResult.message());
     }
 
-    log:print("Creating a new document allowing to include it in the indexing.");
+    log:printInfo("Creating a new document allowing to include it in the indexing.");
     record {|string id; json...;|} documentWithIndexing = {
         id: string `documenti_${uuid.toString()}`,
         "LastName": "Tom",
@@ -81,7 +81,7 @@ public function main() {
         documentWithIndexing, partitionKeyValue, indexingOptions);
 
     if (documentCreateResult is cosmosdb:Document) {
-        log:print(documentCreateResult.toString());
+        log:printInfo(documentCreateResult.toString());
     } else {
         log:printError(documentCreateResult.message());
     }
@@ -90,14 +90,14 @@ public function main() {
         documentWithIndexing, partitionKeyValue, indexingOptions); 
 
     if (documentResultWithIndexing is cosmosdb:Document) {
-        log:print(documentResultWithIndexing.toString());
+        log:printInfo(documentResultWithIndexing.toString());
     } else {
         log:printError(documentResultWithIndexing.message());
     }
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
     // error.
-    log:print("Upserting the document");
+    log:printInfo("Upserting the document");
     record {|string id; json...;|} upsertDocument = {
         id: string `documentu_${uuid.toString()}`,
         "LastName": "Tim",
@@ -120,12 +120,12 @@ public function main() {
         upsertDocument, partitionKeyValue, upsertOptions); 
 
     if (documentUpsertResult is cosmosdb:Document) {
-        log:print(documentUpsertResult.toString());
+        log:printInfo(documentUpsertResult.toString());
     } else {
         log:printError(documentUpsertResult.message());
     }
 
-    log:print("Replacing document");
+    log:printInfo("Replacing document");
     record {|string id; json...;|} newDocumentBody = {
         id: documentId,
         "LastName": "Helena",
@@ -144,22 +144,22 @@ public function main() {
         partitionKeyValue); 
 
     if (replaceResult is cosmosdb:Document) {
-        log:print(replaceResult.toString());
+        log:printInfo(replaceResult.toString());
     } else {
         log:printError(replaceResult.message());
     }
 
-    log:print("Read the document by id");
+    log:printInfo("Read the document by id");
     cosmosdb:Document|error returnedDocument = azureCosmosClient->getDocument(databaseId, containerId, documentId, 
         partitionKeyValue);
 
     if (returnedDocument is cosmosdb:Document) {
-        log:print(returnedDocument.toString());
+        log:printInfo(returnedDocument.toString());
     }else {
         log:printError(returnedDocument.message());
     }
 
-    log:print("Read the document with request options");
+    log:printInfo("Read the document with request options");
     cosmosdb:ResourceReadOptions options = {
         consistancyLevel: "Eventual"
     };
@@ -167,33 +167,33 @@ public function main() {
         containerId, documentId, partitionKeyValue, options);
 
     if (returnedDocumentWithOptions is cosmosdb:Document) {
-        log:print(returnedDocumentWithOptions.toString());
+        log:printInfo(returnedDocumentWithOptions.toString());
     } else {
         log:printError(returnedDocumentWithOptions.message());
     }
 
-    log:print("Getting list of documents");
+    log:printInfo("Getting list of documents");
     stream<cosmosdb:Document>|error documentList = azureCosmosClient->getDocumentList(databaseId, containerId);
 
     if (documentList is stream<cosmosdb:Document>) {
         error? e = documentList.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+            log:printInfo(document.toString());
         });
     } else {
         log:printError(documentList.message());
     }
 
-    log:print("Deleting the document");
+    log:printInfo("Deleting the document");
     cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteDocument(databaseId, containerId, 
         documentId, partitionKeyValue);
 
     if (deletionResult is cosmosdb:DeleteResponse) {
-        log:print(deletionResult.toString());
+        log:printInfo(deletionResult.toString());
     } else {
         log:printError(deletionResult.message());
     }
 
-    log:print("End!");
+    log:printInfo("End!");
 }
 
 function read(string path) returns @tainted json|error {
@@ -207,7 +207,7 @@ function read(string path) returns @tainted json|error {
 function closeRc(io:ReadableCharacterChannel rc) {
     var result = rc.close();
     if (result is error) {
-        log:printError("Error occurred while closing character stream ", err = result);
+        log:printError("Error occurred while closing character stream ");
     }
 }
 

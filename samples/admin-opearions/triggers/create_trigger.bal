@@ -23,14 +23,14 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string triggerId = "my_trigger";
     
-    log:print("Creating a trigger");
+    log:printInfo("Creating a trigger");
     string createTriggerBody = 
     string `function updateMetadata() {
         var context = getContext();
@@ -65,8 +65,8 @@ public function main() {
         createTriggerBody, createTriggerOperationType, createTriggerType); 
 
     if (result is cosmosdb:Trigger) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

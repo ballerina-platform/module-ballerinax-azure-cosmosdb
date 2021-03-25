@@ -23,20 +23,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
     
-    log:print("Deleting stored procedure");
+    log:printInfo("Deleting stored procedure");
     cosmosdb:DeleteResponse|error result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, 
         storedProcedureId);
 
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

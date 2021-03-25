@@ -38,13 +38,10 @@ class DocumentStream {
             self.index += 1;
             return document;
         }
-        // This code block is for retrieving the next batch of records when the initial batch is finished. It has some
-        // error.
+        // This code block is for retrieving the next batch of records when the initial batch is finished.
         if (self.continuationToken != EMPTY_STRING) {
             self.index = 0;
-            // Fetch documents again when the continuation token is provided. But this function has a remote method 
-            // call So, it is not isolated.
-            self.currentEntries = check self.fetchDocuments(); /// Here is the problem
+            self.currentEntries = check self.fetchDocuments();
             record {| Document value; |} document = {value: self.currentEntries[self.index]};  
             self.index += 1;
             return document;
@@ -63,7 +60,7 @@ class DocumentStream {
         if (payload.Documents is json) {
             Document[] documents = [];
             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-            convertToDocumentArray(documents,array);
+            convertToDocumentArray(documents, array);
             return documents;
         } else {
             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);

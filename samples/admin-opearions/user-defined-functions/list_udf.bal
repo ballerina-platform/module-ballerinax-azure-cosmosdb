@@ -23,21 +23,21 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List  user defined functions");
+    log:printInfo("List  user defined functions");
     stream<cosmosdb:UserDefinedFunction>|error result = managementClient->listUserDefinedFunctions(databaseId, 
         containerId);
 
     if (result is stream<cosmosdb:UserDefinedFunction>) {
         error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
-            log:print(udf.toString());
+            log:printInfo(udf.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

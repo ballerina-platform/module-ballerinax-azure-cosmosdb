@@ -23,20 +23,20 @@ cosmosdb:Configuration config = {
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:ManagementClient managementClient = new(config);
+cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List available triggers");
+    log:printInfo("List available triggers");
     stream<cosmosdb:Trigger>|error result = managementClient->listTriggers(databaseId, containerId);
 
     if (result is stream<cosmosdb:Trigger>) {
         error? e = result.forEach(function (cosmosdb:Trigger trigger) {
-            log:print(trigger.toString());
+            log:printInfo(trigger.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
