@@ -12,7 +12,7 @@
 // "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.  See the License for the
 // specific language governing permissions and limitations
-// under the License. 
+// under the License.
 
 // This is a test file for stream implementer
 import ballerina/http;
@@ -20,50 +20,57 @@ import ballerina/http;
 class DocumentStream {
     private Document[] currentEntries = [];
     private string continuationToken;
-
     int index = 0;
     private final http:Client httpClient;
     private final string path;
-    
-    isolated function  init(http:Client httpClient, string path) returns @tainted error? {
+    private map<string> headerMap;
+
+    isolated function  init(http:Client httpClient, string path, map<string> headerMap) returns @tainted error? {
         self.httpClient = httpClient;
         self.path = path;
         self.continuationToken = EMPTY_STRING;
+        self.headerMap = headerMap;
         self.currentEntries = check self.fetchDocuments();
     }
 
     public isolated function next() returns record {| Document value; |}|error? {
         if(self.index < self.currentEntries.length()) {
-            record {| Document value; |} document = {value: self.currentEntries[self.index]};  
-            self.index += 1;
+            record {| Document value; |} document = {value: self.currentEntries[self.index]};
+            self.index = 1;
             return document;
         }
         // This code block is for retrieving the next batch of records when the initial batch is finished.
         if (self.continuationToken != EMPTY_STRING) {
             self.index = 0;
             self.currentEntries = check self.fetchDocuments();
-            record {| Document value; |} document = {value: self.currentEntries[self.index]};  
+            record {| Document value; |} document = {value: self.currentEntries[self.index]};
             self.index += 1;
             return document;
         }
     }
 
     isolated function fetchDocuments() returns @tainted Document[]|Error {
-        map<string> headerMap = {};
         if (self.continuationToken != EMPTY_STRING) {
-            headerMap[CONTINUATION_HEADER] = self.continuationToken;
+            self.headerMap[CONTINUATION_HEADER] = self.continuationToken;
         }
-        http:Response response = check self.httpClient->get(self.path, headerMap);
-        self.continuationToken = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? header : 
+        http:Response response = check self.httpClient->get(self.path, self.headerMap);
+        self.continuationToken = let var header = response.getHeader(CONTINUATION_HEADER) in header is string ? header :
             EMPTY_STRING;
         json payload = check handleResponse(response);
         if (payload.Documents is json) {
-            Document[] documents = [];
             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-            convertToDocumentArray(documents, array);
-            return documents;
+            return convertToDocumentArray1(array);
         } else {
             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     }
+}
+
+isolated function convertToDocumentArray1(json[] sourceDocumentArrayJsonObject) returns Document[] {
+    Document[] documents = [];
+    foreach json documentObject in sourceDocumentArrayJsonObject {
+        Document document = mapJsonToDocumentType(documentObject);
+        documents.push(document);
+    }
+    return documents;
 }

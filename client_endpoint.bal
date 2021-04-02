@@ -133,7 +133,7 @@ public client class DataPlaneClient {
                                              @display {label: "Container id"} string containerId, 
                                              @display {label: "Optional header parameters"} *DocumentListOptions 
                                              documentListOptions) returns 
-                                             @tainted @display {label: "Stream of Documents"} stream<Document>|Error { 
+                                             @tainted @display {label: "Stream of Documents"} stream<Document,error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -143,8 +143,9 @@ public client class DataPlaneClient {
         }
         headerMap = setOptionalGetHeaders(headerMap, documentListOptions);
 
-        Document[] initialArray = [];
-        return <stream<Document>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        DocumentStream objectInstance = check new(self.httpClient, requestPath, headerMap);
+        stream<Document,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete a document.

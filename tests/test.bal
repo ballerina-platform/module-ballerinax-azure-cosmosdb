@@ -22,8 +22,8 @@ import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
 
-configurable string baseURL = os:getEnv("BASE_URL");
-configurable string primaryKey = os:getEnv("MASTER_OR_RESOURCE_TOKEN");
+configurable string & readonly baseURL = os:getEnv("BASE_URL");
+configurable string & readonly primaryKey = os:getEnv("MASTER_OR_RESOURCE_TOKEN");
 
 Configuration config = {
     baseUrl: baseURL,
@@ -303,21 +303,21 @@ function testGetAllContainers() {
         testQueryDocumentsWithRequestOptions,
         testGetOneDocumentWithRequestOptions, 
         testCreateDocumentWithRequestOptions, 
-        testGetDocumentListWithRequestOptions,
-        testGetAllStoredProcedures, 
-        testDeleteOneStoredProcedure, 
-        testListAllUDF, 
-        testDeleteUDF, 
-        testDeleteTrigger, 
+        testGetDocumentListWithRequestOptions
+        // testGetAllStoredProcedures, 
+        // testDeleteOneStoredProcedure, 
+        // testListAllUDF, 
+        // testDeleteUDF, 
+        // testDeleteTrigger, 
 
-        testCreatePermission,
-        testCreatePermissionWithTTL,
-        testGetPartitionKeyRanges,
+        // testCreatePermission,
+        // testCreatePermissionWithTTL,
+        // testGetPartitionKeyRanges,
 
-        testListOffers,
-        testGetOffer,
-        testReplaceOfferWithOptionalParameter,
-        testReplaceOffer   
+        // testListOffers,
+        // testGetOffer,
+        // testReplaceOfferWithOptionalParameter,
+        // testReplaceOffer   
     ]
 }
 function testDeleteContainer() {
@@ -430,7 +430,7 @@ function testGetDocumentList() {
     log:printInfo("ACTION : getDocumentList()");
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, maxItemCount = 1);
-    if (result is stream<Document>) {
+    if (result is stream<Document,error?>) {
         test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
@@ -451,7 +451,7 @@ function testGetDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
-    if (result is stream<Document>) {
+    if (result is stream<Document,error?>) {
         test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
