@@ -197,6 +197,7 @@ isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal
 #
 # + headerMap - A map of type string.
 # + partitionKeyValue - The value of the partition key
+# + return - A map of strings.
 isolated function setGetPartitionKeyHeader(map<string> headerMap, (int|float|decimal|string)? partitionKeyValue) returns 
                                            map<string> {
     if (partitionKeyValue is (int|float|decimal|string)) {
@@ -271,6 +272,7 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
 #
 # + headerMap - A map of type string.
 # + requestOptions - Record of type Options containing the values for optional headers
+# + return - A map of strings.
 isolated function setOptionalGetHeaders(map<string> headerMap, Options? requestOptions) returns map<string> {
     if (requestOptions?.indexingDirective is IndexingDirective) {
         headerMap[INDEXING_DIRECTIVE_HEADER] =  <string>requestOptions?.indexingDirective;
