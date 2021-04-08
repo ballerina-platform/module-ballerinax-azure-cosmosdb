@@ -25,17 +25,21 @@ cosmosdb:Configuration config = {
 
 cosmosdb:ManagementClient managementClient = check new (config);
 
-public function main() {
+public function main() { 
     string databaseId = "my_database";
 
-    log:printInfo("Getting list of containers");
-    stream<cosmosdb:Container>|error result = managementClient->listContainers(databaseId, 2);
+    log:printInfo("List users");
+    stream<cosmosdb:Data,error>?|error result = managementClient->listUsers(databaseId);
+    if (result is stream<cosmosdb:Data,error>?) {
+        if (result is stream<cosmosdb:Data,error>) {
+            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+                log:printInfo(storedPrcedure.toString());
+            });
+            log:printInfo("Success!");
 
-    if (result is stream<cosmosdb:Container>) {
-        error? e = result.forEach(function (cosmosdb:Container container) {
-            log:printInfo(container.toString());
-        });
-        log:printInfo("Success!");
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         log:printError(result.message());
     }

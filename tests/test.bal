@@ -165,8 +165,8 @@ function testCreateDBWithAutoscalingThroughput() {
 function testListAllDatabases() {
     log:printInfo("ACTION : listAllDatabases()");
 
-    var result = azureCosmosManagementClient->listDatabases(6);
-    if (result is stream<Database>) {
+    var result = azureCosmosManagementClient->listDatabases();
+    if (result is stream<Data,error>?) {
         test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
@@ -284,10 +284,11 @@ function testGetAllContainers() {
     log:printInfo("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
-    if (result is Error) {
+    if (result is stream<Data,error>?) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
-    test:assertTrue(true);
 }
 
 // If we want to get information about offers, First we need to have any offers in the account. So enable them when 
@@ -303,21 +304,21 @@ function testGetAllContainers() {
         testQueryDocumentsWithRequestOptions,
         testGetOneDocumentWithRequestOptions, 
         testCreateDocumentWithRequestOptions, 
-        testGetDocumentListWithRequestOptions
-        // testGetAllStoredProcedures, 
-        // testDeleteOneStoredProcedure, 
-        // testListAllUDF, 
-        // testDeleteUDF, 
-        // testDeleteTrigger, 
+        testGetDocumentListWithRequestOptions,
+        testGetAllStoredProcedures, 
+        testDeleteOneStoredProcedure, 
+        testListAllUDF, 
+        testDeleteUDF, 
+        testDeleteTrigger, 
 
-        // testCreatePermission,
-        // testCreatePermissionWithTTL,
-        // testGetPartitionKeyRanges,
+        testCreatePermission,
+        testCreatePermissionWithTTL,
+        testGetPartitionKeyRanges,
 
-        // testListOffers,
-        // testGetOffer,
-        // testReplaceOfferWithOptionalParameter,
-        // testReplaceOffer   
+        testListOffers,
+        testGetOffer,
+        testReplaceOfferWithOptionalParameter,
+        testReplaceOffer   
     ]
 }
 function testDeleteContainer() {
@@ -339,17 +340,17 @@ function testCreateDocument() {
     int valueOfPartitionKey = 1234;
     record {|string id; json...;|} documentBody = {
         id: documentId,
-        "LastName": "keeeeeee",
+        "LastName": "Thaulow",
         "Parents": [{
             "FamilyName": null,
             "FirstName": "Thomas"
         }, {
             "FamilyName": null,
-            "FirstName": "Mary Kay"
+            "FirstName": "Mary"
         }],
         "Children": [{
             "FamilyName": null,
-            "FirstName": "Henriette Thaulow",
+            "FirstName": "Henriette",
             "Gender": "female",
             "Grade": 5,
             "Pets": [{"GivenName": "Fluffy"}]
@@ -388,17 +389,17 @@ function testCreateDocumentWithRequestOptions() {
     string newDocumentId = string `document_${uuid.toString()}`;
     record {|string id; json...;|} documentBody = {
         id: newDocumentId,
-        "LastName": "keeeeeee",
+        "LastName": "Throne",
         "Parents": [{
             "FamilyName": null,
             "FirstName": "Thomas"
         }, {
             "FamilyName": null,
-            "FirstName": "Mary Kay"
+            "FirstName": "Mary"
         }],
         "Children": [{
             "FamilyName": null,
-            "FirstName": "Henriette Thaulow",
+            "FirstName": "Henriette",
             "Gender": "female",
             "Grade": 5,
             "Pets": [{"GivenName": "Fluffy"}]
@@ -429,9 +430,9 @@ function testCreateDocumentWithRequestOptions() {
 function testGetDocumentList() {
     log:printInfo("ACTION : getDocumentList()");
 
-    var result = azureCosmosClient->getDocumentList(databaseId, containerId, maxItemCount = 1);
-    if (result is stream<Document,error?>) {
-        test:assertTrue(true);
+    var result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    if (result is stream<Data,error>?) {
+        //
     } else {
         test:assertFail(msg = result.message());
     }
@@ -451,8 +452,8 @@ function testGetDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
-    if (result is stream<Document,error?>) {
-        test:assertTrue(true);
+    if (result is stream<Data,error>?) {
+        //    
     } else {
         test:assertFail(msg = result.message());
     }
@@ -503,11 +504,13 @@ function testGetOneDocumentWithRequestOptions() {
 function testQueryDocuments() {
     log:printInfo("ACTION : queryDocuments()");
 
-    ResourceQueryOptions options = {partitionKey : 1234, enableCrossPartition: false, maxItemCount: 10};
+    ResourceQueryOptions options = {partitionKey : 1234, enableCrossPartition: false};
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is Error) {
+    if (result is stream<QueryResult,error>) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -526,7 +529,9 @@ function testQueryDocumentsWithRequestOptions() {
     };
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is Error) {
+    if (result is stream<QueryResult,error>) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -621,7 +626,9 @@ function testGetAllStoredProcedures() {
     log:printInfo("ACTION : getAllStoredProcedures()");
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is Error) {
+    if (result is stream<Data,error>?) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -705,7 +712,9 @@ function testListAllUDF() {
     log:printInfo("ACTION : listAllUDF()");
 
     var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is Error) {
+    if (result is stream<Data,error>?) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -826,7 +835,9 @@ function testListTriggers() {
     log:printInfo("ACTION : listTriggers()");
 
     var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
-    if (result is Error) {
+    if (result is stream<Data,error>?) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -910,7 +921,9 @@ function testListUsers() {
     log:printInfo("ACTION : listUsers()");
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
-    if (result is Error) {
+    if (result is stream<Data,error>?) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -1013,7 +1026,9 @@ function testListPermissions() {
     log:printInfo("ACTION : listPermissions()");
 
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
-    if (result is Error) {
+    if (result is stream<Data,error>?) {
+        //
+    } else {
         test:assertFail(msg = result.message());
     }
 }
@@ -1058,12 +1073,16 @@ string? resourceId = "";
 function testListOffers() {
     log:printInfo("ACTION : listOffers()");
 
-    var result = azureCosmosManagementClient->listOffers(maxItemCount = 3);
-    if (result is stream<Offer>) {
-        var offer = result.next();
-        offerId = <@untainted>offer?.value?.id;
-        runtime:sleep(1);
-        resourceId = offer?.value?.resourceId;
+    var result = azureCosmosManagementClient->listOffers();
+    if (result is stream<Data,error>) {
+        record {|Data value;|}|error? offer = result.next();
+        if (offer is record {|Data value;|}) {
+            offerId = <@untainted>offer?.value?.id;
+            runtime:sleep(1);
+            resourceId = offer?.value?.resourceId;
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -1147,14 +1166,14 @@ function testReplaceOfferWithOptionalParameter() {
 }
 
 @test:Config {
-    groups: ["offer"],
-    dependsOn: [testCreateContainer]
+    groups: ["offer"]
+    //dependsOn: [testCreateContainer]
 }
 function testQueryOffer() {
     log:printInfo("ACTION : queryOffer()");
     string offerQuery = 
         string `SELECT * FROM ${container.id} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
-    var result = azureCosmosManagementClient->queryOffer(offerQuery, maxItemCount = 20);
+    var result = azureCosmosManagementClient->queryOffer(offerQuery);
     if (result is Error) {
         test:assertFail(msg = result.message());
     }

@@ -69,13 +69,17 @@ public function main() {
     }
 
     log:printInfo("List users");
-    stream<cosmosdb:User>|error userList = managementClient->listUsers(databaseId);
+    stream<cosmosdb:Data,error>?|error userList = managementClient->listUsers(databaseId);
+    if (userList is stream<cosmosdb:Data,error>?) {
+        if (userList is stream<cosmosdb:Data,error>) {
+            error? e = userList.forEach(function (cosmosdb:Data storedPrcedure) {
+                log:printInfo(storedPrcedure.toString());
+            });
+            log:printInfo("Success!");
 
-    if (userList is stream<cosmosdb:User>) {
-        error? e = userList.forEach(function (cosmosdb:User user) {
-            log:printInfo(user.toString());
-        });
-        log:printInfo("Success!");
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         log:printError(userList.message());
     }
@@ -131,13 +135,17 @@ public function main() {
     }
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Permission>|error permissionList = managementClient->listPermissions(databaseId, userId);
+    stream<cosmosdb:Data,error>?|error permissionList = managementClient->listPermissions(databaseId, userId);
+    if (permissionList is stream<cosmosdb:Data,error>?) {
+        if (permissionList is stream<cosmosdb:Data,error>) {
+            error? e = permissionList.forEach(function (cosmosdb:Data storedPrcedure) {
+                log:printInfo(storedPrcedure.toString());
+            });
+            log:printInfo("Success!");
 
-    if (permissionList is stream<cosmosdb:Permission>) {
-        error? e = permissionList.forEach(function (cosmosdb:Permission permission) {
-            log:printInfo(permission.toString());
-        });
-        log:printInfo("Success!");
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         log:printError(permissionList.message());
     }

@@ -25,19 +25,23 @@ cosmosdb:Configuration config = {
 
 cosmosdb:ManagementClient managementClient = check new (config);
 
-public function main() {
+public function main() { 
     string databaseId = "my_database";
-    string containerId = "my_container";
+    string userId = "my_user";
 
-    log:printInfo("List  user defined functions");
-    stream<cosmosdb:UserDefinedFunction>|error result = managementClient->listUserDefinedFunctions(databaseId, 
-        containerId);
+    log:printInfo("List permissions");
+    stream<cosmosdb:Data,error>?|error result = managementClient->listPermissions(databaseId, userId);
 
-    if (result is stream<cosmosdb:UserDefinedFunction>) {
-        error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
-            log:printInfo(udf.toString());
-        });
-        log:printInfo("Success!");
+    if (result is stream<cosmosdb:Data,error>?) {
+        if (result is stream<cosmosdb:Data,error>) {
+            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+                log:printInfo(storedPrcedure.toString());
+            });
+            log:printInfo("Success!");
+
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         log:printError(result.message());
     }

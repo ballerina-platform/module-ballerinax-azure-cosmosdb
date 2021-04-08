@@ -32,15 +32,20 @@ public function main() {
     log:printInfo("Query1 - Select all from the container where gender 0");
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
-    cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false, maxItemCount : 10};
-    stream<cosmosdb:Document>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
-        options);
+    cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
+    stream<cosmosdb:QueryResult,error>?|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
+        selectAllQuery, options);
 
-    if (result is stream<cosmosdb:Document>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:printInfo(document.toString());
-        });
-        log:printInfo("Success!");
+    if (result is stream<cosmosdb:QueryResult,error>?) {
+        if (result is stream<cosmosdb:QueryResult,error>) {
+            error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+                log:printInfo(queryResult.toString());
+            });
+            log:printInfo("Success!");
+
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         log:printError(result.message());
     }

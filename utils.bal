@@ -118,7 +118,7 @@ isolated function prepareUrl(string[] paths) returns string {
     return <@untainted>url;
 }
 
-# Attach mandatory basic headers to call a REST endpoint.
+# Attach mandatory basic headers to HTTP request.
 # 
 # + request - The http:Request to add headers to
 # + host - The host to which the request is sent
@@ -147,6 +147,13 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     request.setHeader(http:AUTH_HEADER, signature);
 }
 
+# Attach mandatory basic headers to HTTP GET request.
+# 
+# + host - The host to which the request is sent
+# + token - Master or resource token
+# + httpVerb - The HTTP verb of the request the headers are set to
+# + requestPath - Request path for the request
+# + return - If successful, request will be appended with headers. Else returns `Error`.
 isolated function setMandatoryGetHeaders(string host, string token, http:HttpOperation httpVerb, string requestPath) 
                                          returns map<string>|Error {
     string tokenType = getTokenType(token);
@@ -177,16 +184,27 @@ isolated function setMandatoryGetHeaders(string host, string token, http:HttpOpe
 # + partitionKeyValue - The value of the partition key
 isolated function setPartitionKeyHeader(http:Request request, (int|float|decimal|string)? partitionKeyValue) {
     if (partitionKeyValue is (int|float|decimal|string)) {
-        request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKeyValue.toString()}]`);
+        if (partitionKeyValue is string) {
+            request.setHeader(PARTITION_KEY_HEADER, string `["${partitionKeyValue.toString()}"]`);        
+        } else {
+            request.setHeader(PARTITION_KEY_HEADER, string `[${partitionKeyValue.toString()}]`);
+        }
     }
     return;
 }
 
-
+# Set the optional header related to partitionkey value in GET requests.
+#
+# + headerMap - A map of type string.
+# + partitionKeyValue - The value of the partition key
 isolated function setGetPartitionKeyHeader(map<string> headerMap, (int|float|decimal|string)? partitionKeyValue) returns 
                                            map<string> {
     if (partitionKeyValue is (int|float|decimal|string)) {
-        headerMap[PARTITION_KEY_HEADER] = string `[${partitionKeyValue.toString()}]`;
+        if (partitionKeyValue is string) {
+            headerMap[PARTITION_KEY_HEADER] = string `["${partitionKeyValue.toString()}"]`;
+        } else {
+            headerMap[PARTITION_KEY_HEADER] = string `[${partitionKeyValue.toString()}]`;
+        }
     }
     return headerMap;
 }
@@ -249,6 +267,10 @@ isolated function setOptionalHeaders(http:Request request, Options? requestOptio
     }
 }
 
+# Set the optional headers to the HTTP GET request.
+#
+# + headerMap - A map of type string.
+# + requestOptions - Record of type Options containing the values for optional headers
 isolated function setOptionalGetHeaders(map<string> headerMap, Options? requestOptions) returns map<string> {
     if (requestOptions?.indexingDirective is IndexingDirective) {
         headerMap[INDEXING_DIRECTIVE_HEADER] =  <string>requestOptions?.indexingDirective;
@@ -291,7 +313,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 # Get the current time(GMT) in the specific format.
 #
 # + return - If successful, returns `string` representing UTC date and time 
-#            (in `HTTP-date` format as defined by RFC 7231 Date/Time Formats). Else returns `Error`.
+#            (in `HTTP-date` format as defined by RFC 1123 Date/Time Formats). Else returns `Error`.
 isolated function getDateTime() returns string|Error {
     [int, decimal] & readonly currentTime = time:utcNow(); 
     string time = check utcToString(currentTime, TIME_ZONE_FORMAT);
@@ -358,150 +380,151 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
     }
 }
 
-# Get a stream of JSON documents which is returned as query results.
-# 
-# + azureCosmosClient - Client which calls the azure endpoint
-# + path - Path to which API call is made
-# + request - HTTP request object 
-# + return - A `stream<json> or stream<Document>`. Else returns `Error`
-isolated function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
-                                  @tainted stream<json>|stream<Document>|Error {
-    http:Response response = <http:Response> check azureCosmosClient->post(path, request);
-    json payload = check handleResponse(response);
-    string newContinuationHeader = let var header = 
-        response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
+// This is the older version of the stram implementation
+// # Get a stream of JSON documents which is returned as query results.
+// # 
+// # + azureCosmosClient - Client which calls the azure endpoint
+// # + path - Path to which API call is made
+// # + request - HTTP request object 
+// # + return - A `stream<json> or stream<Document>`. Else returns `Error`
+// isolated function getQueryResults(http:Client azureCosmosClient, string path, http:Request request) returns 
+//                                   @tainted stream<json>|stream<Document>|Error {
+//     http:Response response = <http:Response> check azureCosmosClient->post(path, request);
+//     json payload = check handleResponse(response);
+//     string newContinuationHeader = let var header = 
+//         response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
 
-    if (payload.Documents is json) {
-        Document[] documents = [];
-        json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-        convertToDocumentArray(documents, array);
-        return (<@untainted>documents).toStream();
-    } else if (payload.Offers is json) {
-        json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-        return array.toStream();
-    } else {
-        return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-    }
-}
+//     if (payload.Documents is json) {
+//         Document[] documents = [];
+//         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+//         convertToDocumentArray(documents, array);
+//         return (<@untainted>documents).toStream();
+//     } else if (payload.Offers is json) {
+//         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+//         return array.toStream();
+//     } else {
+//         return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//     }
+// }
 
-# Make a request call to the azure endpoint to get a list of resources.
-# 
-# + azureCosmosClient - The http:Client object which is used to call azure endpoints
-# + path - Path to which API call is made
-# + headerMap - The map of strings which contain the headers necessary for the call
-# + array - Initial recory array which will be filled in every request call
-# + continuationHeader - The continuation header which is use to obtain next pages
-# + return - A `stream<record{}>` if successful. Else returns`Error`.
-isolated function retrieveStream(http:Client azureCosmosClient, string path, map<string> headerMap, 
-                                 @tainted record{}[] array, @tainted string? continuationHeader = ()) returns 
-                                 @tainted stream<record{}>|Error {
-    if (continuationHeader is string && continuationHeader != EMPTY_STRING) {
-        headerMap[CONTINUATION_HEADER] = continuationHeader;
-    }
+// # Make a request call to the azure endpoint to get a list of resources.
+// # 
+// # + azureCosmosClient - The http:Client object which is used to call azure endpoints
+// # + path - Path to which API call is made
+// # + headerMap - The map of strings which contain the headers necessary for the call
+// # + array - Initial recory array which will be filled in every request call
+// # + continuationHeader - The continuation header which is use to obtain next pages
+// # + return - A `stream<record{}>` if successful. Else returns`Error`.
+// isolated function retrieveStream(http:Client azureCosmosClient, string path, map<string> headerMap, 
+//                                  @tainted record{}[] array, @tainted string? continuationHeader = ()) returns 
+//                                  @tainted stream<record{}>|Error {
+//     if (continuationHeader is string && continuationHeader != EMPTY_STRING) {
+//         headerMap[CONTINUATION_HEADER] = continuationHeader;
+//     }
 
-    http:Response response = check azureCosmosClient->get(path, headerMap);
-    string newContinuationHeader = let var header = 
-        response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
+//     http:Response response = check azureCosmosClient->get(path, headerMap);
+//     string newContinuationHeader = let var header = 
+//         response.getHeader(CONTINUATION_HEADER) in header is string ? header : EMPTY_STRING;
 
-    json payload = check handleResponse(response);
-    return check createStream(azureCosmosClient, path, headerMap, payload, array, newContinuationHeader);
-}
+//     json payload = check handleResponse(response);
+//     return check createStream(azureCosmosClient, path, headerMap, payload, array, newContinuationHeader);
+// }
 
-# Create a stream from the array obtained from the request call.
-# 
-# + azureCosmosClient - The http:Client object which is used to call azure endpoints
-# + path - Path to which API call is made
-# + headerMap - The map of strings which contain the headers necessary for the call
-# + payload - JSON payload returned from the response
-# + initalArray - Initial recory array which will be filled in every request call
-# + continuationHeader - The continuation header which is use to obtain next pages
-# + return - A `<record{}>` if successful. Else returns `Error`
-isolated function createStream(http:Client azureCosmosClient, string path, map<string> headerMap, json payload, 
-                               record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
-                               @tainted stream<record{}>|Error {
-    var arrayType = typeof initalArray;
-    record{}[] finalArray = initalArray;
+// # Create a stream from the array obtained from the request call.
+// # 
+// # + azureCosmosClient - The http:Client object which is used to call azure endpoints
+// # + path - Path to which API call is made
+// # + headerMap - The map of strings which contain the headers necessary for the call
+// # + payload - JSON payload returned from the response
+// # + initalArray - Initial recory array which will be filled in every request call
+// # + continuationHeader - The continuation header which is use to obtain next pages
+// # + return - A `<record{}>` if successful. Else returns `Error`
+// isolated function createStream(http:Client azureCosmosClient, string path, map<string> headerMap, json payload, 
+//                                record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
+//                                @tainted stream<record{}>|Error {
+//     var arrayType = typeof initalArray;
+//     record{}[] finalArray = initalArray;
 
-    if (arrayType is typedesc<Offer[]>) {
-        if (payload.Offers is json) {
-            json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
-            convertToOfferArray(<Offer[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Document[]>) {
-        if (payload.Documents is json) {
-            json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-            convertToDocumentArray(<Document[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Database[]>) {
-        if (payload.Databases is json) {
-            json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
-            convertToDatabaseArray(<Database[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Container[]>) {
-        if (payload.DocumentCollections is json) {
-            json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
-            convertToContainerArray(<Container[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<StoredProcedure[]>) {
-        if (payload.StoredProcedures is json) {
-            json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
-            convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }     
-    } else if (arrayType is typedesc<UserDefinedFunction[]>) {
-        if (payload.UserDefinedFunctions is json) {
-            json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
-            convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Trigger[]>) {
-        if (payload.Triggers is json) {
-            json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
-            convertToTriggerArray(<Trigger[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<User[]>) {
-        if (payload.Users is json) {
-            json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
-            convertToUserArray(<User[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<Permission[]>) {
-        if (payload.Permissions is json) {
-            json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
-            convertToPermissionArray(<Permission[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else if (arrayType is typedesc<PartitionKeyRange[]>) {
-        if (payload.PartitionKeyRanges is json) {
-            json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
-            convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
-        } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
-        }
-    } else {
-        return error PayloadAccessError(INVALID_RECORD_TYPE_ERROR);
-    }
+//     if (arrayType is typedesc<Offer[]>) {
+//         if (payload.Offers is json) {
+//             json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
+//             convertToOfferArray(<Offer[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<Document[]>) {
+//         if (payload.Documents is json) {
+//             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
+//             convertToDocumentArray(<Document[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<Database[]>) {
+//         if (payload.Databases is json) {
+//             json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
+//             convertToDatabaseArray(<Database[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<Container[]>) {
+//         if (payload.DocumentCollections is json) {
+//             json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
+//             convertToContainerArray(<Container[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<StoredProcedure[]>) {
+//         if (payload.StoredProcedures is json) {
+//             json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
+//             convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }     
+//     } else if (arrayType is typedesc<UserDefinedFunction[]>) {
+//         if (payload.UserDefinedFunctions is json) {
+//             json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
+//             convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<Trigger[]>) {
+//         if (payload.Triggers is json) {
+//             json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
+//             convertToTriggerArray(<Trigger[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<User[]>) {
+//         if (payload.Users is json) {
+//             json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
+//             convertToUserArray(<User[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<Permission[]>) {
+//         if (payload.Permissions is json) {
+//             json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
+//             convertToPermissionArray(<Permission[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else if (arrayType is typedesc<PartitionKeyRange[]>) {
+//         if (payload.PartitionKeyRanges is json) {
+//             json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
+//             convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
+//         } else {
+//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         }
+//     } else {
+//         return error PayloadAccessError(INVALID_RECORD_TYPE_ERROR);
+//     }
 
-    stream<record{}> newStream = (<@untainted>finalArray).toStream();
-    if (continuationHeader != EMPTY_STRING) {
-        newStream = check retrieveStream(azureCosmosClient, path, headerMap, <@untainted>finalArray, continuationHeader);
-    }
-    return newStream;
-}
+//     stream<record{}> newStream = (<@untainted>finalArray).toStream();
+//     if (continuationHeader != EMPTY_STRING) {
+//         newStream = check retrieveStream(azureCosmosClient, path, headerMap, <@untainted>finalArray, continuationHeader);
+//     }
+//     return newStream;
+// }
 
 # Get the enum value for a given string which represents the type of index.
 #
