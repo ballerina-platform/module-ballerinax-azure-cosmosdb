@@ -10,5 +10,3 @@ license = ["Apache-2.0"]
 [build-options]
 observabilityIncluded=true
 
-[dependencies]
-

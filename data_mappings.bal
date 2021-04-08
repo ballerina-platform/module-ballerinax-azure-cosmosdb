@@ -261,106 +261,121 @@ isolated function mapJsonToOfferType(json payload) returns @tainted Offer {
     };
 }
 
-# Convert JSON array of database information in to an array of type `Database`.
-# 
-# + databases - The initial array of database records we need to append new elements to
-# + sourceDatabaseArrayJsonObject - JSON object which contain the array of database information
-isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) {
-    foreach json databaseObject in sourceDatabaseArrayJsonObject {
-        Database database = mapJsonToDatabaseType(databaseObject);
-        databases.push(database);
-    }
-}
+// # Convert JSON array of database information in to an array of type `Database`.
+// # 
+// # + databases - The initial array of database records we need to append new elements to
+// # + sourceDatabaseArrayJsonObject - JSON object which contain the array of database information
+// isolated function convertToDatabaseArray(Database[] databases, json[] sourceDatabaseArrayJsonObject) {
+//     foreach json databaseObject in sourceDatabaseArrayJsonObject {
+//         Database database = mapJsonToDatabaseType(databaseObject);
+//         databases.push(database);
+//     }
+// }
 
-# Convert JSON array of container information in to an array of type `Container`.
-# 
-# + containers - The initial array of container records we need to append new elements to
-# + sourceContainerArrayJsonObject - JSON object which contain the array of container information
-isolated function convertToContainerArray(Container[] containers, json[] sourceContainerArrayJsonObject) {
-    foreach json jsonCollection in sourceContainerArrayJsonObject {
-        Container container = mapJsonToContainerType(jsonCollection);
-        containers.push(container);
-    }
-}
+// # Convert JSON array of container information in to an array of type `Container`.
+// # 
+// # + containers - The initial array of container records we need to append new elements to
+// # + sourceContainerArrayJsonObject - JSON object which contain the array of container information
+// isolated function convertToContainerArray(Container[] containers, json[] sourceContainerArrayJsonObject) {
+//     foreach json jsonCollection in sourceContainerArrayJsonObject {
+//         Container container = mapJsonToContainerType(jsonCollection);
+//         containers.push(container);
+//     }
+// }
 
-# Convert JSON array of document information in to an array of type `Document`.
-# 
-# + documents - The initial array of document records we need to append new elements to
-# + sourceDocumentArrayJsonObject - JSON object which contain the array of document information
-isolated function convertToDocumentArray(Document[] documents, json[] sourceDocumentArrayJsonObject) {
-    foreach json documentObject in sourceDocumentArrayJsonObject {
-        Document document = mapJsonToDocumentType(documentObject);
-        documents.push(document);
-    }
-}
+// # Convert JSON array of document information in to an array of type `Document`.
+// # 
+// # + documents - The initial array of document records we need to append new elements to
+// # + sourceDocumentArrayJsonObject - JSON object which contain the array of document information
+// isolated function convertToDocumentArray(Document[] documents, json[] sourceDocumentArrayJsonObject) {
+//     foreach json documentObject in sourceDocumentArrayJsonObject {
+//         Document document = mapJsonToDocumentType(documentObject);
+//         documents.push(document);
+//     }
+// }
 
-# Convert JSON array of stored procedure information in to an array of type `StoredProcedure`.
-# 
-# + storedProcedures - The initial array of stored procedure records that we need to append new elements to to
-# + sourceStoredProcedureArrayJsonObject - JSON object which contain the array of stored procedure information
-isolated function convertToStoredProcedureArray(StoredProcedure[] storedProcedures, 
-                                                json[] sourceStoredProcedureArrayJsonObject) {
-    foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
-        StoredProcedure storedProcedure = mapJsonToStoredProcedure(storedProcedureObject);
-        storedProcedures.push(storedProcedure);
-    }
-}
+// # Convert JSON array of stored procedure information in to an array of type `StoredProcedure`.
+// # 
+// # + storedProcedures - The initial array of stored procedure records that we need to append new elements to to
+// # + sourceStoredProcedureArrayJsonObject - JSON object which contain the array of stored procedure information
+// isolated function convertToStoredProcedureArray(StoredProcedure[] storedProcedures, 
+//                                                 json[] sourceStoredProcedureArrayJsonObject) {
+//     foreach json storedProcedureObject in sourceStoredProcedureArrayJsonObject {
+//         StoredProcedure storedProcedure = mapJsonToStoredProcedure(storedProcedureObject);
+//         storedProcedures.push(storedProcedure);
+//     }
+// }
 
-# Convert JSON array of user defined function information in to an array of type `UserDefinedFunction`.
-# 
-# + userDefinedFunctions - The initial array of user defined function records that we need to append new elements to
-# + sourceUdfArrayJsonObject - JSON object which contain the array of user defined function information
-isolated function convertsToUserDefinedFunctionArray(UserDefinedFunction[] userDefinedFunctions, 
-                                                     json[] sourceUdfArrayJsonObject) {
-    foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
-        UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction(userDefinedFunctionObject);
-        userDefinedFunctions.push(userDefinedFunction);
-    }
-}
+// # Convert JSON array of user defined function information in to an array of type `UserDefinedFunction`.
+// # 
+// # + userDefinedFunctions - The initial array of user defined function records that we need to append new elements to
+// # + sourceUdfArrayJsonObject - JSON object which contain the array of user defined function information
+// isolated function convertsToUserDefinedFunctionArray(UserDefinedFunction[] userDefinedFunctions, 
+//                                                      json[] sourceUdfArrayJsonObject) {
+//     foreach json userDefinedFunctionObject in sourceUdfArrayJsonObject {
+//         UserDefinedFunction userDefinedFunction = mapJsonToUserDefinedFunction(userDefinedFunctionObject);
+//         userDefinedFunctions.push(userDefinedFunction);
+//     }
+// }
 
-# Convert JSON array of trigger information in to an array of type `Trigger`.
-# 
-# + triggers - The initial array of trigger records that we need to append new elements to
-# + sourceTriggerArrayJsonObject - JSON object which contain the array of trigger information
-isolated function convertToTriggerArray(Trigger[] triggers, json[] sourceTriggerArrayJsonObject) {
-    foreach json triggerObject in sourceTriggerArrayJsonObject {
-        Trigger trigger = mapJsonToTrigger(triggerObject);
-        triggers.push(trigger);
-    }
-}
+// # Convert JSON array of trigger information in to an array of type `Trigger`.
+// # 
+// # + triggers - The initial array of trigger records that we need to append new elements to
+// # + sourceTriggerArrayJsonObject - JSON object which contain the array of trigger information
+// isolated function convertToTriggerArray(Trigger[] triggers, json[] sourceTriggerArrayJsonObject) {
+//     foreach json triggerObject in sourceTriggerArrayJsonObject {
+//         Trigger trigger = mapJsonToTrigger(triggerObject);
+//         triggers.push(trigger);
+//     }
+// }
 
-# Convert JSON array of user information in to an array of type `User`.
-# 
-# + users - The initial array of users records that we need to append new elements to
-# + sourceUserArrayJsonObject - JSON object which contain the array of user information
-isolated function convertToUserArray(User[] users, json[] sourceUserArrayJsonObject) {
-    foreach json userObject in sourceUserArrayJsonObject {
-        User user = mapJsonToUserType(userObject);
-        users.push(user);
-    }
-}
+// # Convert JSON array of user information in to an array of type `User`.
+// # 
+// # + users - The initial array of users records that we need to append new elements to
+// # + sourceUserArrayJsonObject - JSON object which contain the array of user information
+// isolated function convertToUserArray(User[] users, json[] sourceUserArrayJsonObject) {
+//     foreach json userObject in sourceUserArrayJsonObject {
+//         User user = mapJsonToUserType(userObject);
+//         users.push(user);
+//     }
+// }
 
-# Convert JSON array of permission information in to an array of type `Permission`.
-# 
-# + permissions - The initial array of permission records that we need to append new elements to
-# + sourcePermissionArrayJsonObject - JSON object which contain the array of permission information
-isolated function convertToPermissionArray(Permission[] permissions, json[] sourcePermissionArrayJsonObject) {
-    foreach json permissionObject in sourcePermissionArrayJsonObject {
-        Permission permission = mapJsonToPermissionType(permissionObject);
-        permissions.push(permission);
-    }
-}
+// # Convert JSON array of permission information in to an array of type `Permission`.
+// # 
+// # + permissions - The initial array of permission records that we need to append new elements to
+// # + sourcePermissionArrayJsonObject - JSON object which contain the array of permission information
+// isolated function convertToPermissionArray(Permission[] permissions, json[] sourcePermissionArrayJsonObject) {
+//     foreach json permissionObject in sourcePermissionArrayJsonObject {
+//         Permission permission = mapJsonToPermissionType(permissionObject);
+//         permissions.push(permission);
+//     }
+// }
 
-# Convert JSON array of offer infromation in to an array of type `Offer`.
-# 
-# + offers - The initial array of offer records that we need to append new elements to
-# + sourceOfferArrayJsonObject - JSON object which contain the array of offer information
-isolated function convertToOfferArray(Offer[] offers, json[] sourceOfferArrayJsonObject) {
-    foreach json offerObject in sourceOfferArrayJsonObject {
-        Offer offer = mapJsonToOfferType(offerObject);
-        offers.push(offer);
-    }
-}
+// # Convert JSON array of offer infromation in to an array of type `Offer`.
+// # 
+// # + offers - The initial array of offer records that we need to append new elements to
+// # + sourceOfferArrayJsonObject - JSON object which contain the array of offer information
+// isolated function convertToOfferArray(Offer[] offers, json[] sourceOfferArrayJsonObject) {
+//     foreach json offerObject in sourceOfferArrayJsonObject {
+//         Offer offer = mapJsonToOfferType(offerObject);
+//         offers.push(offer);
+//     }
+// }
+
+// # Convert JSON array of partition key ranges in to an array of type `PartitionKeyRange`.
+// # 
+// # + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
+// isolated function convertToPartitionKeyRangeArray(PartitionKeyRange[] partitionKeyRangesArray , 
+//                                                   json[] sourcePrtitionKeyArrayJsonObject) {
+//     foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
+//         PartitionKeyRange value = {
+//             id: let var id = jsonPartitionKey.id in id is string ? id : EMPTY_STRING,
+//             minInclusive: let var min = jsonPartitionKey.minInclusive in min is string ? min : EMPTY_STRING,
+//             maxExclusive: let var max = jsonPartitionKey.maxExclusive in max is string ? max : EMPTY_STRING
+//         };
+//         partitionKeyRangesArray.push(value);
+//     }
+// }
 
 # Convert JSON array of included path information in to an array of type `IncludedPath`.
 # 
@@ -386,21 +401,6 @@ isolated function convertToExcludedPathsArray(json[] sourcePathArrayJsonObject) 
         excludedPaths.push(excludedPath);
     }
     return excludedPaths;
-}
-
-# Convert JSON array of partition key ranges in to an array of type `PartitionKeyRange`.
-# 
-# + sourcePrtitionKeyArrayJsonObject - JSON object which contain the array of partition key range information
-isolated function convertToPartitionKeyRangeArray(PartitionKeyRange[] partitionKeyRangesArray , 
-                                                  json[] sourcePrtitionKeyArrayJsonObject) {
-    foreach json jsonPartitionKey in sourcePrtitionKeyArrayJsonObject {
-        PartitionKeyRange value = {
-            id: let var id = jsonPartitionKey.id in id is string ? id : EMPTY_STRING,
-            minInclusive: let var min = jsonPartitionKey.minInclusive in min is string ? min : EMPTY_STRING,
-            maxExclusive: let var max = jsonPartitionKey.maxExclusive in max is string ? max : EMPTY_STRING
-        };
-        partitionKeyRangesArray.push(value);
-    }
 }
 
 # Convert JSON array of indexes in to an array of type `Index`.

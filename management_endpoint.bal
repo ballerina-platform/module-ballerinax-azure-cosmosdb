@@ -87,8 +87,8 @@ public client class ManagementClient {
     # + return - If successful, returns `Database`. Else returns `Error`.
     @display {label: "Get database"} 
     remote isolated function getDatabase(@display {label: "Database id"} string databaseId, 
-                                         @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                         resourceReadOptions) 
+                                         @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                         resourceReadOptions = ()) 
                                          returns @tainted @display {label: "Database"} Database|Error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -102,23 +102,19 @@ public client class ManagementClient {
 
     # List information of all databases.
     # 
-    # + maxItemCount - Optional. Maximum number of `Database` records in one returning page.
     # + return - If successful, returns `stream<Database>`. else returns `Error`.
     @display {label: "Get databases"}  
-    remote isolated function listDatabases(@display {label: "Maxiumu item count per page (optional)"} int? 
-                                           maxItemCount = ()) returns @tainted @display {label: "Stream of databases"} 
-                                           stream<Database>|Error {
+    remote isolated function listDatabases() returns 
+                                          @tainted @display {label: "Stream of databases"} stream<Data,error>?|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] =  maxItemCount.toString();
-        }
 
-        Database[] initialArray = [];
-        return <stream<Database>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete a given database.
@@ -129,8 +125,8 @@ public client class ManagementClient {
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete a database"} 
     remote isolated function deleteDatabase(@display {label: "Database id"} string databaseId, 
-                                            @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                            resourceDeleteOptions) returns @tainted @display {label: "Deletion response"} 
+                                            @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                            resourceDeleteOptions = ()) returns @tainted @display {label: "Deletion response"} 
                                             DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId]);
@@ -219,8 +215,8 @@ public client class ManagementClient {
     @display {label: "Get container"} 
     remote isolated function getContainer(@display {label: "Database id"} string databaseId, 
                                           @display {label: "Container id"} string containerId, 
-                                          @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                          resourceReadOptions) 
+                                          @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                          resourceReadOptions = ()) 
                                           returns @tainted @display {label: "Container"} Container|Error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -235,25 +231,20 @@ public client class ManagementClient {
     # List information of all containers.
     # 
     # + databaseId - ID of the database to which the containers belongs to
-    # + maxItemCount - Optional. Maximum number of container records in one returning page.
     # + return - If successful, returns `stream<Container>`. Else returns `Error`.
     @display {label: "Get containers"} 
-    remote isolated function listContainers(@display {label: "Database id"} string databaseId, 
-                                            @display {label: "Maximum item count per page (optional)"} int? 
-                                            maxItemCount = ()) 
+    remote isolated function listContainers(@display {label: "Database id"} string databaseId) 
                                             returns @tainted @display {label: "Stream of containers"} 
-                                            stream<Container>|Error {
+                                            stream<Data,error>?|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] =  maxItemCount.toString();
-        }
 
-        Container[] initialArray = [];
-        return <stream<Container>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete a container.
@@ -266,8 +257,8 @@ public client class ManagementClient {
     @display {label: "Delete container"} 
     remote isolated function deleteContainer(@display {label: "Database id"} string databaseId, 
                                              @display {label: "Container id"} string containerId, 
-                                             @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                             resourceDeleteOptions) returns 
+                                             @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                             resourceDeleteOptions = ()) returns 
                                              @tainted @display {label: "Deletion response"} DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId]);
@@ -288,15 +279,16 @@ public client class ManagementClient {
     remote isolated function listPartitionKeyRanges(@display {label: "Database id"} string databaseId, 
                                                     @display {label: "Container id"} string containerId) returns 
                                                     @tainted @display {label: "Stream of partition key ranges"} 
-                                                    stream<PartitionKeyRange>|Error {
+                                                    stream<Data,error>?|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_PK_RANGES]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
 
-        PartitionKeyRange[] initialArray = [];
-        return <stream<PartitionKeyRange>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Create a new user defined function. A user defined function is a side effect free piece of application logic 
@@ -373,22 +365,20 @@ public client class ManagementClient {
     @display {label: "Get user defined functions"} 
     remote isolated function listUserDefinedFunctions(@display {label: "Database id"} string databaseId, 
                                                       @display {label: "Container id"} string containerId, 
-                                                      @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                                      resourceReadOptions) returns 
+                                                      @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                                      resourceReadOptions = ()) returns 
                                                       @tainted @display {label: "Stream of User Defined Fucntions"} 
-                                                      stream<UserDefinedFunction>|Error { 
+                                                      stream<Data,error>?|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_UDF]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (resourceReadOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] = resourceReadOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        UserDefinedFunction[] initialArray = [];
-        return <stream<UserDefinedFunction>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray); 
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete an existing user defined function.
@@ -405,7 +395,7 @@ public client class ManagementClient {
                                                        @display {label: "User defined function id"} string 
                                                        userDefinedFunctionid, 
                                                        @display {label: "Optional header parameters"} 
-                                                       *ResourceDeleteOptions resourceDeleteOptions) returns 
+                                                       ResourceDeleteOptions? resourceDeleteOptions =()) returns 
                                                        @tainted @display {label: "Deletion response"} 
                                                        DeleteResponse|Error { 
         http:Request request = new;
@@ -500,21 +490,19 @@ public client class ManagementClient {
     @display {label: "Get triggers"} 
     remote isolated function listTriggers(@display {label: "Database id"} string databaseId, 
                                           @display {label: "Container id"} string containerId, 
-                                          @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                          resourceReadOptions) returns @tainted @display {label: "Stream of Triggers"} 
-                                          stream<Trigger>|Error { 
+                                          @display {label: "Optional header parameters"} ResourceReadOptions?
+                                          resourceReadOptions = ()) returns 
+                                          @tainted @display {label: "Stream of Triggers"} stream<Data,error>?|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_TRIGGER]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (resourceReadOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] = resourceReadOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        Trigger[] initialArray = [];
-        return <stream<Trigger>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete an existing trigger.
@@ -529,9 +517,9 @@ public client class ManagementClient {
     remote isolated function deleteTrigger(@display {label: "Database id"} string databaseId, 
                                            @display {label: "Container id"} string containerId, 
                                            @display {label: "Trigger id"} string triggerId, 
-                                           @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                           resourceDeleteOptions) returns @tainted @display {label: "Deletion response"} 
-                                           DeleteResponse|Error {
+                                           @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                           resourceDeleteOptions = ()) returns 
+                                           @tainted @display {label: "Deletion response"} DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_TRIGGER, triggerId]);
@@ -595,8 +583,8 @@ public client class ManagementClient {
     @display {label: "Get user"} 
     remote isolated function getUser(@display {label: "Database id"} string databaseId, 
                                      @display {label: "User id"} string userId, 
-                                     @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                     resourceReadOptions) returns @tainted @display {label: "User"} User|Error {
+                                     @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                     resourceReadOptions = ()) returns @tainted @display {label: "User"} User|Error {
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
@@ -615,20 +603,18 @@ public client class ManagementClient {
     # + return - If successful, returns a `stream<User>`. Else returns `Error`.
     @display {label: "Get users"} 
     remote isolated function listUsers(@display {label: "Database id"} string databaseId, 
-                                       @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                       resourceReadOptions) returns @tainted @display {label: "Stream of Users"} 
-                                       stream<User>|Error { 
+                                       @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                       resourceReadOptions = ()) returns @tainted @display {label: "Stream of Users"} 
+                                       stream<Data,error>?|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (resourceReadOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] = resourceReadOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        User[] initialArray = [];
-        return <stream<User>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete a user.
@@ -641,8 +627,8 @@ public client class ManagementClient {
     @display {label: "Delete user"} 
     remote isolated function deleteUser(@display {label: "Database id"} string databaseId, 
                                         @display {label: "User id"} string userId, 
-                                        @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                        resourceDeleteOptions) returns @tainted @display {label: "Deletion response"} 
+                                        @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                        resourceDeleteOptions = ()) returns @tainted @display {label: "Deletion response"} 
                                         DeleteResponse|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId]);
@@ -741,8 +727,8 @@ public client class ManagementClient {
     remote isolated function getPermission(@display {label: "Database id"} string databaseId, 
                                            @display {label: "User id"} string userId,
                                            @display {label: "Permission id"} string permissionId, 
-                                           @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                           resourceReadOptions) 
+                                           @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                           resourceReadOptions = ()) 
                                            returns @tainted @display {label: "Permission"} Permission|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION, permissionId]);
@@ -765,22 +751,20 @@ public client class ManagementClient {
     @display {label: "Get permissions"} 
     remote isolated function listPermissions(@display {label: "Database id"} string databaseId, 
                                              @display {label: "User id"} string userId, 
-                                             @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                             resourceReadOptions) returns 
+                                             @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                             resourceReadOptions = ()) returns 
                                              @tainted @display {label: "Stream of Permissions"} 
-                                             stream<Permission>|Error { 
+                                             stream<Data,error>?|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (resourceReadOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] = resourceReadOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
-
-        Permission[] initialArray = [];
-        return <stream<Permission>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Deletes a permission belongs to a user.
@@ -795,8 +779,8 @@ public client class ManagementClient {
     remote isolated function deletePermission(@display {label: "Database id"} string databaseId, 
                                               @display {label: "User id"} string userId, 
                                               @display {label: "Permission id"} string permissionId, 
-                                              @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                              resourceDeleteOptions) returns 
+                                              @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                              resourceDeleteOptions = ()) returns 
                                               @tainted @display {label: "Deletion response"} DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
@@ -844,8 +828,8 @@ public client class ManagementClient {
     # + return - If successful, returns a `Offer`. Else returns `Error`.
     @display {label: "Get offer"} 
     remote isolated function getOffer(@display {label: "Offer id"} string offerId, 
-                                      @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                      resourceReadOptions) returns @tainted @display {label: "Offer"} Offer|Error {
+                                      @display {label: "Optional header parameters"} ResourceReadOptions? 
+                                      resourceReadOptions = ()) returns @tainted @display {label: "Offer"} Offer|Error {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
@@ -863,20 +847,18 @@ public client class ManagementClient {
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `stream<Offer>` Else returns `Error`.
     @display {label: "Get offers"} 
-    remote isolated function listOffers(@display {label: "Optional header parameters"} *ResourceReadOptions 
-                                        resourceReadOptions) returns @tainted @display {label: "Stream of Offers"} 
-                                        stream<Offer>|Error { 
+    remote isolated function listOffers(@display {label: "Optional header parameters"} ResourceReadOptions? 
+                                        resourceReadOptions = ()) returns @tainted @display {label: "Stream of Offers"} 
+                                        stream<Data,error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (resourceReadOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] = resourceReadOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        Offer[] initialArray = [];
-        return <stream<Offer>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Perform queries on offer resources.
@@ -887,20 +869,19 @@ public client class ManagementClient {
     # + return - If successful, returns a `stream<json>`. Else returns `Error`.
     @display {label: "Query offers"} 
     remote isolated function queryOffer(@display {label: "SQL query"} string sqlQuery, 
-                                        @display {label: "Optional header parameters"} *ResourceQueryOptions 
-                                        resourceQueryOptions) returns @tainted @display {label: "Stream of JSON"} 
-                                        stream<json>|Error { 
+                                        @display {label: "Optional header parameters"} ResourceQueryOptions? 
+                                        resourceQueryOptions = ()) returns @tainted @display {label: "Stream of JSON"} 
+                                        stream<QueryResult,error>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
         setOptionalHeaders(request, resourceQueryOptions);
-        if (resourceQueryOptions?.maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceQueryOptions?.maxItemCount.toString());
-        }
 
         request.setJsonPayload({query: sqlQuery});
         check setHeadersForQuery(request);
 
-        return <stream<json>> check getQueryResults(self.httpClient, requestPath, request);
+        QueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
+        stream<QueryResult,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 }

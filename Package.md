@@ -10,7 +10,7 @@ connect to an Azure Cosmos DB resource from Ballerina and perform various operat
 
 ## Compatibility
 
-Ballerina Language Version   **Swan Lake Alpha 3**  
+Ballerina Language Version   **Swan Lake Alpha 4**  
 Cosmos DB API Version        **2018-12-31**
 
 ## Cosmos DB Clients

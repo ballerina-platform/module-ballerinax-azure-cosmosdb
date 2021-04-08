@@ -47,8 +47,8 @@ public client class DataPlaneClient {
                                             @display {label: "Container id"} string containerId, 
                                             @display {label: "Document"} record {|string id; json...;|} document, 
                                             @display {label: "Partition key"} int|float|decimal|string partitionKey, 
-                                            @display {label: "Optional header parameters"} *DocumentCreateOptions 
-                                            documentCreateOptions) returns 
+                                            @display {label: "Optional header parameters"} DocumentCreateOptions? 
+                                            documentCreateOptions = ()) returns 
                                             @tainted @display {label: "Document"} Document|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -78,8 +78,8 @@ public client class DataPlaneClient {
                                              @display {label: "New Document"} @tainted record {|string id; json...;|} 
                                              document, 
                                              @display {label: "Partition key"} int|float|decimal|string partitionKey,  
-                                             @display {label: "Optional header parameters"} *DocumentReplaceOptions 
-                                             documentReplaceOptions) returns 
+                                             @display {label: "Optional header parameters"} DocumentReplaceOptions? 
+                                             documentReplaceOptions = ()) returns 
                                              @tainted @display {label: "Document"} Document|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -107,8 +107,8 @@ public client class DataPlaneClient {
                                          @display {label: "Container id"} string containerId, 
                                          @display {label: "Document id"} string documentId, 
                                          @display {label: "Partition key"} int|float|decimal|string partitionKey, 
-                                         @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                         resourceReadOptions) returns 
+                                         @display {label: "Optional header parameters"} ResourceReadOptions?
+                                         resourceReadOptions = ()) returns 
                                          @tainted @display {label: "Document"} Document|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -131,20 +131,17 @@ public client class DataPlaneClient {
     @display {label: "Get documents"} 
     remote isolated function getDocumentList(@display {label: "Database id"} string databaseId, 
                                              @display {label: "Container id"} string containerId, 
-                                             @display {label: "Optional header parameters"} *DocumentListOptions 
-                                             documentListOptions) returns 
-                                             @tainted @display {label: "Stream of Documents"} stream<Document,error>|Error { 
+                                             @display {label: "Optional header parameters"} DocumentListOptions? 
+                                             documentListOptions = ()) returns 
+                                             @tainted @display {label: "Stream of Documents"} stream<Data,error>?|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (documentListOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] =  documentListOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, documentListOptions);
 
-        DocumentStream objectInstance = check new(self.httpClient, requestPath, headerMap);
-        stream<Document,error> finalStream = new (objectInstance);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -162,8 +159,8 @@ public client class DataPlaneClient {
                                             @display {label: "Container id"} string containerId, 
                                             @display {label: "Document id"} string documentId, 
                                             @display {label: "Partition key"} int|float|decimal|string partitionKey, 
-                                            @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                            resourceDeleteOptions) returns 
+                                            @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                            resourceDeleteOptions =()) returns 
                                             @tainted @display {label: "Deletion response"} DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -189,18 +186,17 @@ public client class DataPlaneClient {
     remote isolated function queryDocuments(@display {label: "Database id"} string databaseId, 
                                             @display {label: "Container id"} string containerId, 
                                             @display {label: "SQL query"} string sqlQuery, 
-                                            @display {label: "Optional header parameters"} *ResourceQueryOptions 
-                                            resourceQueryOptions) returns 
-                                            @tainted @display {label: "Stream of Documents"} stream<Document>|Error { 
+                                            @display {label: "Optional header parameters"} ResourceQueryOptions? 
+                                            resourceQueryOptions = ()) returns 
+                                            @tainted @display {label: "Stream of Documents"} 
+                                            stream<QueryResult,error>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, resourceQueryOptions?.partitionKey);
         setOptionalHeaders(request, resourceQueryOptions);
-        if (resourceQueryOptions?.maxItemCount is int) {
-            request.setHeader(MAX_ITEM_COUNT_HEADER, resourceQueryOptions?.maxItemCount.toString());
-        }
+
         json payload = {
             query: sqlQuery,
             parameters:[]
@@ -208,7 +204,9 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
 
         check setHeadersForQuery(request);
-        return <stream<Document>> check getQueryResults(self.httpClient, requestPath, request);
+        QueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
+        stream<QueryResult,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Create a new stored procedure. Stored procedure is a piece of application logic written in JavaScript that is 
@@ -281,22 +279,20 @@ public client class DataPlaneClient {
     @display {label: "Get stored procedures"} 
     remote isolated function listStoredProcedures(@display {label: "Database id"} string databaseId, 
                                                   @display {label: "Container id"} string containerId, 
-                                                  @display {label: "Optional header parameters"} *ResourceReadOptions 
-                                                  resourceReadOptions) returns 
+                                                  @display {label: "Optional header parameters"} ResourceReadOptions?
+                                                  resourceReadOptions = ()) returns 
                                                   @tainted @display {label: "Stream of Stored Procedures"} 
-                                                  stream<StoredProcedure>|Error { 
+                                                  stream<Data,error>?|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES]);
         
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
-        if (resourceReadOptions?.maxItemCount is int) {
-            headerMap[MAX_ITEM_COUNT_HEADER] =  resourceReadOptions?.maxItemCount.toString();
-        }
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        StoredProcedure[] initialArray = [];
-        return <stream<StoredProcedure>> check retrieveStream(self.httpClient, requestPath, headerMap, initialArray);
+        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Data,error> finalStream = new (objectInstance);
+        return finalStream;
     }
 
     # Delete a stored procedure.
@@ -311,8 +307,8 @@ public client class DataPlaneClient {
     remote isolated function deleteStoredProcedure(@display {label: "Database id"} string databaseId, 
                                                    @display {label: "Container id"} string containerId, 
                                                    @display {label: "Stored procedure id"} string storedProcedureId, 
-                                                   @display {label: "Optional header parameters"} *ResourceDeleteOptions 
-                                                   resourceDeleteOptions) returns 
+                                                   @display {label: "Optional header parameters"} ResourceDeleteOptions? 
+                                                   resourceDeleteOptions = ()) returns 
                                                    @tainted @display {label: "Deletion Response"} DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -338,7 +334,7 @@ public client class DataPlaneClient {
                                                     @display {label: "Container id"} string containerId, 
                                                     @display {label: "Stored Procedure id"} string storedProcedureId, 
                                                     @display {label: "Optional parameters"} 
-                                                    *StoredProcedureExecuteOptions storedProcedureExecuteOptions) 
+                                                    StoredProcedureExecuteOptions storedProcedureExecuteOptions) 
                                                     returns @tainted @display {label: "JSON response"} json|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 

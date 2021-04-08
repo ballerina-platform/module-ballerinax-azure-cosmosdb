@@ -79,15 +79,19 @@ public function main() {
     }
 
     log:printInfo("List  user defined functions(udf)s");
-    stream<cosmosdb:UserDefinedFunction>|error udfList = managementClient->listUserDefinedFunctions(databaseId, 
-        containerId);
+    stream<cosmosdb:Data,error>?|error udfList = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    if (result is stream<cosmosdb:Data,error>?) {
+        if (result is stream<cosmosdb:Data,error>) {
+            error? e = result.forEach(function (cosmosdb:Data udf) {
+                log:printInfo(udf.toString());
+            });
+            log:printInfo("Success!");
 
-    if (udfList is stream<cosmosdb:UserDefinedFunction>) {
-        error? e = udfList.forEach(function (cosmosdb:UserDefinedFunction udf) {
-            log:printInfo(udf.toString());
-        });
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
-        log:printError(udfList.message());
+        log:printError(result.message());
     }
 
     log:printInfo("Delete user defined function");

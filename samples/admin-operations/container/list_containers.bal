@@ -25,18 +25,22 @@ cosmosdb:Configuration config = {
 
 cosmosdb:ManagementClient managementClient = check new (config);
 
-public function main() { 
+public function main() {
     string databaseId = "my_database";
-    string userId = "my_user";
 
-    log:printInfo("List permissions");
-    stream<cosmosdb:Permission>|error result = managementClient->listPermissions(databaseId, userId);
+    log:printInfo("Getting list of containers");   
+    stream<cosmosdb:Data,error>?|error result = managementClient->listContainers(databaseId);
 
-    if (result is stream<cosmosdb:Permission>) {
-        error? e = result.forEach(function (cosmosdb:Permission permission) {
-            log:printInfo(permission.toString());
-        });
-        log:printInfo("Success!");
+    if (result is stream<cosmosdb:Data,error>?) {
+        if (result is stream<cosmosdb:Data,error>) {
+            error? e = result.forEach(function (cosmosdb:Data container) {
+                log:printInfo(container.toString());
+            });
+            log:printInfo("Success!");
+
+        } else {
+            log:printInfo("Empty stream");
+        }
     } else {
         log:printError(result.message());
     }

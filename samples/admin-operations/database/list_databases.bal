@@ -38,3 +38,34 @@ public function main() {
         log:printError(result.message());
     }
 }
+
+// new implementation
+import ballerina/log;
+import ballerina/os;
+import ballerinax/azure_cosmosdb as cosmosdb;
+
+cosmosdb:Configuration config = {
+    baseUrl: os:getEnv("BASE_URL"),
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+};
+
+cosmosdb:ManagementClient managementClient = check new (config);
+
+public function main() {
+    log:printInfo("Getting list of databases");
+    stream<cosmosdb:Data,error>?|error result = managementClient->listDatabases();
+
+    if (result is stream<cosmosdb:Data,error>?) {
+        if (result is stream<cosmosdb:Data,error>) {
+            error? e = result.forEach(function (cosmosdb:Data database) {
+                log:printInfo(database.toString());
+            });
+            log:printInfo("Success!");
+
+        } else {
+            log:printInfo("Empty stream");
+        }
+    } else {
+        log:printError(result.message());
+    }
+}
