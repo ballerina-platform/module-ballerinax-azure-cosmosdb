@@ -189,10 +189,19 @@ For listing the existing documents inside this Cosmos container you have to give
 parameters. Here, you will get a stream of `Document` records as the response. Using the ballerina Stream API you can 
 access the returned results.
 ```ballerina
-stream<cosmosdb:Document> documentList = check azureCosmosClient-> getDocumentList("my_database", "my_container");
-error? e = documentList.forEach(function (cosmosdb:Document document) {
-    log:printInfo(document.toString());
-});
+stream<cosmosdb:Data,error>?|error result = azureCosmosClient->listTriggers("my_database", "my_container");
+if (result is stream<cosmosdb:Data,error>?) {
+    if (result is stream<cosmosdb:Data,error>) {
+        error? e = result.forEach(function (cosmosdb:Data document) {
+            log:printInfo(document.toString());
+        });
+        log:printInfo("Success!");
+
+    } else {
+        log:printInfo("Empty stream");
+    }
+} else {
+    log:printError(result.message());
 }
 ```
 ### Step 6: Query documents
@@ -204,14 +213,24 @@ https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-
 
 ```ballerina
 string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
-int partitionKeyValueMale = 0;
-int maxItemCount = 10;
-stream<Document> queryResult = check azureCosmosClient-> queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-    maxItemCount, partitionKeyValueMale);
+cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
 
-error? e =  queryResult.forEach(function (Document record){
-                log:printInfo(record);
-            }); 
+stream<cosmosdb:QueryResult,error>?|error result = azureCosmosClient->queryDocuments("my_database", "my_container", 
+    selectAllQuery, options);
+
+if (result is stream<cosmosdb:QueryResult,error>?) {
+    if (result is stream<cosmosdb:QueryResult,error>) {
+        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+            log:printInfo(queryResult.toString());
+        });
+        log:printInfo("Success!");
+
+    } else {
+        log:printInfo("Empty stream");
+    }
+} else {
+    log:printError(result.message());
+}
 ```
 Notes: <br/> As the Cosmos containers are creating logical partitions with the partition key provided, you have to 
 provide the **value of partition key**, if the querying must be done only considering that logical partition. This logical 

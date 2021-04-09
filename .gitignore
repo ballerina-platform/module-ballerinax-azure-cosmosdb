@@ -40,3 +40,6 @@ Config.toml
 
 # idea files
 *.idea
+
+# .ballerina files
+*.ballerina

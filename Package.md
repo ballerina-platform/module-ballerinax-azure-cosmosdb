@@ -144,16 +144,20 @@ public function main() {
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    var result = azureCosmosClient->getDocumentList(<DATABASE_ID>, <CONTAINER_ID>);
-    if (result is error) {
+    stream<cosmosdb:Data,error>?|error result = azureCosmosClient->listTriggers(<DATABASE_ID>, <CONTAINER_ID>);
+    if (result is stream<cosmosdb:Data,error>?) {
+        if (result is stream<cosmosdb:Data,error>) {
+            error? e = result.forEach(function (cosmosdb:Data document) {
+                log:printInfo(document.toString());
+            });
+            log:printInfo("Success!");
+
+        } else {
+            log:printInfo("Empty stream");
+        }
+    } else {
         log:printError(result.message());
-    }
-    if (result is stream<cosmosdb:Document>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:printInfo(document.toString());
-        });
-        log:printInfo("Success!");
-    }
+}
 }
 ```
 ### Get Document
@@ -199,19 +203,24 @@ public function main() {
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
- 
-    ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    var result = azureCosmosClient->queryDocuments(DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-        options, <MAX_ITEM_COUNT>,);
-    if (result is error) {
+    cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
+
+    stream<cosmosdb:QueryResult,error>?|error result = azureCosmosClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, 
+        selectAllQuery, options);
+
+    if (result is stream<cosmosdb:QueryResult,error>?) {
+        if (result is stream<cosmosdb:QueryResult,error>) {
+            error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+                log:printInfo(queryResult.toString());
+            });
+            log:printInfo("Success!");
+
+        } else {
+            log:printInfo("Empty stream");
+        }
+    } else {
         log:printError(result.message());
-    }
-    if (result is stream<cosmosdb:Document>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:printInfo(document.toString());
-        });
-        log:printInfo("Success!");
-    }   
+    }  
 
 }
 ```
