@@ -22,13 +22,13 @@ public type HttpDetail record {
 };
 
 # The errors which will come from the Azure API call itself.  
-public type PayloadAccessError distinct error;
+public type PayloadValidationError distinct error;
 
 # The payload access errors where the error detail contains the HTTP status.  
-public type PayloadAccessErrorWithStatus error<HttpDetail>;
+public type DbOperationError error<HttpDetail>;
 
 # The errors which occur when providing an invalid value.  
-public type IoError distinct error;
+public type InputValidationError distinct error;
 
 # The union of all types of errors in the connector.  
-public type Error PayloadAccessError|PayloadAccessErrorWithStatus|IoError|error;
+public type Error PayloadValidationError|DbOperationError|InputValidationError|error;

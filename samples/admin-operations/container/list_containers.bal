@@ -29,18 +29,13 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("Getting list of containers");   
-    stream<cosmosdb:Data,error>?|error result = managementClient->listContainers(databaseId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listContainers(databaseId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data container) {
-                log:printInfo(container.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data container) {
+            log:printInfo(container.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

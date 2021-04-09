@@ -102,32 +102,15 @@ public function main() {
     }
 
     log:printInfo("Getting list of databases");
-    stream<cosmosdb:Database>|error databaseList = managementClient->listDatabases(10);
+    stream<cosmosdb:Data,error>|error databaseList = managementClient->listDatabases();
 
-    if (databaseList is stream<cosmosdb:Database>) {
-        error? e = databaseList.forEach(function (cosmosdb:Database database) {
+    if (databaseList is stream<cosmosdb:Data,error>) {
+        error? e = databaseList.forEach(function (cosmosdb:Data database) {
             log:printInfo(database.toString());
         });
     } else {
         log:printError(databaseList.message());
     }
-
-    // log:printInfo("Getting list of databases");
-    // stream<cosmosdb:Data,error>?|error databaseList = managementClient->listDatabases();
-
-    // if (databaseList is stream<cosmosdb:Data,error>?) {
-    //    if (databaseList is stream<cosmosdb:Data,error>) {
-    //         error? e = databaseList.forEach(function (cosmosdb:Data database) {
-    //             log:printInfo(database.toString());
-    //         });
-    //         log:printInfo("Success!");
-
-    //     } else {
-    //         log:printInfo("Empty stream");
-    //     }
-    // } else {
-    //     log:printError(databaseList.message());
-    // }
 
     log:printInfo("Deleting databases");
     _ = checkpanic managementClient->deleteDatabase(databaseIfNotExistId);

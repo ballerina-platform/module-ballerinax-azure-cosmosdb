@@ -30,18 +30,13 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List available triggers");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listTriggers(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listTriggers(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data trigger) {
-                log:printInfo(trigger.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data trigger) {
+            log:printInfo(trigger.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

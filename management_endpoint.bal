@@ -39,7 +39,7 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns `Database`. Else returns `Error`.
     @display {label: "Create database"} 
-    remote isolated function createDatabase(@display {label: "Database id"} string databaseId, 
+    remote isolated function createDatabase(@display {label: "Database name"} string databaseId, 
                                             @display {label: "Maximum throughput (optional)"} 
                                             (int|record{|int maxThroughput;|})? throughputOption = ()) 
                                             returns @tainted @display {label: "Database"} Database|Error {
@@ -67,7 +67,7 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns `Database` or `nil` if database already exists. Else returns `Error`.
     @display {label: "Create database if does not exist"} 
-    remote isolated function createDatabaseIfNotExist(@display {label: "Database id"} string databaseId, 
+    remote isolated function createDatabaseIfNotExist(@display {label: "Database name"} string databaseId, 
                                                       @display {label: "Maximum throughput (optional)"} 
                                                       (int|record{|int maxThroughput;|})? throughputOption = ()) returns 
                                                       @tainted @display {label: "Database"} Database?|Error {
@@ -86,7 +86,7 @@ public client class ManagementClient {
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `Database`. Else returns `Error`.
     @display {label: "Get database"} 
-    remote isolated function getDatabase(@display {label: "Database id"} string databaseId, 
+    remote isolated function getDatabase(@display {label: "Database name"} string databaseId, 
                                          @display {label: "Optional header parameters"} ResourceReadOptions? 
                                          resourceReadOptions = ()) 
                                          returns @tainted @display {label: "Database"} Database|Error {
@@ -102,10 +102,10 @@ public client class ManagementClient {
 
     # List information of all databases.
     # 
-    # + return - If successful, returns `stream<Database>`. else returns `Error`.
+    # + return - If successful, returns `stream<Data, error>`. else returns `Error`.
     @display {label: "Get databases"}  
     remote isolated function listDatabases() returns 
-                                          @tainted @display {label: "Stream of databases"} stream<Data,error>?|Error {
+                                          @tainted @display {label: "Stream of databases"} stream<Data, error>|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
@@ -113,7 +113,7 @@ public client class ManagementClient {
             requestPath);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -124,7 +124,7 @@ public client class ManagementClient {
     #                           to the request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete a database"} 
-    remote isolated function deleteDatabase(@display {label: "Database id"} string databaseId, 
+    remote isolated function deleteDatabase(@display {label: "Database name"} string databaseId, 
                                             @display {label: "Optional header parameters"} ResourceDeleteOptions? 
                                             resourceDeleteOptions = ()) returns @tainted @display {label: "Deletion response"} 
                                             DeleteResponse|Error {
@@ -147,8 +147,8 @@ public client class ManagementClient {
     # + throughputOption - Optional. Throughput parameter of type int or json.
     # + return - If successful, returns `Container`. Else returns `Error`.
     @display {label: "Create container"} 
-    remote isolated function createContainer(@display {label: "Database id"} string databaseId, 
-                                             @display {label: "Container id"} string containerId, 
+    remote isolated function createContainer(@display {label: "Database name"} string databaseId, 
+                                             @display {label: "Container name"} string containerId, 
                                              @display {label: "Partition key definition"} PartitionKey partitionKey, 
                                              @display {label: "Indexing policy (optional)"} IndexingPolicy? 
                                              indexingPolicy = (), 
@@ -188,8 +188,8 @@ public client class ManagementClient {
     # + return - If successful, returns `Container` if a new container is created or `nil` if container already exists. 
     #            Else returns `Error`.
     @display {label: "Create container if not exist"} 
-    remote isolated function createContainerIfNotExist(@display {label: "Database id"} string databaseId, 
-                                                       @display {label: "Container id"} string containerId, 
+    remote isolated function createContainerIfNotExist(@display {label: "Database name"} string databaseId, 
+                                                       @display {label: "Container name"} string containerId, 
                                                        @display {label: "Partition key definition"} PartitionKey 
                                                        partitionKey, 
                                                        @display {label: "Indexing policy (optional)"} IndexingPolicy? 
@@ -213,8 +213,8 @@ public client class ManagementClient {
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `Container`. Else returns `Error`.
     @display {label: "Get container"} 
-    remote isolated function getContainer(@display {label: "Database id"} string databaseId, 
-                                          @display {label: "Container id"} string containerId, 
+    remote isolated function getContainer(@display {label: "Database name"} string databaseId, 
+                                          @display {label: "Container name"} string containerId, 
                                           @display {label: "Optional header parameters"} ResourceReadOptions? 
                                           resourceReadOptions = ()) 
                                           returns @tainted @display {label: "Container"} Container|Error {
@@ -231,11 +231,11 @@ public client class ManagementClient {
     # List information of all containers.
     # 
     # + databaseId - ID of the database to which the containers belongs to
-    # + return - If successful, returns `stream<Container>`. Else returns `Error`.
+    # + return - If successful, returns `stream<Data, error>`. Else returns `Error`.
     @display {label: "Get containers"} 
-    remote isolated function listContainers(@display {label: "Database id"} string databaseId) 
+    remote isolated function listContainers(@display {label: "Database name"} string databaseId) 
                                             returns @tainted @display {label: "Stream of containers"} 
-                                            stream<Data,error>?|Error {
+                                            stream<Data, error>|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
 
@@ -243,7 +243,7 @@ public client class ManagementClient {
             requestPath);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -255,8 +255,8 @@ public client class ManagementClient {
     #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete container"} 
-    remote isolated function deleteContainer(@display {label: "Database id"} string databaseId, 
-                                             @display {label: "Container id"} string containerId, 
+    remote isolated function deleteContainer(@display {label: "Database name"} string databaseId, 
+                                             @display {label: "Container name"} string containerId, 
                                              @display {label: "Optional header parameters"} ResourceDeleteOptions? 
                                              resourceDeleteOptions = ()) returns 
                                              @tainted @display {label: "Deletion response"} DeleteResponse|Error {
@@ -274,12 +274,12 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where the partition key ranges are related to
-    # + return - If successful, returns `stream<PartitionKeyRange>`. Else returns `Error`.
+    # + return - If successful, returns `stream<Data, error>`. Else returns `Error`.
     @display {label: "Get partition key ranges"} 
-    remote isolated function listPartitionKeyRanges(@display {label: "Database id"} string databaseId, 
-                                                    @display {label: "Container id"} string containerId) returns 
+    remote isolated function listPartitionKeyRanges(@display {label: "Database name"} string databaseId, 
+                                                    @display {label: "Container name"} string containerId) returns 
                                                     @tainted @display {label: "Stream of partition key ranges"} 
-                                                    stream<Data,error>?|Error {
+                                                    stream<Data, error>|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_PK_RANGES]);
@@ -287,7 +287,7 @@ public client class ManagementClient {
             requestPath);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -300,8 +300,8 @@ public client class ManagementClient {
     # + userDefinedFunction - A JavaScript function represented as a string
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `Error`. 
     @display {label: "Create user defined function"} 
-    remote isolated function createUserDefinedFunction(@display {label: "Database id"} string databaseId, 
-                                                       @display {label: "Container id"} string containerId, 
+    remote isolated function createUserDefinedFunction(@display {label: "Database name"} string databaseId, 
+                                                       @display {label: "Container name"} string containerId, 
                                                        @display {label: "User defined function id"} string 
                                                        userDefinedFunctionId, 
                                                        @display {label: "User defined function"} string 
@@ -332,8 +332,8 @@ public client class ManagementClient {
     # + userDefinedFunction - A JavaScript function represented as a string
     # + return - If successful, returns a `UserDefinedFunction`. Else returns `Error`.
     @display {label: "Replace user defined function"} 
-    remote isolated function replaceUserDefinedFunction(@display {label: "Database id"} string databaseId, 
-                                                        @display {label: "Container id"} string containerId, 
+    remote isolated function replaceUserDefinedFunction(@display {label: "Database name"} string databaseId, 
+                                                        @display {label: "Container name"} string containerId, 
                                                         @display {label: "User defined function id"} string 
                                                         userDefinedFunctionId, 
                                                         @display {label: "User defined function"} string 
@@ -361,14 +361,14 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined functions
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<UserDefinedFunction>`. Else returns `Error`. 
+    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`. 
     @display {label: "Get user defined functions"} 
-    remote isolated function listUserDefinedFunctions(@display {label: "Database id"} string databaseId, 
-                                                      @display {label: "Container id"} string containerId, 
+    remote isolated function listUserDefinedFunctions(@display {label: "Database name"} string databaseId, 
+                                                      @display {label: "Container name"} string containerId, 
                                                       @display {label: "Optional header parameters"} ResourceReadOptions? 
                                                       resourceReadOptions = ()) returns 
                                                       @tainted @display {label: "Stream of User Defined Fucntions"} 
-                                                      stream<Data,error>?|Error { 
+                                                      stream<Data, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_UDF]);
 
@@ -377,7 +377,7 @@ public client class ManagementClient {
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -390,8 +390,8 @@ public client class ManagementClient {
     #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete user defined function"} 
-    remote isolated function deleteUserDefinedFunction(@display {label: "Database id"} string databaseId, 
-                                                       @display {label: "Container id"} string containerId, 
+    remote isolated function deleteUserDefinedFunction(@display {label: "Database name"} string databaseId, 
+                                                       @display {label: "Container name"} string containerId, 
                                                        @display {label: "User defined function id"} string 
                                                        userDefinedFunctionid, 
                                                        @display {label: "Optional header parameters"} 
@@ -421,8 +421,8 @@ public client class ManagementClient {
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a `Trigger`. Else returns `Error`. 
     @display {label: "Create trigger"} 
-    remote isolated function createTrigger(@display {label: "Database id"} string databaseId, 
-                                           @display {label: "Container id"} string containerId, 
+    remote isolated function createTrigger(@display {label: "Database name"} string databaseId, 
+                                           @display {label: "Container name"} string containerId, 
                                            @display {label: "Trigger id"} string triggerId, 
                                            @display {label: "Trigger"} string trigger, 
                                            @display {label: "Triggering operation"} TriggerOperation triggerOperation, 
@@ -456,8 +456,8 @@ public client class ManagementClient {
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
     # + return - If successful, returns a `Trigger`. Else returns `Error`.
     @display {label: "Replace trigger"} 
-    remote isolated function replaceTrigger(@display {label: "Database id"} string databaseId, 
-                                            @display {label: "Container id"} string containerId, 
+    remote isolated function replaceTrigger(@display {label: "Database name"} string databaseId, 
+                                            @display {label: "Container name"} string containerId, 
                                             @display {label: "Trigger id"} string triggerId, 
                                             @display {label: "Trigger"} string trigger, 
                                             @display {label: "Triggering operation"} TriggerOperation triggerOperation, 
@@ -486,13 +486,13 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the triggers
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to therequest
-    # + return - If successful, returns a `stream<Trigger>`. Else returns `Error`. 
+    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`. 
     @display {label: "Get triggers"} 
-    remote isolated function listTriggers(@display {label: "Database id"} string databaseId, 
-                                          @display {label: "Container id"} string containerId, 
+    remote isolated function listTriggers(@display {label: "Database name"} string databaseId, 
+                                          @display {label: "Container name"} string containerId, 
                                           @display {label: "Optional header parameters"} ResourceReadOptions?
                                           resourceReadOptions = ()) returns 
-                                          @tainted @display {label: "Stream of Triggers"} stream<Data,error>?|Error { 
+                                          @tainted @display {label: "Stream of Triggers"} stream<Data, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_TRIGGER]);
 
@@ -501,7 +501,7 @@ public client class ManagementClient {
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -514,8 +514,8 @@ public client class ManagementClient {
     #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete trigger"} 
-    remote isolated function deleteTrigger(@display {label: "Database id"} string databaseId, 
-                                           @display {label: "Container id"} string containerId, 
+    remote isolated function deleteTrigger(@display {label: "Database name"} string databaseId, 
+                                           @display {label: "Container name"} string containerId, 
                                            @display {label: "Trigger id"} string triggerId, 
                                            @display {label: "Optional header parameters"} ResourceDeleteOptions? 
                                            resourceDeleteOptions = ()) returns 
@@ -537,7 +537,7 @@ public client class ManagementClient {
     # + userId - ID of the new user. Must be a unique value.
     # + return - If successful, returns a `User`. Else returns `Error`.
     @display {label: "Create user"} 
-    remote isolated function createUser(@display {label: "Database id"} string databaseId, 
+    remote isolated function createUser(@display {label: "Database name"} string databaseId, 
                                         @display {label: "User id"} string userId) returns 
                                         @tainted @display {label: "User"} User|Error {
         http:Request request = new;
@@ -558,7 +558,7 @@ public client class ManagementClient {
     # + newUserId - New ID for the user
     # + return - If successful, returns a `User`. Else returns `Error`.
     @display {label: "Replace user id"} 
-    remote isolated function replaceUserId(@display {label: "Database id"} string databaseId, 
+    remote isolated function replaceUserId(@display {label: "Database name"} string databaseId, 
                                            @display {label: "Old user id"} string userId, 
                                            @display {label: "New user id"} string newUserId) returns 
                                            @tainted @display {label: "User"} User|Error {
@@ -581,7 +581,7 @@ public client class ManagementClient {
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `User`. Else returns `Error`.
     @display {label: "Get user"} 
-    remote isolated function getUser(@display {label: "Database id"} string databaseId, 
+    remote isolated function getUser(@display {label: "Database name"} string databaseId, 
                                      @display {label: "User id"} string userId, 
                                      @display {label: "Optional header parameters"} ResourceReadOptions? 
                                      resourceReadOptions = ()) returns @tainted @display {label: "User"} User|Error {
@@ -600,12 +600,12 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which, the user belongs to
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request
-    # + return - If successful, returns a `stream<User>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`.
     @display {label: "Get users"} 
-    remote isolated function listUsers(@display {label: "Database id"} string databaseId, 
+    remote isolated function listUsers(@display {label: "Database name"} string databaseId, 
                                        @display {label: "Optional header parameters"} ResourceReadOptions? 
                                        resourceReadOptions = ()) returns @tainted @display {label: "Stream of Users"} 
-                                       stream<Data,error>?|Error { 
+                                       stream<Data, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -613,7 +613,7 @@ public client class ManagementClient {
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -625,7 +625,7 @@ public client class ManagementClient {
     #                           capabilities to the request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete user"} 
-    remote isolated function deleteUser(@display {label: "Database id"} string databaseId, 
+    remote isolated function deleteUser(@display {label: "Database name"} string databaseId, 
                                         @display {label: "User id"} string userId, 
                                         @display {label: "Optional header parameters"} ResourceDeleteOptions? 
                                         resourceDeleteOptions = ()) returns @tainted @display {label: "Deletion response"} 
@@ -650,7 +650,7 @@ public client class ManagementClient {
     # + validityPeriodInSeconds - Optional. Validity period of the permission in seconds.
     # + return - If successful, returns a `Permission`. Else returns `Error`.
     @display {label: "Create permission"} 
-    remote isolated function createPermission(@display {label: "Database id"} string databaseId, 
+    remote isolated function createPermission(@display {label: "Database name"} string databaseId, 
                                               @display {label: "User id"} string userId, 
                                               @display {label: "Permission id"} string permissionId, 
                                               @display {label: "Permission mode"} PermisssionMode permissionMode, 
@@ -688,7 +688,7 @@ public client class ManagementClient {
     # + validityPeriodInSeconds - Optional. Validity period of the permission in seconds.
     # + return - If successful, returns a `Permission`. Else returns `Error`.
     @display {label: "Replace permission"} 
-    remote isolated function replacePermission(@display {label: "Database id"} string databaseId, 
+    remote isolated function replacePermission(@display {label: "Database name"} string databaseId, 
                                                @display {label: "User id"} string userId, 
                                                @display {label: "Permission id"} string permissionId, 
                                                @display {label: "Permission mode"} PermisssionMode permissionMode, 
@@ -724,7 +724,7 @@ public client class ManagementClient {
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `Permission`. Else returns `Error`.
     @display {label: "Get permission"} 
-    remote isolated function getPermission(@display {label: "Database id"} string databaseId, 
+    remote isolated function getPermission(@display {label: "Database name"} string databaseId, 
                                            @display {label: "User id"} string userId,
                                            @display {label: "Permission id"} string permissionId, 
                                            @display {label: "Optional header parameters"} ResourceReadOptions? 
@@ -747,14 +747,14 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permissions are granted
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Permission>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`.
     @display {label: "Get permissions"} 
-    remote isolated function listPermissions(@display {label: "Database id"} string databaseId, 
+    remote isolated function listPermissions(@display {label: "Database name"} string databaseId, 
                                              @display {label: "User id"} string userId, 
                                              @display {label: "Optional header parameters"} ResourceReadOptions? 
                                              resourceReadOptions = ()) returns 
                                              @tainted @display {label: "Stream of Permissions"} 
-                                             stream<Data,error>?|Error { 
+                                             stream<Data, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION]);
 
@@ -763,7 +763,7 @@ public client class ManagementClient {
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
         
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -776,7 +776,7 @@ public client class ManagementClient {
     #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete permission"} 
-    remote isolated function deletePermission(@display {label: "Database id"} string databaseId, 
+    remote isolated function deletePermission(@display {label: "Database name"} string databaseId, 
                                               @display {label: "User id"} string userId, 
                                               @display {label: "Permission id"} string permissionId, 
                                               @display {label: "Optional header parameters"} ResourceDeleteOptions? 
@@ -845,11 +845,11 @@ public client class ManagementClient {
     # performance levels and pre-defined performance levels. 
     # 
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Offer>` Else returns `Error`.
+    # + return - If successful, returns a `stream<Data, error>` Else returns `Error`.
     @display {label: "Get offers"} 
     remote isolated function listOffers(@display {label: "Optional header parameters"} ResourceReadOptions? 
                                         resourceReadOptions = ()) returns @tainted @display {label: "Stream of Offers"} 
-                                        stream<Data,error>|Error { 
+                                        stream<Data, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -857,7 +857,7 @@ public client class ManagementClient {
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
         RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data,error> finalStream = new (objectInstance);
+        stream<Data, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -866,12 +866,12 @@ public client class ManagementClient {
     # + sqlQuery - A string value containing SQL query
     # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the 
     #                          request
-    # + return - If successful, returns a `stream<json>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<QueryResult, error>`. Else returns `Error`.
     @display {label: "Query offers"} 
     remote isolated function queryOffer(@display {label: "SQL query"} string sqlQuery, 
                                         @display {label: "Optional header parameters"} ResourceQueryOptions? 
                                         resourceQueryOptions = ()) returns @tainted @display {label: "Stream of JSON"} 
-                                        stream<QueryResult,error>|Error { 
+                                        stream<QueryResult, error>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
@@ -881,7 +881,7 @@ public client class ManagementClient {
         check setHeadersForQuery(request);
 
         QueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
-        stream<QueryResult,error> finalStream = new (objectInstance);
+        stream<QueryResult, error> finalStream = new (objectInstance);
         return finalStream;
     }
 }

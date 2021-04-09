@@ -29,17 +29,12 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("List users");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listUsers(databaseId);
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
-                log:printInfo(storedPrcedure.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    stream<cosmosdb:Data, error>|error result = managementClient->listUsers(databaseId);
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

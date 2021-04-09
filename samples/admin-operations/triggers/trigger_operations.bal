@@ -114,18 +114,13 @@ public function main() {
     }
 
     log:printInfo("List available triggers");
-    stream<cosmosdb:Data,error>?|error triggerList = managementClient->listTriggers(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error triggerList = managementClient->listTriggers(databaseId, containerId);
 
-    if (triggerList is stream<cosmosdb:Data,error>?) {
-        if (triggerList is stream<cosmosdb:Data,error>) {
-            error? e = triggerList.forEach(function (cosmosdb:Data trigger) {
-                log:printInfo(trigger.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (triggerList is stream<cosmosdb:Data, error>) {
+        error? e = triggerList.forEach(function (cosmosdb:Data trigger) {
+            log:printInfo(trigger.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(triggerList.message());
     }

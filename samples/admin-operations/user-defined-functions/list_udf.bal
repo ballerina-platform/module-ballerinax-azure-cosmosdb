@@ -30,18 +30,13 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List  user defined functions");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data udf) {
-                log:printInfo(udf.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data udf) {
+            log:printInfo(udf.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

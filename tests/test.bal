@@ -166,7 +166,7 @@ function testListAllDatabases() {
     log:printInfo("ACTION : listAllDatabases()");
 
     var result = azureCosmosManagementClient->listDatabases();
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         test:assertTrue(true);
     } else {
         test:assertFail(msg = result.message());
@@ -284,7 +284,7 @@ function testGetAllContainers() {
     log:printInfo("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>?) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -431,7 +431,7 @@ function testGetDocumentList() {
     log:printInfo("ACTION : getDocumentList()");
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -452,7 +452,7 @@ function testGetDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //    
     } else {
         test:assertFail(msg = result.message());
@@ -508,7 +508,7 @@ function testQueryDocuments() {
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<QueryResult,error>) {
+    if (result is stream<QueryResult, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -529,7 +529,7 @@ function testQueryDocumentsWithRequestOptions() {
     };
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<QueryResult,error>) {
+    if (result is stream<QueryResult, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -626,7 +626,7 @@ function testGetAllStoredProcedures() {
     log:printInfo("ACTION : getAllStoredProcedures()");
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -712,7 +712,7 @@ function testListAllUDF() {
     log:printInfo("ACTION : listAllUDF()");
 
     var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -835,7 +835,7 @@ function testListTriggers() {
     log:printInfo("ACTION : listTriggers()");
 
     var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -921,7 +921,7 @@ function testListUsers() {
     log:printInfo("ACTION : listUsers()");
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -1026,7 +1026,7 @@ function testListPermissions() {
     log:printInfo("ACTION : listPermissions()");
 
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
-    if (result is stream<Data,error>?) {
+    if (result is stream<Data, error>) {
         //
     } else {
         test:assertFail(msg = result.message());
@@ -1074,7 +1074,7 @@ function testListOffers() {
     log:printInfo("ACTION : listOffers()");
 
     var result = azureCosmosManagementClient->listOffers();
-    if (result is stream<Data,error>) {
+    if (result is stream<Data, error>) {
         record {|Data value;|}|error? offer = result.next();
         if (offer is record {|Data value;|}) {
             offerId = <@untainted>offer?.value?.id;

@@ -39,9 +39,9 @@ public function main() {
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
 
     log:printInfo("List the offers in the current cosmos db account");   
-    stream<cosmosdb:Data,error>?|error offerList = checkpanic managementClient->listOffers();
+    stream<cosmosdb:Data, error>|error offerList = checkpanic managementClient->listOffers();
 
-    if (offerList is stream<cosmosdb:Data,error>) {
+    if (offerList is stream<cosmosdb:Data, error>) {
         record {|cosmosdb:Data value;|}|error? offer = offerList.next();
         if (offer is record {|cosmosdb:Data value;|}) {
             offerId = <@untainted>offer.value.id;
@@ -75,7 +75,7 @@ public function main() {
     string offersInContainerQuery = 
         string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
-    stream<cosmosdb:QueryResult,error>|error result = checkpanic managementClient->
+    stream<cosmosdb:QueryResult, error>|error result = checkpanic managementClient->
         queryOffer(<@untainted>offersInContainerQuery);
     log:printInfo("Success!");
 }

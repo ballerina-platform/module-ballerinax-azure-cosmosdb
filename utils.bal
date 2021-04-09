@@ -142,7 +142,7 @@ isolated function setMandatoryHeaders(http:Request request, string host, string 
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
         signature = check url:encode(token, UTF8_URL_ENCODING);
     } else {
-        return error IoError(NULL_RESOURCE_TYPE_ERROR);
+        return error InputValidationError(NULL_RESOURCE_TYPE_ERROR);
     }
     request.setHeader(http:AUTH_HEADER, signature);
 }
@@ -165,7 +165,7 @@ isolated function setMandatoryGetHeaders(string host, string token, http:HttpOpe
     } else if (tokenType.toLowerAscii() == TOKEN_TYPE_RESOURCE) {
         signature = check url:encode(token, UTF8_URL_ENCODING);
     } else {
-        return error IoError(NULL_RESOURCE_TYPE_ERROR);
+        return error InputValidationError(NULL_RESOURCE_TYPE_ERROR);
     }
 
     return {
@@ -231,7 +231,7 @@ isolated function setThroughputOrAutopilotHeader(http:Request request,
         if (throughputOption >= MIN_REQUEST_UNITS) {
             request.setHeader(THROUGHPUT_HEADER, throughputOption.toString());
         } else {
-            return error IoError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
+            return error InputValidationError(MINIMUM_MANUAL_THROUGHPUT_ERROR);
         }
     } else if (throughputOption is record{|int maxThroughput;|}) {
         request.setHeader(AUTOPILET_THROUGHPUT_HEADER, throughputOption.toString());
@@ -308,7 +308,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
         <= MAX_TIME_TO_LIVE_IN_SECONDS) {
         request.setHeader(EXPIRY_HEADER, validityPeriodInSeconds.toString());
     } else {
-        return error IoError(VALIDITY_PERIOD_ERROR);
+        return error InputValidationError(VALIDITY_PERIOD_ERROR);
     }
 }
 
@@ -363,7 +363,7 @@ isolated function handleResponse(http:Response httpResponse) returns @tainted js
         return jsonResponse;
     }
     string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
-    return error PayloadAccessErrorWithStatus(message, status = httpResponse.statusCode);
+    return error DbOperationError(message, status = httpResponse.statusCode);
 }
 
 # Handle success or error responses to requests which does not need to return a payload.
@@ -378,7 +378,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
     } else {
         json jsonResponse = check httpResponse.getJsonPayload();
         string message = let var msg = jsonResponse.message in msg is string ? msg : REST_API_INVOKING_ERROR;
-        return error PayloadAccessErrorWithStatus(message, status = httpResponse.statusCode);
+        return error DbOperationError(message, status = httpResponse.statusCode);
     }
 }
 
@@ -405,7 +405,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 //         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
 //         return array.toStream();
 //     } else {
-//         return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//         return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //     }
 // }
 
@@ -452,73 +452,73 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 //             json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
 //             convertToOfferArray(<Offer[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Document[]>) {
 //         if (payload.Documents is json) {
 //             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
 //             convertToDocumentArray(<Document[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Database[]>) {
 //         if (payload.Databases is json) {
 //             json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
 //             convertToDatabaseArray(<Database[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Container[]>) {
 //         if (payload.DocumentCollections is json) {
 //             json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
 //             convertToContainerArray(<Container[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<StoredProcedure[]>) {
 //         if (payload.StoredProcedures is json) {
 //             json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
 //             convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }     
 //     } else if (arrayType is typedesc<UserDefinedFunction[]>) {
 //         if (payload.UserDefinedFunctions is json) {
 //             json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
 //             convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Trigger[]>) {
 //         if (payload.Triggers is json) {
 //             json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
 //             convertToTriggerArray(<Trigger[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<User[]>) {
 //         if (payload.Users is json) {
 //             json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
 //             convertToUserArray(<User[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Permission[]>) {
 //         if (payload.Permissions is json) {
 //             json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
 //             convertToPermissionArray(<Permission[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<PartitionKeyRange[]>) {
 //         if (payload.PartitionKeyRanges is json) {
 //             json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
 //             convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
 //         } else {
-//             return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+//             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else {
-//         return error PayloadAccessError(INVALID_RECORD_TYPE_ERROR);
+//         return error PayloadValidationError(INVALID_RECORD_TYPE_ERROR);
 //     }
 
 //     stream<record{}> newStream = (<@untainted>finalArray).toStream();

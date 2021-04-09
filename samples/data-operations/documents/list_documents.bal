@@ -30,18 +30,13 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Data,error>?|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data document) {
-                log:printInfo(document.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data document) {
+            log:printInfo(document.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

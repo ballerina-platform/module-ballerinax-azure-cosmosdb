@@ -88,7 +88,7 @@ class RecordStream {
             json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
             return convertToPartitionKeyRangeArray(array);
         } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     }
 }
@@ -141,7 +141,7 @@ class QueryResultStream {
             json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
             return convertToOfferArray(array);
         } else {
-            return error PayloadAccessError(INVALID_RESPONSE_PAYLOAD_ERROR);
+            return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
         }
     }
 }

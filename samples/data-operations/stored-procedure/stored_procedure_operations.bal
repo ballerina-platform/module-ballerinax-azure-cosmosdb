@@ -66,17 +66,12 @@ public function main() {
     }
 
     log:printInfo("List stored procedures");
-    stream<cosmosdb:Data,error>?|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (spList is stream<cosmosdb:Data,error>?) {
-        if (spList is stream<cosmosdb:Data,error>) {
-            error? e = spList.forEach(function (cosmosdb:Data storedPrcedure) {
-                log:printInfo(storedPrcedure.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    stream<cosmosdb:Data, error>|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (spList is stream<cosmosdb:Data, error>) {
+        error? e = spList.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(spList.message());
     }

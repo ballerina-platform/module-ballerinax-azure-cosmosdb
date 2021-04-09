@@ -175,7 +175,7 @@ record {|string id; json...;|} document = {
 };
 int valueOfPartitionKey = 0;
 
-cosmosdb:Document documentResult = check azureCosmosClient-> createDocument("my_database", "my_container", document, 
+cosmosdb:Document documentResult = azureCosmosClient-> createDocument("my_database", "my_container", document, 
     valueOfPartitionKey);
 ```
 Notes: <br/> 
@@ -189,17 +189,12 @@ For listing the existing documents inside this Cosmos container you have to give
 parameters. Here, you will get a stream of `Document` records as the response. Using the ballerina Stream API you can 
 access the returned results.
 ```ballerina
-stream<cosmosdb:Data,error>?|error result = azureCosmosClient->listTriggers("my_database", "my_container");
-if (result is stream<cosmosdb:Data,error>?) {
-    if (result is stream<cosmosdb:Data,error>) {
-        error? e = result.forEach(function (cosmosdb:Data document) {
-            log:printInfo(document.toString());
-        });
-        log:printInfo("Success!");
-
-    } else {
-        log:printInfo("Empty stream");
-    }
+stream<cosmosdb:Data, error>|error result = azureCosmosClient->listTriggers("my_database", "my_container");
+if (result is stream<cosmosdb:Data, error>) {
+    error? e = result.forEach(function (cosmosdb:Data document) {
+        log:printInfo(document.toString());
+    });
+    log:printInfo("Success!");
 } else {
     log:printError(result.message());
 }
@@ -215,19 +210,14 @@ https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-
 string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
 
-stream<cosmosdb:QueryResult,error>?|error result = azureCosmosClient->queryDocuments("my_database", "my_container", 
+stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments("my_database", "my_container", 
     selectAllQuery, options);
 
-if (result is stream<cosmosdb:QueryResult,error>?) {
-    if (result is stream<cosmosdb:QueryResult,error>) {
-        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
-            log:printInfo(queryResult.toString());
-        });
-        log:printInfo("Success!");
-
-    } else {
-        log:printInfo("Empty stream");
-    }
+if (result is stream<cosmosdb:QueryResult, error>) {
+    error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+        log:printInfo(queryResult.toString());
+    });
+    log:printInfo("Success!");
 } else {
     log:printError(result.message());
 }
@@ -242,7 +232,7 @@ Finally, you can delete the document you have created. For this operation to be 
 you have to give **my_database** and **my_container** as parameters. Apart from that, the ID of the target document to 
 delete **my_document** and **value of the partition key** of that document must be provided.
 ```ballerina
-cosmosdb:DeleteResponse = check azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", 
+cosmosdb:DeleteResponse = azureCosmosClient->deleteDocument("my_database", "my_container", "my_document", 
     valueOfPartitionKey);
 ```
 
@@ -287,7 +277,7 @@ cosmosdb:PartitionKey partitionKeyDefinition = {
     paths: ["/gender"],
     keyVersion: 2
 };
-cosmosdb:Container containerResult = check managementClient-> createContainer("my_database", "my_container", 
+cosmosdb:Container containerResult = managementClient-> createContainer("my_database", "my_container", 
     partitionKeyDefinition);
 ```
 Notes: <br/> 
@@ -493,18 +483,13 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Data,error>?|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data document) {
-                log:printInfo(document.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data document) {
+            log:printInfo(document.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
@@ -591,19 +576,14 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
     cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    stream<cosmosdb:QueryResult,error>?|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
+    stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
         selectAllQuery, options);
 
-    if (result is stream<cosmosdb:QueryResult,error>?) {
-        if (result is stream<cosmosdb:QueryResult,error>) {
-            error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
-                log:printInfo(queryResult.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:QueryResult, error>) {
+        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+            log:printInfo(queryResult.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
@@ -740,9 +720,9 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List stored procedure");
-    stream<cosmosdb:Data,error>?|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
+    stream<cosmosdb:Data, error>?|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (result is stream<cosmosdb:Data, error>?) {
+        if (result is stream<cosmosdb:Data, error>) {
             error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
                 log:printInfo(storedPrcedure.toString());
             });
@@ -891,12 +871,12 @@ public function main() {
     string databaseId = "my_database";
 
     int throughput = 600;
-    cosmosdb:Database databaseResult = check managementClient-> createDatabase(databaseId, throughput);
+    cosmosdb:Database databaseResult = managementClient-> createDatabase(databaseId, throughput);
 
     // or
 
     record {|int maxThroughput;|} maxThroughput = { maxThroughput: 4000 };
-    cosmosdb:Database databaseResult = check managementClient->createDatabase(databaseId, maxThroughput);
+    cosmosdb:Database databaseResult = managementClient->createDatabase(databaseId, maxThroughput);
 }
 ```
 These options for throughput are only supported in the Cosmos DB account type known as **provisioned throughput** 
@@ -957,18 +937,14 @@ cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     log:printInfo("Getting list of databases");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listDatabases();
+    stream<cosmosdb:Data, error>|error result = managementClient->listDatabases();
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data database) {
-                log:printInfo(database.toString());
-            });
-            log:printInfo("Success!");
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data database) {
+            log:printInfo(database.toString());
+        });
+        log:printInfo("Success!");
 
-        } else {
-            log:printInfo("Empty stream");
-        }
     } else {
         log:printError(result.message());
     }
@@ -1113,18 +1089,13 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("Getting list of containers");   
-    stream<cosmosdb:Data,error>?|error result = managementClient->listContainers(databaseId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listContainers(databaseId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data container) {
-                log:printInfo(container.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data container) {
+            log:printInfo(container.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
@@ -1293,18 +1264,13 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List  user defined functions");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data udf) {
-                log:printInfo(udf.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data udf) {
+            log:printInfo(udf.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
@@ -1512,18 +1478,13 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List available triggers");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listTriggers(databaseId, containerId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listTriggers(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data trigger) {
-                log:printInfo(trigger.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data trigger) {
+            log:printInfo(trigger.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
@@ -1695,17 +1656,12 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("List users");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listUsers(databaseId);
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
-                log:printInfo(storedPrcedure.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    stream<cosmosdb:Data, error>|error result = managementClient->listUsers(databaseId);
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
@@ -1908,18 +1864,13 @@ public function main() {
     string userId = "my_user";
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listPermissions(databaseId, userId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listPermissions(databaseId, userId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
-                log:printInfo(storedPrcedure.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

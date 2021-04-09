@@ -30,18 +30,13 @@ public function main() {
     string userId = "my_user";
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Data,error>?|error result = managementClient->listPermissions(databaseId, userId);
+    stream<cosmosdb:Data, error>|error result = managementClient->listPermissions(databaseId, userId);
 
-    if (result is stream<cosmosdb:Data,error>?) {
-        if (result is stream<cosmosdb:Data,error>) {
-            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
-                log:printInfo(storedPrcedure.toString());
-            });
-            log:printInfo("Success!");
-
-        } else {
-            log:printInfo("Empty stream");
-        }
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
+        });
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }
