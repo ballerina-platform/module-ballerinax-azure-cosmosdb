@@ -20,10 +20,10 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -31,7 +31,7 @@ public function main() {
     string existingStoredProcedureId = "my_stored_procedure";
 
     // Replace stored procedure
-    log:print("Replacing stored procedure");
+    log:printInfo("Replacing stored procedure");
     string newStoredProcedureBody = string `function heloo(personToGreet){
                                                 var context = getContext();
                                                 var response = context.getResponse();
@@ -42,8 +42,8 @@ public function main() {
         existingStoredProcedureId, newStoredProcedureBody);
 
     if (result is cosmosdb:StoredProcedure) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

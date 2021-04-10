@@ -20,17 +20,17 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
     
-    log:print("Creating stored procedure");
+    log:printInfo("Creating stored procedure");
     string storedProcedureBody = string `function (){
                                             var context = getContext();
                                             var response = context.getResponse();
@@ -41,8 +41,8 @@ public function main() {
         storedProcedureId, storedProcedureBody); 
 
     if (result is cosmosdb:StoredProcedure) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

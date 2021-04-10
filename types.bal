@@ -17,10 +17,10 @@
 # Represents configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account
-# + masterOrResourceToken - The token used to make the request call authorized
+# + primaryKeyOrResourceToken - The token used to make the request call authorized
 public type Configuration record {|
     string baseUrl;
-    string masterOrResourceToken;
+    string primaryKeyOrResourceToken;
 |};
 
 # Represents matadata headers which will return for a delete request.
@@ -255,7 +255,7 @@ public type DocumentListOptions record {|
 # 
 # + parameters - An array of parameters which has values match the function parameters of a stored procedure
 # + partitionKey - The value of partition key of documents that the stored procedure is tagrgetted at
-public type StoredProcedureOptions record {|
+public type StoredProcedureExecuteOptions record {|
     string[] parameters = [];
     int|float|decimal|string partitionKey?;
 |};
@@ -276,14 +276,14 @@ public type ResourceReadOptions record {|
 # + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
 #                      The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency 
-# + partitionKey - Optional. The value of partition key field of the container.
 # + enableCrossPartition - Boolean value specifying whether to allow cross partitioning. Default is `true` where, 
 #                          it allows to query across all logical partitions.
+# + partitionKey - Optional. The value of partition key field of the container.
 public type ResourceQueryOptions record {|
     ConsistencyLevel consistancyLevel?;
     string sessionToken?;
-    (int|float|decimal|string)? partitionKey = ();
     boolean enableCrossPartition = true;
+    (int|float|decimal|string)? partitionKey = ();
 |};
 
 # Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
@@ -295,3 +295,11 @@ public type ResourceDeleteOptions record {|
 
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
     ResourceQueryOptions|ResourceDeleteOptions;
+
+# A Union type containing `Document`, `Database`, `Container`, `StoredProcedure`, `UserDefinedFunction`, `Trigger`, 
+# `User`, `Permission`, `Offer` and `PartitionKeyRange`  
+public type Data Document|Database|Container|StoredProcedure|UserDefinedFunction|Trigger|User|Permission|Offer|
+    PartitionKeyRange;
+
+# A Union type containing `Document`, `Offer`  
+public type QueryResult Document|Offer;

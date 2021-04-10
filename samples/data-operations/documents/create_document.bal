@@ -20,10 +20,10 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
@@ -31,7 +31,7 @@ public function main() {
     string containerId = "my_container";
     string documentId = "my_document";
 
-    log:print("Create a new document");
+    log:printInfo("Create a new document");
     record {|string id; json...;|} documentBody = {
         id: documentId,
         "FirstName": "Alan",
@@ -51,8 +51,8 @@ public function main() {
         partitionKeyValue); 
 
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

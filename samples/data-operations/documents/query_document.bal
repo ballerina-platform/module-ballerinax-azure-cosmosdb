@@ -20,28 +20,27 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("Query1 - Select all from the container where gender 0");
+    log:printInfo("Query1 - Select all from the container where gender 0");
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
-    int maxItemCount = 10;
 
     cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    stream<cosmosdb:Document>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, selectAllQuery, 
-        options, maxItemCount);
+    stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
+        selectAllQuery, options);
 
-    if (result is stream<cosmosdb:Document>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+    if (result is stream<cosmosdb:QueryResult, error>) {
+        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+            log:printInfo(queryResult.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

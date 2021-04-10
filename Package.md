@@ -10,7 +10,7 @@ connect to an Azure Cosmos DB resource from Ballerina and perform various operat
 
 ## Compatibility
 
-Ballerina Language Version   **Swan Lake Alpha 2**  
+Ballerina Language Version   **Swan Lake Alpha 4**  
 Cosmos DB API Version        **2018-12-31**
 
 ## Cosmos DB Clients
@@ -22,18 +22,18 @@ There are two clients provided by Ballerina to interact with Cosmos DB.
    ```ballerina
     cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
-        masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
+        primaryKeyOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:DataPlaneClient azureCosmosClient = new(configuration);
+    cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
    ```
 2. **cosmosdb:ManagementClient** - This connects to the running Cosmos DB databases and containers to execute management-plane operations.
 
    ```ballerina
     cosmosdb:Configuration configuration = {
         baseUrl : <BASE_URL>,
-        masterOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
+        primaryKeyOrResourceToken : <MASTER_OR_RESOURCE_TOKEN>,
     };
-    cosmosdb:ManagementClient managementClient = new(configuration);
+    cosmosdb:ManagementClient managementClient = check new (configuration);
    ```
 
 ## Samples 
@@ -48,17 +48,17 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:ManagementClient managementClient = new(configuration);
+    cosmosdb:ManagementClient managementClient = check new (configuration);
 
     var result = managementClient->createDatabase(<DATABASE_ID>); 
     if (result is error) {
         log:printError(result.message());
     }
     if (result is cosmosdb:Database) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -75,9 +75,9 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
-    cosmosdb:ManagementClient managementClient = new(configuration);
+    cosmosdb:ManagementClient managementClient = check new (configuration);
 
     cosmosdb:PartitionKey partitionKey = {
         paths: ["/accountNumber"],
@@ -90,8 +90,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Container) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -106,7 +106,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -122,8 +122,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
     
 }
@@ -140,20 +140,19 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    var result = azureCosmosClient->getDocumentList(<DATABASE_ID>, <CONTAINER_ID>);
-    if (result is error) {
-        log:printError(result.message());
-    }
-    if (result is stream<cosmosdb:Document>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+    stream<cosmosdb:Data, error>|error result = azureCosmosClient->listTriggers(<DATABASE_ID>, <CONTAINER_ID>);
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data document) {
+            log:printInfo(document.toString());
         });
-        log:print("Success!");
-    }
+        log:printInfo("Success!");
+    } else {
+        log:printError(result.message());
+}
 }
 ```
 ### Get Document
@@ -168,7 +167,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -178,8 +177,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:Document) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```
@@ -194,24 +193,24 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
- 
-    ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    var result = azureCosmosClient->queryDocuments(DATABASE_ID>, <CONTAINER_ID>, selectAllQuery, 
-        options, <MAX_ITEM_COUNT>,);
-    if (result is error) {
-        log:printError(result.message());
-    }
-    if (result is stream<cosmosdb:Document>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:print(document.toString());
+    cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
+
+    stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, 
+        selectAllQuery, options);
+
+    if (result is stream<cosmosdb:QueryResult, error>) {
+        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+            log:printInfo(queryResult.toString());
         });
-        log:print("Success!");
-    }   
+        log:printInfo("Success!");
+    } else {
+        log:printError(result.message());
+    }  
 
 }
 ```
@@ -226,7 +225,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 public function main() {
     cosmosdb:Configuration configuration = {
         baseUrl : "https://cosmosconnector.documents.azure.com:443",
-        masterOrResourceToken : "mytokenABCD==",
+        primaryKeyOrResourceToken : "mytokenABCD==",
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
@@ -236,8 +235,8 @@ public function main() {
         log:printError(result.message());
     }
     if (result is cosmosdb:DeleteResponse) {
-        log:print(result.toString());
-        log:print("Success!");
+        log:printInfo(result.toString());
+        log:printInfo("Success!");
     }
 }
 ```

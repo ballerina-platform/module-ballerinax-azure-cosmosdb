@@ -22,17 +22,17 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
     var uuid = createRandomUUIDWithoutHyphens();
 
-    log:print("Creating stored procedure");
+    log:printInfo("Creating stored procedure");
     string storedProcedureId = string `sproc_${uuid.toString()}`;
     string storedProcedureBody = string `function (){
                                             var context = getContext();
@@ -44,12 +44,12 @@ public function main() {
         containerId, storedProcedureId, storedProcedureBody); 
 
     if (storedProcedureCreateResult is cosmosdb:StoredProcedure) {
-        log:print(storedProcedureCreateResult.toString());
+        log:printInfo(storedProcedureCreateResult.toString());
     } else {
         log:printError(storedProcedureCreateResult.message());
     }
 
-    log:print("Replacing stored procedure");
+    log:printInfo("Replacing stored procedure");
     string newStoredProcedureBody = string `function heloo(personToGreet){
                                                 var context = getContext();
                                                 var response = context.getResponse();
@@ -60,45 +60,45 @@ public function main() {
         containerId, storedProcedureId, newStoredProcedureBody);
 
     if (storedProcedureReplaceResult is cosmosdb:StoredProcedure) {
-        log:print(storedProcedureReplaceResult.toString());
+        log:printInfo(storedProcedureReplaceResult.toString());
     } else {
         log:printError(storedProcedureReplaceResult.message());
     }
 
-    log:print("List stored procedures");
-    stream<cosmosdb:StoredProcedure>|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-
-    if (spList is stream<cosmosdb:StoredProcedure>) {
-        error? e = spList.forEach(function (cosmosdb:StoredProcedure procedure) {
-            log:print(procedure.toString());
+    log:printInfo("List stored procedures");
+    stream<cosmosdb:Data, error>|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (spList is stream<cosmosdb:Data, error>) {
+        error? e = spList.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
         });
+        log:printInfo("Success!");
     } else {
         log:printError(spList.message());
     }
 
-    log:print("Executing stored procedure");
-    cosmosdb:StoredProcedureOptions options = {
+    log:printInfo("Executing stored procedure");
+    cosmosdb:StoredProcedureExecuteOptions options = {
         parameters: ["Sachi"]
     };
 
     json|error result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
 
     if (result is json) {
-        log:print(result.toString());
+        log:printInfo(result.toString());
     } else {
         log:printError(result.message());
     }
 
-    log:print("Deleting stored procedure");
+    log:printInfo("Deleting stored procedure");
     cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, 
         storedProcedureId);
 
     if (deletionResult is cosmosdb:DeleteResponse) {
-        log:print(deletionResult.toString());
+        log:printInfo(deletionResult.toString());
     } else {
         log:printError(deletionResult.message());
     }
-    log:print("End!");
+    log:printInfo("End!");
 }
 
 function createRandomUUIDWithoutHyphens() returns string {

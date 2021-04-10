@@ -20,23 +20,22 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:Configuration config = {
     baseUrl: os:getEnv("BASE_URL"),
-    masterOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
+    primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
 
-cosmosdb:DataPlaneClient azureCosmosClient = new (config);
+cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
 public function main() {
     string databaseId = "my_database";
     string containerId = "my_container";
 
-    log:print("List stored procedure");
-    stream<cosmosdb:StoredProcedure>|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-
-    if (result is stream<cosmosdb:StoredProcedure>) {
-        error? e = result.forEach(function (cosmosdb:StoredProcedure procedure) {
-            log:print(procedure.toString());
+    log:printInfo("List stored procedure");
+    stream<cosmosdb:Data, error>|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (result is stream<cosmosdb:Data, error>) {
+        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+            log:printInfo(storedPrcedure.toString());
         });
-        log:print("Success!");
+        log:printInfo("Success!");
     } else {
         log:printError(result.message());
     }

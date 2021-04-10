@@ -140,7 +140,7 @@ public const PARTITION_KEY_VERSION_1 = 1;
 public const PARTITION_KEY_VERSION_2 = 2;
 
 # The version of the partition key
-public type PartitionKeyVersion  PARTITION_KEY_VERSION_1 | PARTITION_KEY_VERSION_2;
+public type PartitionKeyVersion  PARTITION_KEY_VERSION_1|PARTITION_KEY_VERSION_2;
 
 # Used for partition key
 const PARTITIONING_ALGORITHM_TYPE_HASH = "Hash";
@@ -182,7 +182,7 @@ const ITEM_COUNT_HEADER = "x-ms-item-count";
 
 # Time Zone
 const GMT_ZONE = "Europe/London";
-const TIME_ZONE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss z";
+const TIME_ZONE_FORMAT = "E, dd MMM yyyy HH:mm:ss";
 
 # Resources
 const RESOURCE_TYPE_DATABASES = "dbs";
@@ -223,6 +223,7 @@ const NULL_AUTHORIZATION_SIGNATURE_ERROR = "Authorization token is null";
 const DECODING_ERROR = "Base64 Decoding error";
 const TIME_STRING_ERROR = "Time is not correct";
 const INVALID_RESPONSE_PAYLOAD_ERROR = "Invalid response payload";
+const INVALID_RECORD_TYPE_ERROR = "Invalid record type";
 const STREAM_IS_NOT_TYPE_ERROR = "The stream is not type";
 const INVALID_STREAM_TYPE = "Invalid stream type";
 const AZURE_ERROR = "Error occured";
