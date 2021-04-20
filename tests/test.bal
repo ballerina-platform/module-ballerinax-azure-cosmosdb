@@ -167,7 +167,9 @@ function testListAllDatabases() {
 
     var result = azureCosmosManagementClient->listDatabases();
     if (result is stream<Data, error>) {
-        test:assertTrue(true);
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        });     
     } else {
         test:assertFail(msg = result.message());
     }
@@ -284,8 +286,10 @@ function testGetAllContainers() {
     log:printInfo("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
-    if (result is stream<Data, error>?) {
-        //
+    if (result is stream<Data, error>) {
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -432,7 +436,9 @@ function testGetDocumentList() {
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
     if (result is stream<Data, error>) {
-        //
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -453,7 +459,9 @@ function testGetDocumentListWithRequestOptions() {
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
     if (result is stream<Data, error>) {
-        //    
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -509,7 +517,9 @@ function testQueryDocuments() {
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
     if (result is stream<QueryResult, error>) {
-        //
+        error? e = result.forEach(isolated function (QueryResult queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -530,7 +540,9 @@ function testQueryDocumentsWithRequestOptions() {
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
     if (result is stream<QueryResult, error>) {
-        //
+        error? e = result.forEach(isolated function (QueryResult queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -627,7 +639,9 @@ function testGetAllStoredProcedures() {
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
     if (result is stream<Data, error>) {
-        //
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -713,7 +727,9 @@ function testListAllUDF() {
 
     var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
     if (result is stream<Data, error>) {
-        //
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        });    
     } else {
         test:assertFail(msg = result.message());
     }
@@ -836,7 +852,9 @@ function testListTriggers() {
 
     var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
     if (result is stream<Data, error>) {
-        //
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -922,7 +940,9 @@ function testListUsers() {
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
     if (result is stream<Data, error>) {
-        //
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
@@ -1027,7 +1047,9 @@ function testListPermissions() {
 
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
     if (result is stream<Data, error>) {
-        //
+        error? e = result.forEach(isolated function (Data queryResult) {
+            log:printInfo(queryResult.toString());
+        }); 
     } else {
         test:assertFail(msg = result.message());
     }
