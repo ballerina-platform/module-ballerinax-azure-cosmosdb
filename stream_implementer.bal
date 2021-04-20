@@ -36,7 +36,7 @@ class RecordStream {
     public isolated function next() returns record {| Data value; |}|error? {
         if(self.index < self.currentEntries.length()) {
             record {| Data value; |} singleRecord = {value: self.currentEntries[self.index]};
-            self.index = 1;
+            self.index += 1;
             return singleRecord;
         }
         // This code block is for retrieving the next batch of records when the initial batch is finished.
@@ -113,7 +113,7 @@ class QueryResultStream {
     public isolated function next() returns record {| QueryResult value; |}|error? {
         if(self.index < self.currentEntries.length()) {
             record {| QueryResult value; |} singleRecord = {value: self.currentEntries[self.index]};
-            self.index = 1;
+            self.index += 1;
             return singleRecord;
         }
         // This code block is for retrieving the next batch of records when the initial batch is finished.
