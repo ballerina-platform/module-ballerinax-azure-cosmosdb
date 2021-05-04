@@ -33,7 +33,7 @@ class RecordStream {
         self.currentEntries = check self.fetchRecords();
     }
 
-    public isolated function next() returns record {| Data value; |}|error? {
+    public isolated function next() returns @tainted record {| Data value; |}|error? {
         if(self.index < self.currentEntries.length()) {
             record {| Data value; |} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;
@@ -110,7 +110,7 @@ class QueryResultStream {
         self.currentEntries = check self.fetchQueryResults();
     }
 
-    public isolated function next() returns record {| QueryResult value; |}|error? {
+    public isolated function next() returns @tainted record {| QueryResult value; |}|error? {
         if(self.index < self.currentEntries.length()) {
             record {| QueryResult value; |} singleRecord = {value: self.currentEntries[self.index]};
             self.index += 1;

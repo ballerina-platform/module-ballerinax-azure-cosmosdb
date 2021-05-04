@@ -1223,7 +1223,7 @@ function testGetContainerWithResourceToken() {
             primaryKeyOrResourceToken: result?.token.toString()
         };
 
-        ManagementClient managementClient = checkpanic new (configdb);
+        ManagementClient managementClient = checkpanic new (<@untainted>configdb);
 
         string containerId = container.id;
         var resultcontainer = managementClient->getContainer(databaseId, containerId);
