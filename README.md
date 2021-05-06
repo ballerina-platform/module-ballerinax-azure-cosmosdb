@@ -100,8 +100,8 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
 - Java 11 installed. <br/>
     Java Development Kit (JDK) with version 11 is required.
 
-- Ballerina SLP8 installed. <br/>
-    Ballerina Swan Lake Alpha 2 is required.
+- Ballerina SL Alpha 5 installed. <br/>
+    Ballerina Swan Lake Alpha 5 is required.
 
 ## Add project configurations file
 
@@ -119,7 +119,7 @@ primaryKey = <MASTER_OR_RESOURCE_TOKEN>
 ## Supported Versions
 |                            | Version               |
 |----------------------------|-----------------------|
-| Ballerina Language Version | **Swan Lake Alpha 4** |
+| Ballerina Language Version | **Swan Lake Alpha 5** |
 | Cosmos DB API Version      | **2018-12-31**        |
 | Java Development Kit (JDK) | 11                    |
 
@@ -1930,11 +1930,11 @@ Sample is available at: https://github.com/ballerina-platform/module-ballerinax-
 
         > **Note:** Set the JAVA_HOME environment variable to the path name of the directory into which you installed JDK.
 
-2. Download and install [Ballerina SLP8](https://ballerina.io/). 
+2. Download and install [Ballerina SL Alpha 5](https://ballerina.io/). 
 
 ## Building the Source
 
-Execute the commands below to build from the source after installing Ballerina SLP8 version.
+Execute the commands below to build from the source after installing Ballerina SL Alpha 5 version.
 
 1. To build the library:
 ```shell script
