@@ -14,15 +14,15 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
+              uses: ballerina-platform/ballerina-action/@master
               with:
                   args:
-                      build -c --skip-tests
+                      build -c ./cosmosdb
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
                   MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@swan-lake-connector-release
+              uses: ballerina-platform/ballerina-action/@master
               with:
                   args:
                       push 
