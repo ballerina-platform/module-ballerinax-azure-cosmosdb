@@ -382,7 +382,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
     }
 }
 
-// This is the older version of the stram implementation
+// This is the older version of the stream implementation
 // # Get a stream of JSON documents which is returned as query results.
 // # 
 // # + azureCosmosClient - Client which calls the azure endpoint
@@ -414,7 +414,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 // # + azureCosmosClient - The http:Client object which is used to call azure endpoints
 // # + path - Path to which API call is made
 // # + headerMap - The map of strings which contain the headers necessary for the call
-// # + array - Initial recory array which will be filled in every request call
+// # + array - Initial record array which will be filled in every request call
 // # + continuationHeader - The continuation header which is use to obtain next pages
 // # + return - A `stream<record{}>` if successful. Else returns`Error`.
 // isolated function retrieveStream(http:Client azureCosmosClient, string path, map<string> headerMap, 
@@ -438,82 +438,82 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 // # + path - Path to which API call is made
 // # + headerMap - The map of strings which contain the headers necessary for the call
 // # + payload - JSON payload returned from the response
-// # + initalArray - Initial recory array which will be filled in every request call
+// # + initialArray - Initial record array which will be filled in every request call
 // # + continuationHeader - The continuation header which is use to obtain next pages
 // # + return - A `<record{}>` if successful. Else returns `Error`
 // isolated function createStream(http:Client azureCosmosClient, string path, map<string> headerMap, json payload, 
-//                                record{}[] initalArray, @tainted string? continuationHeader = ()) returns 
+//                                record{}[] initialArray, @tainted string? continuationHeader = ()) returns
 //                                @tainted stream<record{}>|Error {
-//     var arrayType = typeof initalArray;
-//     record{}[] finalArray = initalArray;
+//     var arrayType = typeof initialArray;
+//     record{}[] finalArray = initialArray;
 
 //     if (arrayType is typedesc<Offer[]>) {
 //         if (payload.Offers is json) {
 //             json[] array = let var load = payload.Offers in load is json ? <json[]>load : [];
-//             convertToOfferArray(<Offer[]>initalArray, array);
+//             convertToOfferArray(<Offer[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Document[]>) {
 //         if (payload.Documents is json) {
 //             json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
-//             convertToDocumentArray(<Document[]>initalArray, array);
+//             convertToDocumentArray(<Document[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Database[]>) {
 //         if (payload.Databases is json) {
 //             json[] array = let var load = payload.Databases in load is json ? <json[]>load : [];
-//             convertToDatabaseArray(<Database[]>initalArray, array);
+//             convertToDatabaseArray(<Database[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Container[]>) {
 //         if (payload.DocumentCollections is json) {
 //             json[] array = let var load = payload.DocumentCollections in load is json ? <json[]>load : [];
-//             convertToContainerArray(<Container[]>initalArray, array);
+//             convertToContainerArray(<Container[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<StoredProcedure[]>) {
 //         if (payload.StoredProcedures is json) {
 //             json[] array = let var load = payload.StoredProcedures in load is json ? <json[]>load : [];
-//             convertToStoredProcedureArray(<StoredProcedure[]>initalArray, array);
+//             convertToStoredProcedureArray(<StoredProcedure[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }     
 //     } else if (arrayType is typedesc<UserDefinedFunction[]>) {
 //         if (payload.UserDefinedFunctions is json) {
 //             json[] array = let var load = payload.UserDefinedFunctions in load is json ? <json[]>load : [];
-//             convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initalArray, array);
+//             convertsToUserDefinedFunctionArray(<UserDefinedFunction[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Trigger[]>) {
 //         if (payload.Triggers is json) {
 //             json[] array = let var load = payload.Triggers in load is json ? <json[]>load : [];
-//             convertToTriggerArray(<Trigger[]>initalArray, array);
+//             convertToTriggerArray(<Trigger[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<User[]>) {
 //         if (payload.Users is json) {
 //             json[] array = let var load = payload.Users in load is json ? <json[]>load : [];
-//             convertToUserArray(<User[]>initalArray, array);
+//             convertToUserArray(<User[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<Permission[]>) {
 //         if (payload.Permissions is json) {
 //             json[] array = let var load = payload.Permissions in load is json ? <json[]>load : [];
-//             convertToPermissionArray(<Permission[]>initalArray, array);
+//             convertToPermissionArray(<Permission[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }
 //     } else if (arrayType is typedesc<PartitionKeyRange[]>) {
 //         if (payload.PartitionKeyRanges is json) {
 //             json[] array = let var load = payload.PartitionKeyRanges in load is json ? <json[]>load : [];
-//             convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initalArray, array);
+//             convertToPartitionKeyRangeArray(<PartitionKeyRange[]>initialArray, array);
 //         } else {
 //             return error PayloadValidationError(INVALID_RESPONSE_PAYLOAD_ERROR);
 //         }

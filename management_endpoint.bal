@@ -57,7 +57,7 @@ public client class ManagementClient {
         http:Response response = check self.httpClient->post(requestPath, request);
         // Return the json payload from the response 
         json jsonResponse = check handleResponse(response);
-        // Map the reponse payload and the headers to a record type
+        // Map the response payload and the headers to a record type
         return mapJsonToDatabaseType(jsonResponse);
     }
 
@@ -816,7 +816,7 @@ public client class ManagementClient {
     # + return - If successful, returns a `Offer`. Else returns `Error`.
     @display {label: "Get offer"} 
     remote isolated function getOffer(@display {label: "Offer Id"} string offerId, 
-                                      @display {label: " Optional Header Parameters"} ResourceReadOptions? 
+                                      @display {label: "Optional Header Parameters"} ResourceReadOptions? 
                                       resourceReadOptions = ()) returns @tainted Offer|Error {
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS, offerId]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
