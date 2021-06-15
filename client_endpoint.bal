@@ -19,7 +19,10 @@ import ballerina/http;
 # Azure Cosmos DB Client Object for executing data plane operations.
 # 
 # + httpClient - the HTTP Client
-@display {label: "Azure Cosmos DB Client"}
+@display {
+    label: "Azure Cosmos DB Client",
+    iconPath: "AzureCosmosDBLogo.svg"
+}
 public client class DataPlaneClient {
     private http:Client httpClient;
     private string baseUrl;
@@ -43,13 +46,12 @@ public client class DataPlaneClient {
     #                           request
     # + return - If successful, returns `Document`. Else returns `Error`.
     @display {label: "Create document"}
-    remote isolated function createDocument(@display {label: "Database name"} string databaseId, 
-                                            @display {label: "Container name"} string containerId, 
+    remote isolated function createDocument(@display {label: "Database Name"} string databaseId, 
+                                            @display {label: "Container Name"} string containerId, 
                                             @display {label: "Document"} record {|string id; json...;|} document, 
-                                            @display {label: "Partition key"} int|float|decimal|string partitionKey, 
-                                            @display {label: "Optional header parameters"} DocumentCreateOptions? 
-                                            documentCreateOptions = ()) returns 
-                                            @tainted @display {label: "Document"} Document|Error { 
+                                            @display {label: "Partition Key"} int|float|decimal|string partitionKey, 
+                                            @display {label: "Optional Header Parameters"} DocumentCreateOptions? 
+                                            documentCreateOptions = ()) returns @tainted Document|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
@@ -72,15 +74,14 @@ public client class DataPlaneClient {
     # + documentReplaceOptions - The `DocumentReplaceOptions` which can be used to add additional capabilities to the 
     #                            request
     # + return - If successful, returns a `Document`. Else returns `Error`.
-    @display {label: "Replace document"} 
-    remote isolated function replaceDocument(@display {label: "Database name"} string databaseId, 
-                                             @display {label: "Container name"} string containerId, 
+    @display {label: "Replace document"}
+    remote isolated function replaceDocument(@display {label: "Database Name"} string databaseId, 
+                                             @display {label: "Container Name"} string containerId, 
                                              @display {label: "New Document"} @tainted record {|string id; json...;|} 
                                              document, 
-                                             @display {label: "Partition key"} int|float|decimal|string partitionKey,  
-                                             @display {label: "Optional header parameters"} DocumentReplaceOptions? 
-                                             documentReplaceOptions = ()) returns 
-                                             @tainted @display {label: "Document"} Document|Error {
+                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,  
+                                             @display {label: "Optional Header Parameters"} DocumentReplaceOptions? 
+                                             documentReplaceOptions = ()) returns @tainted Document|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, document.id]);
@@ -102,14 +103,13 @@ public client class DataPlaneClient {
     # + partitionKey - The value of partition key field of the container
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `Document`. Else returns `Error`.
-    @display {label: "Get document"} 
-    remote isolated function getDocument(@display {label: "Database name"} string databaseId, 
-                                         @display {label: "Container name"} string containerId, 
-                                         @display {label: "Document id"} string documentId, 
-                                         @display {label: "Partition key"} int|float|decimal|string partitionKey, 
-                                         @display {label: "Optional header parameters"} ResourceReadOptions?
-                                         resourceReadOptions = ()) returns 
-                                         @tainted @display {label: "Document"} Document|Error { 
+    @display {label: "Get document"}
+    remote isolated function getDocument(@display {label: "Database Name"} string databaseId, 
+                                         @display {label: "Container Name"} string containerId, 
+                                         @display {label: "Document Id"} string documentId, 
+                                         @display {label: "Partition Key"} int|float|decimal|string partitionKey, 
+                                         @display {label: "Optional Header Parameters"} ResourceReadOptions?
+                                         resourceReadOptions = ()) returns @tainted Document|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -129,9 +129,9 @@ public client class DataPlaneClient {
     # + documentListOptions - The `DocumentListOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns `stream<Data, error>`. Else, returns `Error`. 
     @display {label: "Get documents"} 
-    remote isolated function getDocumentList(@display {label: "Database name"} string databaseId, 
-                                             @display {label: "Container name"} string containerId, 
-                                             @display {label: "Optional header parameters"} DocumentListOptions? 
+    remote isolated function getDocumentList(@display {label: "Database Name"} string databaseId, 
+                                             @display {label: "Container Name"} string containerId, 
+                                             @display {label: "Optional Header Parameters"} DocumentListOptions? 
                                              documentListOptions = ()) returns 
                                              @tainted @display {label: "Stream of Documents"} stream<Data, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
@@ -154,14 +154,13 @@ public client class DataPlaneClient {
     # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the 
     #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
-    @display {label: "Delete document"} 
-    remote isolated function deleteDocument(@display {label: "Database name"} string databaseId, 
-                                            @display {label: "Container name"} string containerId, 
-                                            @display {label: "Document id"} string documentId, 
-                                            @display {label: "Partition key"} int|float|decimal|string partitionKey, 
-                                            @display {label: "Optional header parameters"} ResourceDeleteOptions? 
-                                            resourceDeleteOptions = ()) returns 
-                                            @tainted @display {label: "Deletion response"} DeleteResponse|Error { 
+    @display {label: "Delete document"}
+    remote isolated function deleteDocument(@display {label: "Database Name"} string databaseId, 
+                                            @display {label: "Container Name"} string containerId, 
+                                            @display {label: "Document Id"} string documentId, 
+                                            @display {label: "Partition Key"} int|float|decimal|string partitionKey, 
+                                            @display {label: "Optional Header Parameters"} ResourceDeleteOptions? 
+                                            resourceDeleteOptions = ()) returns @tainted DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS, documentId]);
@@ -182,16 +181,16 @@ public client class DataPlaneClient {
     # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the 
     #                          request
     # + return - If successful, returns a `stream<QueryResult, error>`. Else returns `Error`.
-    @display {label: "Query documents"} 
-    remote isolated function queryDocuments(@display {label: "Database name"} string databaseId, 
-                                            @display {label: "Container name"} string containerId, 
+    @display {label: "Query documents"}
+    remote isolated function queryDocuments(@display {label: "Database Name"} string databaseId, 
+                                            @display {label: "Container Name"} string containerId, 
                                             @display {label: "SQL query"} string sqlQuery, 
-                                            @display {label: "Optional header parameters"} ResourceQueryOptions? 
+                                            @display {label: "Optional Header Parameters"} ResourceQueryOptions? 
                                             resourceQueryOptions = ()) returns 
                                             @tainted @display {label: "Stream of Documents"} 
                                             stream<QueryResult, error>|Error { 
         http:Request request = new;
-        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
+        string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId,
             RESOURCE_TYPE_DOCUMENTS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
         setPartitionKeyHeader(request, resourceQueryOptions?.partitionKey);
@@ -209,7 +208,7 @@ public client class DataPlaneClient {
         return finalStream;
     }
 
-    # Create a new stored procedure. Stored procedure is a piece of application logic written in JavaScript that is 
+    # Create a new stored procedure. Stored Procedure is a piece of application logic written in JavaScript that is 
     # registered and executed against a container as a single transaction.
     # 
     # + databaseId - ID of the database to which the container belongs to
@@ -217,13 +216,12 @@ public client class DataPlaneClient {
     # + storedProcedureId - A unique ID for the newly created stored procedure
     # + storedProcedure - A JavaScript function represented as a string
     # + return - If successful, returns a `StoredProcedure`. Else returns `Error`. 
-    @display {label: "Create stored procedure"} 
-    remote isolated function createStoredProcedure(@display {label: "Database name"} string databaseId,  
-                                                   @display {label: "Container name"} string containerId, 
-                                                   @display {label: "Stored procedure id"} string storedProcedureId, 
-                                                   @display {label: "Stored procedure function"} string storedProcedure) 
-                                                   returns @tainted @display {label: "Stored Procedure"} 
-                                                   StoredProcedure|Error {
+    @display {label: "Create stored procedure"}
+    remote isolated function createStoredProcedure(@display {label: "Database Name"} string databaseId,
+                                                   @display {label: "Container Name"} string containerId,
+                                                   @display {label: "Stored Procedure Id"} string storedProcedureId,
+                                                   @display {label: "Stored Procedure Function"} string storedProcedure)
+                                                   returns @tainted StoredProcedure|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES]);
@@ -233,7 +231,7 @@ public client class DataPlaneClient {
             id: storedProcedureId,
             body: storedProcedure
         };
-        request.setJsonPayload(payload); 
+        request.setJsonPayload(payload);
 
         http:Response response = check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
@@ -248,12 +246,11 @@ public client class DataPlaneClient {
     # + storedProcedure - A JavaScript function which will replace the existing one
     # + return - If successful, returns a `StoredProcedure`. Else returns `Error`. 
     @display {label: "Replace stored procedure"} 
-    remote isolated function replaceStoredProcedure(@display {label: "Database name"} string databaseId, 
-                                                    @display {label: "Container name"} string containerId, 
-                                                    @display {label: "Stored procedure id"} string storedProcedureId, 
-                                                    @display {label: "Stored procedure function"} string storedProcedure) 
-                                                    returns @tainted @display {label: "Stored Procedure"} 
-                                                    StoredProcedure|Error { 
+    remote isolated function replaceStoredProcedure(@display {label: "Database Name"} string databaseId, 
+                                                    @display {label: "Container Name"} string containerId, 
+                                                    @display {label: "Stored Procedure Id"} string storedProcedureId, 
+                                                    @display {label: "Stored Procedure Function"} string storedProcedure) 
+                                                    returns @tainted StoredProcedure|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
@@ -277,9 +274,9 @@ public client class DataPlaneClient {
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
     # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`. 
     @display {label: "Get stored procedures"} 
-    remote isolated function listStoredProcedures(@display {label: "Database name"} string databaseId, 
-                                                  @display {label: "Container name"} string containerId, 
-                                                  @display {label: "Optional header parameters"} ResourceReadOptions?
+    remote isolated function listStoredProcedures(@display {label: "Database Name"} string databaseId, 
+                                                  @display {label: "Container Name"} string containerId, 
+                                                  @display {label: "Optional Header Parameters"} ResourceReadOptions?
                                                   resourceReadOptions = ()) returns 
                                                   @tainted @display {label: "Stream of Stored Procedures"} 
                                                   stream<Data, error>|Error { 
@@ -304,12 +301,11 @@ public client class DataPlaneClient {
     #                           request
     # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
     @display {label: "Delete stored procedure"} 
-    remote isolated function deleteStoredProcedure(@display {label: "Database name"} string databaseId, 
-                                                   @display {label: "Container name"} string containerId, 
-                                                   @display {label: "Stored procedure id"} string storedProcedureId, 
-                                                   @display {label: "Optional header parameters"} ResourceDeleteOptions? 
-                                                   resourceDeleteOptions = ()) returns 
-                                                   @tainted @display {label: "Deletion Response"} DeleteResponse|Error { 
+    remote isolated function deleteStoredProcedure(@display {label: "Database Name"} string databaseId, 
+                                                   @display {label: "Container Name"} string containerId, 
+                                                   @display {label: "Stored Procedure Id"} string storedProcedureId, 
+                                                   @display {label: "Optional Header Parameters"} ResourceDeleteOptions? 
+                                                   resourceDeleteOptions = ()) returns @tainted DeleteResponse|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
@@ -330,12 +326,12 @@ public client class DataPlaneClient {
     #                            parameters
     # + return - If successful, returns `json` with the output from the executed function. Else returns `Error`. 
     @display {label: "Execute stored procedure"} 
-    remote isolated function executeStoredProcedure(@display {label: "Database name"} string databaseId, 
-                                                    @display {label: "Container name"} string containerId, 
-                                                    @display {label: "Stored Procedure id"} string storedProcedureId, 
-                                                    @display {label: "Optional parameters"} 
+    remote isolated function executeStoredProcedure(@display {label: "Database Name"} string databaseId, 
+                                                    @display {label: "Container Name"} string containerId, 
+                                                    @display {label: "Stored Procedure Id"} string storedProcedureId, 
+                                                    @display {label: "Execution Options"} 
                                                     StoredProcedureExecuteOptions storedProcedureExecuteOptions) 
-                                                    returns @tainted @display {label: "JSON response"} json|Error { 
+                                                    returns @tainted @display {label: "JSON Response"} json|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES, storedProcedureId]);
