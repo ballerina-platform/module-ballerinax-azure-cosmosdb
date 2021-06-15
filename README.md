@@ -7,7 +7,7 @@ Ballerina Connector For Azure Cosmos DB
 
 Connects to Microsoft Azure Cosmos DB using Ballerina.
 
-- [Azure Cosmos DB Connecter](#markdown-navigation)
+- [Azure Cosmos DB Connector](#markdown-navigation)
     - [Introduction](#introduction)
         - [What is Azure Cosmos DB](#what-is-azure-cosmos-db-?)
         - [Key features of Azure Cosmos DB](#key-features-of-azure-cosmos-db)
@@ -76,9 +76,9 @@ https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account/
         - Obtaining Resource Token
         
         The person who possesses the Master Key of the Cosmos DB account is capable of creating Permissions for each 
-        User. By using this concept, a ballerina service that uses the Cosmos DB connector can act as a token broker, 
+        User. By using this concept, a ballerina service that uses the CosmosDB connector can act as a token broker, 
         which issues tokens with specific access rights to users (involves a middle-tier service that serves as the 
-        authentication and authorization broker between a client and a back-end service). This is handled by using 
+        authentication and authorization broker between a client, and a back-end service). This is handled by using 
         Resource-Tokens. 
 
         Resource tokens provide user-based permissions to individual account resources, including collections, 
@@ -154,7 +154,7 @@ the Cosmos DB Account. For continuing with the data plane operations in Cosmos D
 cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
 ```
 ### Step 4: Create a document
-Now, with all the above steps followed you can create a new document inside the Cosmos container. As Cosmos DB is 
+Now, with all the above steps followed you can create a new document inside the Cosmos container. As CosmosDB is 
 designed to store and query JSON-like documents, the document you intend to store must be JSON. Then, the document must 
 have a unique ID to identify it. In this case, the Document ID will be **my_document**. 
 
@@ -178,7 +178,7 @@ cosmosdb:Document documentResult = azureCosmosClient-> createDocument("my_databa
     valueOfPartitionKey);
 ```
 Notes: <br/> 
-- This document is created inside an already existing container with ID **my_container** and the container was created 
+- This document is created inside an already existing container with ID **my_container**, and the container was created 
 inside a database with ID **my_document**.
 - As this container have selected path **/gender** as the partition key, the document you create should include that path 
 with a valid value.
@@ -201,7 +201,7 @@ if (result is stream<cosmosdb:Data, error>) {
 ### Step 6: Query documents
 Querying documents is one of the main use-cases supported by a database. For querying documents inside the container 
 you have created, you have to give **my_database** and **my_container** which the querying should be done, as parameters. 
-A SQL query must be provided, which is represented as a string. When executing a SQL query using the connector, there 
+An SQL query must be provided, which is represented as a string. When executing an SQL query using the connector, there 
 are specific ways you can write the query itself. More information on writing queries can be found here: 
 https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-using-the-rest-api
 
@@ -416,7 +416,7 @@ for the container. This is provided by giving **Include** or **Exclude**.
 
 ### Get a document
 This sample shows how to get a document by its ID. It returns ta record of type `Document`. Here, you have to provide 
-*database ID*, *container ID* where the document will be created and the **ID of the document** to retrieve. As the 
+*database ID*, *container ID* where the document will be created, and the **ID of the document** to retrieve. As the 
 partition key is mandatory in the container, for getDocument operation you need to provide the correct 
 **value for that partition key**.
 ```ballerina
@@ -453,10 +453,10 @@ Notes: <br/> For document read operations several optional parameters can be pro
 are related to maintaining the consistency and handling concurrency of the data. 
 - **sessionToken** - the client will use a session token internally with each read/query request to ensure that the 
 session-level consistency level is maintained.
-- **consistancyLevel** - It is the consistency level override. The valid values are: **Strong**, **Bounded**, 
+- **consistencyLevel** - It is the consistency level override. The valid values are: **Strong**, **Bounded**, 
 **Session**, or **Eventual**. 
 Users must set this level to the same or weaker level than the account’s configured consistency level. More information 
-about Cosmos DB consistency levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
+about CosmosDB consistency levels can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/consistency-levels
 
 [Sample](samples/data-operations/documents/get_document.bal)
 
@@ -498,7 +498,7 @@ Notes: <br/> For document list operations several optional parameters can be pro
 type in the connector. These are related to maintaining the consistency and handling concurrency of the data. 
 - **sessionToken** - the client will use a session token internally with each read/query request to ensure that the 
 session-level consistency level is maintained.
-- **consistancyLevel** - It is the consistency level override. The valid values are: **Strong**, **Bounded**, 
+- **consistencyLevel** - It is the consistency level override. The valid values are: **Strong**, **Bounded**, 
 **Session**, or **Eventual**. 
 *Users must set this level to the same or weaker level than the account’s configured consistency level*.
 - **changeFeedOption** - Must be set to **Incremental feed**, or omitted otherwise. More information about change feed 
@@ -509,7 +509,7 @@ can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/change-feed
 
 ### Delete a document
 This sample shows how to delete a document which exists inside a container. You have to specify the *database ID*, 
-*container ID* where the document exists and the **ID of document** you want to delete. The 
+*container ID* where the document exists, and the **ID of document** you want to delete. The 
 **value of the partition key** for that specific document should also passed to the function.
 ```ballerina
 import ballerina/log;
@@ -589,8 +589,8 @@ public function main() {
 }
 ```
 Notes: <br/> 
-- The record type `ResourceQueryOptions` can be used to provide several options for executing the qury.
-    - **consistancyLevel** - It is the consistency level override. The valid values are: **Strong**, **Bounded**, 
+- The record type `ResourceQueryOptions` can be used to provide several options for executing the query.
+    - **consistencyLevel** - It is the consistency level override. The valid values are: **Strong**, **Bounded**, 
     **Session**, or **Eventual**.  Users must set this level to the same or weaker level than the account’s configured 
     consistency level of the Azure account.
     - **sessionToken** - The client will use a session token internally with each read/query request to ensure that the     
@@ -615,7 +615,7 @@ in Cosmos DB.
 This sample shows how to create a stored procedure inside a container. This stored procedure will return a 
 response appending a string inside the function to the response body. For this, you have to provide the *database ID* 
 and the *container ID* where the stored procedure will be saved in. Apart from that, a *unique ID* for the stored 
-procedure and a JavaScript function that represents the stored procedure should be provided as parameters.  
+procedure, and a JavaScript function that represents the stored procedure should be provided as parameters.  
 ```ballerina
 import ballerina/log;
 import ballerina/os;
@@ -739,7 +739,7 @@ public function main() {
 
 ### Delete a stored procedure
 This sample shows how to delete a stored procedure that exists inside a container. You have to specify the 
-*database ID*, *container ID* where the stored procedure exists and the *ID of the stored procedure* you want to delete.
+*database ID*, *container ID* where the stored procedure exists, and the *ID of the stored procedure* you want to delete.
 ```ballerina
 import ballerina/log;
 import ballerina/os;
@@ -771,7 +771,7 @@ public function main() {
 [Sample](samples/data-operations/stored-procedure/delete_stored_procedure.bal)
 
 ### Execute a stored procedure
-A stored procedure is a piece of logic written in JavaScript which can be executed via an API call. Cosmos DB connector 
+A stored procedure is a piece of logic written in JavaScript which can be executed via an API call. CosmosDB connector 
 explicitly gives the capability to execute stored procedures. They can be used in Azure databases to execute CRUD 
 operations on documents and also to read from the request body and write to the response body. More information about 
 this can be found here: https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-write-stored-procedures-triggers-udfs. 
@@ -1704,7 +1704,7 @@ public function main() {
 ## Permissions
 Permissions are related to the Users in the Cosmos DB. The person who possesses the **Master-Token** of the Cosmos DB 
 account is capable of creating permissions for each user. By using this concept, a ballerina service that uses the 
-Cosmos DB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
+CosmosDB connector can act as a token broker, which issues tokens with specific access rights to users (involves a 
 middle-tier service that serves as the authentication and authorization broker between a client and a back-end service). 
 This is granted by using **Resource-Token**. 
 
@@ -1937,12 +1937,12 @@ Execute the commands below to build from the source after installing Ballerina S
 
 1. To build the library:
 ```shell script
-    ballerina build
+    bal build
 ```
 
 2. To build the module without the tests:
 ```shell script
-    ballerina build --skip-tests
+    bal build --skip-tests
 ```
 # Contributing to Ballerina
 As an open source project, Ballerina welcomes contributions from the community. 

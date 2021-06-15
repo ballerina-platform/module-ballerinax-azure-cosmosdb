@@ -16,7 +16,7 @@
 
 import ballerina/http;
 
-// This stream implmenter works for GET requests
+// This stream implementer works for GET requests
 class RecordStream {
     private Data[] currentEntries = [];
     private string continuationToken;
@@ -93,7 +93,7 @@ class RecordStream {
     }
 }
 
-// This stream implmenter works for POST requests
+// This stream implementer works for POST requests
 class QueryResultStream {
     private QueryResult[] currentEntries = [];
     private string continuationToken;

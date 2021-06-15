@@ -156,8 +156,8 @@ public function main() {
 }
 ```
 ### Get Document
-This operation allows to retrieve a document by it's ID. It returns a record type `Document`. Here, you have to provide 
-*Database ID*, *Container ID* where the document will be created and the *ID of the document* to retrieve. As the 
+This operation allows to retrieve a document by its ID. It returns a record type `Document`. Here, you have to provide 
+*Database ID*, *Container ID* where the document will be created, and the *ID of the document* to retrieve. As the 
 partition key is mandatory in the container, for getDocument operation you need to provide the correct 
 **value for that partition key**.
 ```ballerina
@@ -183,7 +183,7 @@ public function main() {
 }
 ```
 ### Query Documents
-Ballerina connector for Azure COsmos DB allows the option to either provide a query as a normal ballerina string that 
+Ballerina connector for Azure Cosmos DB allows the option to either provide a query as a normal ballerina string that 
 matches with the SQL queries compatible with the REST API. This example shows a query that will return all the data 
 inside a document such that the value for **/gender** equals 0.
 ```ballerina
@@ -216,7 +216,7 @@ public function main() {
 ```
 ### Delete Document
 Using this connector, deletion of a document that exists inside a container is possible. You have to specify the 
-*Database ID*, *Container ID* where the document exists and the *ID of document* you want to delete. The 
+*Database ID*, *Container ID* where the document exists, and the *ID of document* you want to delete. The 
 **value of the partition key** for that specific document should also be passed to the function.
 ```ballerina
 import ballerina/log;
