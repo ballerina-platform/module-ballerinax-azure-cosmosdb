@@ -39,11 +39,11 @@ public function main() {
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
 
     log:printInfo("List the offers in the current cosmos db account");   
-    stream<cosmosdb:Data, error>|error offerList = checkpanic managementClient->listOffers();
+    stream<cosmosdb:Offer, error>|error offerList = checkpanic managementClient->listOffers();
 
-    if (offerList is stream<cosmosdb:Data, error>) {
-        record {|cosmosdb:Data value;|}|error? offer = offerList.next();
-        if (offer is record {|cosmosdb:Data value;|}) {
+    if (offerList is stream<cosmosdb:Offer, error>) {
+        record {|cosmosdb:Offer value;|}|error? offer = offerList.next();
+        if (offer is record {|cosmosdb:Offer value;|}) {
             offerId = <@untainted>offer.value.id;
             resourceId = offer?.value?.resourceId;
         }

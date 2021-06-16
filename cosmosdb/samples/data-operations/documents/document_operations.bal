@@ -173,10 +173,10 @@ public function main() {
     }
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Data, error>|error documentList = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<cosmosdb:Document, error>|error documentList = azureCosmosClient->getDocumentList(databaseId, containerId);
 
-    if (documentList is stream<cosmosdb:Data, error>) {
-        error? e = documentList.forEach(function (cosmosdb:Data document) {
+    if (documentList is stream<cosmosdb:Document, error>) {
+        error? e = documentList.forEach(function (cosmosdb:Document document) {
             log:printInfo(document.toString());
         });
         log:printInfo("Success!");
@@ -185,7 +185,7 @@ public function main() {
     }
 
     log:printInfo("Deleting the document");
-    cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteDocument(databaseId, containerId, 
+    cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteDocument(databaseId, containerId,
         documentId, partitionKeyValue);
 
     if (deletionResult is cosmosdb:DeleteResponse) {
@@ -213,7 +213,7 @@ function closeRc(io:ReadableCharacterChannel rc) {
 }
 
 # Create a random UUID removing the unnecessary hyphens which will interrupt querying opearations.
-# 
+#
 # + return - A string UUID without hyphens
 function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());

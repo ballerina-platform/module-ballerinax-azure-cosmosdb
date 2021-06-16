@@ -66,9 +66,9 @@ public function main() {
     }
 
     log:printInfo("List stored procedures");
-    stream<cosmosdb:Data, error>|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (spList is stream<cosmosdb:Data, error>) {
-        error? e = spList.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:StoredProcedure, error>|error spList = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (spList is stream<cosmosdb:StoredProcedure, error>) {
+        error? e = spList.forEach(function (cosmosdb:StoredProcedure storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");
@@ -81,7 +81,7 @@ public function main() {
         parameters: ["Sachi"]
     };
 
-    json|error result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
+    json|error result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options);
 
     if (result is json) {
         log:printInfo(result.toString());
@@ -90,7 +90,7 @@ public function main() {
     }
 
     log:printInfo("Deleting stored procedure");
-    cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, 
+    cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteStoredProcedure(databaseId, containerId,
         storedProcedureId);
 
     if (deletionResult is cosmosdb:DeleteResponse) {

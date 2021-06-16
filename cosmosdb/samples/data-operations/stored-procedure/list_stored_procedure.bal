@@ -30,9 +30,9 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List stored procedure");
-    stream<cosmosdb:Data, error>|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:StoredProcedure, error>|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (result is stream<cosmosdb:StoredProcedure, error>) {
+        error? e = result.forEach(function (cosmosdb:StoredProcedure storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");
