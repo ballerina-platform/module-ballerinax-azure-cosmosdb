@@ -33,11 +33,11 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
     cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
+    stream<cosmosdb:Document, error>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
         selectAllQuery, options);
 
-    if (result is stream<cosmosdb:QueryResult, error>) {
-        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+    if (result is stream<cosmosdb:Document, error>) {
+        error? e = result.forEach(function (cosmosdb:Document queryResult) {
             log:printInfo(queryResult.toString());
         });
         log:printInfo("Success!");

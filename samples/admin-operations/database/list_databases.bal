@@ -27,10 +27,10 @@ cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     log:printInfo("Getting list of databases");
-    stream<cosmosdb:Data, error>|error result = managementClient->listDatabases();
+    stream<cosmosdb:Database, error>|error result = managementClient->listDatabases();
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data database) {
+    if (result is stream<cosmosdb:Database, error>) {
+        error? e = result.forEach(function (cosmosdb:Database database) {
             log:printInfo(database.toString());
         });
         log:printInfo("Success!");

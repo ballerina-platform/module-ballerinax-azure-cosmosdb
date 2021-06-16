@@ -69,9 +69,9 @@ public function main() {
     }
 
     log:printInfo("List users");
-    stream<cosmosdb:Data, error>|error userList = managementClient->listUsers(databaseId);
-    if (userList is stream<cosmosdb:Data, error>) {
-        error? e = userList.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:User, error>|error userList = managementClient->listUsers(databaseId);
+    if (userList is stream<cosmosdb:User, error>) {
+        error? e = userList.forEach(function (cosmosdb:User storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");
@@ -130,9 +130,9 @@ public function main() {
     }
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Data, error>|error permissionList = managementClient->listPermissions(databaseId, userId);
-    if (permissionList is stream<cosmosdb:Data, error>) {
-        error? e = permissionList.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:Permission, error>|error permissionList = managementClient->listPermissions(databaseId, userId);
+    if (permissionList is stream<cosmosdb:Permission, error>) {
+        error? e = permissionList.forEach(function (cosmosdb:Permission storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");

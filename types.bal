@@ -386,10 +386,3 @@ public type ResourceDeleteOptions record {|
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
     ResourceQueryOptions|ResourceDeleteOptions;
 
-# A Union type containing `Document`, `Database`, `Container`, `StoredProcedure`, `UserDefinedFunction`, `Trigger`, 
-# `User`, `Permission`, `Offer` and `PartitionKeyRange`
-public type Data Document|Database|Container|StoredProcedure|UserDefinedFunction|Trigger|User|Permission|Offer|
-    PartitionKeyRange;
-
-# A Union type containing `Document`, `Offer`
-public type QueryResult Document|Offer;

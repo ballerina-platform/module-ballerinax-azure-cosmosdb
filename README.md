@@ -188,9 +188,9 @@ For listing the existing documents inside this Cosmos container you have to give
 parameters. Here, you will get a stream of `Document` records as the response. Using the ballerina Stream API you can 
 access the returned results.
 ```ballerina
-stream<cosmosdb:Data, error>|error result = azureCosmosClient->listTriggers("my_database", "my_container");
-if (result is stream<cosmosdb:Data, error>) {
-    error? e = result.forEach(function (cosmosdb:Data document) {
+stream<cosmosdb:Document, error>|error result = azureCosmosClient->listTriggers("my_database", "my_container");
+if (result is stream<cosmosdb:Document, error>) {
+    error? e = result.forEach(function (cosmosdb:Document document) {
         log:printInfo(document.toString());
     });
     log:printInfo("Success!");
@@ -209,11 +209,11 @@ https://docs.microsoft.com/en-us/rest/api/cosmos-db/querying-cosmosdb-resources-
 string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
 
-stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments("my_database", "my_container", 
+stream<cosmosdb:Document, error>|error result = azureCosmosClient->queryDocuments("my_database", "my_container", 
     selectAllQuery, options);
 
-if (result is stream<cosmosdb:QueryResult, error>) {
-    error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+if (result is stream<cosmosdb:Document, error>) {
+    error? e = result.forEach(function (cosmosdb:Document queryResult) {
         log:printInfo(queryResult.toString());
     });
     log:printInfo("Success!");
@@ -482,10 +482,10 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Data, error>|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<cosmosdb:Document, error>|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data document) {
+    if (result is stream<cosmosdb:Document, error>) {
+        error? e = result.forEach(function (cosmosdb:Document document) {
             log:printInfo(document.toString());
         });
         log:printInfo("Success!");
@@ -575,11 +575,11 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
     cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
+    stream<cosmosdb:Document, error>|error result = azureCosmosClient->queryDocuments(databaseId, containerId, 
         selectAllQuery, options);
 
-    if (result is stream<cosmosdb:QueryResult, error>) {
-        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+    if (result is stream<cosmosdb:Document, error>) {
+        error? e = result.forEach(function (cosmosdb:Document queryResult) {
             log:printInfo(queryResult.toString());
         });
         log:printInfo("Success!");
@@ -719,10 +719,10 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List stored procedure");
-    stream<cosmosdb:Data, error>?|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<cosmosdb:Data, error>?) {
-        if (result is stream<cosmosdb:Data, error>) {
-            error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:StoredProcedure, error>?|error result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
+    if (result is stream<cosmosdb:StoredProcedure, error>?) {
+        if (result is stream<cosmosdb:StoredProcedure, error>) {
+            error? e = result.forEach(function (cosmosdb:StoredProcedure storedPrcedure) {
                 log:printInfo(storedPrcedure.toString());
             });
             log:printInfo("Success!");
@@ -936,10 +936,10 @@ cosmosdb:ManagementClient managementClient = check new (config);
 
 public function main() {
     log:printInfo("Getting list of databases");
-    stream<cosmosdb:Data, error>|error result = managementClient->listDatabases();
+    stream<cosmosdb:Database, error>|error result = managementClient->listDatabases();
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data database) {
+    if (result is stream<cosmosdb:Database, error>) {
+        error? e = result.forEach(function (cosmosdb:Database database) {
             log:printInfo(database.toString());
         });
         log:printInfo("Success!");
@@ -1088,10 +1088,10 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("Getting list of containers");   
-    stream<cosmosdb:Data, error>|error result = managementClient->listContainers(databaseId);
+    stream<cosmosdb:Container, error>|error result = managementClient->listContainers(databaseId);
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data container) {
+    if (result is stream<cosmosdb:Container, error>) {
+        error? e = result.forEach(function (cosmosdb:Container container) {
             log:printInfo(container.toString());
         });
         log:printInfo("Success!");
@@ -1263,10 +1263,10 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List  user defined functions");
-    stream<cosmosdb:Data, error>|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    stream<cosmosdb:UserDefinedFunction, error>|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data udf) {
+    if (result is stream<cosmosdb:UserDefinedFunction, error>) {
+        error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
             log:printInfo(udf.toString());
         });
         log:printInfo("Success!");
@@ -1477,10 +1477,10 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List available triggers");
-    stream<cosmosdb:Data, error>|error result = managementClient->listTriggers(databaseId, containerId);
+    stream<cosmosdb:Trigger, error>|error result = managementClient->listTriggers(databaseId, containerId);
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data trigger) {
+    if (result is stream<cosmosdb:Trigger, error>) {
+        error? e = result.forEach(function (cosmosdb:Trigger trigger) {
             log:printInfo(trigger.toString());
         });
         log:printInfo("Success!");
@@ -1655,9 +1655,9 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("List users");
-    stream<cosmosdb:Data, error>|error result = managementClient->listUsers(databaseId);
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:Users, error>|error result = managementClient->listUsers(databaseId);
+    if (result is stream<cosmosdb:Users, error>) {
+        error? e = result.forEach(function (cosmosdb:Users storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");
@@ -1863,10 +1863,10 @@ public function main() {
     string userId = "my_user";
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Data, error>|error result = managementClient->listPermissions(databaseId, userId);
+    stream<cosmosdb:Permission, error>|error result = managementClient->listPermissions(databaseId, userId);
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+    if (result is stream<cosmosdb:Permission, error>) {
+        error? e = result.forEach(function (cosmosdb:Permission storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");

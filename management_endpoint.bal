@@ -102,18 +102,19 @@ public client class ManagementClient {
 
     # List information of all databases.
     # 
-    # + return - If successful, returns `stream<Data, error>`. else returns `Error`.
+    # + return - If successful, returns `stream<Database, error>`. else returns `Error`.
     @display {label: "Get Databases"}  
     remote isolated function listDatabases() returns 
-                                          @tainted @display {label: "Stream of Databases"} stream<Data, error>|Error {
+                                          @tainted @display {label: "Stream of Databases"} 
+                                          stream<Database, error>|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        DatabaseStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Database, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -230,19 +231,19 @@ public client class ManagementClient {
     # List information of all containers.
     # 
     # + databaseId - ID of the database to which the containers belongs to
-    # + return - If successful, returns `stream<Data, error>`. Else returns `Error`.
+    # + return - If successful, returns `stream<Container, error>`. Else returns `Error`.
     @display {label: "Get Containers"} 
     remote isolated function listContainers(@display {label: "Database ID"} string databaseId) 
                                             returns @tainted @display {label: "Stream of Containers"} 
-                                            stream<Data, error>|Error {
+                                            stream<Container, error>|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        ContainerStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Container, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -273,20 +274,20 @@ public client class ManagementClient {
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where the partition key ranges are related to
-    # + return - If successful, returns `stream<Data, error>`. Else returns `Error`.
+    # + return - If successful, returns `stream<PartitionKeyRange, error>`. Else returns `Error`.
     @display {label: "Get Partition Key Ranges"} 
     remote isolated function listPartitionKeyRanges(@display {label: "Database ID"} string databaseId, 
                                                     @display {label: "Container ID"} string containerId) returns 
                                                     @tainted @display {label: "Stream of Partition Key Ranges"} 
-                                                    stream<Data, error>|Error {
+                                                    stream<PartitionKeyRange, error>|Error {
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_PK_RANGES]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        PartitionKeyRangeStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<PartitionKeyRange, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -358,14 +359,14 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined functions
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`. 
+    # + return - If successful, returns a `stream<UserDefinedFunction, error>`. Else returns `Error`. 
     @display {label: "Get User Defined Functions"} 
     remote isolated function listUserDefinedFunctions(@display {label: "Database ID"} string databaseId, 
                                                       @display {label: "Container ID"} string containerId, 
                                                       @display {label: "Optional Header Parameters"} ResourceReadOptions? 
                                                       resourceReadOptions = ()) returns 
                                                       @tainted @display {label: "Stream of User Defined Fucntions"} 
-                                                      stream<Data, error>|Error { 
+                                                      stream<UserDefinedFunction, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_UDF]);
 
@@ -373,8 +374,8 @@ public client class ManagementClient {
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        UserDefiinedFunctionStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<UserDefinedFunction, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -482,13 +483,13 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the triggers
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to therequest
-    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`. 
+    # + return - If successful, returns a `stream<Trigger, error>`. Else returns `Error`. 
     @display {label: "Get Triggers"} 
     remote isolated function listTriggers(@display {label: "Database ID"} string databaseId, 
                                           @display {label: "Container ID"} string containerId, 
                                           @display {label: "Optional Header Parameters"} ResourceReadOptions?
                                           resourceReadOptions = ()) returns 
-                                          @tainted @display {label: "Stream of Triggers"} stream<Data, error>|Error { 
+                                          @tainted @display {label: "Stream of Triggers"} stream<Trigger, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_TRIGGER]);
 
@@ -496,8 +497,8 @@ public client class ManagementClient {
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        TriggerStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Trigger, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -594,20 +595,20 @@ public client class ManagementClient {
     # + databaseId - ID of the database to which, the user belongs to
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to 
     #                         the request
-    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<User, error>`. Else returns `Error`.
     @display {label: "Get Users"} 
     remote isolated function listUsers(@display {label: "Database ID"} string databaseId, 
                                        @display {label: "Optional Header Parameters"} ResourceReadOptions? 
                                        resourceReadOptions = ()) returns @tainted @display {label: "Stream of Users"} 
-                                       stream<Data, error>|Error { 
+                                       stream<User, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        UserStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<User, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -737,14 +738,14 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permissions are granted
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<Permission, error>`. Else returns `Error`.
     @display {label: "Get Permissions"} 
     remote isolated function listPermissions(@display {label: "Database ID"} string databaseId, 
                                              @display {label: "User ID"} string userId, 
                                              @display {label: "Optional Header Parameters"} ResourceReadOptions? 
                                              resourceReadOptions = ()) returns 
                                              @tainted @display {label: "Stream of Permissions"} 
-                                             stream<Data, error>|Error { 
+                                             stream<Permission, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_USER, userId, 
             RESOURCE_TYPE_PERMISSION]);
 
@@ -752,8 +753,8 @@ public client class ManagementClient {
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
         
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        PermissionStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Permission, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -833,19 +834,19 @@ public client class ManagementClient {
     # performance levels and pre-defined performance levels. 
     # 
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Data, error>` Else returns `Error`.
+    # + return - If successful, returns a `stream<Offer, error>` Else returns `Error`.
     @display {label: "Get Offers"} 
     remote isolated function listOffers(@display {label: " Optional Header Parameters"} ResourceReadOptions? 
                                         resourceReadOptions = ()) returns @tainted @display {label: "Stream of Offers"} 
-                                        stream<Data, error>|Error { 
+                                        stream<Offer, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        OfferStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Offer, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -854,13 +855,13 @@ public client class ManagementClient {
     # + sqlQuery - A string value containing SQL query
     # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the 
     #                          request
-    # + return - If successful, returns a `stream<QueryResult, error>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<Offer, error>`. Else returns `Error`.
     @display {label: "Query Offers"} 
     remote isolated function queryOffer(@display {label: "SQL Query"} string sqlQuery, 
                                         @display {label: "Optional Header Parameters"} ResourceQueryOptions? 
                                         resourceQueryOptions = ()) returns 
                                         @tainted @display {label: "Stream of Query Results"} 
-                                        stream<QueryResult, error>|Error { 
+                                        stream<Offer, error>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_OFFERS]);
         check setMandatoryHeaders(request, self.host, self.primaryKeyOrResourceToken, http:HTTP_POST, requestPath);
@@ -869,8 +870,8 @@ public client class ManagementClient {
         request.setJsonPayload({query: sqlQuery});
         check setHeadersForQuery(request);
 
-        QueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
-        stream<QueryResult, error> finalStream = new (objectInstance);
+        OfferQueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
+        stream<Offer, error> finalStream = new (objectInstance);
         return finalStream;
     }
 }
