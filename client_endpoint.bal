@@ -127,21 +127,21 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the document
     # + documentListOptions - The `DocumentListOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns `stream<Data, error>`. Else, returns `Error`. 
+    # + return - If successful, returns `stream<Document, error>`. Else, returns `Error`. 
     @display {label: "Get Documents"}
     remote isolated function getDocumentList(@display {label: "Database ID"} string databaseId, 
                                              @display {label: "Container ID"} string containerId, 
                                              @display {label: "Optional Header Parameters"} DocumentListOptions? 
                                              documentListOptions = ()) returns 
-                                             @tainted @display {label: "Stream of Documents"} stream<Data, error>|Error { 
+                                             @tainted @display {label: "Stream of Documents"} stream<Document, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, documentListOptions);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        DocumentStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<Document, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -180,7 +180,7 @@ public client class DataPlaneClient {
     # + sqlQuery - A string containing the SQL query
     # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the 
     #                          request
-    # + return - If successful, returns a `stream<QueryResult, error>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<Document, error>`. Else returns `Error`.
     @display {label: "Query Documents"}
     remote isolated function queryDocuments(@display {label: "Database ID"} string databaseId, 
                                             @display {label: "Container ID"} string containerId, 
@@ -188,7 +188,7 @@ public client class DataPlaneClient {
                                             @display {label: "Optional Header Parameters"} ResourceQueryOptions? 
                                             resourceQueryOptions = ()) returns 
                                             @tainted @display {label: "Stream of Documents"} 
-                                            stream<QueryResult, error>|Error { 
+                                            stream<Document, error>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId,
             RESOURCE_TYPE_DOCUMENTS]);
@@ -203,8 +203,8 @@ public client class DataPlaneClient {
         request.setJsonPayload(<@untainted>payload);
 
         check setHeadersForQuery(request);
-        QueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
-        stream<QueryResult, error> finalStream = new (objectInstance);
+        DocumentQueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
+        stream<Document, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -272,14 +272,14 @@ public client class DataPlaneClient {
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedures
     # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Data, error>`. Else returns `Error`. 
+    # + return - If successful, returns a `stream<StoredProcedure, error>`. Else returns `Error`. 
     @display {label: "Get Stored Procedures"}
     remote isolated function listStoredProcedures(@display {label: "Database ID"} string databaseId, 
                                                   @display {label: "Container ID"} string containerId, 
                                                   @display {label: "Optional Header Parameters"} ResourceReadOptions?
                                                   resourceReadOptions = ()) returns 
                                                   @tainted @display {label: "Stream of Stored Procedures"} 
-                                                  stream<Data, error>|Error { 
+                                                  stream<StoredProcedure, error>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES]);
         
@@ -287,8 +287,8 @@ public client class DataPlaneClient {
             requestPath);
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
-        RecordStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Data, error> finalStream = new (objectInstance);
+        StoredProcedureStream objectInstance = check new (self.httpClient, requestPath, headerMap);
+        stream<StoredProcedure, error> finalStream = new (objectInstance);
         return finalStream;
     }
 
