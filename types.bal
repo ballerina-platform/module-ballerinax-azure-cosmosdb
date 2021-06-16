@@ -386,5 +386,3 @@ public type ResourceDeleteOptions record {|
 type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
     ResourceQueryOptions|ResourceDeleteOptions;
 
-# A Union type containing `Document`, `Offer`
-public type QueryResult Document|Offer;
