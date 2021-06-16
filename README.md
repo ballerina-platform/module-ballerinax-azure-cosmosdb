@@ -354,7 +354,7 @@ for the container. This is provided by giving **Include** or **Exclude**.
 - **isUpsertRequest** - You can convert the creation of a new document into an upsert request by using this parameter. 
 Must be a boolean value.
 
-Sample is available at: https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/main/samples/data-operations/documents/create_document.bal
+[Sample](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/blob/main/samples/data-operations/documents/create_document.bal)
 
 ### Replace document
 This sample shows how to replace an existing document inside a container. Similar to document creation but, it replaces 

@@ -69,9 +69,9 @@ public function main() {
     }
 
     log:printInfo("List users");
-    stream<cosmosdb:Data, error>|error userList = managementClient->listUsers(databaseId);
-    if (userList is stream<cosmosdb:Data, error>) {
-        error? e = userList.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:User, error>|error userList = managementClient->listUsers(databaseId);
+    if (userList is stream<cosmosdb:User, error>) {
+        error? e = userList.forEach(function (cosmosdb:User storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");
@@ -84,10 +84,10 @@ public function main() {
     log:printInfo("Create permission for a user");
     string permissionId = string `permission_${uuid.toString()}`;
     cosmosdb:PermisssionMode permissionMode = "All";
-    string permissionResource = 
+    string permissionResource =
         string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
-        
-    cosmosdb:Permission|error permission = managementClient->createPermission(databaseId, userId, permissionId, 
+
+    cosmosdb:Permission|error permission = managementClient->createPermission(databaseId, userId, permissionId,
         permissionMode, <@untainted>permissionResource);
 
     if (permission is cosmosdb:Permission) {
@@ -98,7 +98,7 @@ public function main() {
     }
 
     // Create permission with time to live
-    // 
+    //
     // string newPermissionMode = "Read";
     // string newPermissionResource = string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.
     // toString()}`;
@@ -119,7 +119,7 @@ public function main() {
     cosmosdb:PermisssionMode permissionModeReplace = "All";
     string permissionResourceReplace = string `dbs/${databaseId}/colls/${containerId}`;
 
-    permission = managementClient->replacePermission(databaseId, userId, permissionId, 
+    permission = managementClient->replacePermission(databaseId, userId, permissionId,
         permissionModeReplace, permissionResourceReplace);
 
     if (permission is cosmosdb:Permission) {
@@ -130,9 +130,9 @@ public function main() {
     }
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Data, error>|error permissionList = managementClient->listPermissions(databaseId, userId);
-    if (permissionList is stream<cosmosdb:Data, error>) {
-        error? e = permissionList.forEach(function (cosmosdb:Data storedPrcedure) {
+    stream<cosmosdb:Permission, error>|error permissionList = managementClient->listPermissions(databaseId, userId);
+    if (permissionList is stream<cosmosdb:Permission, error>) {
+        error? e = permissionList.forEach(function (cosmosdb:Permission storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");
