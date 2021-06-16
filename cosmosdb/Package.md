@@ -2,10 +2,10 @@ Connects to Azure Cosmos DB from Ballerina.
 
 ## Module Overview
 
-The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed 
-multi-model database which is used for managing data across the world. The Ballerina Cosmos DB connector allows you to 
-connect to an Azure Cosmos DB resource from Ballerina and perform various operations such as `find`, `create`, `read`, 
-`update`, and `delete` operations of `Databases`, `Containers`,`User Defined Functions`, `Triggers`, `Stored Procedures`, 
+The Azure Cosmos DB is Microsoft’s NoSQL database in the Azure technology stack. It is called a globally distributed
+multi-model database which is used for managing data across the world. The Ballerina Cosmos DB connector allows you to
+connect to an Azure Cosmos DB resource from Ballerina and perform various operations such as `find`, `create`, `read`,
+`update`, and `delete` operations of `Databases`, `Containers`,`User Defined Functions`, `Triggers`, `Stored Procedures`,
 `Users`, `Permissions` and `Offers`.
 
 ## Compatibility
@@ -36,10 +36,10 @@ There are two clients provided by Ballerina to interact with Cosmos DB.
     cosmosdb:ManagementClient managementClient = check new (configuration);
    ```
 
-## Samples 
+## Samples
 ### Creating a Database
-For creating a database in Azure we have to provide a unique database ID that does not already exist in the specific 
-Cosmos DB account. This operation will return a record of type Database. 
+For creating a database in Azure we have to provide a unique database ID that does not already exist in the specific
+Cosmos DB account. This operation will return a record of type Database.
 
 ```ballerina
 import ballerina/log;
@@ -64,9 +64,9 @@ public function main() {
 ```
 
 ### Creating a Container
-A container can be created inside an existing database in the Cosmos DB account. As the REST API version which is used 
-in this implementation of the connector strictly supports the partition key, it is a necessity to provide the 
-partition key in the creation of a container. 
+A container can be created inside an existing database in the Cosmos DB account. As the REST API version which is used
+in this implementation of the connector strictly supports the partition key, it is a necessity to provide the
+partition key in the creation of a container.
 
 ```ballerina
 import ballerina/log;
@@ -96,8 +96,8 @@ public function main() {
 }
 ```
 ### Inserting a Document
-Azure Cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath the 
-connector, an item may refer to a document in the container. SQL API stores entities as JSON in a hierarchical key-value 
+Azure Cosmos DB allows the execution of CRUD operations on items separately. As we are using the Core API underneath the
+connector, an item may refer to a document in the container. SQL API stores entities as JSON in a hierarchical key-value
 document. The max document size in Cosmos DB is 2 MB.
 ```ballerina
 import ballerina/log;
@@ -129,8 +129,8 @@ public function main() {
 }
 ```
 ### List Documents
-Usually, Cosmos DB provides an array of JSON objects as the response for list operations. But, the connector has handled 
-this array and instead of that, it provides streaming capabilities for these kinds of operations. Apart from 
+Usually, Cosmos DB provides an array of JSON objects as the response for list operations. But, the connector has handled
+this array and instead of that, it provides streaming capabilities for these kinds of operations. Apart from
 that, Cosmos DB originally allows pagination of results returned list operations.
 
 ```ballerina
@@ -144,9 +144,9 @@ public function main() {
     };
     cosmosdb:DataPlaneClient azureCosmosClient = new (configuration);
 
-    stream<cosmosdb:Data, error>|error result = azureCosmosClient->listTriggers(<DATABASE_ID>, <CONTAINER_ID>);
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data document) {
+    stream<cosmosdb:Document, error>|error result = azureCosmosClient->listTriggers(<DATABASE_ID>, <CONTAINER_ID>);
+    if (result is stream<cosmosdb:Document, error>) {
+        error? e = result.forEach(function (cosmosdb:Document document) {
             log:printInfo(document.toString());
         });
         log:printInfo("Success!");
@@ -156,9 +156,9 @@ public function main() {
 }
 ```
 ### Get Document
-This operation allows to retrieve a document by it's ID. It returns a record type `Document`. Here, you have to provide 
-*Database ID*, *Container ID* where the document will be created and the *ID of the document* to retrieve. As the 
-partition key is mandatory in the container, for getDocument operation you need to provide the correct 
+This operation allows to retrieve a document by its ID. It returns a record type `Document`. Here, you have to provide
+*Database ID*, *Container ID* where the document will be created, and the *ID of the document* to retrieve. As the
+partition key is mandatory in the container, for getDocument operation you need to provide the correct
 **value for that partition key**.
 ```ballerina
 import ballerina/log;
@@ -183,8 +183,8 @@ public function main() {
 }
 ```
 ### Query Documents
-Ballerina connector for Azure COsmos DB allows the option to either provide a query as a normal ballerina string that 
-matches with the SQL queries compatible with the REST API. This example shows a query that will return all the data 
+Ballerina connector for Azure Cosmos DB allows the option to either provide a query as a normal ballerina string that
+matches with the SQL queries compatible with the REST API. This example shows a query that will return all the data
 inside a document such that the value for **/gender** equals 0.
 ```ballerina
 import ballerina/log;
@@ -200,11 +200,11 @@ public function main() {
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
     cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
 
-    stream<cosmosdb:QueryResult, error>|error result = azureCosmosClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, 
+    stream<cosmosdb:Document, error>|error result = azureCosmosClient->queryDocuments(<DATABASE_ID>, <CONTAINER_ID>, 
         selectAllQuery, options);
 
-    if (result is stream<cosmosdb:QueryResult, error>) {
-        error? e = result.forEach(function (cosmosdb:QueryResult queryResult) {
+    if (result is stream<cosmosdb:Document, error>) {
+        error? e = result.forEach(function (cosmosdb:Document queryResult) {
             log:printInfo(queryResult.toString());
         });
         log:printInfo("Success!");
@@ -215,8 +215,8 @@ public function main() {
 }
 ```
 ### Delete Document
-Using this connector, deletion of a document that exists inside a container is possible. You have to specify the 
-*Database ID*, *Container ID* where the document exists and the *ID of document* you want to delete. The 
+Using this connector, deletion of a document that exists inside a container is possible. You have to specify the
+*Database ID*, *Container ID* where the document exists, and the *ID of document* you want to delete. The
 **value of the partition key** for that specific document should also be passed to the function.
 ```ballerina
 import ballerina/log;
@@ -239,4 +239,4 @@ public function main() {
         log:printInfo("Success!");
     }
 }
-```
+``
