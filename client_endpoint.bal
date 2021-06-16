@@ -184,7 +184,7 @@ public client class DataPlaneClient {
     @display {label: "Query Documents"}
     remote isolated function queryDocuments(@display {label: "Database ID"} string databaseId, 
                                             @display {label: "Container ID"} string containerId, 
-                                            @display {label: "SQL query"} string sqlQuery, 
+                                            @display {label: "SQL Query"} string sqlQuery, 
                                             @display {label: "Optional Header Parameters"} ResourceQueryOptions? 
                                             resourceQueryOptions = ()) returns 
                                             @tainted @display {label: "Stream of Documents"} 

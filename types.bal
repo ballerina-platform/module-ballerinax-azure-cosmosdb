@@ -43,7 +43,7 @@ public type DeleteResponse record {|
 # + sessionToken - Session token of the request
 @display{label: "Response Metadata"}
 public type Commons record {|
-    @display{label: "Resource Id"}
+    @display{label: "Resource ID"}
     string resourceId?;
     @display{label: "Self URI"}
     string selfReference?;
@@ -85,7 +85,7 @@ public type Container record {|
 # + documentBody - The document reprsented as a map of json
 @display{label: "Document"}
 public type Document record {|
-    @display{label: "Document Id"}
+    @display{label: "Document ID"}
     string id;
     *Commons;
     @display{label: "Document Body"}
@@ -173,20 +173,20 @@ public type PartitionKey record {|
 # + storedProcedure - A JavaScript function, respresented as a string
 @display{label: "Stored Procedure"}
 public type StoredProcedure record {|
-    @display{label: "Stored Procedure Id"}
+    @display{label: "Stored Procedure ID"}
     string id;
     *Commons;
     @display{label: "Stored Procedure"}
     string storedProcedure;
 |};
 
-# Represent the record type with necessary parameters to represent a user defined function.
+# Represent the record type with necessary parameters to represent a User Defined Function.
 # 
-# + id - User generated unique ID for the user defined function
+# + id - User generated unique ID for the User Defined Function
 # + userDefinedFunction - A JavaScript function, respresented as a string
 @display{label: "User Defined Function"}
 public type UserDefinedFunction record {|
-    @display{label: "User Defined Function Id"}
+    @display{label: "User Defined Function ID"}
     string id;
     *Commons;
     @display{label: "User Defined Function"}
@@ -201,7 +201,7 @@ public type UserDefinedFunction record {|
 # + triggerType - When the trigger is fired, `Pre` or `Post`
 @display{label: "Trigger"}
 public type Trigger record {|
-    @display{label: "Trigger Id"}
+    @display{label: "Trigger ID"}
     string id;
     *Commons;
     @display{label: "Trigger"}
@@ -219,7 +219,7 @@ public type Trigger record {|
 # + maxExclusive - Maximum partition key hash value for the partition key range
 @display{label: "Partition Key Range"}
 public type PartitionKeyRange record {|
-    @display{label: "Partition Key Range Id"}
+    @display{label: "Partition Key Range ID"}
     string id;
     *Commons;
     @display{label: " Minimum Partition Key Hash"}
@@ -234,7 +234,7 @@ public type PartitionKeyRange record {|
 # + permissions - A system generated property that specifies the addressable path of the permissions resource
 @display{label: "User"}
 public type User record {|
-    @display{label: "User Id"}
+    @display{label: "User ID"}
     string id;
     *Commons;
     @display{label: "Permission Path"}
@@ -249,7 +249,7 @@ public type User record {|
 # + token - System generated `Resource-Token` for the particular resource and user
 @display{label: "Permission"}
 public type Permission record {|
-    @display{label: "Permission Id"}
+    @display{label: "Permission ID"}
     string id;
     *Commons;
     @display{label: "Access Mode"}
@@ -271,7 +271,7 @@ public type Permission record {|
 # + resourceSelfLink - The self-link(_self) of the collection
 @display{label: "Offer"}
 public type Offer record {|
-    @display{label: "Offer Id"}
+    @display{label: "Offer ID"}
     string id;
     *Commons;
     @display{label: "Offer Version"}
@@ -280,7 +280,7 @@ public type Offer record {|
     OfferType offerType;
     @display{label: "Offer Information"}
     map<json> content;
-    @display{label: "Resource Id"}
+    @display{label: "Resource ID"}
     string resourceResourceId;
     @display{label: "Self URI"}
     string resourceSelfLink;
@@ -324,7 +324,7 @@ public type DocumentListOptions record {|
     string sessionToken?;
     @display{label: "Change Feed Option"}
     ChangeFeedOption changeFeedOption?;
-    @display{label: "Partition Key Range Id"}
+    @display{label: "Partition Key Range ID"}
     string partitionKeyRangeId?;
 |};
 
