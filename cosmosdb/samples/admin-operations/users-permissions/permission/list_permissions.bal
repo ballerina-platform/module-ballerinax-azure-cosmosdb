@@ -30,10 +30,10 @@ public function main() {
     string userId = "my_user";
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Data, error>|error result = managementClient->listPermissions(databaseId, userId);
+    stream<cosmosdb:Permission, error>|error result = managementClient->listPermissions(databaseId, userId);
 
-    if (result is stream<cosmosdb:Data, error>) {
-        error? e = result.forEach(function (cosmosdb:Data storedPrcedure) {
+    if (result is stream<cosmosdb:Permission, error>) {
+        error? e = result.forEach(function (cosmosdb:Permission storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
         log:printInfo("Success!");

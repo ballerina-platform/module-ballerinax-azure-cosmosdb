@@ -166,10 +166,10 @@ function testListAllDatabases() {
     log:printInfo("ACTION : listAllDatabases()");
 
     var result = azureCosmosManagementClient->listDatabases();
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<Database, error>) {
+        error? e = result.forEach(isolated function (Database queryResult) {
             log:printInfo(queryResult.toString());
-        });     
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -286,34 +286,34 @@ function testGetAllContainers() {
     log:printInfo("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<Container, error>) {
+        error? e = result.forEach(isolated function (Container queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
 }
 
-// If we want to get information about offers, First we need to have any offers in the account. So enable them when 
+// If we want to get information about offers, First we need to have any offers in the account. So enable them when
 // using  a provisioned throughput account
 @test:Config {
-    groups: ["container"], 
+    groups: ["container"],
     dependsOn: [
-        testGetOneContainer, 
+        testGetOneContainer,
         testGetAllContainers,
-        testGetDocumentList, 
-        testDeleteDocument, 
-        testQueryDocuments, 
+        testGetDocumentList,
+        testDeleteDocument,
+        testQueryDocuments,
         testQueryDocumentsWithRequestOptions,
-        testGetOneDocumentWithRequestOptions, 
-        testCreateDocumentWithRequestOptions, 
+        testGetOneDocumentWithRequestOptions,
+        testCreateDocumentWithRequestOptions,
         testGetDocumentListWithRequestOptions,
-        testGetAllStoredProcedures, 
-        testDeleteOneStoredProcedure, 
-        testListAllUDF, 
-        testDeleteUDF, 
-        testDeleteTrigger, 
+        testGetAllStoredProcedures,
+        testDeleteOneStoredProcedure,
+        testListAllUDF,
+        testDeleteUDF,
+        testDeleteTrigger,
 
         testCreatePermission,
         testCreatePermissionWithTTL,
@@ -322,7 +322,7 @@ function testGetAllContainers() {
         testListOffers,
         testGetOffer,
         testReplaceOfferWithOptionalParameter,
-        testReplaceOffer   
+        testReplaceOffer
     ]
 }
 function testDeleteContainer() {
@@ -425,7 +425,7 @@ function testCreateDocumentWithRequestOptions() {
     }
 }
 
-// Replace document 
+// Replace document
 
 @test:Config {
     groups: ["document"],
@@ -435,10 +435,10 @@ function testGetDocumentList() {
     log:printInfo("ACTION : getDocumentList()");
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<Document, error>) {
+        error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -453,15 +453,15 @@ function testGetDocumentListWithRequestOptions() {
 
     DocumentListOptions options = {
         consistancyLevel: EVENTUAL,
-        // changeFeedOption : "Incremental feed", 
+        // changeFeedOption : "Incremental feed",
         sessionToken: "tag",
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<Document, error>) {
+        error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -516,10 +516,10 @@ function testQueryDocuments() {
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<QueryResult, error>) {
-        error? e = result.forEach(isolated function (QueryResult queryResult) {
+    if (result is stream<Document, error>) {
+        error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -539,22 +539,22 @@ function testQueryDocumentsWithRequestOptions() {
     };
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<QueryResult, error>) {
-        error? e = result.forEach(isolated function (QueryResult queryResult) {
+    if (result is stream<Document, error>) {
+        error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
 }
 
 @test:Config {
-    groups: ["document"], 
+    groups: ["document"],
     dependsOn: [
-        testCreateContainer, 
-        testCreateDocument, 
-        testGetOneDocument, 
-        testGetOneDocumentWithRequestOptions, 
+        testCreateContainer,
+        testCreateDocument,
+        testGetOneDocument,
+        testGetOneDocumentWithRequestOptions,
         testQueryDocuments,
         testGetDocumentList,
         testGetDocumentListWithRequestOptions
@@ -638,10 +638,10 @@ function testGetAllStoredProcedures() {
     log:printInfo("ACTION : getAllStoredProcedures()");
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<StoredProcedure, error>) {
+        error? e = result.forEach(isolated function (StoredProcedure queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -650,7 +650,7 @@ function testGetAllStoredProcedures() {
 @test:Config {
     groups: ["storedProcedure"],
     dependsOn: [
-        testCreateStoredProcedure, 
+        testCreateStoredProcedure,
         testExecuteOneStoredProcedure
     ]
 }
@@ -726,10 +726,10 @@ function testListAllUDF() {
     log:printInfo("ACTION : listAllUDF()");
 
     var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<UserDefinedFunction, error>) {
+        error? e = result.forEach(isolated function (UserDefinedFunction queryResult) {
             log:printInfo(queryResult.toString());
-        });    
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -764,7 +764,7 @@ function testCreateTrigger() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(),filterQuery, 
+                                            var accept = collection.queryDocuments(collection.getSelfLink(),filterQuery,
                                                     updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
@@ -776,7 +776,7 @@ function testCreateTrigger() {
                                             // update metadata
                                             metadataDocument.createdDocuments += 1;
                                             metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, 
+                                            var accept = collection.replaceDocument(metadataDocument._self,
                                                     metadataDocument, function(err, docReplaced) {
                                                 if(err) throw "Unable to update metadata, abort";
                                             });
@@ -787,7 +787,7 @@ function testCreateTrigger() {
     TriggerOperation createTriggerOperation = "All";
     TriggerType createTriggerType = "Post";
 
-    var result = azureCosmosManagementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody, 
+    var result = azureCosmosManagementClient->createTrigger(databaseId, containerId, triggerId, createTriggerBody,
         createTriggerOperation, createTriggerType);
     if (result is Error) {
         test:assertFail(msg = result.message());
@@ -811,7 +811,7 @@ function testReplaceTrigger() {
 
                                             // query for metadata document
                                             var filterQuery = 'SELECT * FROM root r WHERE r.id = "_metadata"';
-                                            var accept = collection.queryDocuments(collection.getSelfLink(),filterQuery, 
+                                            var accept = collection.queryDocuments(collection.getSelfLink(),filterQuery,
                                                     updateMetadataCallback);
                                             if(!accept) throw "Unable to update metadata, abort";
                                         }
@@ -823,7 +823,7 @@ function testReplaceTrigger() {
                                             // update metadata
                                             metadataDocument.createdDocuments += 1;
                                             metadataDocument.createdNames += " " + createdDocument.id;
-                                            var accept = collection.replaceDocument(metadataDocument._self, 
+                                            var accept = collection.replaceDocument(metadataDocument._self,
                                                     metadataDocument, function(err, docReplaced) {
                                                 if(err) throw "Unable to update metadata, abort";
                                             });
@@ -834,7 +834,7 @@ function testReplaceTrigger() {
     TriggerOperation replaceTriggerOperation = "All";
     TriggerType replaceTriggerType = "Post";
 
-    var result = azureCosmosManagementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody, 
+    var result = azureCosmosManagementClient->replaceTrigger(databaseId, containerId, triggerId, replaceTriggerBody,
         replaceTriggerOperation, replaceTriggerType);
     if (result is Error) {
         test:assertFail(msg = result.message());
@@ -851,10 +851,10 @@ function testListTriggers() {
     log:printInfo("ACTION : listTriggers()");
 
     var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<Trigger, error>) {
+        error? e = result.forEach(isolated function (Trigger queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -939,10 +939,10 @@ function testListUsers() {
     log:printInfo("ACTION : listUsers()");
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<User, error>) {
+        error? e = result.forEach(isolated function (User queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -950,8 +950,8 @@ function testListUsers() {
 
 @test:Config {
     groups: ["user"],
-    dependsOn: 
-    [           
+    dependsOn:
+    [
         testDeletePermission,
         testReplaceUserId,
         testGetUser,
@@ -974,7 +974,7 @@ function testDeleteUser() {
     groups: ["permission"],
     dependsOn: [
         testReplaceUserId,
-        testGetOneDatabase, 
+        testGetOneDatabase,
         testGetOneContainer
     ]
 }
@@ -984,7 +984,7 @@ function testCreatePermission() {
     PermisssionMode permissionMode = "All";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
-    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode, 
+    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, permissionId, permissionMode,
         permissionResource);
     if (result is Error) {
         test:assertFail(msg = result.message());
@@ -1010,7 +1010,7 @@ function testCreatePermissionWithTTL() {
     string permissionResource = string `dbs/${database.id}/colls/${container.id}/`;
     int validityPeriod = 9000;
 
-    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode, 
+    var result = azureCosmosManagementClient->createPermission(databaseId, newUserId, newPermissionId, permissionMode,
         permissionResource, validityPeriod);
     if (result is Error) {
         test:assertFail(msg = result.message());
@@ -1029,7 +1029,7 @@ function testReplacePermission() {
     PermisssionMode permissionMode = "Read";
     string permissionResource = string `dbs/${database.id}/colls/${container.id}`;
 
-    var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode, 
+    var result = azureCosmosManagementClient->replacePermission(databaseId, newUserId, permissionId, permissionMode,
         permissionResource);
     if (result is Error) {
         test:assertFail(msg = result.message());
@@ -1046,10 +1046,10 @@ function testListPermissions() {
     log:printInfo("ACTION : listPermissions()");
 
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
-    if (result is stream<Data, error>) {
-        error? e = result.forEach(isolated function (Data queryResult) {
+    if (result is stream<Permission, error>) {
+        error? e = result.forEach(isolated function (Permission queryResult) {
             log:printInfo(queryResult.toString());
-        }); 
+        });
     } else {
         test:assertFail(msg = result.message());
     }
@@ -1091,17 +1091,17 @@ string? resourceId = "";
 
 @test:Config {
     groups: ["offer"]
-} 
+}
 function testListOffers() {
     log:printInfo("ACTION : listOffers()");
 
     var result = azureCosmosManagementClient->listOffers();
-    if (result is stream<Data, error>) {
-        record {|Data value;|}|error? offer = result.next();
-        if (offer is record {|Data value;|}) {
+    if (result is stream<Offer, error>) {
+        record {|Offer value;|}|error? offer = result.next();
+        if (offer is record {|Offer value;|}) {
             offerId = <@untainted>offer?.value?.id;
             runtime:sleep(1);
-            resourceId = offer?.value?.resourceId;
+            resourceId = <@untainted>offer?.value?.resourceId;
         } else {
             log:printInfo("Empty stream");
         }

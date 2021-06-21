@@ -151,10 +151,10 @@ public function main() {
     }
 
     log:printInfo("Getting list of containers");
-    stream<cosmosdb:Data,error>|error containerList = managementClient->listContainers(databaseId);
+    stream<cosmosdb:Container,error>|error containerList = managementClient->listContainers(databaseId);
 
-    if (containerList is stream<cosmosdb:Data,error>) {
-        error? e = containerList.forEach(function (cosmosdb:Data container) {
+    if (containerList is stream<cosmosdb:Container,error>) {
+        error? e = containerList.forEach(function (cosmosdb:Container container) {
             log:printInfo(container.toString());
         });
     } else {
