@@ -29,10 +29,14 @@ public client class DataPlaneClient {
     private string primaryKeyOrResourceToken;
     private string host;
 
-    public isolated function init(Configuration azureConfig) returns Error? {
-        self.baseUrl = azureConfig.baseUrl;
-        self.primaryKeyOrResourceToken = azureConfig.primaryKeyOrResourceToken;
-        self.host = getHost(azureConfig.baseUrl);
+
+    # Initializes the Azure Cosmos DB connector client endpoint.
+    #
+    # +  cosmosdbConfig - Configurations required to initialize the `Client` endpoint
+    public isolated function init(Configuration cosmosdbConfig) returns Error? {
+        self.baseUrl = cosmosdbConfig.baseUrl;
+        self.primaryKeyOrResourceToken = cosmosdbConfig.primaryKeyOrResourceToken;
+        self.host = getHost(cosmosdbConfig.baseUrl);
         self.httpClient = check new(self.baseUrl);
     }
  
