@@ -16,16 +16,24 @@
 
 import ballerina/http;
 
-# Azure Cosmos DB Client Object for management operations.
+# This is the Azure Cosmos DB SQL API, a fast NoSQL database servic offers rich querying over diverse data, helps 
+# deliver configurable and reliable performance, is globally distributed, and enables rapid development. 
 # 
 # + httpClient - the HTTP Client
 @display {label: "Azure Cosmos DB Management Client"} 
-public client class ManagementClient {
-    private http:Client httpClient;
-    private string baseUrl;
-    private string primaryKeyOrResourceToken;
-    private string host;
+public isolated client class ManagementClient {
+    final http:Client httpClient;
+    final string baseUrl;
+    final string primaryKeyOrResourceToken;
+    final string host;
 
+    # Gets invoked to initialize the `connector`.
+    # The HTTP client initialization requires setting the API credentials. 
+    # Create an [Azure Cosmos DB account](https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account) 
+    # and obtain tokens following [this guide](https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys).
+    #
+    # + cosmosdbConfig - Configurations required to initialize the `Client` endpoint
+    # + return -  Error at failure of client initialization
     public isolated function init(Configuration azureConfig) returns error? {
         self.baseUrl = azureConfig.baseUrl;
         self.primaryKeyOrResourceToken = azureConfig.primaryKeyOrResourceToken;
@@ -33,11 +41,11 @@ public client class ManagementClient {
         self.httpClient = check new(self.baseUrl);
     }
 
-    # Create a database.
+    # Creates a database.
     # 
     # + databaseId - ID of the new database. Must be a unique value.
-    # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns `Database`. Else returns `Error`.
+    # + throughputOption - Throughput parameter of type int or json.
+    # + return - If successful, returns `cosmos_db:Database`. Else returns `cosmos_db:Error`.
     @display {label: "Create Database"} 
     remote isolated function createDatabase(@display {label: "Database ID"} string databaseId, 
                                             @display {label: "Maximum Throughput (optional)"} 
@@ -61,11 +69,11 @@ public client class ManagementClient {
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # Create a database only if the specified database ID does not exist already.
+    # Creates a database only if the specified database ID does not exist already.
     # 
     # + databaseId - ID of the new database. Must be a unique value.
-    # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns `Database` or `nil` if database already exists. Else returns `Error`.
+    # + throughputOption - Throughput parameter of type int or json.
+    # + return - If successful, returns `cosmos_db:Database` or `()` if database already exists. Else returns `cosmos_db:Error`.
     @display {label: "Create Database If Not Exist"} 
     remote isolated function createDatabaseIfNotExist(@display {label: "Database ID"} string databaseId, 
                                                       @display {label: "Maximum Throughput (optional)"} 
@@ -80,11 +88,12 @@ public client class ManagementClient {
         return result;
     }
 
-    # Get information of a given database.
+    # Gets information of a given database.
     # 
     # + databaseId - ID of the database 
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns `Database`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns `cosmos_db:Database`. Else returns `cosmos_db:Error`.
     @display {label: "Get Database"} 
     remote isolated function getDatabase(@display {label: "Database ID"} string databaseId, 
                                          @display {label: "Optional Header Parameters"} ResourceReadOptions? 
@@ -100,9 +109,9 @@ public client class ManagementClient {
         return mapJsonToDatabaseType(jsonResponse);
     }
 
-    # List information of all databases.
+    # Lists information of all databases.
     # 
-    # + return - If successful, returns `stream<Database, error>`. else returns `Error`.
+    # + return - If successful, returns `stream<cosmos_db:Database, error>`. else returns `cosmos_db:Error`.
     @display {label: "Get Databases"}
     remote isolated function listDatabases() returns
                                           @tainted @display {label: "Stream of Databases"}
@@ -118,12 +127,12 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Delete a given database.
+    # Deletes a given database.
     #
     # + databaseId - ID of the database to delete
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities
     #                           to the request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete Database"}
     remote isolated function deleteDatabase(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Optional Header Parameters"} ResourceDeleteOptions?
@@ -138,14 +147,14 @@ public client class ManagementClient {
         return mapHeadersToResultType(response);
     }
 
-    # Create a container inside the given database.
+    # Creates a container inside the given database.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the new container. Must be a unique value.
-    # + partitionKey - A record of type `PartitionKey`
-    # + indexingPolicy - Optional. A record of type `IndexingPolicy`.
-    # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns `Container`. Else returns `Error`.
+    # + partitionKey - A record `cosmos_db:PartitionKey`
+    # + indexingPolicy - A record `cosmos_db:IndexingPolicy`.
+    # + throughputOption - Throughput parameter of type int or json.
+    # + return - If successful, returns `cosmos_db:Container`. Else returns `cosmos_db:Error`.
     @display {label: "Create Container"}
     remote isolated function createContainer(@display {label: "Database ID"} string databaseId,
                                              @display {label: "Container ID"} string containerId,
@@ -178,15 +187,15 @@ public client class ManagementClient {
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # Create a container only if the specified container ID does not exist already.
+    # Creates a container only if the specified container ID does not exist already.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the new container
-    # + partitionKey - A record of type `PartitionKey`
-    # + indexingPolicy - Optional. A record of type `IndexingPolicy`.
-    # + throughputOption - Optional. Throughput parameter of type int or json.
-    # + return - If successful, returns `Container` if a new container is created or `nil` if container already exists.
-    #            Else returns `Error`.
+    # + partitionKey - A record of `cosmos_db:PartitionKey`
+    # + indexingPolicy - A record of `cosmos_db:IndexingPolicy`.
+    # + throughputOption - Throughput parameter of type int or json.
+    # + return - If successful, returns `cosmos_db:Container` if a new container is created or `()` if container already 
+    #           exists. Else returns `cosmos_db:Error`.
     @display {label: "Create Container If Not Exist"}
     remote isolated function createContainerIfNotExist(@display {label: "Database ID"} string databaseId,
                                                        @display {label: "Container ID"} string containerId,
@@ -206,12 +215,13 @@ public client class ManagementClient {
         return result;
     }
 
-    # Get information about a container.
+    # Gets information about a container.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns `Container`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns `cosmos_db:Container`. Else returns `cosmos_db:Error`.
     @display {label: "Get Container"}
     remote isolated function getContainer(@display {label: "Database ID"} string databaseId,
                                           @display {label: "Container ID"} string containerId,
@@ -228,10 +238,10 @@ public client class ManagementClient {
         return mapJsonToContainerType(jsonResponse);
     }
 
-    # List information of all containers.
+    # Lists information of all containers.
     #
     # + databaseId - ID of the database to which the containers belongs to
-    # + return - If successful, returns `stream<Container, error>`. Else returns `Error`.
+    # + return - If successful, returns `stream<cosmos_db:Container, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get Containers"}
     remote isolated function listContainers(@display {label: "Database ID"} string databaseId)
                                             returns @tainted @display {label: "Stream of Containers"}
@@ -247,13 +257,13 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Delete a container.
+    # Deletes a container.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to delete
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the
-    #                           request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete Container"}
     remote isolated function deleteContainer(@display {label: "Database ID"} string databaseId,
                                              @display {label: "Container ID"} string containerId,
@@ -270,11 +280,11 @@ public client class ManagementClient {
         return mapHeadersToResultType(response);
     }
 
-    # Retrieve a list of partition key ranges for the container.
+    # Retrieves a list of partition key ranges for the container.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where the partition key ranges are related to
-    # + return - If successful, returns `stream<PartitionKeyRange, error>`. Else returns `Error`.
+    # + return - If successful, returns `stream<cosmos_db:PartitionKeyRange, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get Partition Key Ranges"}
     remote isolated function listPartitionKeyRanges(@display {label: "Database ID"} string databaseId,
                                                     @display {label: "Container ID"} string containerId) returns
@@ -291,14 +301,13 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Create a new User Defined Function. A User Defined Function is a side effect free piece of application logic
-    # written in JavaScript.
+    # Creates a new User Defined Function.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where, User Defined Function is created
     # + userDefinedFunctionId - A unique ID for the newly created User Defined Function
     # + userDefinedFunction - A JavaScript function represented as a string
-    # + return - If successful, returns a `UserDefinedFunction`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:UserDefinedFunction`. Else returns `cosmos_db:Error`.
     @display {label: "Create User Defined Function"}
     remote isolated function createUserDefinedFunction(@display {label: "Database ID"} string databaseId,
                                                        @display {label: "Container ID"} string containerId,
@@ -323,13 +332,13 @@ public client class ManagementClient {
         return mapJsonToUserDefinedFunction(jsonResponse);
     }
 
-    # Replace an existing User Defined Function.
+    # Replaces an existing User Defined Function.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the existing User Defined Function
     # + userDefinedFunctionId - The ID of the User Defined Function to replace
     # + userDefinedFunction - A JavaScript function represented as a string
-    # + return - If successful, returns a `UserDefinedFunction`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:UserDefinedFunction`. Else returns `cosmos_db:Error`.
     @display {label: "Replace User Defined Function"}
     remote isolated function replaceUserDefinedFunction(@display {label: "Database ID"} string databaseId,
                                                         @display {label: "Container ID"} string containerId,
@@ -354,12 +363,13 @@ public client class ManagementClient {
         return mapJsonToUserDefinedFunction(jsonResponse);
     }
 
-    # Get a list of existing user defined functions.
+    # Gets a list of existing user defined functions.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the user defined functions
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<UserDefinedFunction, error>`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `stream<cosmos_db:UserDefinedFunction, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get User Defined Functions"}
     remote isolated function listUserDefinedFunctions(@display {label: "Database ID"} string databaseId,
                                                       @display {label: "Container ID"} string containerId,
@@ -379,14 +389,14 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Delete an existing User Defined Function.
+    # Deletes an existing User Defined Function.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the User Defined Function
     # + userDefinedFunctionid - ID of UDF to delete
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the
-    #                           request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete User Defined Function"}
     remote isolated function deleteUserDefinedFunction(@display {label: "Database ID"} string databaseId,
                                                        @display {label: "Container ID"} string containerId,
@@ -406,8 +416,7 @@ public client class ManagementClient {
         return mapHeadersToResultType(response);
     }
 
-    # Create a trigger. Triggers are pieces of application logic that can be executed before (pre-triggers) and
-    # after (post-triggers) creation, deletion, and replacement of a document. Triggers are written in JavaScript.
+    # Creates a trigger.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where trigger is created
@@ -416,7 +425,7 @@ public client class ManagementClient {
     # + triggerOperation - The specific operation in which trigger will be executed can be `All`, `Create`, `Replace` or
     #                      `Delete`
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
-    # + return - If successful, returns a `Trigger`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:Trigger`. Else returns `cosmos_db:Error`.
     @display {label: "Create Trigger"}
     remote isolated function createTrigger(@display {label: "Database ID"} string databaseId,
                                            @display {label: "Container ID"} string containerId,
@@ -443,7 +452,7 @@ public client class ManagementClient {
         return mapJsonToTrigger(jsonResponse);
     }
 
-    # Replace an existing trigger.
+    # Replaces an existing trigger.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the trigger
@@ -451,7 +460,7 @@ public client class ManagementClient {
     # + trigger - A JavaScript function represented as a string
     # + triggerOperation - The specific operation in which trigger will be executed
     # + triggerType - The instance in which trigger will be executed `Pre` or `Post`
-    # + return - If successful, returns a `Trigger`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:Trigger`. Else returns `cosmos_db:Error`.
     @display {label: "Replace Trigger"}
     remote isolated function replaceTrigger(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Container ID"} string containerId,
@@ -478,12 +487,13 @@ public client class ManagementClient {
         return mapJsonToTrigger(jsonResponse);
     }
 
-    # List existing triggers.
+    # Lists existing triggers.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the triggers
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to therequest
-    # + return - If successful, returns a `stream<Trigger, error>`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `stream<cosmos_db:Trigger, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get Triggers"}
     remote isolated function listTriggers(@display {label: "Database ID"} string databaseId,
                                           @display {label: "Container ID"} string containerId,
@@ -502,14 +512,14 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Delete an existing trigger.
+    # Deletes an existing trigger.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the trigger
     # + triggerId - ID of the trigger to be deleted
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the
-    #                           request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete Trigger"}
     remote isolated function deleteTrigger(@display {label: "Database ID"} string databaseId,
                                            @display {label: "Container ID"} string containerId,
@@ -527,11 +537,11 @@ public client class ManagementClient {
         return mapHeadersToResultType(response);
     }
 
-    # Create a user for a given database.
+    # Creates a user for a given database.
     #
     # + databaseId - ID of the database where the user is created.
     # + userId - ID of the new user. Must be a unique value.
-    # + return - If successful, returns a `User`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:User`. Else returns `cosmos_db:Error`.
     @display {label: "Create User"}
     remote isolated function createUser(@display {label: "Database ID"} string databaseId,
                                         @display {label: "User ID"} string userId) returns @tainted User|Error {
@@ -546,12 +556,12 @@ public client class ManagementClient {
         return mapJsonToUserType(check handleResponse(response));
     }
 
-    # Replace the ID of an existing user.
+    # Replaces the ID of an existing user.
     #
     # + databaseId - ID of the database to which, the existing user belongs to
     # + userId - Old ID of the user
     # + newUserId - New ID for the user
-    # + return - If successful, returns a `User`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:User`. Else returns `cosmos_db:Error`.
     @display {label: "Replace User ID"}
     remote isolated function replaceUserId(@display {label: "Database ID"} string databaseId,
                                            @display {label: "Old User ID"} string userId,
@@ -569,12 +579,13 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # Get information of a user.
+    # Gets information of a user.
     #
     # + databaseId - ID of the database to which, the user belongs to
     # + userId - ID of user
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `User`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `cosmos_db:User`. Else returns `cosmos_db:Error`.
     @display {label: "Get User"}
     remote isolated function getUser(@display {label: "Database ID"} string databaseId,
                                      @display {label: "User ID"} string userId,
@@ -590,12 +601,12 @@ public client class ManagementClient {
         return mapJsonToUserType(jsonResponse);
     }
 
-    # List users of a specific database.
+    # Lists users of a specific database.
     #
     # + databaseId - ID of the database to which, the user belongs to
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to
     #                         the request
-    # + return - If successful, returns a `stream<User, error>`. Else returns `Error`.
+    # + return - If successful, returns a `stream<cosmos_db:User, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get Users"}
     remote isolated function listUsers(@display {label: "Database ID"} string databaseId,
                                        @display {label: "Optional Header Parameters"} ResourceReadOptions?
@@ -612,13 +623,13 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Delete a user.
+    # Deletes a user.
     #
     # + databaseId - ID of the database to which, the user belongs to
     # + userId - ID of the user to delete
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional
     #                           capabilities to the request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete User"}
     remote isolated function deleteUser(@display {label: "Database ID"} string databaseId,
                                         @display {label: "User ID"} string userId,
@@ -634,15 +645,15 @@ public client class ManagementClient {
         return mapHeadersToResultType(response);
     }
 
-    # Create a permission for a user.
+    # Creates a permission for a user.
     #
     # + databaseId - ID of the database to which, the user belongs to
     # + userId - ID of user to which, the permission is granted. Must be a unique value.
     # + permissionId - A unique ID for the newly created permission
     # + permissionMode - The mode to which the permission is scoped
     # + resourcePath - The resource this permission is allowing the user to access
-    # + validityPeriodInSeconds - Optional. Validity period of the permission in seconds.
-    # + return - If successful, returns a `Permission`. Else returns `Error`.
+    # + validityPeriodInSeconds - Validity period of the permission in seconds.
+    # + return - If successful, returns a `cosmos_db:Permission`. Else returns `cosmos_db:Error`.
     @display {label: "Create Permission"}
     remote isolated function createPermission(@display {label: "Database ID"} string databaseId,
                                               @display {label: "User ID"} string userId,
@@ -671,15 +682,15 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Replace an existing permission.
+    # Replaces an existing permission.
     #
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permission is granted
     # + permissionId - The ID of the permission to be replaced
     # + permissionMode - The mode to which the permission is scoped
     # + resourcePath - The resource this permission is allowing the user to access
-    # + validityPeriodInSeconds - Optional. Validity period of the permission in seconds.
-    # + return - If successful, returns a `Permission`. Else returns `Error`.
+    # + validityPeriodInSeconds - Validity period of the permission in seconds.
+    # + return - If successful, returns a `cosmos_db:Permission`. Else returns `cosmos_db:Error`.
     @display {label: "Replace Permission"}
     remote isolated function replacePermission(@display {label: "Database ID"} string databaseId,
                                                @display {label: "User ID"} string userId,
@@ -708,13 +719,14 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # Get information of a permission.
+    # Gets information of a permission.
     #
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permission is granted
     # + permissionId - ID of the permission
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `Permission`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `cosmos_db:Permission`. Else returns `cosmos_db:Error`.
     @display {label: "Get Permission"}
     remote isolated function getPermission(@display {label: "Database ID"} string databaseId,
                                            @display {label: "User ID"} string userId,
@@ -733,12 +745,13 @@ public client class ManagementClient {
         return mapJsonToPermissionType(jsonResponse);
     }
 
-    # List permissions belong to a user.
+    # Lists permissions belong to a user.
     #
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permissions are granted
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Permission, error>`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `stream<cosmos_db:Permission, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get Permissions"}
     remote isolated function listPermissions(@display {label: "Database ID"} string databaseId,
                                              @display {label: "User ID"} string userId,
@@ -763,9 +776,9 @@ public client class ManagementClient {
     # + databaseId - ID of the database where the user is created
     # + userId - ID of user to which, the permission is granted
     # + permissionId - ID of the permission to delete
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the
-    #                           request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete Permission"}
     remote isolated function deletePermission(@display {label: "Database ID"} string databaseId,
                                               @display {label: "User ID"} string userId,
@@ -784,10 +797,10 @@ public client class ManagementClient {
         return mapHeadersToResultType(response);
     }
 
-    # Replace an existing offer.
+    # Replaces an existing offer.
     #
-    # + offer - A record of type `Offer`
-    # + return - If successful, returns a `Offer`. Else returns `Error`.
+    # + offer - A record `cosmos_db:Offer`
+    # + return - If successful, returns a `cosmos_db:Offer`. Else returns `cosmos_db:Error`.
     @display {label: "Replace Offer"}
     remote isolated function replaceOffer(@display {label: "Offer ID"} Offer offer) returns @tainted Offer|Error {
         http:Request request = new;
@@ -810,11 +823,12 @@ public client class ManagementClient {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # Get information about an offer.
+    # Gets information about an offer.
     #
     # + offerId - The ID of the offer
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `Offer`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `cosmos_db:Offer`. Else returns `cosmos_db:Error`.
     @display {label: "Get Offer"}
     remote isolated function getOffer(@display {label: "Offer ID"} string offerId,
                                       @display {label: "Optional Header Parameters"} ResourceReadOptions?
@@ -829,12 +843,11 @@ public client class ManagementClient {
         return mapJsonToOfferType(jsonResponse);
     }
 
-    # List information of offers. Each Azure Cosmos DB collection is provisioned with an associated performance level
-    # represented as an offer resource in the REST model. Azure Cosmos DB supports offers representing both user-defined
-    # performance levels and pre-defined performance levels.
+    # Lists information of offers.
     #
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<Offer, error>` Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `stream<cosmos_db:Offer, error>` Else returns `cosmos_db:Error`.
     @display {label: "Get Offers"}
     remote isolated function listOffers(@display {label: " Optional Header Parameters"} ResourceReadOptions?
                                         resourceReadOptions = ()) returns @tainted @display {label: "Stream of Offers"}
@@ -850,12 +863,12 @@ public client class ManagementClient {
         return finalStream;
     }
 
-    # Perform queries on offer resources.
+    # Performs queries on offer resources.
     #
     # + sqlQuery - A string value containing SQL query
-    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the
-    #                          request
-    # + return - If successful, returns a `stream<Offer, error>`. Else returns `Error`.
+    # + resourceQueryOptions - The `cosmos_db:ResourceQueryOptions` which can be used to add additional capabilities to 
+    #                          the request
+    # + return - If successful, returns a `stream<cosmos_db:Offer, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Query Offers"}
     remote isolated function queryOffer(@display {label: "SQL Query"} string sqlQuery,
                                         @display {label: "Optional Header Parameters"} ResourceQueryOptions?

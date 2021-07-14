@@ -14,13 +14,13 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Represents the **Consistency Level Override** for document create and update.
+# The **Consistency Level Override** for document create and update.
 # 
 # + STRONG - Users are always guaranteed to read the latest committed write
 # + BOUNDED - Reads might lag behind writes behind at most K updates of an item or by T time interval
 # + SESSION - Reads are guaranteed to honor the consistent-prefix, monotonic reads, monotonic writes, read-your-writes, 
 #             and write-follows-reads guarantees in a single client session
-# + EVENTUAL - No ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge.
+# + EVENTUAL - No ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge
 public enum ConsistencyLevel {
     STRONG = "Strong",
     BOUNDED = "Bounded",
@@ -28,7 +28,7 @@ public enum ConsistencyLevel {
     EVENTUAL = "Eventual"
 }
 
-# Represents whether to **include** or **exclude** the document in indexing.
+# Whether to **include** or **exclude** the document in indexing.
 #
 # + INCLUDE - Adds the document to the index
 # + EXCLUDE - Omits the document from indexing
@@ -37,7 +37,7 @@ public enum IndexingDirective {
     EXCLUDE = "Exclude"
 }
 
-# Represents the type of an Index.
+# Type of an Index.
 # 
 # + HASH - Useful for equality comparisons
 # + RANGE - Useful for equality, range comparisons and sorting
@@ -48,7 +48,7 @@ public enum IndexType {
     SPATIAL = "Spatial"
 }
 
-# The datatype for which the indexing behavior is applied to.
+# Datatype for which the indexing behavior is applied to.
 # 
 # + STRING - Represents a string data type
 # + NUMBER - Represents a numeric data type
@@ -63,7 +63,7 @@ public enum IndexDataType {
     LINESTRING = "LineString"
 }
 
-# The mode of indexing for the container.
+# Mode of indexing for the container.
 # 
 # + CONSISTENT - The index is updated synchronously as you create, update or delete items
 # + NONE - Indexing is disabled on the container
@@ -94,7 +94,7 @@ public enum TriggerType {
     POST = "Post"
 }
 
-# The access mode for the resource.
+# Access mode for the resource.
 # 
 # + ALL_PERMISSION - Provides **read**, **write**, and **delete** access to a resource
 # + READ_PERMISSION - Restricts the user to have only **read** access to the resource
@@ -103,7 +103,7 @@ public enum PermisssionMode {
     READ_PERMISSION = "Read"
 }
 
-# The specific version for a given offer.
+# Specific version for a given offer.
 # 
 # + PRE_DEFINED - Represents pre-defined throughput levels
 # + USER_DEFINED - Represents user-defined throughput levels
@@ -112,7 +112,7 @@ public enum OfferVersion {
     USER_DEFINED = "V2"
 }
 
-# The performance levels for a specific throughput level. They depend on the Cosmos DB region which the container 
+# Performance levels for a specific throughput level. <br/> They depend on the Cosmos DB region which the container 
 # belongs to and partitioning nature of the container (ie: single partitioned or multiple partitioned).
 # 
 # + LEVEL_S1 - Performance level allows a low throughput and predefined amount of storage  
@@ -126,20 +126,20 @@ public enum OfferType {
     INVALID = "Invalid"
 }
 
-# Use to retrieve only the incremental changes to documents within the collection.
+# Incremental changes to documents within the collection.
 # 
 # + INCREMENTAL - Provides a sorted list of documents that were changed in the order in which they were modified
 public enum ChangeFeedOption {
     INCREMENTAL = "Incremental feed"
 }
 
-# The version of the partition key if it is smaller than 100 bytes
+# Version of the partition key if it is smaller than 100 bytes
 public const PARTITION_KEY_VERSION_1 = 1;
 
-# The version of the partition key if it is larger than 100 bytes
+# Version of the partition key if it is larger than 100 bytes
 public const PARTITION_KEY_VERSION_2 = 2;
 
-# The version of the partition key
+# Version of the partition key.
 public type PartitionKeyVersion  PARTITION_KEY_VERSION_1|PARTITION_KEY_VERSION_2;
 
 # Used for partition key

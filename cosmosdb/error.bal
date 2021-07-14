@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# The map which contains extra HTTP status code detail of an error.
+# Extra HTTP status code detail of an error.
 #
 # + status - The HTTP status code of the error  
 public type HttpDetail record {

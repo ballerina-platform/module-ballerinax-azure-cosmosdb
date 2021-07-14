@@ -16,35 +16,43 @@
 
 import ballerina/http;
 
-# Azure Cosmos DB Client Object for executing data plane operations.
+# This is the Azure Cosmos DB SQL API, a fast NoSQL database servic offers rich querying over diverse data, helps 
+# deliver configurable and reliable performance, is globally distributed, and enables rapid development. 
 # 
-# + httpClient - the HTTP Client
+# + httpClient - The HTTP Client
 @display {
     label: "Azure Cosmos DB Client",
     iconPath: "AzureCosmosDBLogo.svg"
 }
-public client class DataPlaneClient {
-    private http:Client httpClient;
-    private string baseUrl;
-    private string primaryKeyOrResourceToken;
-    private string host;
+public isolated client class DataPlaneClient {
+    final http:Client httpClient;
+    final string baseUrl;
+    final string primaryKeyOrResourceToken;
+    final string host;
 
-    public isolated function init(Configuration azureConfig) returns Error? {
-        self.baseUrl = azureConfig.baseUrl;
-        self.primaryKeyOrResourceToken = azureConfig.primaryKeyOrResourceToken;
-        self.host = getHost(azureConfig.baseUrl);
+    # Gets invoked to initialize the `connector`.
+    # The connector initialization requires setting the API credentials. 
+    # Create an [Azure Cosmos DB account](https://docs.microsoft.com/en-us/azure/cosmos-db/how-to-manage-database-account) 
+    # and obtain tokens following [this guide](https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys).
+    #
+    # + cosmosdbConfig - Configurations required to initialize the `Client` endpoint
+    # + return -  Error at failure of client initialization
+    public isolated function init(Configuration cosmosdbConfig) returns Error? {
+        self.baseUrl = cosmosdbConfig.baseUrl;
+        self.primaryKeyOrResourceToken = cosmosdbConfig.primaryKeyOrResourceToken;
+        self.host = getHost(cosmosdbConfig.baseUrl);
         self.httpClient = check new(self.baseUrl);
     }
  
-    # Create a document.
+    # Creates a document.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where, document is created
     # + document - A JSON document to be saved in the database
     # + partitionKey - The specific value related to the partition key field of the container 
-    # + documentCreateOptions - The `DocumentCreateOptions` which can be used to add additional capabilities to the 
-    #                           request
-    # + return - If successful, returns `Document`. Else returns `Error`.
+    # + documentCreateOptions - The `cosmos_db:DocumentCreateOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:Document`. Else returns `cosmos_db:Error`.
     @display {label: "Create Document"}
     remote isolated function createDocument(@display {label: "Database ID"} string databaseId, 
                                             @display {label: "Container ID"} string containerId, 
@@ -65,15 +73,15 @@ public client class DataPlaneClient {
         return mapJsonToDocumentType(jsonResponse);
     }
 
-    # Replace a document.
+    # Replaces a document.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the existing document
     # + document - A JSON document which will replace the existing document
     # + partitionKey - The specific value related to the partition key field of the container 
-    # + documentReplaceOptions - The `DocumentReplaceOptions` which can be used to add additional capabilities to the 
-    #                            request
-    # + return - If successful, returns a `Document`. Else returns `Error`.
+    # + documentReplaceOptions - The `cosmos_db:DocumentReplaceOptions` which can be used to add additional capabilities 
+    #                            to the request
+    # + return - If successful, returns a `cosmos_db:Document`. Else returns `cosmos_db:Error`.
     @display {label: "Replace Document"}
     remote isolated function replaceDocument(@display {label: "Database ID"} string databaseId, 
                                              @display {label: "Container ID"} string containerId, 
@@ -95,14 +103,15 @@ public client class DataPlaneClient {
         return mapJsonToDocumentType(jsonResponse); 
     }
 
-    # Get information about a document.
+    # Gets information about a document.
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the document
     # + documentId - ID of the document 
     # + partitionKey - The value of partition key field of the container
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns `Document`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns `cosmos_db:Document`. Else returns `cosmos_db:Error`.
     @display {label: "Get Document"}
     remote isolated function getDocument(@display {label: "Database ID"} string databaseId, 
                                          @display {label: "Container ID"} string containerId, 
@@ -122,12 +131,13 @@ public client class DataPlaneClient {
         return mapJsonToDocumentType(jsonResponse);
     }
 
-    # List information of all the documents .
+    # Lists information of all the documents .
     # 
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the document
-    # + documentListOptions - The `DocumentListOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns `stream<Document, error>`. Else, returns `Error`.
+    # + documentListOptions - The `cosmos_db:DocumentListOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns `stream<cosmos_db:Document, error>`. Else, returns `cosmos_db:Error`.
     @display {label: "Get Documents"}
     remote isolated function getDocumentList(@display {label: "Database ID"} string databaseId,
                                              @display {label: "Container ID"} string containerId,
@@ -145,15 +155,15 @@ public client class DataPlaneClient {
         return finalStream;
     }
 
-    # Delete a document.
+    # Deletes a document.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the document
     # + documentId - ID of the document
     # + partitionKey - The specific value related to the partition key field of the container
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the
-    #                           request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete Document"}
     remote isolated function deleteDocument(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Container ID"} string containerId,
@@ -173,14 +183,14 @@ public client class DataPlaneClient {
         return mapHeadersToResultType(response);
     }
 
-    # Query documents.
+    # Queries documents.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container to query
     # + sqlQuery - A string containing the SQL query
-    # + resourceQueryOptions - The `ResourceQueryOptions` which can be used to add additional capabilities to the
-    #                          request
-    # + return - If successful, returns a `stream<Document, error>`. Else returns `Error`.
+    # + resourceQueryOptions - The `cosmos_db:ResourceQueryOptions` which can be used to add additional capabilities 
+    #                          to the request
+    # + return - If successful, returns a `stream<cosmos_db:Document, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Query Documents"}
     remote isolated function queryDocuments(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Container ID"} string containerId,
@@ -208,14 +218,13 @@ public client class DataPlaneClient {
         return finalStream;
     }
 
-    # Create a new stored procedure. Stored Procedure is a piece of application logic written in JavaScript that is
-    # registered and executed against a container as a single transaction.
+    # Creates a new stored procedure. 
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container where, stored procedure will be created
     # + storedProcedureId - A unique ID for the newly created stored procedure
     # + storedProcedure - A JavaScript function represented as a string
-    # + return - If successful, returns a `StoredProcedure`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:StoredProcedure`. Else returns `cosmos_db:Error`.
     @display {label: "Create Stored Procedure"}
     remote isolated function createStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                    @display {label: "Container ID"} string containerId,
@@ -238,13 +247,13 @@ public client class DataPlaneClient {
         return mapJsonToStoredProcedure(jsonResponse);
     }
 
-    # Replace a stored procedure with new one.
+    # Replaces a stored procedure with new one.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the existing stored procedures
     # + storedProcedureId - The ID of the stored procedure to be replaced
     # + storedProcedure - A JavaScript function which will replace the existing one
-    # + return - If successful, returns a `StoredProcedure`. Else returns `Error`.
+    # + return - If successful, returns a `cosmos_db:StoredProcedure`. Else returns `cosmos_db:Error`.
     @display {label: "Replace Stored Procedure"}
     remote isolated function replaceStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                     @display {label: "Container ID"} string containerId,
@@ -267,12 +276,13 @@ public client class DataPlaneClient {
         return mapJsonToStoredProcedure(jsonResponse);
     }
 
-    # List information of all stored procedures.
+    # Lists information of all stored procedures.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedures
-    # + resourceReadOptions - The `ResourceReadOptions` which can be used to add additional capabilities to the request
-    # + return - If successful, returns a `stream<StoredProcedure, error>`. Else returns `Error`.
+    # + resourceReadOptions - The `cosmos_db:ResourceReadOptions` which can be used to add additional capabilities to 
+    #                         the request
+    # + return - If successful, returns a `stream<cosmos_db:StoredProcedure, error>`. Else returns `cosmos_db:Error`.
     @display {label: "Get Stored Procedures"}
     remote isolated function listStoredProcedures(@display {label: "Database ID"} string databaseId,
                                                   @display {label: "Container ID"} string containerId,
@@ -292,14 +302,14 @@ public client class DataPlaneClient {
         return finalStream;
     }
 
-    # Delete a stored procedure.
+    # Deletes a stored procedure.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedure
     # + storedProcedureId - ID of the stored procedure to delete
-    # + resourceDeleteOptions - The `ResourceDeleteOptions` which can be used to add additional capabilities to the
-    #                           request
-    # + return - If successful, returns `DeleteResponse`. Else returns `Error`.
+    # + resourceDeleteOptions - The `cosmos_db:ResourceDeleteOptions` which can be used to add additional capabilities 
+    #                           to the request
+    # + return - If successful, returns `cosmos_db:DeleteResponse`. Else returns `cosmos_db:Error`.
     @display {label: "Delete Stored Procedure"}
     remote isolated function deleteStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                    @display {label: "Container ID"} string containerId,
@@ -317,14 +327,14 @@ public client class DataPlaneClient {
         return mapHeadersToResultType(response);
     }
 
-    # Execute a stored procedure.
+    # Executes a stored procedure.
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the stored procedure
     # + storedProcedureId - ID of the stored procedure to execute
-    # + storedProcedureExecuteOptions - A record of type `StoredProcedureExecuteOptions` to specify the additional
-    #                            parameters
-    # + return - If successful, returns `json` with the output from the executed function. Else returns `Error`.
+    # + storedProcedureExecuteOptions - A record `cosmos_db:StoredProcedureExecuteOptions` to specify the 
+    #                                   additional parameters
+    # + return - If successful, returns `json` with the output from the executed function. Else returns `cosmos_db:Error`.
     @display {label: "Execute Stored Procedure"}
     remote isolated function executeStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                     @display {label: "Container ID"} string containerId,
