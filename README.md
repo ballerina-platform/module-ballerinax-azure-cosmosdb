@@ -182,6 +182,7 @@ Notes: <br/>
 inside a database with ID **my_document**.
 - As this container have selected path **/gender** as the partition key, the document you create should include that path 
 with a valid value.
+- The new document to create is represented as `record {|string id; json...;|}`. The json... represent key-value pairs where the values are of type `boolean, int, float, decimal, string, json[], or map<json>`
 
 ### Step 5: List the documents
 For listing the existing documents inside this Cosmos container you have to give **my_database** and **my_container** as 
