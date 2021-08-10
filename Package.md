@@ -114,6 +114,14 @@ public function main() {
         id: "documentid1",
         LastName: "Sheldon", 
         accountNumber: 001234222
+        Parents: [{
+            "FamilyName": "Turing",
+            "FirstName": "Julius"
+        }, {
+            "FamilyName": "Stoney",
+            "FirstName": "Ethel"
+        }],
+        gender: 0
     };
 
     var result = azureCosmosClient->createDocument(<DATABASE_ID>, <CONTAINER_ID>, documentBody, 
@@ -128,6 +136,8 @@ public function main() {
     
 }
 ```
+Notes: <br/> 
+- The new document to create is represented as `record {|string id; json...;|}`. The json... represent key-value pairs where the values are of type `boolean, int, float, decimal, string, json[], or map<json>`
 ### List Documents
 Usually, Cosmos DB provides an array of JSON objects as the response for list operations. But, the connector has handled 
 this array and instead of that, it provides streaming capabilities for these kinds of operations. Apart from 
