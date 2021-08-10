@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 
-# Represents configuration parameters to create Azure Cosmos DB client.
+# Configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account
 # + primaryKeyOrResourceToken - The token used to make the request call authorized
@@ -26,7 +26,7 @@ public type Configuration record {|
     string primaryKeyOrResourceToken;
 |};
 
-# Represents matadata headers which will return for a delete request.
+# Metadata headers which will return for a delete request.
 # 
 # + sessionToken - Session token from the response
 @display{label: "Deletion Response"}
@@ -35,7 +35,7 @@ public type DeleteResponse record {|
     string sessionToken;
 |};
 
-# Represents the common elements representing information.
+# Common elements representing information.
 # 
 # + resourceId - A unique identifier which is used internally for placement and navigation of the resource
 # + selfReference - A unique addressable URI for the resource
@@ -53,7 +53,7 @@ public type Commons record {|
     string sessionToken?;
 |};
 
-# Represents the elements representing information about a database.
+# Parameters representing information about a database.
 # 
 # + id - User generated unique ID for the database 
 @display{label: "Database"}
@@ -63,7 +63,7 @@ public type Database record {|
     *Commons;
 |};
 
-# Represents the elements representing information about a container.
+# Parameters representing information about a container.
 # 
 # + id - User generated unique ID for the container
 # + indexingPolicy - Record of type `IndexingPolicy`
@@ -79,7 +79,7 @@ public type Container record {|
     PartitionKey partitionKey;
 |};
 
-# Represent the parameters representing information about a document.
+# Parameters representing information about a document.
 # 
 # + id - User generated unique ID for the document 
 # + documentBody - The document reprsented as a map of json
@@ -92,11 +92,11 @@ public type Document record {|
     map<json> documentBody;
 |};
 
-# Represent the parameters necessary to create an indexing policy when creating a container.
+# Parameters necessary to create an indexing policy when creating a container.
 # 
-# + indexingMode - Mode of indexing. Can be `consistent` or `none`.
-# + automatic - Specify whether indexing is done automatically or not. Must be `true` if indexing must be automatic and
-#               `false` otherwise.
+# + indexingMode - Mode of indexing. Can be `consistent` or `none`
+# + automatic - Specify whether indexing is done automatically or not
+#              - Must be `true` if indexing must be automatic and `false` otherwise.
 # + includedPaths - Array of type `IncludedPath` representing included paths
 # + excludedPaths - Array of type `IncludedPath` representing excluded paths
 @display{label: "Indexing Policy"}
@@ -111,7 +111,7 @@ public type IndexingPolicy record {|
     ExcludedPath[] excludedPaths?;
 |};
 
-# Represent the necessary parameters of included path type.
+# Parameters representing included path type.
 # 
 # + path - Path to which the indexing behavior applies to
 # + indexes - Array of type `Index`, representing index values
@@ -123,7 +123,7 @@ public type IncludedPath record {|
     Index[] indexes = [];
 |};
 
-# Represent the necessary parameters of excluded path type.
+# Parameters representing excluded path type.
 # 
 # + path - Path that is excluded from indexing 
 @display{label: "Excluded Path"}
@@ -132,14 +132,15 @@ public type ExcludedPath record {|
     string path;
 |};
 
-# Represent the record type with necessary parameters to represent an index. 
+# Parameters representing an index. 
 # 
-# + kind - Type of index. Can be `Hash`, `Range` or `Spatial`.
-# + dataType - Datatype for which the indexing behavior is applied to. Can be `String`, `Number`, `Point`, `Polygon`
-#              or `LineString`.
-# + precision - Precision of the index. Can be either set to -1 for maximum precision or between 1-8 for `Number`, 
-#               and 1-100 for `String`. Not applicable for `Point`, `Polygon`, and `LineString` data types. Default is
-#               -1.
+# + kind - Type of index
+#        - Can be `Hash`, `Range` or `Spatial`.
+# + dataType - Datatype for which the indexing behavior is applied to
+#            - Can be `String`, `Number`, `Point`, `Polygon` or `LineString`.
+# + precision - Precision of the index
+#             - Can be either set to -1 for maximum precision or between 1-8 for `Number`, and 1-100 for `String`
+#             - Not applicable for `Point`, `Polygon`, and `LineString` data types. Default is -1.
 @display{label: "Index"}
 public type Index record {|
     @display{label: "Index Type"}
@@ -150,13 +151,13 @@ public type Index record {|
     int precision = MAX_PRECISION;
 |};
 
-# Represent the record type with necessary parameters to represent a partition key.
+# Parameters representing a partition key.
 # 
 # + paths - Array of paths using which, data within the collection can be partitioned. The array must contain only a
 #           single value.
-# + kind - Algorithm used for partitioning. Only **Hash** is supported.
-# + keyVersion - Version of partition key. Default is **1**. To use a large partition key, set the version to 
-#                **2**. 
+# + kind - Algorithm used for partitioning
+#        - Only **Hash** is supported.
+# + keyVersion - Version of partition key. Default is **1**. To use a large partition key, set the version to **2**. 
 @display{label: "Partition Key Definition"}
 public type PartitionKey record {|
     @display{label: "Partition Key Path"}
@@ -167,7 +168,7 @@ public type PartitionKey record {|
     PartitionKeyVersion keyVersion = PARTITION_KEY_VERSION_1;
 |};
 
-# Represent the record type with necessary parameters to represent a stored procedure.
+# Parameters representing a stored procedure.
 # 
 # + id - User generated unique ID for the stored procedure
 # + storedProcedure - A JavaScript function, respresented as a string
@@ -180,7 +181,7 @@ public type StoredProcedure record {|
     string storedProcedure;
 |};
 
-# Represent the record type with necessary parameters to represent a user defined function.
+# Parameters representing a user defined function.
 # 
 # + id - User generated unique ID for the user defined function
 # + userDefinedFunction - A JavaScript function, respresented as a string
@@ -193,11 +194,12 @@ public type UserDefinedFunction record {|
     string userDefinedFunction;
 |};
 
-# Represent the record type with necessary parameters to represent a trigger.
+# Parameters representing a trigger.
 # 
 # + id - User generated unique ID for the trigger
 # + triggerFunction - A JavaScript function, respresented as a string
-# + triggerOperation - Type of operation that invokes the trigger. Can be `All`, `Create`, `Replace` or `Delete`.
+# + triggerOperation - Type of operation that invokes the trigger
+#                    - Can be `All`, `Create`, `Replace` or `Delete`.
 # + triggerType - When the trigger is fired, `Pre` or `Post`
 @display{label: "Trigger"}
 public type Trigger record {|
@@ -212,7 +214,7 @@ public type Trigger record {|
     TriggerType triggerType = PRE;
 |};
 
-# Represent the record type with necessary parameters to create partition key range.
+# Parameters representing a partition key range.
 # 
 # + id - ID for the partition key range
 # + minInclusive - Minimum partition key hash value for the partition key range
@@ -228,7 +230,7 @@ public type PartitionKeyRange record {|
     string maxExclusive;
 |};
 
-# Represent the record type with necessary parameters to represent a user.
+# Parameters representing a user.
 # 
 # + id - User generated unique ID for the user 
 # + permissions - A system generated property that specifies the addressable path of the permissions resource
@@ -241,7 +243,7 @@ public type User record {|
     string permissions;
 |};
 
-# Represent the record type with necessary parameters to represent a permission.
+# Parameters representing a permission.
 # 
 # + id - User generated unique ID for the permission
 # + permissionMode - Access mode for the resource, Should be `All` or `Read`
@@ -260,13 +262,14 @@ public type Permission record {|
     string token;
 |};
 
-# Represent the record type with necessary parameters to represent an offer.
+# Parameters representing an offer.
 # 
 # + id - User generated unique ID for the offer
-# + offerVersion - Offer version, This value can be `V1` for pre-defined throughput levels and `V2` for user-defined 
-#                  throughput levels
-# + offerType - Optional. Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
-# + content - Information about the offer. For `V2` offers, it contains the throughput of the collection.
+# + offerVersion - Offer version
+#                - This value can be `V1` for pre-defined throughput levels and `V2` for user-defined throughput levels
+# + offerType - Performance level for V1 offer version, allows `S1`, `S2` and `S3`.
+# + content - Information about the offer
+#           - For `V2` offers, it contains the throughput of the collection.
 # + resourceResourceId - The resource id(_rid) of the collection
 # + resourceSelfLink - The self-link(_self) of the collection
 @display{label: "Offer"}
@@ -286,10 +289,10 @@ public type Offer record {|
     string resourceSelfLink;
 |};
 
-# Represent the optional parameters which can be passed to the function when creating a document.
+# Optional parameters which can be passed to the function when creating a document.
 # 
-# + indexingDirective - The option whether to include the document in the index. Allowed values are `Include` or 
-#                       `Exclude`.
+# + indexingDirective - The option whether to include the document in the index
+#                     - Allowed values are `Include` or `Exclude`.
 # + isUpsertRequest - A boolean value which specify whether the request is an upsert request
 @display{label: "Document Create Options"}
 public type DocumentCreateOptions record {|
@@ -299,20 +302,21 @@ public type DocumentCreateOptions record {|
     boolean isUpsertRequest = false;
 |};
 
-# Represent the optional parameters which can be passed to the function when replacing a document.
+# Optional parameters which can be passed to the function when replacing a document.
 # 
-# + indexingDirective - The option whether to include the document in the index. Allowed values are 'Include' or 
-#                       'Exclude'.
+# + indexingDirective - The option whether to include the document in the index
+#                     - Allowed values are 'Include' or 'Exclude'.
 @display{label: "Document Replace Options"}
 public type DocumentReplaceOptions record {|
     @display{label: "Indexing Option"}
     IndexingDirective indexingDirective?;
 |};
 
-# Represent the optional parameters which can be passed to the function when listing information about the documents.
+# Optional parameters which can be passed to the function when listing information about the documents.
 # 
-# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
-#                      The override must be the same or weaker than the Cosmos DB account’s configured consistency level.
+# + consistancyLevel - The consistency level override
+#                    - Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
+#                    - The override must be the same or weaker than the Cosmos DB account’s configured consistency level.
 # + sessionToken - Echo the latest read value of `session token header` to acquire session level consistency 
 # + changeFeedOption - Must be set to `Incremental feed` or omitted otherwise
 # + partitionKeyRangeId - The partition key range ID for reading data
@@ -340,11 +344,12 @@ public type StoredProcedureExecuteOptions record {|
     int|float|decimal|string partitionKey?;
 |};
 
-# Represent the optional parameters which can be passed to the function when reading the information about other 
+# Optional parameters which can be passed to the function when reading the information about other 
 # resources in Cosmos DB such as Containers, StoredProcedures, Triggers, User Defined Functions, etc.
 # 
-# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
-#                      The override must be the same or weaker than the account’s configured consistency level.
+# + consistancyLevel - The consistency level override
+#                    - Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
+#                    - The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency
 @display{label: "Resource Read Options"}
 public type ResourceReadOptions record {|
@@ -354,12 +359,13 @@ public type ResourceReadOptions record {|
     string sessionToken?;
 |};
 
-# Represent the optional parameters which can be passed to the function when querying containers.
+# Optional parameters which can be passed to the function when querying containers.
 # 
-# + consistancyLevel - The consistency level override. Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
-#                      The override must be the same or weaker than the account’s configured consistency level.
+# + consistancyLevel - The consistency level override
+#                    - Allowed values are `Strong`, `Bounded`, `Session` or `Eventual`.
+#                    - The override must be the same or weaker than the account’s configured consistency level.
 # + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency 
-# + enableCrossPartition - Boolean value specifying whether to allow cross partitioning. Default is `true` where, 
+# + enableCrossPartition - Boolean value specifying whether to allow cross partitioning <br/> Default is `true` where, 
 #                          it allows to query across all logical partitions.
 # + partitionKey - Optional. The value of partition key field of the container.
 @display{label: "Resource Query Options"}
@@ -374,7 +380,7 @@ public type ResourceQueryOptions record {|
     (int|float|decimal|string)? partitionKey = ();
 |};
 
-# Represent the optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
+# Optional parameters which can be passed to the function when deleting other resources in Cosmos DB.
 # 
 # + sessionToken - Echo the latest read value of `sessionToken` to acquire session level consistency
 @display{label: "Resource Delete Options"}
