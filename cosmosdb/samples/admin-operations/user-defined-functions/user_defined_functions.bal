@@ -79,8 +79,8 @@ public function main() {
     }
 
     log:printInfo("List  user defined functions(udf)s");
-    stream<cosmosdb:UserDefinedFunction, error>|error udfList = managementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (udfList is stream<cosmosdb:UserDefinedFunction, error>) {
+    stream<cosmosdb:UserDefinedFunction, error?>|error udfList = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    if (udfList is stream<cosmosdb:UserDefinedFunction, error?>) {
         error? e = udfList.forEach(function (cosmosdb:UserDefinedFunction udf) {
             log:printInfo(udf.toString());
         });

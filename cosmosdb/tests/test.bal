@@ -166,7 +166,7 @@ function testListAllDatabases() {
     log:printInfo("ACTION : listAllDatabases()");
 
     var result = azureCosmosManagementClient->listDatabases();
-    if (result is stream<Database, error>) {
+    if (result is stream<Database, error?>) {
         error? e = result.forEach(isolated function (Database queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -286,7 +286,7 @@ function testGetAllContainers() {
     log:printInfo("ACTION : getAllContainers()");
 
     var result = azureCosmosManagementClient->listContainers(databaseId);
-    if (result is stream<Container, error>) {
+    if (result is stream<Container, error?>) {
         error? e = result.forEach(isolated function (Container queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -435,7 +435,7 @@ function testGetDocumentList() {
     log:printInfo("ACTION : getDocumentList()");
 
     var result = azureCosmosClient->getDocumentList(databaseId, containerId);
-    if (result is stream<Document, error>) {
+    if (result is stream<Document, error?>) {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -458,7 +458,7 @@ function testGetDocumentListWithRequestOptions() {
         partitionKeyRangeId: "0"
     };
     var result = azureCosmosClient->getDocumentList(databaseId, containerId, options);
-    if (result is stream<Document, error>) {
+    if (result is stream<Document, error?>) {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -516,7 +516,7 @@ function testQueryDocuments() {
     string query = string `SELECT * FROM ${container.id.toString()} f WHERE f.Address.City = 'NY'`;
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<Document, error>) {
+    if (result is stream<Document, error?>) {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -539,7 +539,7 @@ function testQueryDocumentsWithRequestOptions() {
     };
 
     var result = azureCosmosClient->queryDocuments(databaseId, containerId, query, options);
-    if (result is stream<Document, error>) {
+    if (result is stream<Document, error?>) {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -638,7 +638,7 @@ function testGetAllStoredProcedures() {
     log:printInfo("ACTION : getAllStoredProcedures()");
 
     var result = azureCosmosClient->listStoredProcedures(databaseId, containerId);
-    if (result is stream<StoredProcedure, error>) {
+    if (result is stream<StoredProcedure, error?>) {
         error? e = result.forEach(isolated function (StoredProcedure queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -726,7 +726,7 @@ function testListAllUDF() {
     log:printInfo("ACTION : listAllUDF()");
 
     var result = azureCosmosManagementClient->listUserDefinedFunctions(databaseId, containerId);
-    if (result is stream<UserDefinedFunction, error>) {
+    if (result is stream<UserDefinedFunction, error?>) {
         error? e = result.forEach(isolated function (UserDefinedFunction queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -851,7 +851,7 @@ function testListTriggers() {
     log:printInfo("ACTION : listTriggers()");
 
     var result = azureCosmosManagementClient->listTriggers(databaseId, containerId);
-    if (result is stream<Trigger, error>) {
+    if (result is stream<Trigger, error?>) {
         error? e = result.forEach(isolated function (Trigger queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -939,7 +939,7 @@ function testListUsers() {
     log:printInfo("ACTION : listUsers()");
 
     var result = azureCosmosManagementClient->listUsers(databaseId);
-    if (result is stream<User, error>) {
+    if (result is stream<User, error?>) {
         error? e = result.forEach(isolated function (User queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -1046,7 +1046,7 @@ function testListPermissions() {
     log:printInfo("ACTION : listPermissions()");
 
     var result = azureCosmosManagementClient->listPermissions(databaseId, newUserId);
-    if (result is stream<Permission, error>) {
+    if (result is stream<Permission, error?>) {
         error? e = result.forEach(isolated function (Permission queryResult) {
             log:printInfo(queryResult.toString());
         });
@@ -1096,7 +1096,7 @@ function testListOffers() {
     log:printInfo("ACTION : listOffers()");
 
     var result = azureCosmosManagementClient->listOffers();
-    if (result is stream<Offer, error>) {
+    if (result is stream<Offer, error?>) {
         record {|Offer value;|}|error? offer = result.next();
         if (offer is record {|Offer value;|}) {
             offerId = <@untainted>offer?.value?.id;
@@ -1255,8 +1255,7 @@ function afterFunc() {
 function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
-        return stringUUID;
+        return 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
     } else {
         return EMPTY_STRING;
     }
