@@ -39,9 +39,9 @@ public function main() {
     cosmosdb:Container container = checkpanic managementClient->getContainer(databaseId, containerId);
 
     log:printInfo("List the offers in the current cosmos db account");   
-    stream<cosmosdb:Offer, error>|error offerList = checkpanic managementClient->listOffers();
+    stream<cosmosdb:Offer, error?>|error offerList = checkpanic managementClient->listOffers();
 
-    if (offerList is stream<cosmosdb:Offer, error>) {
+    if (offerList is stream<cosmosdb:Offer, error?>) {
         record {|cosmosdb:Offer value;|}|error? offer = offerList.next();
         if (offer is record {|cosmosdb:Offer value;|}) {
             offerId = <@untainted>offer.value.id;

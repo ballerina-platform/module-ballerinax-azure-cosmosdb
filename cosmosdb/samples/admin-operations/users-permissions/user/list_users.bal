@@ -29,8 +29,8 @@ public function main() {
     string databaseId = "my_database";
 
     log:printInfo("List users");
-    stream<cosmosdb:User, error>|error result = managementClient->listUsers(databaseId);
-    if (result is stream<cosmosdb:User, error>) {
+    stream<cosmosdb:User, error?>|error result = managementClient->listUsers(databaseId);
+    if (result is stream<cosmosdb:User, error?>) {
         error? e = result.forEach(function (cosmosdb:User storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });

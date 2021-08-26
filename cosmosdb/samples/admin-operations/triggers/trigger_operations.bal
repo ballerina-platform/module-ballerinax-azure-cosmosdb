@@ -114,9 +114,9 @@ public function main() {
     }
 
     log:printInfo("List available triggers");
-    stream<cosmosdb:Trigger, error>|error triggerList = managementClient->listTriggers(databaseId, containerId);
+    stream<cosmosdb:Trigger, error?>|error triggerList = managementClient->listTriggers(databaseId, containerId);
 
-    if (triggerList is stream<cosmosdb:Trigger, error>) {
+    if (triggerList is stream<cosmosdb:Trigger, error?>) {
         error? e = triggerList.forEach(function (cosmosdb:Trigger trigger) {
             log:printInfo(trigger.toString());
         });

@@ -30,9 +30,9 @@ public function main() {
     string containerId = "my_container";
 
     log:printInfo("List  user defined functions");
-    stream<cosmosdb:UserDefinedFunction, error>|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
+    stream<cosmosdb:UserDefinedFunction, error?>|error result = managementClient->listUserDefinedFunctions(databaseId, containerId);
 
-    if (result is stream<cosmosdb:UserDefinedFunction, error>) {
+    if (result is stream<cosmosdb:UserDefinedFunction, error?>) {
         error? e = result.forEach(function (cosmosdb:UserDefinedFunction udf) {
             log:printInfo(udf.toString());
         });

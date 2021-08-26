@@ -69,8 +69,8 @@ public function main() {
     }
 
     log:printInfo("List users");
-    stream<cosmosdb:User, error>|error userList = managementClient->listUsers(databaseId);
-    if (userList is stream<cosmosdb:User, error>) {
+    stream<cosmosdb:User, error?>|error userList = managementClient->listUsers(databaseId);
+    if (userList is stream<cosmosdb:User, error?) {
         error? e = userList.forEach(function (cosmosdb:User storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });
