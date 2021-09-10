@@ -25,7 +25,7 @@ import ballerina/test;
 configurable string & readonly baseURL = os:getEnv("BASE_URL");
 configurable string & readonly primaryKey = os:getEnv("MASTER_OR_RESOURCE_TOKEN");
 
-Configuration config = {
+ConnectionConfig config = {
     baseUrl: baseURL,
     primaryKeyOrResourceToken: primaryKey
 };
@@ -1218,7 +1218,7 @@ function testGetContainerWithResourceToken() {
     if (result is Error) {
         test:assertFail(msg = result.message());
     } else {
-        Configuration configdb = {
+        ConnectionConfig configdb = {
             baseUrl: os:getEnv("BASE_URL"),
             primaryKeyOrResourceToken: result?.token.toString()
         };

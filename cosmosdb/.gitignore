@@ -35,7 +35,7 @@ hs_err_pid*
 /tests/resources
 
 # resources folder
-/resources
+/resources/*.json
 
 # idea files
 *.idea

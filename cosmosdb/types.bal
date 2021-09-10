@@ -19,7 +19,7 @@
 # + baseUrl - Base URL of the Azure Cosmos DB account
 # + primaryKeyOrResourceToken - The token used to make the request call authorized
 @display{label: "Connection Config"}
-public type Configuration record {|
+public type ConnectionConfig record {|
     @display{label: "Base URL"}
     string baseUrl;
     @display{label: "Primary Key"}

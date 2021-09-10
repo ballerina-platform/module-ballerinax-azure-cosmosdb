@@ -22,7 +22,7 @@ import ballerina/http;
 # + httpClient - The HTTP Client
 @display {
     label: "Azure Cosmos DB Client",
-    iconPath: "AzureCosmosDBLogo.svg"
+    iconPath: "resources/azure_cosmosdb.svg"
 }
 public isolated client class DataPlaneClient {
     final http:Client httpClient;
@@ -36,12 +36,13 @@ public isolated client class DataPlaneClient {
     # and obtain tokens following [this guide](https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys).
     #
     # + cosmosdbConfig - Configurations required to initialize the `Client` endpoint
+    # + httpClientConfig - HTTP configuration
     # + return -  Error at failure of client initialization
-    public isolated function init(Configuration cosmosdbConfig) returns Error? {
+    public isolated function init(ConnectionConfig cosmosdbConfig, http:ClientConfiguration httpClientConfig = {}) returns Error? {
         self.baseUrl = cosmosdbConfig.baseUrl;
         self.primaryKeyOrResourceToken = cosmosdbConfig.primaryKeyOrResourceToken;
         self.host = getHost(cosmosdbConfig.baseUrl);
-        self.httpClient = check new(self.baseUrl);
+        self.httpClient = check new (self.baseUrl, httpClientConfig);
     }
  
     # Creates a document.
