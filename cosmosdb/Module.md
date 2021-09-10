@@ -26,7 +26,7 @@ import ballerinax/azure_cosmosdb as cosmosdb;
 You can now add the connection configuration with the `Master-Token` or `Resource-Token`, and the resource URI to the
 Cosmos DB Account.
 ```ballerina
-cosmosdb:Configuration configuration = {
+cosmosdb:ConnectionConfig configuration = {
     baseUrl: <URI>,
     primaryKeyOrResourceToken: <PRIMARY_KEY>
 };

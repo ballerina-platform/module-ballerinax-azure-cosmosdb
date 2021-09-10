@@ -20,7 +20,7 @@ import ballerina/http;
 # deliver configurable and reliable performance, is globally distributed, and enables rapid development. 
 # 
 # + httpClient - the HTTP Client
-@display {label: "Azure Cosmos DB Management Client"} 
+@display {label: "Azure Cosmos DB Management Client", iconPath: "resources/azure_cosmosdb.svg"} 
 public isolated client class ManagementClient {
     final http:Client httpClient;
     final string baseUrl;
@@ -33,12 +33,13 @@ public isolated client class ManagementClient {
     # and obtain tokens following [this guide](https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys).
     #
     # + cosmosdbConfig - Configurations required to initialize the `Client` endpoint
+    # + httpClientConfig - HTTP configuration
     # + return -  Error at failure of client initialization
-    public isolated function init(Configuration azureConfig) returns error? {
+    public isolated function init(ConnectionConfig azureConfig, http:ClientConfiguration httpClientConfig = {}) returns error? {
         self.baseUrl = azureConfig.baseUrl;
         self.primaryKeyOrResourceToken = azureConfig.primaryKeyOrResourceToken;
         self.host = getHost(azureConfig.baseUrl);
-        self.httpClient = check new(self.baseUrl);
+        self.httpClient = check new (self.baseUrl, httpClientConfig);
     }
 
     # Creates a database.

@@ -20,7 +20,7 @@ import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
 
-cosmosdb:Configuration config = {
+cosmosdb:ConnectionConfig config = {
     baseUrl: os:getEnv("BASE_URL"),
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
