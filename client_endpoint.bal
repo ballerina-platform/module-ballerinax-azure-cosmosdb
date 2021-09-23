@@ -133,7 +133,7 @@ public client class DataPlaneClient {
                                              @display {label: "Container ID"} string containerId, 
                                              @display {label: "Optional Header Parameters"} DocumentListOptions? 
                                              documentListOptions = ()) returns 
-                                             @tainted @display {label: "Stream of Documents"} stream<Document, error>|Error { 
+                                             @tainted @display {label: "Stream of Documents"} stream<Document, error?>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_DOCUMENTS]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET, 
@@ -141,7 +141,7 @@ public client class DataPlaneClient {
         headerMap = setOptionalGetHeaders(headerMap, documentListOptions);
 
         DocumentStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<Document, error> finalStream = new (objectInstance);
+        stream<Document, error?> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -188,7 +188,7 @@ public client class DataPlaneClient {
                                             @display {label: "Optional Header Parameters"} ResourceQueryOptions? 
                                             resourceQueryOptions = ()) returns 
                                             @tainted @display {label: "Stream of Documents"} 
-                                            stream<Document, error>|Error { 
+                                            stream<Document, error?>|Error { 
         http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId,
             RESOURCE_TYPE_DOCUMENTS]);
@@ -204,7 +204,7 @@ public client class DataPlaneClient {
 
         check setHeadersForQuery(request);
         DocumentQueryResultStream objectInstance = check new (self.httpClient, requestPath, request);
-        stream<Document, error> finalStream = new (objectInstance);
+        stream<Document, error?> finalStream = new (objectInstance);
         return finalStream;
     }
 
@@ -279,7 +279,7 @@ public client class DataPlaneClient {
                                                   @display {label: "Optional Header Parameters"} ResourceReadOptions?
                                                   resourceReadOptions = ()) returns 
                                                   @tainted @display {label: "Stream of Stored Procedures"} 
-                                                  stream<StoredProcedure, error>|Error { 
+                                                  stream<StoredProcedure, error?>|Error { 
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId, 
             RESOURCE_TYPE_STORED_POCEDURES]);
         
@@ -288,7 +288,7 @@ public client class DataPlaneClient {
         headerMap = setOptionalGetHeaders(headerMap, resourceReadOptions);
 
         StoredProcedureStream objectInstance = check new (self.httpClient, requestPath, headerMap);
-        stream<StoredProcedure, error> finalStream = new (objectInstance);
+        stream<StoredProcedure, error?> finalStream = new (objectInstance);
         return finalStream;
     }
 
