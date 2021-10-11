@@ -1,9 +1,9 @@
 [package]
 org= "ballerinax"
 name= "azure_cosmosdb"
-version= "0.1.6-SNAPSHOT"
+version= "2.0.0"
 authors = ["Ballerina"]
-keywords = ["it operations/databases", "cost/paid", "vendor/microsoft"]
+keywords = ["IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft"]
 repository = "https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb"
 license = ["Apache-2.0"]
 
