@@ -11,8 +11,12 @@ jobs:
               uses: ballerina-platform/ballerina-action/@nightly
               with:
                   args:
-                      pack --with-tests ./cosmosdb
+                      pack ./cosmosdb
+            - name: Ballerina Test
+              uses: ballerina-platform/ballerina-action/@nightly
+              with:
+                  args:
+                      test ./cosmosdb
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
-                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
-                  
+                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}      

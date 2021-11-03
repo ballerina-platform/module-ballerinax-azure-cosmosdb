@@ -23,9 +23,6 @@ jobs:
               with:
                   args:
                       pack ./cosmosdb
-              env:
-                BASE_URL: ${{ secrets.BASE_URL }}
-                MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
 
             # Send notification when build fails
             - name: Notify failure

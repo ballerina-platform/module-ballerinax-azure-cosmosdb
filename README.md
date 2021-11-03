@@ -29,11 +29,11 @@ Execute the following commands to build from the source:
  
 - To build the package:
    ```   
-   bal pack --with-tests ./cosmosdb
-   ```
-- To build the package without tests:
-   ```
    bal pack ./cosmosdb
+   ```
+- To run tests after build:
+   ```
+   bal test ./cosmosdb
    ```
 ## Contributing to ballerina
  
