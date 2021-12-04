@@ -22,7 +22,7 @@ import ballerina/http;
 # + httpClient - The HTTP Client
 @display {
     label: "Azure Cosmos DB Client",
-    iconPath: "resources/azure_cosmosdb.svg"
+    iconPath: "icon.png"
 }
 public isolated client class DataPlaneClient {
     final http:Client httpClient;
