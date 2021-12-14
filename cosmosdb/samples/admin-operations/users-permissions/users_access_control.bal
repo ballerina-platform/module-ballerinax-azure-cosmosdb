@@ -130,8 +130,8 @@ public function main() {
     }
 
     log:printInfo("List permissions");
-    stream<cosmosdb:Permission, error>|error permissionList = managementClient->listPermissions(databaseId, userId);
-    if (permissionList is stream<cosmosdb:Permission, error>) {
+    stream<cosmosdb:Permission, error?>|error permissionList = managementClient->listPermissions(databaseId, userId);
+    if (permissionList is stream<cosmosdb:Permission, error?>) {
         error? e = permissionList.forEach(function (cosmosdb:Permission storedPrcedure) {
             log:printInfo(storedPrcedure.toString());
         });

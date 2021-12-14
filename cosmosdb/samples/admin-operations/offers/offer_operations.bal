@@ -75,7 +75,7 @@ public function main() {
     string offersInContainerQuery = 
         string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
-    stream<cosmosdb:QueryResult, error>|error result = checkpanic managementClient->
+    stream<cosmosdb:QueryResult, error?>|error result = checkpanic managementClient->
         queryOffer(<@untainted>offersInContainerQuery);
     log:printInfo("Success!");
 }

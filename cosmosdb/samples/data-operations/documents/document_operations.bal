@@ -173,9 +173,9 @@ public function main() {
     }
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Document, error>|error documentList = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<cosmosdb:Document, error?>|error documentList = azureCosmosClient->getDocumentList(databaseId, containerId);
 
-    if (documentList is stream<cosmosdb:Document, error>) {
+    if (documentList is stream<cosmosdb:Document, error?>) {
         error? e = documentList.forEach(function (cosmosdb:Document document) {
             log:printInfo(document.toString());
         });
