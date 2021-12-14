@@ -102,9 +102,9 @@ public function main() {
     }
 
     log:printInfo("Getting list of databases");
-    stream<cosmosdb:Database,error>|error databaseList = managementClient->listDatabases();
+    stream<cosmosdb:Database,error?>|error databaseList = managementClient->listDatabases();
 
-    if (databaseList is stream<cosmosdb:Database,error>) {
+    if (databaseList is stream<cosmosdb:Database,error?>) {
         error? e = databaseList.forEach(function (cosmosdb:Database database) {
             log:printInfo(database.toString());
         });

@@ -59,7 +59,7 @@ isolated function getResourceType(string url) returns string {
     if (count % 2 != 0) {
         resourceType = urlParts[count];
         if (count > 1) {
-            int? lastIndex = url.lastIndexOf(FORWARD_SLASH);
+            _ = url.lastIndexOf(FORWARD_SLASH);
         }
     } else {
         resourceType = urlParts[count - 1];
@@ -318,7 +318,7 @@ isolated function setExpiryHeader(http:Request request, int validityPeriodInSeco
 #            (in `HTTP-date` format as defined by RFC 1123 Date/Time Formats). Else returns `Error`.
 isolated function getDateTime() returns string|Error {
     [int, decimal] & readonly currentTime = time:utcNow(); 
-    string time = check utcToString(currentTime, TIME_ZONE_FORMAT);
+    _ = check utcToString(currentTime, TIME_ZONE_FORMAT);
     return check utcToString(currentTime, TIME_ZONE_FORMAT) + " GMT";
 }
 
