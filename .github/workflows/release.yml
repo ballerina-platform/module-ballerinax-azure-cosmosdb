@@ -12,7 +12,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action@slbeta6
               with:
                   args:
                       pack ./cosmosdb
@@ -20,7 +20,7 @@ jobs:
                   BASE_URL: ${{ secrets.BASE_URL }}
                   MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@master
+              uses: ballerina-platform/ballerina-action@slbeta6
               with:
                   args:
                       push 
