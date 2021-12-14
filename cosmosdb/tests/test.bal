@@ -170,6 +170,9 @@ function testListAllDatabases() {
         error? e = result.forEach(isolated function (Database queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -290,6 +293,9 @@ function testGetAllContainers() {
         error? e = result.forEach(isolated function (Container queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -439,6 +445,9 @@ function testGetDocumentList() {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -462,6 +471,9 @@ function testGetDocumentListWithRequestOptions() {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -520,6 +532,9 @@ function testQueryDocuments() {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -543,6 +558,9 @@ function testQueryDocumentsWithRequestOptions() {
         error? e = result.forEach(isolated function (Document queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -642,6 +660,9 @@ function testGetAllStoredProcedures() {
         error? e = result.forEach(isolated function (StoredProcedure queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -730,6 +751,9 @@ function testListAllUDF() {
         error? e = result.forEach(isolated function (UserDefinedFunction queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -855,6 +879,9 @@ function testListTriggers() {
         error? e = result.forEach(isolated function (Trigger queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -943,6 +970,9 @@ function testListUsers() {
         error? e = result.forEach(isolated function (User queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -1050,6 +1080,9 @@ function testListPermissions() {
         error? e = result.forEach(isolated function (Permission queryResult) {
             log:printInfo(queryResult.toString());
         });
+        if (e is error) {
+            log:printInfo(msg = e.message());
+        }
     } else {
         test:assertFail(msg = result.message());
     }
@@ -1210,7 +1243,6 @@ function testQueryOffer() {
 function testGetContainerWithResourceToken() {
     log:printInfo("ACTION : createCollection_Resource_Token()");
 
-    string permissionDatabaseId = databaseId;
     string permissionUserId = newUserId;
     string userPermissionId = permissionId;
 
@@ -1243,7 +1275,7 @@ function afterFunc() {
     var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
 
     if (result1 is DeleteResponse && result2 is DeleteResponse) {
-        var output = "";
+        log:printInfo("Success");
     } else {
         test:assertFail(msg = "Failed to delete one of the databases");
     }

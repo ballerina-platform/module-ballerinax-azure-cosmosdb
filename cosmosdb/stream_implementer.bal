@@ -47,6 +47,7 @@ class DatabaseStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchDatabases() returns @tainted Database[]|Error {
@@ -97,6 +98,7 @@ class ContainerStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchContainers() returns @tainted Container[]|Error {
@@ -147,6 +149,7 @@ class DocumentStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchDocuments() returns @tainted Document[]|Error {
@@ -196,6 +199,7 @@ class StoredProcedureStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchStoredProcedures() returns @tainted StoredProcedure[]|Error {
@@ -245,6 +249,7 @@ class UserDefiinedFunctionStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchUserDefinedFunctions() returns @tainted UserDefinedFunction[]|Error {
@@ -295,6 +300,7 @@ class TriggerStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchTriggers() returns @tainted Trigger[]|Error {
@@ -345,6 +351,7 @@ class UserStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchUsers() returns @tainted User[]|Error {
@@ -396,6 +403,7 @@ class PermissionStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchPermission() returns @tainted Permission[]|Error {
@@ -446,6 +454,7 @@ class OfferStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchOffers() returns @tainted Offer[]|Error {
@@ -495,6 +504,7 @@ class PartitionKeyRangeStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchPKRanges() returns @tainted PartitionKeyRange[]|Error {
@@ -545,6 +555,7 @@ class DocumentQueryResultStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchQueryResults() returns @tainted Document[]|Error {
@@ -594,6 +605,7 @@ class OfferQueryResultStream {
             self.index += 1;
             return singleRecord;
         }
+        return;
     }
 
     isolated function fetchOfferQueryResults() returns @tainted Offer[]|Error {

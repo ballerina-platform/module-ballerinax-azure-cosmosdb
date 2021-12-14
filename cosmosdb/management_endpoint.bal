@@ -117,7 +117,6 @@ public isolated client class ManagementClient {
     remote isolated function listDatabases() returns
                                           @tainted @display {label: "Stream of Databases"}
                                           stream<Database, error?>|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET,
@@ -247,7 +246,6 @@ public isolated client class ManagementClient {
     remote isolated function listContainers(@display {label: "Database ID"} string databaseId)
                                             returns @tainted @display {label: "Stream of Containers"}
                                             stream<Container, error?>|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS]);
 
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET,
@@ -291,7 +289,6 @@ public isolated client class ManagementClient {
                                                     @display {label: "Container ID"} string containerId) returns
                                                     @tainted @display {label: "Stream of Partition Key Ranges"}
                                                     stream<PartitionKeyRange, error?>|Error {
-        http:Request request = new;
         string requestPath = prepareUrl([RESOURCE_TYPE_DATABASES, databaseId, RESOURCE_TYPE_COLLECTIONS, containerId,
             RESOURCE_TYPE_PK_RANGES]);
         map<string> headerMap = check setMandatoryGetHeaders(self.host, self.primaryKeyOrResourceToken, http:HTTP_GET,
@@ -793,7 +790,6 @@ public isolated client class ManagementClient {
         setOptionalHeaders(request, resourceDeleteOptions);
 
         http:Response response = check self.httpClient->delete(requestPath, request);
-        json|error value = handleResponse(response);
         check handleHeaderOnlyResponse(response);
         return mapHeadersToResultType(response);
     }
