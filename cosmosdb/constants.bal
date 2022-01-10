@@ -23,9 +23,10 @@
 # + EVENTUAL - No ordering guarantee for reads. In the absence of any further writes, the replicas eventually converge
 public enum ConsistencyLevel {
     STRONG = "Strong",
-    BOUNDED = "Bounded",
+    BOUNDED_STALENESS = "BoundedStaleness",
     SESSION = "Session",
-    EVENTUAL = "Eventual"
+    EVENTUAL = "Eventual",
+    CONSISTENT_PREFIX = "ConsistentPrefix"
 }
 
 # Whether to **include** or **exclude** the document in indexing.
