@@ -25,7 +25,7 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
@@ -33,13 +33,5 @@ public function main() {
     int partitionKeyValue = 0;
     
     log:printInfo("Deleting the document");
-    cosmosdb:DeleteResponse|error result = azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 
-        partitionKeyValue);
-
-    if (result is cosmosdb:DeleteResponse) {
-        log:printInfo(result.toString());
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
 }

@@ -28,7 +28,7 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     string containerId = "my_container";
     var uuid = createRandomUUIDWithoutHyphens();
@@ -49,18 +49,11 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document|error documentResult = azureCosmosClient->createDocument(databaseId, containerId, documentBody, 
-        partitionKeyValue); 
-
-    if (documentResult is cosmosdb:Document) {
-        log:printInfo(documentResult.toString());
-    } else {
-        log:printError(documentResult.message());
-    }
+    check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, partitionKeyValue);
 
     log:printInfo("Creating a new document allowing to include it in the indexing.");
-    record {|string id; json...;|} documentWithIndexing = {
-        id: string `documenti_${uuid.toString()}`,
+    string id = string `documenti_${uuid.toString()}`;
+    record {} documentWithIndexing = {
         "LastName": "Tom",
         "Parents": [{
             "FamilyName": null,
@@ -73,33 +66,17 @@ public function main() {
     };
     partitionKeyValue = 1;
 
-    cosmosdb:DocumentCreateOptions indexingOptions = {
+    cosmosdb:RequestOptions indexingOptions = {
         indexingDirective: "Include"
     };
 
-    cosmosdb:Document|error documentCreateResult = azureCosmosClient->createDocument(databaseId, containerId, 
-        documentWithIndexing, partitionKeyValue, indexingOptions);
-
-    if (documentCreateResult is cosmosdb:Document) {
-        log:printInfo(documentCreateResult.toString());
-    } else {
-        log:printError(documentCreateResult.message());
-    }
-
-    cosmosdb:Document|error  documentResultWithIndexing = azureCosmosClient->createDocument(databaseId, containerId, 
-        documentWithIndexing, partitionKeyValue, indexingOptions); 
-
-    if (documentResultWithIndexing is cosmosdb:Document) {
-        log:printInfo(documentResultWithIndexing.toString());
-    } else {
-        log:printError(documentResultWithIndexing.message());
-    }
+    check azureCosmosClient->createDocument(databaseId, containerId, id, documentWithIndexing, partitionKeyValue, 
+    indexingOptions);
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
     // error.
     log:printInfo("Upserting the document");
-    record {|string id; json...;|} upsertDocument = {
-        id: string `documentu_${uuid.toString()}`,
+    record {} upsertDocument = {
         "LastName": "Tim",
         "Parents": [{
             "FamilyName": null,
@@ -112,22 +89,15 @@ public function main() {
     };
     partitionKeyValue = 0;
 
-    cosmosdb:DocumentCreateOptions upsertOptions = {
+    cosmosdb:RequestOptions upsertOptions = {
         isUpsertRequest: true
     };
     
-    cosmosdb:Document|error documentUpsertResult = azureCosmosClient->createDocument(databaseId, containerId, 
-        upsertDocument, partitionKeyValue, upsertOptions); 
-
-    if (documentUpsertResult is cosmosdb:Document) {
-        log:printInfo(documentUpsertResult.toString());
-    } else {
-        log:printError(documentUpsertResult.message());
-    }
+    check azureCosmosClient->createDocument(databaseId, containerId, id, upsertDocument, partitionKeyValue, 
+    upsertOptions); 
 
     log:printInfo("Replacing document");
-    record {|string id; json...;|} newDocumentBody = {
-        id: documentId,
+    record {} newDocumentBody = {
         "LastName": "Helena",
         "Parents": [{
             "FamilyName": null,
@@ -140,59 +110,35 @@ public function main() {
     };
     partitionKeyValue = 0;
 
-    cosmosdb:Document|error replaceResult = azureCosmosClient->replaceDocument(databaseId, containerId, newDocumentBody, 
-        partitionKeyValue); 
-
-    if (replaceResult is cosmosdb:Document) {
-        log:printInfo(replaceResult.toString());
-    } else {
-        log:printError(replaceResult.message());
-    }
+    check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, newDocumentBody, partitionKeyValue); 
 
     log:printInfo("Read the document by id");
-    cosmosdb:Document|error returnedDocument = azureCosmosClient->getDocument(databaseId, containerId, documentId, 
+    cosmosdb:Document returnedDocument = check azureCosmosClient->getDocument(databaseId, containerId, documentId, 
         partitionKeyValue);
 
-    if (returnedDocument is cosmosdb:Document) {
-        log:printInfo(returnedDocument.toString());
-    }else {
-        log:printError(returnedDocument.message());
-    }
+    log:printInfo(returnedDocument.toString());
 
     log:printInfo("Read the document with request options");
-    cosmosdb:ResourceReadOptions options = {
+    cosmosdb:RequestOptions options = {
         consistancyLevel: "Eventual"
     };
-    cosmosdb:Document|error returnedDocumentWithOptions = azureCosmosClient->getDocument(databaseId, 
+    cosmosdb:Document returnedDocumentWithOptions = check azureCosmosClient->getDocument(databaseId, 
         containerId, documentId, partitionKeyValue, options);
 
-    if (returnedDocumentWithOptions is cosmosdb:Document) {
-        log:printInfo(returnedDocumentWithOptions.toString());
-    } else {
-        log:printError(returnedDocumentWithOptions.message());
-    }
+    log:printInfo(returnedDocumentWithOptions.toString());
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Document, error?>|error documentList = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<record {}, error?> documentList = check azureCosmosClient->getDocumentList(databaseId, containerId, 
+    partitionKeyValue);
 
-    if (documentList is stream<cosmosdb:Document, error?>) {
-        error? e = documentList.forEach(function (cosmosdb:Document document) {
-            log:printInfo(document.toString());
-        });
-        log:printInfo("Success!");
-    } else {
-        log:printError(documentList.message());
-    }
+    error? e = documentList.forEach(function (record{} document) {
+        log:printInfo(document.toString());
+    });
+    log:printInfo("Success!");
+   
 
     log:printInfo("Deleting the document");
-    cosmosdb:DeleteResponse|error deletionResult = azureCosmosClient->deleteDocument(databaseId, containerId,
-        documentId, partitionKeyValue);
-
-    if (deletionResult is cosmosdb:DeleteResponse) {
-        log:printInfo(deletionResult.toString());
-    } else {
-        log:printError(deletionResult.message());
-    }
+    check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
 
     log:printInfo("End!");
 }
@@ -219,7 +165,10 @@ function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
-        return stringUUID;
+        if (stringUUID is string) {
+            return stringUUID;
+        }
+        return "";
     } else {
         return "";
     }

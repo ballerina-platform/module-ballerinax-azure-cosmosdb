@@ -25,23 +25,20 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     string containerId = "my_container";
 
     log:printInfo("Query1 - Select all from the container where gender 0");
     string selectAllQuery = string `SELECT * FROM ${containerId.toString()} f WHERE f.gender = ${0}`;
 
-    cosmosdb:ResourceQueryOptions options = {partitionKey : 0, enableCrossPartition: false};
-    stream<cosmosdb:Document, error?>|error result = azureCosmosClient->queryDocuments(databaseId, containerId,
+    cosmosdb:QueryOptions options = {partitionKey : 0};
+    stream<record {}, error?> result = check azureCosmosClient->queryDocuments(databaseId, containerId,
         selectAllQuery, options);
 
-    if (result is stream<cosmosdb:Document, error?>) {
-        error? e = result.forEach(function (cosmosdb:Document queryResult) {
-            log:printInfo(queryResult.toString());
-        });
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    check result.forEach(function (record {} queryResult) {
+        log:printInfo(queryResult.toString());
+    });
+    log:printInfo("Success!");
+   
 }

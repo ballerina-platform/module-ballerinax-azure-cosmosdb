@@ -25,19 +25,18 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     string containerId = "my_container";
+    int partitionKeyValue = 0;
 
     log:printInfo("Getting list of documents");
-    stream<cosmosdb:Document, error?>|error result = azureCosmosClient->getDocumentList(databaseId, containerId);
+    stream<record{}, error?> result = check azureCosmosClient->getDocumentList(databaseId, containerId, 
+    partitionKeyValue);
 
-    if (result is stream<cosmosdb:Document, error?>) {
-        error? e = result.forEach(function (cosmosdb:Document document) {
-            log:printInfo(document.toString());
-        });
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    check result.forEach(function (record {} document) {
+        log:printInfo(document.toString());
+    });
+    log:printInfo("Success!");
+   
 }

@@ -25,15 +25,14 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     // Assume partition key of this container is set as /gender which is an int of 0 or 1
     string containerId = "my_container";
     string documentId = "my_document";
 
     log:printInfo("Create a new document");
-    record {|string id; json...;|} documentBody = {
-        id: documentId,
+    record {} documentBody = {
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
@@ -47,13 +46,6 @@ public function main() {
     };
     int partitionKeyValue = 0;
 
-    cosmosdb:Document|error result = azureCosmosClient->createDocument(databaseId, containerId, documentBody, 
-        partitionKeyValue); 
-
-    if (result is cosmosdb:Document) {
-        log:printInfo(result.toString());
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, partitionKeyValue);
+  
 }
