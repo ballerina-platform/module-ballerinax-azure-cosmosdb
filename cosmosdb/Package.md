@@ -4,10 +4,10 @@ Connects to [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api
 The `azure_cosmosdb` is a [Ballerina](https://ballerina.io/) connector for Azure Cosmos DB.
 
 ### Compatibility
-|                      | Version                    |
-|----------------------|----------------------------|
-| Ballerina Language   | Ballerina Swan Lake Beta6  | 
-| Cosmos DB (SQL)API   | 2018-12-31                 |
+|                      | Version                       |
+|----------------------|-------------------------------|
+| Ballerina Language   | Ballerina Swan Lake 2201.0.0  | 
+| Cosmos DB (SQL)API   | 2018-12-31                    |
 
 ## Report issues
 To report bugs, request new features, start new discussions, view project boards, etc., go to the [Ballerina Extended Library repository](https://github.com/ballerina-platform/ballerina-extended-library)
