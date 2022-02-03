@@ -16,7 +16,22 @@ jobs:
               uses: ballerina-platform/ballerina-action/@nightly
               with:
                   args:
-                      test ./cosmosdb
+                      test --code-coverage ./cosmosdb
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
-                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}      
+                  MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }} 
+
+            # Read the ballerina test results
+            - name: Read Ballerina Test Results
+              id: test_results
+              run: |
+                content=`cat ./cosmosdb/target/report/test_results.json`                
+                content="${content//'%'/'%25'}"
+                content="${content//$'\n'/'%0A'}"
+                content="${content//$'\r'/'%0D'}"
+                echo "::set-output name=testResultsJson::$content"
+
+            # Print the code coverage information
+            - name: Code Coverage
+              run: |
+                echo "Code Coverage Percentage : ${{fromJson(steps.test_results.outputs.testResultsJson).coveragePercentage}}"     
