@@ -26,6 +26,69 @@ public type ConnectionConfig record {|
     string primaryKeyOrResourceToken;
 |};
 
+# Custom parameters for client creation
+#
+# + consistencyLevel - The ConsistencyLevel to be used By default, ConsistencyLevel.SESSION consistency will be used
+# + directMode - The default DIRECT connection configuration to be used  
+# + connectionSharingAcrossClientsEnabled - Enables connections sharing across multiple Cosmos Clients  
+# + contentResponseOnWriteEnabled - The boolean to only return the headers and status code in Cosmos DB response 
+# in case of Create, Update and Delete operations on CosmosItem  
+# + preferredRegions - The preferred regions for geo-replicated database accounts  
+# + userAgentSuffix - The value of the user-agent suffix
+public type ClientConfiguration record {|
+    @display{label: "Consistency Level"}
+    ConsistencyLevel consistencyLevel;
+    @display{label: "Direct mode"}
+    DirectMode directMode;
+    @display{label: "Cnnection Sharing Across Clients to be Enabled?"}
+    boolean connectionSharingAcrossClientsEnabled;
+    @display{label: "Content Response On Write to be Enabled?"}
+    boolean contentResponseOnWriteEnabled;
+    @display{label: "Preferred Regions"}
+    string[] preferredRegions;
+    @display{label: "User Agent Suffix"}
+    string userAgentSuffix;
+|};
+
+# Represents DirectMode configuration.
+#
+# + directConnectionConfig - Direct Connection Configuration
+# + gatewayConnectionConfig - Gateway Connection Configuration 
+public type DirectMode record {|
+    DirectConnectionConfig directConnectionConfig?;
+    GatewayConnectionConfig gatewayConnectionConfig?;
+|};
+
+# Represents Gateway Connection Configuration
+#
+# + maxConnectionPoolSize - Max Connection Pool Size  
+# + idleConnectionTimeout - Idle Connection Timeout  
+public type GatewayConnectionConfig record {
+    int maxConnectionPoolSize?;
+    int idleConnectionTimeout?;
+};
+
+
+# Represents the direct connection configuration.
+#
+# + connectTimeout - Represents timeout for establishing connections with an endpoint (in seconds)
+# + idleConnectionTimeout - The idle connection timeout (in seconds)
+# + idleEndpointTimeout - Idle endpoint timeout Default value is 1 hour (in seconds)
+# + maxConnectionsPerEndpoint - Max connections per endpoint This represents the size of connection pool for a specific endpoint Default value is 130  
+# + maxRequestsPerConnection - Mmax requests per connection This represents the number of requests that will be queued on a single connection for a specific endpoint Default value is 30 
+# + networkRequestTimeout - The network request timeout interval (time to wait for response from network peer).
+# + connectionEndpointRediscoveryEnabled - Value indicating whether Direct TCP connection endpoint rediscovery should be enabled
+public type DirectConnectionConfig record {
+    int connectTimeout?;
+    int idleConnectionTimeout?;
+    int idleEndpointTimeout?;
+    int maxConnectionsPerEndpoint?;
+    int maxRequestsPerConnection?;
+    int networkRequestTimeout?;
+    boolean connectionEndpointRediscoveryEnabled?;
+};
+
+
 # Metadata headers which will return for a delete request.
 # 
 # + sessionToken - Session token from the response
@@ -91,6 +154,7 @@ public type Document record {|
     @display{label: "Document Body"}
     map<json> documentBody;
 |};
+
 
 # Parameters necessary to create an indexing policy when creating a container.
 # 
@@ -294,13 +358,116 @@ public type Offer record {|
 # + indexingDirective - The option whether to include the document in the index
 #                     - Allowed values are `Include` or `Exclude`.
 # + isUpsertRequest - A boolean value which specify whether the request is an upsert request
+# + consistancyLevel - Consistency level required for the request
+# + contentResponseOnWriteEnabled - The boolean to only return the headers and status code in Cosmos DB response in case of Create, Update and Delete operations on CosmosItem
+# + dedicatedGatewayRequestOptions - The Dedicated Gateway Request Options
+# + ifMatchETag - The If-Match (ETag) associated with the request in the Azure Cosmos DB service
+# + ifNoneMatchETag - The If-None-Match (ETag) associated with the request in the Azure Cosmos DB service
+# + postTriggerInclude - Triggers to be invoked after the operation
+# + preTriggerInclude - Triggers to be invoked before the operation
+# + sessionToken - The token for use with session consistency
+# + thresholdForDiagnosticsOnTracer - ThresholdForDiagnosticsOnTracer, if latency on CRUD operation is greater than this diagnostics will be sent to open telemetry exporter as events in tracer span of end to end CRUD api
+# + throughputControlGroupName - The throughput control group name
 @display{label: "Document Create Options"}
-public type DocumentCreateOptions record {|
+public type RequestOptions record {|
     @display{label: "Indexing Option"}
     IndexingDirective indexingDirective?;
     @display{label: "Is Upsert"}
     boolean isUpsertRequest = false;
+    @display{label: "Consistency Level"}
+    ConsistencyLevel consistancyLevel?;
+    @display{label: "Content Response On Write to be Enabled"}
+    boolean contentResponseOnWriteEnabled?;
+    @display{label: "Dedicated Gateway Request Options"}
+    DedicatedGatewayRequestOptions dedicatedGatewayRequestOptions?;
+    @display{label: "If Match ETag"}
+    string ifMatchETag?;
+    @display{label: "If Match None ETag"}
+    string ifNoneMatchETag?;
+    @display{label: "Post Trigger Include"}
+    string[] postTriggerInclude?;
+    @display{label: "Pre Trigger Include"}
+    string[] preTriggerInclude?;
+    @display{label: "SessionToken"}
+    string sessionToken?;
+    @display{label: "Threshold For Diagnostics On Tracer"}
+    int thresholdForDiagnosticsOnTracer?;
+    @display{label: "Throughput Control Group Name"}
+    string throughputControlGroupName?;
 |};
+
+
+# Query Options
+#
+# + consistencyLevel - Consistency level required for the request
+# + dedicatedGatewayRequestOptions - Dedicated Gateway Request Options  
+# + indexMetricsEnabled - Used to obtain the index metrics to understand how the query engine used existing indexes and
+#                           could use potential new indexes.  
+# + maxBufferedItemCount - Number of items that can be buffered client side during parallel query execution
+# + maxDegreeOfParallelism - Number of concurrent operations run client side during parallel query execution
+# + partitionKey - Used to identify the current request's target partition.  
+# + queryMetricsEnabled - Option to enable/disable getting metrics relating to query execution on item query requests  
+# + limitInKb - Option for item query requests in the Azure Cosmos DB service
+# + scanInQueryEnabled - Option to allow scan on the queries which couldn't be served as indexing was opted out on the
+#                        requested paths
+# + sessionToken - Session token for use with session consistency  
+# + thresholdForDiagnosticsOnTracer - If latency on query operation is greater than this diagnostics will be send to 
+#                                       open telemetry exporter as events in tracer span of end to end CRUD api.
+# + throughputControlGroupName - Throughput control group name.
+public type QueryOptions record {
+    @display{label: "Consistency Level"}
+    ConsistencyLevel consistencyLevel?;
+    @display{label: "Dedicated Gateway Request Options"}
+    DedicatedGatewayRequestOptions dedicatedGatewayRequestOptions?;
+    @display{label: "Index Metrics to be Enabled?"}
+    boolean indexMetricsEnabled?;
+    @display{label: "Max Buffered Item Count"}
+    int maxBufferedItemCount?;
+    @display{label: "Max Degree of Parallelism"}
+    int maxDegreeOfParallelism?;
+    @display{label: "Partitionkey"}
+    int|float|decimal|string partitionKey?;
+    @display{label: "Query Metrics to be Enabled?"}
+    boolean queryMetricsEnabled?;
+    @display{label: "Limit in Kb"}
+    int limitInKb?;
+    @display{label: "Scan In Query to be Enabled?"}
+    boolean scanInQueryEnabled?;
+    @display{label: "Session token"}
+    string sessionToken?;
+    @display{label: "Threshold for Diagnostics On Tracer"}
+    int thresholdForDiagnosticsOnTracer?;
+    @display{label: "Throughput Control Group Name"}
+    string throughputControlGroupName?;
+};
+
+
+# Dedicated Gateway Request Options
+#
+# + maxIntegratedCacheStaleness - The staleness value associated with the request in the Azure CosmosDB service. 
+public type DedicatedGatewayRequestOptions record {
+    @display{label: "Max Integrated Cache Staleness"}
+    int maxIntegratedCacheStaleness;
+};
+
+
+# Encapsulates options that can be specified for a request issued to cosmos stored procedure. 
+#
+# + ifMatchETag - The If-Match (ETag) associated with the request in the Azure Cosmos DB service 
+# + ifNoneMatchETag - the If-None-Match (ETag) associated with the request in the Azure Cosmos DB service  
+# + scriptLoggingEnabled - Sets whether Javascript stored procedure logging is enabled for the current request in the 
+#                           Azure Cosmos DB database service or not  
+# + sessionToken - The token for use with session consistency. 
+public type CosmosStoredProcedureRequestOptions record {
+    @display{label: "If Match ETag"}
+    string ifMatchETag?;
+    @display{label: "If None Match ETag"}
+    string ifNoneMatchETag?;
+    @display{label: "Script Logging to be Enabled"}
+    boolean scriptLoggingEnabled?;
+    @display{label: "Session Token"}
+    string sessionToken?;
+};
 
 # Optional parameters which can be passed to the function when replacing a document.
 # 
@@ -335,13 +502,13 @@ public type DocumentListOptions record {|
 # The options which can be passed for execution of stored procedures.
 # 
 # + parameters - An array of parameters which has values match the function parameters of a stored procedure
-# + partitionKey - The value of partition key of documents that the stored procedure is tagrgetted at
+# + cosmosStoredProcedureRequestOptions - 
 @display{label: "Stored Procedure Execute Options"}
 public type StoredProcedureExecuteOptions record {|
     @display{label: "Function Parameters"}
     string[] parameters = [];
-    @display{label: "Partition Key"}
-    int|float|decimal|string partitionKey?;
+    @display{label: "Cosmos Stored Procedure Request Options"}
+    CosmosStoredProcedureRequestOptions cosmosStoredProcedureRequestOptions?;
 |};
 
 # Optional parameters which can be passed to the function when reading the information about other 
@@ -389,6 +556,6 @@ public type ResourceDeleteOptions record {|
     string sessionToken?;
 |};
 
-type Options DocumentCreateOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
+type Options RequestOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
     ResourceQueryOptions|ResourceDeleteOptions;
 
