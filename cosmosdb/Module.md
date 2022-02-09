@@ -36,12 +36,10 @@ cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
 ### Step 3 - Invoke connector operation
 1. Create a document <br/>
 Once you follow the above steps. you can create a new document inside the Cosmos container as shown below. Cosmos DB is 
-designed to store and query JSON-like documents. Therefore, the document you create must be of the `JSON` type. It also 
-needs a unique ID to identify it.. In this example, the document ID is `my_document`
+designed to store and query JSON-like documents. Therefore, the document you create must be of the `JSON` type. In this example, the document ID is `my_document`
 
     ```ballerina
-    record {|string id; json...;|} document = {
-            id: "my_document",
+    record {} document = {
             "FirstName": "Alan",
             "FamilyName": "Turing",
             "Parents": [{
@@ -54,14 +52,14 @@ needs a unique ID to identify it.. In this example, the document ID is `my_docum
             "gender": 0
     };
     int valueOfPartitionKey = 0;
+    string id = "my_document";
 
-    cosmosdb:Document documentResult = azureCosmosClient-> createDocument("my_database", "my_container", document, 
-        valueOfPartitionKey);
+    check azureCosmosClient-> createDocument("my_database", "my_container", id, document, valueOfPartitionKey);
     ```
 **Note:** <br/>
 - This document is created inside an already existing container with ID **my_container** and the container was created inside a database with ID **my_document**.
 - As this container have selected path **/gender** as the partition key path. The document you create should include that path with a valid value.
-- The new document to create is represented as `record {|string id; json...;|}`. The json... represent key-value pairs where the values are of type `boolean, int, float, decimal, string, json[], or map<json>`
+- The document is represented as `record {}`
 
 2. Use `bal run` command to compile and run the Ballerina program
 
