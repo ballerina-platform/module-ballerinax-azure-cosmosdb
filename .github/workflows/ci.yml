@@ -25,6 +25,8 @@ jobs:
               with:
                   args:
                       pack ./cosmosdb
+              env:
+                JAVA_HOME: /usr/lib/jvm/default-jvm
             - name: Ballerina Test
               uses: ballerina-platform/ballerina-action/@nightly
               with:
@@ -33,6 +35,7 @@ jobs:
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
                   MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }} 
+                  JAVA_HOME: /usr/lib/jvm/default-jvm
 
             # Read the ballerina test results
             - name: Read Ballerina Test Results

@@ -38,6 +38,8 @@ jobs:
               with:
                   args:
                       pack ./cosmosdb
+              env:
+                JAVA_HOME: /usr/lib/jvm/default-jvm
 
             # Send notification when build fails
             - name: Notify failure
