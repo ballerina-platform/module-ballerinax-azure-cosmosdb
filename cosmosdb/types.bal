@@ -68,7 +68,6 @@ public type GatewayConnectionConfig record {
     int idleConnectionTimeout?;
 };
 
-
 # Represents the direct connection configuration.
 #
 # + connectTimeout - Represents timeout for establishing connections with an endpoint (in seconds)
@@ -87,7 +86,6 @@ public type DirectConnectionConfig record {
     int networkRequestTimeout?;
     boolean connectionEndpointRediscoveryEnabled?;
 };
-
 
 # Metadata headers which will return for a delete request.
 # 
@@ -450,7 +448,6 @@ public type DedicatedGatewayRequestOptions record {
     int maxIntegratedCacheStaleness;
 };
 
-
 # Encapsulates options that can be specified for a request issued to cosmos stored procedure. 
 #
 # + ifMatchETag - The If-Match (ETag) associated with the request in the Azure Cosmos DB service 
@@ -559,3 +556,55 @@ public type ResourceDeleteOptions record {|
 type Options RequestOptions|DocumentReplaceOptions|DocumentListOptions|ResourceReadOptions|
     ResourceQueryOptions|ResourceDeleteOptions;
 
+# Document response.
+#
+# + activityId - Activity ID for the request
+# + currentResourceQuotaUsage - Current size of this entity (in megabytes (MB) for server resources and in count for master resources)  
+# + maxResourceQuota - Maximum size limit for this entity (in megabytes (MB) for server resources and in count for master resources).  
+# + etag - ETag from the response headers
+# + responseHeaders - Headers associated with the response.
+# + sessionToken - Token used for managing client's consistency requirements.  
+# + statusCode - HTTP status code associated with the response
+# + requestCharge - Request charge as request units (RU) consumed by the operation
+# + duration - End-to-end request latency for the current request to Azure Cosmos DB service 
+# + diagnostics - Diagnostics information for the current request to Azure Cosmos DB service  
+# + item - Field Description  
+public type DocumentResponse record {
+    string activityId;
+    string currentResourceQuotaUsage;
+    string maxResourceQuota;
+    string? etag?;
+    map<string> responseHeaders;
+    string sessionToken;
+    int statusCode;
+    float requestCharge;
+    int duration;
+    Diagnostics diagnostics?;
+    json? item?;
+};
+
+# Stored procedure response.
+#
+# + activityId -  Activity ID for the request 
+# + requestCharge - Request charge as request units (RU) consumed by the operation  
+# + responseAsString - Response of the stored procedure as a string  
+# + scriptLog - Output from stored procedure console.log() statements
+# + sessionToken - Token used for managing client's consistency requirements
+# + statusCode - HTTP status code associated with the response
+public type StoredProcedureResponse record {
+    string activityId;
+    float requestCharge;
+    string? responseAsString?;
+    string? scriptLog?;
+    string sessionToken;
+    int statusCode;
+};
+
+#  Diagnostic statistics associated with a request to Azure Cosmos DB.
+#
+# + regionsContacted - Regions contacted for this request  
+# + duration - Response Diagnostic String 
+public type Diagnostics record {
+    string[] regionsContacted?;
+    int duration;
+};

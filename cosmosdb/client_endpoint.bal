@@ -54,7 +54,7 @@ public isolated client class DataPlaneClient {
                                             @display {label: "Document"} record {} document,
                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,
                                             @display {label: "Optional Header Parameters"} RequestOptions?
-                                            requestOptions = ()) returns error? {
+                                            requestOptions = ()) returns DocumentResponse|error {
 
         json jsonDocument = check document.cloneWithType(json);
         json updatedDocument = check jsonDocument.mergeJson({"id": documemtId});
@@ -78,7 +78,7 @@ public isolated client class DataPlaneClient {
                                             @display {label: "New Document"} record {} document,
                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,
                                             @display {label: "Optional Header Parameters"} RequestOptions?
-                                            requestOptions = ()) returns error? {
+                                            requestOptions = ()) returns DocumentResponse|error {
         json jsonDocument = check document.cloneWithType(json);
         json updatedDocument = check jsonDocument.mergeJson({"id": documemtId});
         return replaceDocument(databaseId, containerId, documemtId, <map<json>>updatedDocument, partitionKey, 
@@ -140,7 +140,7 @@ public isolated client class DataPlaneClient {
                                             @display {label: "Document ID"} string documentId,
                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,
                                             @display {label: "Optional Header Parameters"} RequestOptions?
-                                            requestOptions = ()) returns error? = @java:Method {
+                                            requestOptions = ()) returns DocumentResponse|error = @java:Method {
         'class: "io.ballerinax.cosmosdb.DataplaneClient"
     } external;
 
@@ -178,7 +178,7 @@ public isolated client class DataPlaneClient {
                                                     @display {label: "Stored Procedure ID"} string storedProcedureId,
                                                     @display {label: "Stored Procedure Function"} string 
                                                     storedProcedure, CosmosStoredProcedureRequestOptions? options = ())
-                                                    returns error? {
+                                                    returns StoredProcedureResponse|error {
         return createStoredProcedure(databaseId, containerId, storedProcedureId, storedProcedure, options);
     }
 
@@ -205,7 +205,7 @@ public isolated client class DataPlaneClient {
     remote isolated function deleteStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                     @display {label: "Container ID"} string containerId,
                                                     @display {label: "Stored Procedure ID"} string storedProcedureId
-                                                    ) returns error? = @java:Method {
+                                                    ) returns StoredProcedureResponse|error = @java:Method {
         'class: "io.ballerinax.cosmosdb.DataplaneClient"
     } external;
 
@@ -225,7 +225,7 @@ public isolated client class DataPlaneClient {
                                                     @display {label: "Partition Key"} int|float|decimal|string 
                                                     patitionKey, @display {label: "Execution Options"}
                                                     StoredProcedureExecuteOptions? storedProcedureExecuteOptions = ())
-                                                    returns error? = @java:Method {
+                                                    returns StoredProcedureResponse|error = @java:Method {
         'class: "io.ballerinax.cosmosdb.DataplaneClient"
     } external;
 
@@ -241,19 +241,21 @@ customConfig = ()) returns error? = @java:Method {
 } external;
 
 isolated function createDocument(string databaseId, string containerId,
-                                    map<json> document, int|float|decimal|string partitionKey,
-                                    RequestOptions? documentCreateOptions = ()) returns error? = @java:Method {
+                                    map<json> document, int|float|decimal|string partitionKey, RequestOptions? 
+                                    documentCreateOptions = ()) returns DocumentResponse|error = @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;
 
 isolated function replaceDocument(string databaseId, string containerId, string id,
                                     map<json> document, int|float|decimal|string partitionKey,
-                                    RequestOptions? documentCreateOptions = ()) returns error? = @java:Method {
+                                    RequestOptions? documentCreateOptions = ()) returns DocumentResponse|error = 
+                                    @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;
 
 isolated function createStoredProcedure(string databaseId, string containerId,
                                     string storedProcedureId, string storedProcedure,
-                                    CosmosStoredProcedureRequestOptions? options = ()) returns error? = @java:Method {
+                                    CosmosStoredProcedureRequestOptions? options = ()) returns 
+                                    StoredProcedureResponse|error = @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;

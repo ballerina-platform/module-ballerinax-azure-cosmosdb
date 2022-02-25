@@ -83,5 +83,8 @@ public class Constants {
     public static final String RECORD_TYPE = "recordType";
     public static final String OBJECT_ITERATOR = "ObjectIterator";
     public static final String STORED_PROCEDURE = "StoredProcedure";
+    public static final String DIAGNOSTICS = "Diagnostics";
+    public static final String DOCUMENT_RESPONSE = "DocumentResponse";
+    public static final String STORED_PROCEDURE_RESPONSE = "StoredProcedureResponse";
 
 }
