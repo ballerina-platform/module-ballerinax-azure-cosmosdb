@@ -35,8 +35,7 @@ cosmosdb:DataPlaneClient azureCosmosClient = check new (configuration);
 ```
 ### Step 3 - Invoke connector operation
 1. Create a document <br/>
-Once you follow the above steps. you can create a new document inside the Cosmos container as shown below. Cosmos DB is 
-designed to store and query JSON-like documents. Therefore, the document you create must be of the `JSON` type. In this example, the document ID is `my_document`
+Once you follow the above steps. you can create a new document inside the Cosmos container as shown below. Cosmos DB is designed to store and query JSON-like documents. Therefore, the document you create must be of the `JSON` type. In this example, the document ID is `my_document`
 
     ```ballerina
     record {} document = {
@@ -54,10 +53,10 @@ designed to store and query JSON-like documents. Therefore, the document you cre
     int valueOfPartitionKey = 0;
     string id = "my_document";
 
-    check azureCosmosClient-> createDocument("my_database", "my_container", id, document, valueOfPartitionKey);
+    cosmosdb:DocumentResponse response = check azureCosmosClient-> createDocument("my_database", "my_container", id, document, valueOfPartitionKey);
     ```
 **Note:** <br/>
-- This document is created inside an already existing container with ID **my_container** and the container was created inside a database with ID **my_document**.
+- This document is created inside an already existing container with ID **my_container** and the container was created inside a database with ID **my_database**.
 - As this container have selected path **/gender** as the partition key path. The document you create should include that path with a valid value.
 - The document is represented as `record {}`
 

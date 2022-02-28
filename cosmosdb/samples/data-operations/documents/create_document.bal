@@ -46,6 +46,7 @@ public function main() returns error? {
     };
     int partitionKeyValue = 0;
 
-    check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, partitionKeyValue);
-  
+    cosmosdb:DocumentResponse documentResponse = check azureCosmosClient->createDocument(databaseId, containerId, 
+    documentId, documentBody, partitionKeyValue);
+    log:printInfo(documentResponse.toString());
 }

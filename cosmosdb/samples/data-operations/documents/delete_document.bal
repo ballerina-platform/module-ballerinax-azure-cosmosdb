@@ -33,5 +33,7 @@ public function main() returns error? {
     int partitionKeyValue = 0;
     
     log:printInfo("Deleting the document");
-    check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
+    cosmosdb:DocumentResponse documentResponse = check azureCosmosClient->deleteDocument(databaseId, containerId, 
+    documentId, partitionKeyValue);
+    log:printInfo(documentResponse.toString());
 }

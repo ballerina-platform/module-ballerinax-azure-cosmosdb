@@ -25,9 +25,10 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     string containerId = "my_container";
+    string partitionKey = "key";
     string storedProcedureId = "my_stored_procedure";
 
     log:printInfo("Executing stored procedure");
@@ -35,12 +36,10 @@ public function main() {
         parameters: ["Sachi"]
     };
 
-    json|error result = azureCosmosClient->executeStoredProcedure(databaseId, containerId, storedProcedureId, options); 
+    cosmosdb:StoredProcedureResponse result = check azureCosmosClient->executeStoredProcedure(databaseId, containerId,
+    storedProcedureId, partitionKey, options);
 
-    if (result is json) {
-        log:printInfo(result.toString());
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    log:printInfo(result.toString());
+    log:printInfo("Success!");
+
 }

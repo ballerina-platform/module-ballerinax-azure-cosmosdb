@@ -49,7 +49,8 @@ public function main() returns error? {
     };
     int partitionKeyValue = 0;
 
-    check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, partitionKeyValue);
+    cosmosdb:DocumentResponse documentResponse = check azureCosmosClient->createDocument(databaseId, containerId, 
+    documentId, documentBody, partitionKeyValue);
 
     log:printInfo("Creating a new document allowing to include it in the indexing.");
     string id = string `documenti_${uuid.toString()}`;
@@ -70,7 +71,8 @@ public function main() returns error? {
         indexingDirective: "Include"
     };
 
-    check azureCosmosClient->createDocument(databaseId, containerId, id, documentWithIndexing, partitionKeyValue, 
+    cosmosdb:DocumentResponse documentResponseResult = check azureCosmosClient->createDocument(databaseId, containerId, 
+    id, documentWithIndexing, partitionKeyValue, 
     indexingOptions);
 
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
@@ -93,8 +95,8 @@ public function main() returns error? {
         isUpsertRequest: true
     };
     
-    check azureCosmosClient->createDocument(databaseId, containerId, id, upsertDocument, partitionKeyValue, 
-    upsertOptions); 
+    cosmosdb:DocumentResponse documentResponseOut = check azureCosmosClient->createDocument(databaseId, containerId, id,
+    upsertDocument, partitionKeyValue, upsertOptions); 
 
     log:printInfo("Replacing document");
     record {} newDocumentBody = {
@@ -110,7 +112,8 @@ public function main() returns error? {
     };
     partitionKeyValue = 0;
 
-    check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, newDocumentBody, partitionKeyValue); 
+    cosmosdb:DocumentResponse documentResponseValue = check azureCosmosClient->replaceDocument(databaseId, containerId, 
+    documentId, newDocumentBody, partitionKeyValue); 
 
     log:printInfo("Read the document by id");
     cosmosdb:Document returnedDocument = check azureCosmosClient->getDocument(databaseId, containerId, documentId, 
@@ -138,7 +141,8 @@ public function main() returns error? {
    
 
     log:printInfo("Deleting the document");
-    check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, partitionKeyValue);
+    cosmosdb:DocumentResponse b = check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 
+    partitionKeyValue);
 
     log:printInfo("End!");
 }
