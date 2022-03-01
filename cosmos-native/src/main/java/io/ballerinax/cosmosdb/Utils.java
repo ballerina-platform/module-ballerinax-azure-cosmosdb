@@ -20,16 +20,22 @@ package io.ballerinax.cosmosdb;
 
 import com.azure.cosmos.ConsistencyLevel;
 import com.azure.cosmos.CosmosClientBuilder;
+import com.azure.cosmos.CosmosDiagnostics;
 import com.azure.cosmos.DirectConnectionConfig;
 import com.azure.cosmos.GatewayConnectionConfig;
 import com.azure.cosmos.models.CosmosItemRequestOptions;
+import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.CosmosStoredProcedureRequestOptions;
+import com.azure.cosmos.models.CosmosStoredProcedureResponse;
 import com.azure.cosmos.models.DedicatedGatewayRequestOptions;
 import com.azure.cosmos.models.IndexingDirective;
 import com.azure.cosmos.models.PartitionKey;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.ballerina.runtime.api.PredefinedTypes;
+import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.MapType;
 import io.ballerina.runtime.api.utils.TypeUtils;
 import io.ballerina.runtime.api.values.BArray;
 import io.ballerina.runtime.api.values.BMap;
@@ -38,6 +44,7 @@ import io.ballerina.runtime.api.values.BValue;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +57,10 @@ import static io.ballerinax.cosmosdb.Constants.CONSISTENCY_LEVEL;
 import static io.ballerinax.cosmosdb.Constants.CONSISTENT_PREFIX;
 import static io.ballerinax.cosmosdb.Constants.CONTENT_RESPONSE_ON_WRITE_ENABLED;
 import static io.ballerinax.cosmosdb.Constants.DEDICATED_GATEWAY_REQUEST_OPTIONS;
+import static io.ballerinax.cosmosdb.Constants.DIAGNOSTICS;
 import static io.ballerinax.cosmosdb.Constants.DIRECT_CONNECTION_CONFIG;
 import static io.ballerinax.cosmosdb.Constants.DIRECT_MODE;
+import static io.ballerinax.cosmosdb.Constants.DOCUMENT_RESPONSE;
 import static io.ballerinax.cosmosdb.Constants.EVENTUAL;
 import static io.ballerinax.cosmosdb.Constants.EXCLUDE;
 import static io.ballerinax.cosmosdb.Constants.GATEWAY_CONNECTION_CONFIG;
@@ -81,6 +90,7 @@ import static io.ballerinax.cosmosdb.Constants.SCRIPT_LOGGING_ENABLED;
 import static io.ballerinax.cosmosdb.Constants.SESSION;
 import static io.ballerinax.cosmosdb.Constants.SESSION_TOKEN;
 import static io.ballerinax.cosmosdb.Constants.SP_PROCEDURE_REQUEST_OPTIONS;
+import static io.ballerinax.cosmosdb.Constants.STORED_PROCEDURE_RESPONSE;
 import static io.ballerinax.cosmosdb.Constants.STRONG;
 import static io.ballerinax.cosmosdb.Constants.THRESHOLD_DIAGNOSIS_TRACER;
 import static io.ballerinax.cosmosdb.Constants.THRESHOLD_FOR_DIAGNOSTICS;
@@ -88,6 +98,8 @@ import static io.ballerinax.cosmosdb.Constants.THROUHPUT_CONTROL;
 import static io.ballerinax.cosmosdb.Constants.USER_AGENT_SUFFIX;
 
 public class Utils {
+
+    private static final MapType MAP_TYPE = TypeCreator.createMapType(PredefinedTypes.TYPE_STRING);
 
     public static void setCustomConfiguration(CosmosClientBuilder cosmosClientBuilder, Object customConfig) {
         if (customConfig != null) {
@@ -383,16 +395,61 @@ public class Utils {
      * @param object Object used to convert to BMap.
      * @return Converted BMap object.
      */
-    public static BMap<BString, Object> toBMap(Object object) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    private static BMap<BString, Object> toBMap(Object object) {
+        ObjectMapper objectMapper = new ObjectMapper().findAndRegisterModules();
         Map map = objectMapper.convertValue(object, Map.class);
-        BMap<BString, Object> returnMap = ValueCreator.createMapValue();
+        BMap<BString, Object> returnMap = ValueCreator.createMapValue(MAP_TYPE);
         if (map != null) {
             for (Object aKey : map.keySet().toArray()) {
-                returnMap.put(fromString(aKey.toString()),
-                        fromString(map.get(aKey).toString()));
+                returnMap.put(fromString(aKey.toString()), fromString(map.get(aKey).toString()));
             }
         }
         return returnMap;
+    }
+
+    private static BMap<BString, Object> createDiagnosticsRecord(CosmosDiagnostics diagnostics) {
+        Map<String, Object> responseMap = new HashMap<>();
+        Object[] objectArr = diagnostics.getRegionsContacted().toArray();
+        BString[] bStringArr = new BString[objectArr.length];
+        for (int i = 0; i < objectArr.length; i++) {
+            BString bString = fromString(String.valueOf(objectArr[i]));
+            bStringArr[i] = bString;
+        }
+        responseMap.put("regionsContacted", ValueCreator.createArrayValue(bStringArr));
+        responseMap.put("duration", diagnostics.getDuration().toMillis());
+        BMap<BString, Object> createdResponse = ValueCreator.createRecordValue(ModuleUtils.getModule(), DIAGNOSTICS,
+                responseMap);
+        return createdResponse;
+    }
+
+    public static Object createDocumentResponse(CosmosItemResponse response) {
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("activityId", response.getActivityId());
+        responseMap.put("currentResourceQuotaUsage", response.getCurrentResourceQuotaUsage());
+        responseMap.put("diagnostics", createDiagnosticsRecord(response.getDiagnostics()));
+        responseMap.put("duration", response.getDuration().toMillis());
+        responseMap.put("etag", response.getETag());
+        responseMap.put("item", response.getItem());
+        responseMap.put("maxResourceQuota", response.getMaxResourceQuota());
+        responseMap.put("requestCharge", response.getRequestCharge());
+        responseMap.put("responseHeaders", toBMap(response.getResponseHeaders()));
+        responseMap.put("sessionToken", response.getSessionToken());
+        responseMap.put("statusCode", response.getStatusCode());
+        BMap<BString, Object> createdResponse = ValueCreator.createRecordValue(ModuleUtils.getModule(),
+                DOCUMENT_RESPONSE, responseMap);
+        return createdResponse;
+    }
+
+    public static Object createStoredProcedureMap(CosmosStoredProcedureResponse response) {
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("activityId", response.getActivityId());
+        responseMap.put("requestCharge", response.getRequestCharge());
+        responseMap.put("responseAsString", response.getResponseAsString());
+        responseMap.put("scriptLog", response.getScriptLog());
+        responseMap.put("sessionToken", response.getSessionToken());
+        responseMap.put("statusCode", response.getStatusCode());
+        BMap<BString, Object> createdResponse = ValueCreator.createRecordValue(ModuleUtils.getModule(),
+                STORED_PROCEDURE_RESPONSE, responseMap);
+        return createdResponse;
     }
 }

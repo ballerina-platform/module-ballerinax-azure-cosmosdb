@@ -22,9 +22,11 @@ import com.azure.cosmos.CosmosClient;
 import com.azure.cosmos.CosmosClientBuilder;
 import com.azure.cosmos.CosmosContainer;
 import com.azure.cosmos.CosmosDatabase;
+import com.azure.cosmos.models.CosmosItemResponse;
 import com.azure.cosmos.models.CosmosQueryRequestOptions;
 import com.azure.cosmos.models.CosmosStoredProcedureProperties;
 import com.azure.cosmos.models.CosmosStoredProcedureRequestOptions;
+import com.azure.cosmos.models.CosmosStoredProcedureResponse;
 import com.azure.cosmos.util.CosmosPagedIterable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ballerina.runtime.api.Environment;
@@ -47,8 +49,10 @@ import static io.ballerinax.cosmosdb.Constants.BASEURL;
 import static io.ballerinax.cosmosdb.Constants.COSMOS_RESULT_ITERATOR_OBJECT;
 import static io.ballerinax.cosmosdb.Constants.STORED_PROCEDURE;
 import static io.ballerinax.cosmosdb.Constants.TOKEN;
+import static io.ballerinax.cosmosdb.Utils.createDocumentResponse;
 import static io.ballerinax.cosmosdb.Utils.createPartitionKey;
 import static io.ballerinax.cosmosdb.Utils.createRequestOptions;
+import static io.ballerinax.cosmosdb.Utils.createStoredProcedureMap;
 import static io.ballerinax.cosmosdb.Utils.setExecuteStoredProcedureRequestOptions;
 import static io.ballerinax.cosmosdb.Utils.setProcedureParams;
 import static io.ballerinax.cosmosdb.Utils.setQueryOptions;
@@ -60,7 +64,8 @@ public class DataplaneClient {
     private static CosmosClient cosmosClient;
     private static ObjectMapper objectMapper = new ObjectMapper();
 
-    public static Object initClient(Environment env, BObject client, BMap<BString, BValue> config, Object customConfig) {
+    public static Object initClient(Environment env, BObject client, BMap<BString, BValue> config, Object customConfig)
+    {
         String baseUrl = config.containsKey(BASEURL) ? config.getStringValue(BASEURL).getValue() : "";
         String token = config.containsKey(TOKEN) ? config.getStringValue(TOKEN).getValue() : "";
         cosmosClientBuilder = new CosmosClientBuilder();
@@ -79,9 +84,9 @@ public class DataplaneClient {
         try {
             CosmosContainer container = getContainer(databaseId, containerId);
             Object documentObject = objectMapper.readValue(document.toString(), Object.class);
-            container.createItem(documentObject, createPartitionKey(partitionKey),
+            CosmosItemResponse<Object> response = container.createItem(documentObject, createPartitionKey(partitionKey),
                     createRequestOptions(requestOptions));
-            return null;
+            return createDocumentResponse(response);
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -92,9 +97,9 @@ public class DataplaneClient {
         try {
             CosmosContainer container = getContainer(databaseId, containerId);
             Object documentObject = objectMapper.readValue(document.toString(), Object.class);
-            container.replaceItem(documentObject, documentId.getValue(), createPartitionKey(partitionKey),
-                    createRequestOptions(requestOptions));
-            return null;
+            CosmosItemResponse<Object> response = container.replaceItem(documentObject, documentId.getValue(),
+                    createPartitionKey(partitionKey), createRequestOptions(requestOptions));
+            return createDocumentResponse(response);
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -162,9 +167,9 @@ public class DataplaneClient {
                                         BString itemId, Object partitionKey, Object requestOptions) {
         try {
             CosmosContainer container = getContainer(databaseId, containerId);
-            container.deleteItem(itemId.getValue(), createPartitionKey(partitionKey),
-                    createRequestOptions(requestOptions));
-            return null;
+            CosmosItemResponse<Object> response = container.deleteItem(itemId.getValue(),
+                    createPartitionKey(partitionKey), createRequestOptions(requestOptions));
+            return createDocumentResponse(response);
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -177,8 +182,9 @@ public class DataplaneClient {
                 storedProcedure.getValue());
         try {
             CosmosContainer container = getContainer(databaseId, containerId);
-            container.getScripts().createStoredProcedure(properties, setStoredProcedureRequestOptions(requestOptions));
-            return null;
+            CosmosStoredProcedureResponse response = container.getScripts().createStoredProcedure(properties,
+                    setStoredProcedureRequestOptions(requestOptions));
+            return createStoredProcedureMap(response);
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -210,8 +216,9 @@ public class DataplaneClient {
                                                BString storedProcedureId) {
         try {
             CosmosContainer container = getContainer(databaseId, containerId);
-            container.getScripts().getStoredProcedure(storedProcedureId.getValue()).delete();
-            return null;
+            CosmosStoredProcedureResponse response = container.getScripts().getStoredProcedure(
+                    storedProcedureId.getValue()).delete();
+            return createStoredProcedureMap(response);
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }
@@ -225,8 +232,9 @@ public class DataplaneClient {
             List<Object> parameters = setProcedureParams(storedProcedureExecuteOptions);
             CosmosStoredProcedureRequestOptions options = setExecuteStoredProcedureRequestOptions(partitionKey,
                     storedProcedureExecuteOptions);
-            container.getScripts().getStoredProcedure(storedProcedureId.getValue()).execute(parameters, options);
-            return null;
+            CosmosStoredProcedureResponse response = container.getScripts().getStoredProcedure(
+                    storedProcedureId.getValue()).execute(parameters, options);
+            return createStoredProcedureMap(response);
         } catch (Exception e) {
             return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
         }

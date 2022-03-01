@@ -25,19 +25,16 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
-    
+
     log:printInfo("Deleting stored procedure");
-    cosmosdb:DeleteResponse|error result = azureCosmosClient->deleteStoredProcedure(databaseId, containerId, 
+    cosmosdb:StoredProcedureResponse result = check azureCosmosClient->deleteStoredProcedure(databaseId, containerId,
         storedProcedureId);
 
-    if (result is cosmosdb:DeleteResponse) {
-        log:printInfo(result.toString());
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    log:printInfo(result.toString());
+    log:printInfo("Success!");
+
 }

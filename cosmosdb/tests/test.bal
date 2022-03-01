@@ -382,8 +382,8 @@ function testCreateDocument() returns error? {
         "AccountNumber": 1234
     };
 
-    _ = check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKey);
-
+    DocumentResponse response = check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKey);
+    test:assertEquals(response.statusCode, 201);
 }
 
 @test:Config {
@@ -404,8 +404,8 @@ function testReplaceDocument() returns error? {
         "AccountNumber": 1234
     };
 
-    _ = check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKey);
-
+    DocumentResponse response = check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKey);
+    test:assertEquals(response.statusCode, 200);
 }
 
 @test:Config {
@@ -452,8 +452,8 @@ function testCreateDocumentWithRequestOptions() returns error? {
         "AccountNumber": 1234
     };
 
-    _ = check azureCosmosClient->createDocument(databaseId, containerId, newDocumentId, documentBody, valueOfPartitionKey, options);
-
+    DocumentResponse response = check azureCosmosClient->createDocument(databaseId, containerId, newDocumentId, documentBody, valueOfPartitionKey, options);
+    test:assertEquals(response.statusCode, 201);
 }
 
 public type Person record {
@@ -588,8 +588,8 @@ function testQueryDocumentsWithRequestOptions() returns error? {
 function testDeleteDocument() returns error? {
     log:printInfo("ACTION : deleteDocument()");
 
-    _ = check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
-
+    DocumentResponse response = check azureCosmosClient->deleteDocument(databaseId, containerId, documentId, 1234);
+    test:assertEquals(response.statusCode, 204);
 }
 
 @test:Config {
@@ -605,7 +605,9 @@ function testCreateStoredProcedure() returns error? {
                                             response.setBody("Hello, World");
                                         }`;
 
-    _ = check azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, createSprocBody);
+    StoredProcedureResponse response = check azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, 
+    createSprocBody);
+    test:assertEquals(response.statusCode, 201);
 }
 
 @test:Config {

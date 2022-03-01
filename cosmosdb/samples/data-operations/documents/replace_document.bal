@@ -47,7 +47,9 @@ public function main() returns error? {
         "gender": 0
     };
 
-    check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, documentBody, partitionKeyValue); 
+    cosmosdb:DocumentResponse documentResponse = check azureCosmosClient->replaceDocument(databaseId, containerId, 
+    documentId, documentBody, partitionKeyValue); 
+    log:printInfo(documentResponse.toString());
     log:printInfo("Success!");
   
 }

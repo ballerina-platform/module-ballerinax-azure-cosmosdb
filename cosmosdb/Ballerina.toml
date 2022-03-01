@@ -2,7 +2,7 @@
 distribution = "2201.0.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
-version= "2.2.0"
+version= "3.0.0"
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft"]
 icon = "icon.png"
@@ -13,7 +13,7 @@ license = ["Apache-2.0"]
 observabilityIncluded=true
 
 [[platform.java11.dependency]]
-path = "../cosmos-native/build/libs/cosmos-native-2.2.0-all.jar"
+path = "../cosmos-native/build/libs/cosmos-native-3.0.0-all.jar"
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
-version = "2.2.0"
+version = "3.0.0"

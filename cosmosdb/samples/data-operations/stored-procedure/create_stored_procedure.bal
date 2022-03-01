@@ -25,7 +25,7 @@ cosmosdb:ConnectionConfig config = {
 
 cosmosdb:DataPlaneClient azureCosmosClient = check new (config);
 
-public function main() {
+public function main() returns error? {
     string databaseId = "my_database";
     string containerId = "my_container";
     string storedProcedureId = "my_stored_procedure";
@@ -37,13 +37,10 @@ public function main() {
                                             response.setBody("Hello,  World");
                                         }`;
 
-    cosmosdb:StoredProcedure|error result = azureCosmosClient->createStoredProcedure(databaseId, containerId, 
-        storedProcedureId, storedProcedureBody); 
+    cosmosdb:StoredProcedureResponse result = check azureCosmosClient->createStoredProcedure(databaseId, containerId,
+        storedProcedureId, storedProcedureBody);
 
-    if (result is cosmosdb:StoredProcedure) {
-        log:printInfo(result.toString());
-        log:printInfo("Success!");
-    } else {
-        log:printError(result.message());
-    }
+    log:printInfo(result.toString());
+    log:printInfo("Success!");
+
 }
