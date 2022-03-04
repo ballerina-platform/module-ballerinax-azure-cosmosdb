@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.0.0"
+distribution = "2201.0.1"
 org= "ballerinax"
 name= "azure_cosmosdb"
 version= "3.0.0"
