@@ -17,4 +17,4 @@
  
 rootProject.name = 'module-ballerinax-azure-cosmosdb'
 include ':cosmosdb'
-include ':cosmos-native'
+include ':cosmosdb-native'

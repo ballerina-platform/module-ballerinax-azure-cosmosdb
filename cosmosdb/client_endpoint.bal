@@ -51,7 +51,7 @@ public isolated client class DataPlaneClient {
     remote isolated function createDocument(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Container ID"} string containerId,
                                             @display {label: "Document ID"} string documemtId,
-                                            @display {label: "Document"} record {} document,
+                                            @display {label: "Document"} map<json> document,
                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,
                                             @display {label: "Optional Header Parameters"} RequestOptions?
                                             requestOptions = ()) returns DocumentResponse|error {
@@ -75,7 +75,7 @@ public isolated client class DataPlaneClient {
     remote isolated function replaceDocument(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Container ID"} string containerId,
                                             @display {label: "Document ID"} string documemtId,
-                                            @display {label: "New Document"} record {} document,
+                                            @display {label: "New Document"} map<json> document,
                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,
                                             @display {label: "Optional Header Parameters"} RequestOptions?
                                             requestOptions = ()) returns DocumentResponse|error {
