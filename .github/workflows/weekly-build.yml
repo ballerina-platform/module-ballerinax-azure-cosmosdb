@@ -34,7 +34,7 @@ jobs:
 
             # Build the ballerina project
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action/@2201.0.0
               with:
                   args:
                       pack ./cosmosdb
@@ -43,7 +43,7 @@ jobs:
             
             # Test the ballerina project
             - name: Ballerina Test
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action/@2201.0.0
               with:
                   args:
                       test --code-coverage ./cosmosdb
