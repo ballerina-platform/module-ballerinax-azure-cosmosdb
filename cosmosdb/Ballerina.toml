@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.0.1"
+distribution = "2201.0.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
 version= "3.0.0"
@@ -13,7 +13,7 @@ license = ["Apache-2.0"]
 observabilityIncluded=true
 
 [[platform.java11.dependency]]
-path = "../cosmos-native/build/libs/cosmos-native-3.0.0-all.jar"
+path = "../cosmosdb-native/build/libs/cosmosdb-native-3.0.0.jar"
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
 version = "3.0.0"

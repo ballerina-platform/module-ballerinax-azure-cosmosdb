@@ -352,7 +352,7 @@ function testCreateDocument() returns error? {
     log:printInfo("ACTION : createDocument()");
 
     int valueOfPartitionKey = 1234;
-    record {} documentBody = {
+    map<json> documentBody = {
         "LastName": "Thaulow",
         "Parents": [
             {
@@ -399,7 +399,7 @@ function testReplaceDocument() returns error? {
     log:printInfo("ACTION : replaceDocument()");
 
     int valueOfPartitionKey = 1234;
-    record {} documentBody = {
+    map<json> documentBody = {
         "LastName": "Mark",
         "AccountNumber": 1234
     };
@@ -422,7 +422,7 @@ function testCreateDocumentWithRequestOptions() returns error? {
     };
     int valueOfPartitionKey = 1234;
     string newDocumentId = string `document_${uuid.toString()}`;
-    record {} documentBody = {
+    map<json> documentBody = {
         "LastName": "Throne",
         "Parents": [
             {
