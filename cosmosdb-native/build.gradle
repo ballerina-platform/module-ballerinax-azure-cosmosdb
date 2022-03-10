@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id "com.github.johnrengelman.shadow"
 }
 
 group project.group
@@ -25,10 +24,9 @@ repositories {
 
 dependencies {
     implementation group: 'com.azure', name: 'azure-cosmos', version: project.azureCosmosVersion
-    dist group: 'com.azure', name: 'azure-cosmos', version: project.azureCosmosVersion
-    implementation group: 'org.ballerinalang', name: 'ballerina-lang', version: project.ballerinaLangVersion
-    implementation group: 'org.ballerinalang', name: 'value', version: project.ballerinaLangVersion
-
+    dist(group: 'com.azure', name: 'azure-cosmos', version: project.azureCosmosVersion)
+    compile (group: 'org.ballerinalang', name: 'ballerina-lang', version: project.ballerinaLangVersion)
+    compile group: 'org.ballerinalang', name: 'value', version: project.ballerinaLangVersion
     compile(group: 'org.ballerinalang', name: 'ballerina-runtime', version: project.ballerinaLangVersion) {
         transitive = true
     }
@@ -38,8 +36,12 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     dependsOn configurations.dist
     from { configurations.dist.collect { it.isDirectory() ? it : zipTree(it) } } {
-        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+        exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA','io/netty/resolver/**', 'io/netty/handler/**',
+        'io/netty/transport/**', 'io/netty/internal/tcnative/**', 'io/netty/channel/*.class',
+        'io/netty/channel/socket/**', 'io/netty/channel/nio/**', 'io/netty/channel/pool/**', 
+        'io/netty/channel/group/**', 'io/netty/channel/local/**', 'io/netty/channel/embedded/**', 
+        'io/netty/channel/oio/**', 'io/netty/channel/internal/**', 'io/netty/bootstrap/**', 'io/netty/util/**', 
+        'io/netty/buffer/**', 'javax/activation/**', 'org/codehaus/stax2/**', 'org/HdrHistogram/**', 'com/ctc/wstx/**', 
+        'org/slf4j/**'
     }
 }
-
-build.dependsOn(shadowJar)
