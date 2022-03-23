@@ -34,7 +34,7 @@ public function main() returns error? {
     int partitionKeyValue = 0; 
 
     log:printInfo("Replacing document");
-    record {} documentBody = {
+    map<json> documentBody = {
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
