@@ -35,7 +35,7 @@ public function main() returns error? {
     
     log:printInfo("Create a new document");
     string documentId = string `document_${uuid.toString()}`;
-    record {|string id; json...;|} documentBody = {
+    map<json> documentBody = {
         id: documentId,
         "LastName": "Sam",
         "Parents": [{
@@ -54,7 +54,7 @@ public function main() returns error? {
 
     log:printInfo("Creating a new document allowing to include it in the indexing.");
     string id = string `documenti_${uuid.toString()}`;
-    record {} documentWithIndexing = {
+    map<json> documentWithIndexing = {
         "LastName": "Tom",
         "Parents": [{
             "FamilyName": null,
@@ -78,7 +78,7 @@ public function main() returns error? {
     // Create the document which already existing id and specify that it is an upsert request. If not this will show an 
     // error.
     log:printInfo("Upserting the document");
-    record {} upsertDocument = {
+    map<json> upsertDocument = {
         "LastName": "Tim",
         "Parents": [{
             "FamilyName": null,
@@ -99,7 +99,7 @@ public function main() returns error? {
     upsertDocument, partitionKeyValue, upsertOptions); 
 
     log:printInfo("Replacing document");
-    record {} newDocumentBody = {
+    map<json> newDocumentBody = {
         "LastName": "Helena",
         "Parents": [{
             "FamilyName": null,

@@ -32,7 +32,7 @@ public function main() returns error? {
     string documentId = "my_document";
 
     log:printInfo("Create a new document");
-    record {} documentBody = {
+    map<json> documentBody = {
         "FirstName": "Alan",
         "FamilyName": "Turing",
         "Parents": [{
