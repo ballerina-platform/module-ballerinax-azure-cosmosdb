@@ -17,3 +17,13 @@ path = "../cosmosdb-native/build/libs/cosmosdb-native-3.0.0.jar"
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
 version = "3.0.0"
+
+[[platform.java11.dependency]]
+groupId = "io.netty"
+artifactId = "netty-resolver-dns"
+version = "4.1.71.Final"
+
+[[platform.java11.dependency]]
+groupId = "io.netty"
+artifactId = "netty-handler"
+version = "4.1.71.Final"
