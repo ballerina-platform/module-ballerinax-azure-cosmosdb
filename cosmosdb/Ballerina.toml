@@ -2,7 +2,7 @@
 distribution = "2201.0.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
-version= "3.0.0"
+version= "3.0.1"
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft"]
 icon = "icon.png"
@@ -13,7 +13,17 @@ license = ["Apache-2.0"]
 observabilityIncluded=true
 
 [[platform.java11.dependency]]
-path = "../cosmosdb-native/build/libs/cosmosdb-native-3.0.0.jar"
+path = "../cosmosdb-native/build/libs/cosmosdb-native-3.0.1.jar"
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
-version = "3.0.0"
+version = "3.0.1"
+
+[[platform.java11.dependency]]
+groupId = "io.netty"
+artifactId = "netty-resolver-dns"
+version = "4.1.71.Final"
+
+[[platform.java11.dependency]]
+groupId = "io.netty"
+artifactId = "netty-handler"
+version = "4.1.71.Final"
