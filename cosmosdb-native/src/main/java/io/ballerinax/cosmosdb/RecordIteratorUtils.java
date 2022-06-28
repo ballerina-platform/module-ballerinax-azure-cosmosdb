@@ -19,15 +19,15 @@
 package io.ballerinax.cosmosdb;
 
 import com.azure.cosmos.models.CosmosStoredProcedureProperties;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
-import io.ballerina.runtime.api.types.MapType;
 import io.ballerina.runtime.api.types.RecordType;
+import io.ballerina.runtime.api.types.UnionType;
 import io.ballerina.runtime.api.values.BObject;
-import io.ballerina.runtime.internal.JsonParser;
+import io.ballerina.runtime.api.values.BTypedesc;
+import org.ballerinalang.langlib.value.FromJsonStringWithType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -57,10 +57,14 @@ public class RecordIteratorUtils {
             return null;
         } else {
             Iterator<Object> results = (Iterator<Object>) recordIterator.getNativeData(Constants.OBJECT_ITERATOR);
-            ObjectMapper mapper = new ObjectMapper();
             if (results.hasNext()) {
                 try {
-                    return JsonParser.parse(mapper.writeValueAsString(results.next()));
+                    String result = new ObjectMapper().writeValueAsString(results.next());
+                    RecordType recordType = (RecordType) recordIterator.getNativeData(Constants.RECORD_TYPE);
+                    UnionType responseType = TypeCreator.createUnionType(recordType, PredefinedTypes.TYPE_ERROR,
+                            PredefinedTypes.TYPE_NULL);
+                    BTypedesc responseTypedescValue = ValueCreator.createTypedescValue(responseType);
+                    return FromJsonStringWithType.fromJsonStringWithType(fromString(result), responseTypedescValue);
                 } catch (Exception e) {
                     return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
                 }

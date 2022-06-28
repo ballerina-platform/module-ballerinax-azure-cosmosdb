@@ -28,14 +28,16 @@ public class ResultIterator {
     public isolated function next() returns record {|record {} value;|}|Error? {
         record {}|Error? result;
         result = nextResult(self);
-        if (result is record {}) {
+        if result is record {} {
             record {|
                 record {} value;
             |} streamRecord = {value: result};
             return streamRecord;
-        } else {
+        } else if result is Error {
             self.err = result;
             return self.err;
+        } else {
+            return result;
         }
     }
 }
