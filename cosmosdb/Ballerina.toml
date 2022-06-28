@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.0.0"
+distribution = "2201.1.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
 version= "3.0.1"
@@ -21,9 +21,9 @@ version = "3.0.1"
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
-version = "4.1.71.Final"
+version = "4.1.77.Final"
 
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
-version = "4.1.71.Final"
+version = "4.1.77.Final"
