@@ -484,9 +484,9 @@ function testGetDocumentList() returns error? {
     stream<Person, error?> result = check azureCosmosClient->getDocumentList(databaseId, containerId, 
     valueOfPartitionKey);
     check result.forEach(isolated function(Person queryResult) {
+        test:assertTrue(queryResult is Person);
         test:assertEquals(1234, queryResult.AccountNumber);
     });
-
 }
 
 @test:Config {
