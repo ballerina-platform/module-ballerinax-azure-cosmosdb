@@ -30,8 +30,13 @@ ConnectionConfig config = {
     primaryKeyOrResourceToken: primaryKey
 };
 
+ManagementClientConfig mgtClientConfig = {
+    baseUrl: baseURL,
+    primaryKeyOrResourceToken: primaryKey
+};
+
 DataPlaneClient azureCosmosClient = check new (config);
-ManagementClient azureCosmosManagementClient = check new (config);
+ManagementClient azureCosmosManagementClient = check new (mgtClientConfig);
 
 var randomString = createRandomUUIDWithoutHyphens();
 
@@ -1219,12 +1224,12 @@ function testGetContainerWithResourceToken() {
     if (result is Error) {
         test:assertFail(msg = result.message());
     } else {
-        ConnectionConfig configdb = {
-            baseUrl: os:getEnv("BASE_URL"),
+        ManagementClientConfig configdb = {
+            baseUrl: baseURL,
             primaryKeyOrResourceToken: result?.token.toString()
         };
 
-        ManagementClient managementClient = checkpanic new (<@untainted>configdb);
+        ManagementClient managementClient = checkpanic new (configdb);
 
         string containerId = container.id;
         var resultcontainer = managementClient->getContainer(databaseId, containerId);

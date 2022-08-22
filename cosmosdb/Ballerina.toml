@@ -1,8 +1,8 @@
 [package]
-distribution = "2201.1.0"
+distribution = "2201.2.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
-version= "3.0.1"
+version= "4.0.0"
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft"]
 icon = "icon.png"
@@ -13,10 +13,10 @@ license = ["Apache-2.0"]
 observabilityIncluded=true
 
 [[platform.java11.dependency]]
-path = "../cosmosdb-native/build/libs/cosmosdb-native-3.0.1.jar"
+path = "../cosmosdb-native/build/libs/cosmosdb-native-4.0.0.jar"
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
-version = "3.0.1"
+version = "4.0.0"
 
 [[platform.java11.dependency]]
 groupId = "io.netty"

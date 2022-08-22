@@ -35,10 +35,26 @@ public isolated client class ManagementClient {
     # + cosmosdbConfig - Configurations required to initialize the `Client` endpoint
     # + httpClientConfig - HTTP configuration
     # + return -  Error at failure of client initialization
-    public isolated function init(ConnectionConfig azureConfig, http:ClientConfiguration httpClientConfig = {}) returns error? {
-        self.baseUrl = azureConfig.baseUrl;
-        self.primaryKeyOrResourceToken = azureConfig.primaryKeyOrResourceToken;
-        self.host = getHost(azureConfig.baseUrl);
+    public isolated function init(ManagementClientConfig config) returns error? {
+        self.baseUrl = config.baseUrl;
+        self.primaryKeyOrResourceToken = config.primaryKeyOrResourceToken;
+        self.host = getHost(config.baseUrl);
+        http:ClientConfiguration httpClientConfig = {
+            httpVersion: config.httpVersion,
+            http1Settings: {...config.http1Settings},
+            http2Settings: config.http2Settings,
+            timeout: config.timeout,
+            forwarded: config.forwarded,
+            poolConfig: config.poolConfig,
+            cache: config.cache,
+            compression: config.compression,
+            circuitBreaker: config.circuitBreaker,
+            retryConfig: config.retryConfig,
+            responseLimits: config.responseLimits,
+            secureSocket: config.secureSocket,
+            proxy: config.proxy,
+            validation: config.validation
+        };
         self.httpClient = check new (self.baseUrl, httpClientConfig);
     }
 

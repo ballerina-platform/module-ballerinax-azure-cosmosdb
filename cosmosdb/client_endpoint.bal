@@ -30,11 +30,9 @@ public isolated client class DataPlaneClient {
     # and obtain tokens following [this guide](https://docs.microsoft.com/en-us/azure/cosmos-db/database-security#primary-keys).
     #
     # + connectionConfig - Configurations required to initialize the `Client` endpoint
-    # + httpClientConfig - HTTP configuration
     # + return - Error at failure of client initialization
-    public isolated function init(ConnectionConfig connectionConfig, ClientConfiguration? advanceClientConfig = ()) 
-    returns error? {
-        check initClient(self, connectionConfig, advanceClientConfig);
+    public isolated function init(ConnectionConfig config) returns error? {
+        check initClient(self, config, config.advanceClientConfig);
     }
 
     # Creates a document.
@@ -235,7 +233,7 @@ public isolated client class DataPlaneClient {
 
 }
 
-isolated function initClient(DataPlaneClient dataClient, ConnectionConfig config, ClientConfiguration?
+isolated function initClient(DataPlaneClient dataClient, ConnectionConfig config, CustomClientConfiguration?
 customConfig = ()) returns error? = @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;

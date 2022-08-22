@@ -18,7 +18,7 @@ import ballerina/log;
 import ballerina/os;
 import ballerinax/azure_cosmosdb as cosmosdb;
 
-cosmosdb:ConnectionConfig config = {
+cosmosdb:ManagementClientConfig config = {
     baseUrl: os:getEnv("BASE_URL"),
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };

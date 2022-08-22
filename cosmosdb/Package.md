@@ -6,7 +6,7 @@ The `azure_cosmosdb` is a [Ballerina](https://ballerina.io/) connector for Azure
 ### Compatibility
 |                      | Version                       |
 |----------------------|-------------------------------|
-| Ballerina Language   | Ballerina Swan Lake 2201.1.0  | 
+| Ballerina Language   | Ballerina Swan Lake 2201.2.0  | 
 | Cosmos DB (SQL)API   | 2018-12-31                    |
 
 ## Report issues

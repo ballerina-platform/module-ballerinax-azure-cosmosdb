@@ -18,12 +18,15 @@
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account
 # + primaryKeyOrResourceToken - The token used to make the request call authorized
+# + advanceClientConfig - Custom parameters for client creation
 @display{label: "Connection Config"}
 public type ConnectionConfig record {|
     @display{label: "Base URL"}
     string baseUrl;
     @display{label: "Primary Key"}
     string primaryKeyOrResourceToken;
+    @display{label: "Advanced Client Config"}
+    CustomClientConfiguration advanceClientConfig?;
 |};
 
 # Custom parameters for client creation
@@ -35,7 +38,7 @@ public type ConnectionConfig record {|
 # in case of Create, Update and Delete operations on CosmosItem  
 # + preferredRegions - The preferred regions for geo-replicated database accounts  
 # + userAgentSuffix - The value of the user-agent suffix
-public type ClientConfiguration record {|
+public type CustomClientConfiguration record {|
     @display{label: "Consistency Level"}
     ConsistencyLevel consistencyLevel;
     @display{label: "Direct mode"}
