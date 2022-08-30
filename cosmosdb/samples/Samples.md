@@ -153,7 +153,7 @@ type.
 For example:
 
 ```ballerina
-cosmosdb:ConnectionConfig config = {
+cosmosdb:ManagementClientConfig config = {
     baseUrl: os:getEnv("BASE_URL"),
     primaryKeyOrResourceToken: os:getEnv("MASTER_OR_RESOURCE_TOKEN")
 };
