@@ -15,6 +15,7 @@
 // under the License.
 
 import ballerina/http;
+import ballerinax/'client.config;
 
 # This is the Azure Cosmos DB SQL API, a fast NoSQL database servic offers rich querying over diverse data, helps 
 # deliver configurable and reliable performance, is globally distributed, and enables rapid development. 
@@ -39,22 +40,7 @@ public isolated client class ManagementClient {
         self.baseUrl = config.baseUrl;
         self.primaryKeyOrResourceToken = config.primaryKeyOrResourceToken;
         self.host = getHost(config.baseUrl);
-        http:ClientConfiguration httpClientConfig = {
-            httpVersion: config.httpVersion,
-            http1Settings: {...config.http1Settings},
-            http2Settings: config.http2Settings,
-            timeout: config.timeout,
-            forwarded: config.forwarded,
-            poolConfig: config.poolConfig,
-            cache: config.cache,
-            compression: config.compression,
-            circuitBreaker: config.circuitBreaker,
-            retryConfig: config.retryConfig,
-            responseLimits: config.responseLimits,
-            secureSocket: config.secureSocket,
-            proxy: config.proxy,
-            validation: config.validation
-        };
+        http:ClientConfiguration httpClientConfig = check config:constructHTTPClientConfig(config);
         self.httpClient = check new (self.baseUrl, httpClientConfig);
     }
 
