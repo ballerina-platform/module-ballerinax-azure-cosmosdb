@@ -14,6 +14,7 @@
 // specific language governing permissions and limitations
 // under the License. 
 
+import ballerina/http;
 import ballerinax/'client.config;
 
 # CosmosDB Management Client configurations.
@@ -29,6 +30,8 @@ public type ManagementClientConfig record {|
         kind: "password"
     }
     string primaryKeyOrResourceToken;
+    # The HTTP version understood by the client
+    http:HttpVersion httpVersion = http:HTTP_1_1;
 |};
 
 # Configuration parameters to create Azure Cosmos DB client.
