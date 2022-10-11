@@ -25,7 +25,7 @@ jobs:
               run: |
                   ./gradlew build
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@2201.1.0
+              uses: ballerina-platform/ballerina-action//@2201.2.1
               with:
                   args:
                       pack ./cosmosdb
@@ -34,7 +34,7 @@ jobs:
                   MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
                   JAVA_HOME: /usr/lib/jvm/default-jvm
             - name: Ballerina Push
-              uses: ballerina-platform/ballerina-action/@2201.1.0
+              uses: ballerina-platform/ballerina-action//@2201.2.1
               with:
                   args:
                       push 

@@ -14,6 +14,23 @@
 // specific language governing permissions and limitations
 // under the License. 
 
+import ballerinax/'client.config;
+
+# CosmosDB Management Client configurations.
+@display {label: "Connection Config"}
+public type ManagementClientConfig record {|
+    *config:ConnectionConfig;
+    never auth?;
+    # Base URL of the Azure Cosmos DB account
+    string baseUrl;
+    # The token used to make the request call authorized
+    @display{
+        label: "",
+        kind: "password"
+    }
+    string primaryKeyOrResourceToken;
+|};
+
 # Configuration parameters to create Azure Cosmos DB client.
 # 
 # + baseUrl - Base URL of the Azure Cosmos DB account
