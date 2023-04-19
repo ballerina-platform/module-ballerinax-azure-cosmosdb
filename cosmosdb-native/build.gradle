@@ -42,6 +42,6 @@ jar {
         'io/netty/channel/group/**', 'io/netty/channel/local/**', 'io/netty/channel/embedded/**', 
         'io/netty/channel/oio/**', 'io/netty/channel/internal/**', 'io/netty/bootstrap/**', 'io/netty/util/**', 
         'io/netty/buffer/**', 'javax/activation/**', 'org/codehaus/stax2/**', 'org/HdrHistogram/**', 'com/ctc/wstx/**', 
-        'org/slf4j/**', 'io/netty/**', 'reactor/netty/**'
+        'org/slf4j/**', 'io/netty/**', 'reactor/netty/**', 'io/micrometer/**'
     }
 }
