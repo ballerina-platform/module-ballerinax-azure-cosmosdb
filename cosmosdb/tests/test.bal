@@ -21,6 +21,7 @@ import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
 import ballerina/test;
+import ballerina/io;
 
 configurable string & readonly baseURL = os:getEnv("BASE_URL");
 configurable string & readonly primaryKey = os:getEnv("MASTER_OR_RESOURCE_TOKEN");
@@ -1246,8 +1247,11 @@ function testGetContainerWithResourceToken() {
 function afterFunc() returns error? {
     log:printInfo("ACTION : deleteDatabases()");
     var result1 = azureCosmosManagementClient->deleteDatabase(databaseId);
+    io:println(result1);
     var result2 = azureCosmosManagementClient->deleteDatabase(createDatabaseExistId);
+    io:println(result2);
     var result3 = azureCosmosClient->close();
+    io:println(result3);
 
     if (result1 is DeleteResponse && result2 is DeleteResponse && result3 is ()) {
         log:printInfo("Success");
