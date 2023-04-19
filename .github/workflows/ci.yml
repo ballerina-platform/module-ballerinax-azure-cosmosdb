@@ -22,20 +22,20 @@ jobs:
               run: chmod +x gradlew
             - name: Build with Gradle
               env:
-                  packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-                  packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+                  packageUser: ${{ github.actor }}
+                  packagePAT: ${{ secrets.GITHUB_TOKEN }}
                   JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
               run: |
                   ./gradlew build
             - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action/@2201.4.1
               with:
                   args:
                       pack ./cosmosdb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
             - name: Ballerina Test
-              uses: ballerina-platform/ballerina-action/@nightly
+              uses: ballerina-platform/ballerina-action/@2201.4.1
               with:
                   args:
                       test --code-coverage ./cosmosdb
