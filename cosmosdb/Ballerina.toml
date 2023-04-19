@@ -32,3 +32,18 @@ version = "4.1.86.Final"
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
 version = "4.1.86.Final"
+
+[[platform.java11.dependency]]
+groupId = "io.projectreactor.netty"
+artifactId = "reactor-netty-core"
+version = "1.1.2"
+
+[[platform.java11.dependency]]
+groupId = "io.projectreactor.netty"
+artifactId = "reactor-netty"
+version = "1.1.2"
+
+[[platform.java11.dependency]]
+groupId = "io.projectreactor.netty"
+artifactId = "reactor-netty-http"
+version = "1.1.2"
