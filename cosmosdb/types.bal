@@ -21,6 +21,7 @@ import ballerinax/'client.config;
 @display {label: "Connection Config"}
 public type ManagementClientConfig record {|
     *config:ConnectionConfig;
+    # Excluded auth configurations (Provide primaryKey or ResourceToken instead)
     never auth?;
     # Base URL of the Azure Cosmos DB account
     string baseUrl;
