@@ -40,7 +40,7 @@ isolated function getTokenType(string token) returns string {
 # + url - The Base URL given by the user from which we want to extract host
 # + return - String representing the resource id
 isolated function getHost(string url) returns string {
-    string replacedString = regex:replaceFirst(url, HTTPS_REGEX, EMPTY_STRING);
+    string replacedString = regex:replace(url, HTTPS_REGEX, EMPTY_STRING);
     int? lastIndex = replacedString.lastIndexOf(FORWARD_SLASH);
     if (lastIndex is int) {
         replacedString = replacedString.substring(0, lastIndex);

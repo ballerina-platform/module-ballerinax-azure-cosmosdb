@@ -1,8 +1,8 @@
 [package]
-distribution = "2201.3.0"
+distribution = "2201.4.1"
 org= "ballerinax"
 name= "azure_cosmosdb"
-version= "4.0.0"
+version= "4.1.1"
 authors = ["Ballerina"]
 keywords = ["IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft"]
 icon = "icon.png"
@@ -13,17 +13,53 @@ license = ["Apache-2.0"]
 observabilityIncluded=true
 
 [[platform.java11.dependency]]
-path = "../cosmosdb-native/build/libs/cosmosdb-native-4.0.0.jar"
+path = "../cosmosdb-native/build/libs/cosmosdb-native-4.1.1.jar"
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
-version = "4.0.0"
+version = "4.1.1"
 
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
-version = "4.1.77.Final"
+version = "4.1.86.Final"
 
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
-version = "4.1.77.Final"
+version = "4.1.86.Final"
+
+[[platform.java11.dependency]]
+groupId = "io.netty"
+artifactId = "netty-transport-native-unix-common"
+version = "4.1.86.Final"
+
+[[platform.java11.dependency]]
+groupId = "io.projectreactor.netty"
+artifactId = "reactor-netty-core"
+version = "1.1.2"
+
+[[platform.java11.dependency]]
+groupId = "io.projectreactor.netty"
+artifactId = "reactor-netty"
+version = "1.1.2"
+
+[[platform.java11.dependency]]
+groupId = "io.projectreactor.netty"
+artifactId = "reactor-netty-http"
+version = "1.1.2"
+
+[[platform.java11.dependency]]
+groupId = "io.micrometer"
+artifactId = "micrometer-observation"
+version = "1.10.3"
+
+[[platform.java11.dependency]]
+groupId = "io.micrometer"
+artifactId = "micrometer-core"
+version = "1.10.3"
+
+[[platform.java11.dependency]]
+groupId = "io.micrometer"
+artifactId = "micrometer-commons"
+version = "1.10.3"
+
