@@ -398,7 +398,8 @@ function testCreateDocument() returns error? {
         testGetOneDocumentWithRequestOptions,
         testQueryDocuments,
         testGetDocumentList,
-        testGetDocumentListWithRequestOptions]
+        testGetDocumentListWithRequestOptions
+    ]
 }
 function testReplaceDocument() returns error? {
     log:printInfo("ACTION : replaceDocument()");
@@ -411,6 +412,58 @@ function testReplaceDocument() returns error? {
 
     DocumentResponse response = check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKey);
     test:assertEquals(response.statusCode, 200);
+}
+
+@test:Config {
+    groups: ["document"],
+    dependsOn: [testCreateContainer]
+}
+function testReplaceDocumentID() returns error? {
+    log:printInfo("ACTION : replaceDocumentID()");
+
+    int valueOfPartitionKey = 1234;
+    string documentId = string `document_${randomString.toString()}`;
+    map<json> documentBody = {
+        "LastName": "Einstein",
+        "Parents": [
+            {
+                "FamilyName": null,
+                "FirstName": "Hermann"
+            },
+            {
+                "FamilyName": null,
+                "FirstName": "Pauline"
+            }
+        ],
+        "Children": [
+            {
+                "FamilyName": null,
+                "FirstName": "Hans",
+                "Gender": "male",
+                "Grade": 5,
+                "Pets": [{"GivenName": "Pumpkin"}]
+            }
+        ],
+        "Address": {
+            "State": "WA",
+            "Country": "King",
+            "City": "Seattle"
+        },
+        "IsRegistered": true,
+        "AccountNumber": 1234
+    };
+
+    DocumentResponse createResponse = check azureCosmosClient->createDocument(databaseId, containerId, documentId, documentBody, valueOfPartitionKey);
+    test:assertEquals(createResponse.statusCode, 201);
+
+    map<json> updatedDocumentBody = {
+        "LastName": "Antony",
+        "AccountNumber": 1234,
+        "id": "new_document_123"
+    };
+
+    DocumentResponse updateResponse = check azureCosmosClient->replaceDocument(databaseId, containerId, documentId, updatedDocumentBody, valueOfPartitionKey);
+    test:assertEquals(updateResponse.statusCode, 200);
 }
 
 @test:Config {
@@ -478,7 +531,6 @@ public type Pet record {
     string GivenName;
 };
 
-
 @test:Config {
     groups: ["document"],
     dependsOn: [testCreateDocument, testCreateDocumentWithRequestOptions]
@@ -486,7 +538,7 @@ public type Pet record {
 function testGetDocumentList() returns error? {
     log:printInfo("ACTION : getDocumentList()");
     int valueOfPartitionKey = 1234;
-    stream<Person, error?> result = check azureCosmosClient->getDocumentList(databaseId, containerId, 
+    stream<Person, error?> result = check azureCosmosClient->getDocumentList(databaseId, containerId,
     valueOfPartitionKey);
     check result.forEach(isolated function(Person queryResult) {
         test:assertEquals(1234, queryResult.AccountNumber);
@@ -503,7 +555,7 @@ function testGetDocumentListWithRequestOptions() returns error? {
     QueryOptions options = {
         consistencyLevel: EVENTUAL
     };
-    stream<Person, error?> result = check azureCosmosClient->getDocumentList(databaseId, containerId, 
+    stream<Person, error?> result = check azureCosmosClient->getDocumentList(databaseId, containerId,
     valueOfPartitionKey, options);
     check result.forEach(isolated function(Person queryResult) {
         test:assertEquals(1234, queryResult.AccountNumber);
@@ -609,7 +661,7 @@ function testCreateStoredProcedure() returns error? {
                                             response.setBody("Hello, World");
                                         }`;
 
-    StoredProcedureResponse response = check azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId, 
+    StoredProcedureResponse response = check azureCosmosClient->createStoredProcedure(databaseId, containerId, sprocId,
     createSprocBody);
     test:assertEquals(response.statusCode, 201);
 }
@@ -627,7 +679,7 @@ function testExecuteOneStoredProcedure() returns error? {
     int partitionKey = 1234;
 
     _ = check azureCosmosClient->executeStoredProcedure(databaseId, containerId, sprocId, partitionKey, options);
-   
+
 }
 
 @test:Config {
