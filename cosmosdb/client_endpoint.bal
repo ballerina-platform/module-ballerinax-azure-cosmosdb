@@ -63,7 +63,7 @@ public isolated client class DataPlaneClient {
     #
     # + databaseId - ID of the database to which the container belongs to
     # + containerId - ID of the container which contains the existing document
-    # + documemtId - ID of the document
+    # + documentId - Current ID of the document
     # + document - A JSON document which will replace the existing document
     # + partitionKey - The specific value related to the partition key field of the container 
     # + requestOptions - The `cosmos_db:RequestOptions` which can be used to add additional capabilities that can 
@@ -72,14 +72,18 @@ public isolated client class DataPlaneClient {
     @display {label: "Replace Document"}
     remote isolated function replaceDocument(@display {label: "Database ID"} string databaseId,
                                             @display {label: "Container ID"} string containerId,
-                                            @display {label: "Document ID"} string documemtId,
+                                            @display {label: "Document ID"} string documentId,
                                             @display {label: "New Document"} map<json> document,
                                             @display {label: "Partition Key"} int|float|decimal|string partitionKey,
                                             @display {label: "Optional Header Parameters"} RequestOptions?
                                             requestOptions = ()) returns DocumentResponse|error {
-        json jsonDocument = check document.cloneWithType(json);
-        json updatedDocument = check jsonDocument.mergeJson({"id": documemtId});
-        return replaceDocument(databaseId, containerId, documemtId, <map<json>>updatedDocument, partitionKey, 
+        json updatedDocument = check document.cloneWithType(json);
+        // If the doument doesn't contain an id, the document will not replace the id in the database. 
+        // If the document contains an id, it will replace the existing id in the database.
+        if !document.hasKey("id") {
+            updatedDocument = check updatedDocument.mergeJson({"id": documentId});
+        }
+        return replaceDocument(databaseId, containerId, documentId, <map<json>>updatedDocument, partitionKey,
         requestOptions);
     }
 
@@ -156,7 +160,7 @@ public isolated client class DataPlaneClient {
                                             @display {label: "Container ID"} string containerId,
                                             @display {label: "SQL Query"} string sqlQuery,
                                             @display {label: "Optional Header Parameters"} QueryOptions? queryOptions
-                                            = (), typedesc<record {}> returnType = <>) 
+                                            = (), typedesc<record {}> returnType = <>)
                                             returns stream<returnType, error?>|error = @java:Method {
         'class: "io.ballerinax.cosmosdb.DataplaneClient"
     } external;
@@ -168,13 +172,13 @@ public isolated client class DataPlaneClient {
     # + storedProcedureId - A unique ID for the newly created stored procedure
     # + storedProcedure - A JavaScript function represented as a string
     # + options - The `cosmos_db:CosmosStoredProcedureRequestOptions` which can be used to add additional capabilities
-    #  that can override client configuration provided in the inilization
+    # that can override client configuration provided in the inilization
     # + return - If successful, returns a `cosmos_db:StoredProcedure`. Else returns error.
     @display {label: "Create Stored Procedure"}
     remote isolated function createStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                     @display {label: "Container ID"} string containerId,
                                                     @display {label: "Stored Procedure ID"} string storedProcedureId,
-                                                    @display {label: "Stored Procedure Function"} string 
+                                                    @display {label: "Stored Procedure Function"} string
                                                     storedProcedure, CosmosStoredProcedureRequestOptions? options = ())
                                                     returns StoredProcedureResponse|error {
         return createStoredProcedure(databaseId, containerId, storedProcedureId, storedProcedure, options);
@@ -220,7 +224,7 @@ public isolated client class DataPlaneClient {
     remote isolated function executeStoredProcedure(@display {label: "Database ID"} string databaseId,
                                                     @display {label: "Container ID"} string containerId,
                                                     @display {label: "Stored Procedure ID"} string storedProcedureId,
-                                                    @display {label: "Partition Key"} int|float|decimal|string 
+                                                    @display {label: "Partition Key"} int|float|decimal|string
                                                     patitionKey, @display {label: "Execution Options"}
                                                     StoredProcedureExecuteOptions? storedProcedureExecuteOptions = ())
                                                     returns StoredProcedureResponse|error = @java:Method {
@@ -239,21 +243,21 @@ customConfig = ()) returns error? = @java:Method {
 } external;
 
 isolated function createDocument(string databaseId, string containerId,
-                                    map<json> document, int|float|decimal|string partitionKey, RequestOptions? 
+                                    map<json> document, int|float|decimal|string partitionKey, RequestOptions?
                                     documentCreateOptions = ()) returns DocumentResponse|error = @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;
 
 isolated function replaceDocument(string databaseId, string containerId, string id,
                                     map<json> document, int|float|decimal|string partitionKey,
-                                    RequestOptions? documentCreateOptions = ()) returns DocumentResponse|error = 
+                                    RequestOptions? documentCreateOptions = ()) returns DocumentResponse|error =
                                     @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;
 
 isolated function createStoredProcedure(string databaseId, string containerId,
                                     string storedProcedureId, string storedProcedure,
-                                    CosmosStoredProcedureRequestOptions? options = ()) returns 
+                                    CosmosStoredProcedureRequestOptions? options = ()) returns
                                     StoredProcedureResponse|error = @java:Method {
     'class: "io.ballerinax.cosmosdb.DataplaneClient"
 } external;
