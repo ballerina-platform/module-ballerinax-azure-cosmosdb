@@ -2,6 +2,7 @@ Ballerina Azure Cosmos DB Connector
 ===================
 [![Build Status](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions?query=workflow%3ACI)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-azure-cosmosdb.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/commits/master)
+[![GraalVM Check](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/build-with-bal-test-native.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/build-with-bal-test-native.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 The Cosmos DB SQL(Core) API supports all database-related operations that are carried out extensively by the existing 
