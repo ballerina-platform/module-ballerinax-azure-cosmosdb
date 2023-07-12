@@ -49,6 +49,6 @@ jobs:
                 version: latest
 
             - name: Run Ballerina tests using the native executable
-              run: bal test --native ./cosmosdb
+              run: bal test --graalvm ./cosmosdb
               env:
                 JAVA_HOME: /usr/lib/jvm/default-jvm
