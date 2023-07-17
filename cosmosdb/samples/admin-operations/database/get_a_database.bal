@@ -16,7 +16,7 @@
 
 import ballerina/log;
 import ballerina/os;
-import ballerinax/azure_cosmosdb as cosmosdb;
+import ballerinax/azure.cosmosdb;
 
 cosmosdb:ManagementClientConfig config = {
     baseUrl: os:getEnv("BASE_URL"),

@@ -18,7 +18,7 @@ import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/os;
 import ballerina/regex;
-import ballerinax/azure_cosmosdb as cosmosdb;
+import ballerinax/azure.cosmosdb;
 
 cosmosdb:ConnectionConfig config = {
     baseUrl: os:getEnv("BASE_URL"),

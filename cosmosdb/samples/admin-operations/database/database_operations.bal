@@ -14,7 +14,7 @@
 // specific language governing permissions and limitations
 // under the License.
 
-import ballerinax/azure_cosmosdb as cosmosdb;
+import ballerinax/azure.cosmosdb;
 import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/os;
