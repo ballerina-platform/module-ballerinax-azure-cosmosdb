@@ -36,7 +36,7 @@ subprojects {
 }
 
 def artifactCacheParent = file("${project.projectDir}/build/cache_parent/")
-def packageName = "azure_cosmosdb"
+def packageName = "azure.cosmosdb"
 def packageOrg = "ballerinax"
 def pathToBala = file("${project.projectDir}/cosmosdb/target/bala")
 def platform = "java11"

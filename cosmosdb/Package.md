@@ -1,7 +1,7 @@
 Connects to [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/)  from Ballerina.
 
 ## Package overview
-The `azure_cosmosdb` is a [Ballerina](https://ballerina.io/) connector for Azure Cosmos DB.
+The `azure.cosmosdb` is a [Ballerina](https://ballerina.io/) connector for Azure Cosmos DB.
 
 ### Compatibility
 |                      | Version                       |

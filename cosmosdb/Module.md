@@ -18,9 +18,9 @@ Before using this connector in your Ballerina application, complete the followin
 To use the Azure Cosmos DB connector in your Ballerina application, update the .bal file as follows:
 
 ### Step 1 - Import connector
-Import the `ballerinax/azure_cosmosdb` module into the Ballerina project.
+Import the `ballerinax/azure.cosmosdb` module into the Ballerina project.
 ```ballerina
-import ballerinax/azure_cosmosdb as cosmosdb;
+import ballerinax/azure.cosmosdb;
 ```
 ### Step 2 - Create a new connector instance
 You can now add the connection configuration with the `Master-Token` or `Resource-Token`, and the resource URI to the

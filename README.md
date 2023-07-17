@@ -14,7 +14,7 @@ containers, etc. In addition, it allows the special features provided by Cosmos 
 language-integrated queries and management of users and permissions.
 
 For more information, see module(s).
-- [azure_cosmosdb](cosmosdb/Module.md)
+- [azure.cosmosdb](cosmosdb/Module.md)
 
 ## Building from the source
 ### Setting up the prerequisites
