@@ -38,28 +38,14 @@ jobs:
               uses: ballerina-platform/ballerina-action/@nightly
               with:
                   args:
-                      test --code-coverage ./cosmosdb
+                      test --test-report --code-coverage --coverage-format=xml ./cosmosdb
               env:
                   BASE_URL: ${{ secrets.BASE_URL }}
                   MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }} 
                   JAVA_HOME: /usr/lib/jvm/default-jvm
 
-            # Read the ballerina test results
-            - name: Read Ballerina Test Results
-              id: test_results
-              run: |
-                content=`cat ./cosmosdb/target/report/test_results.json`                
-                content="${content//'%'/'%25'}"
-                content="${content//$'\n'/'%0A'}"
-                content="${content//$'\r'/'%0D'}"
-                echo "::set-output name=testResultsJson::$content"
-
-            # Print the code coverage information
-            - name: Code Coverage
-              run: |
-                echo "Covered Code Lines : ${{fromJson(steps.test_results.outputs.testResultsJson).coveredLines}}"
-                echo "Total Code Lines : $(expr ${{fromJson(steps.test_results.outputs.testResultsJson).missedLines}} + ${{fromJson(steps.test_results.outputs.testResultsJson).coveredLines}})"
-                echo "Code Coverage Percentage : ${{fromJson(steps.test_results.outputs.testResultsJson).coveragePercentage}}"
+            - name: Upload coverage reports to Codecov
+              uses: codecov/codecov-action@v3
             
             - name: Alert notifier on failure
               if: failure() && (github.event.action == 'check_connector_for_breaking_changes')
