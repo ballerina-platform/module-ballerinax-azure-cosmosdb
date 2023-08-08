@@ -16,7 +16,7 @@
  * under the License.
  */
 
-description = 'Ballerina - Cosmosdb Ballerina Connector'
+description = 'Ballerina - Azure Cosmosdb Ballerina Connector'
 
 def tomlVersion = stripBallerinaExtensionVersion("${project.version}")
 
@@ -57,13 +57,13 @@ task build {
         def cacheDirs = centralDir.listFiles().findAll { it.isDirectory() && it.name.startsWith('cache-') }
         delete cacheDirs
 
-        def destinationDir = new File("${System.getProperty('user.home')}/.ballerina/repositories/central.ballerina.io/bala/ballerinax/${project.ballerinaProjectName}")
+        def destinationDir = new File("${System.getProperty('user.home')}/.ballerina/repositories/central.ballerina.io/bala/ballerinax/${project.balPackageName}")
         if (destinationDir.exists()) {
             delete destinationDir;
         }
 
         copy {
-            from "${System.getProperty('user.home')}/.ballerina/repositories/local/bala/ballerinax/${project.ballerinaProjectName}"
+            from "${System.getProperty('user.home')}/.ballerina/repositories/local/bala/ballerinax/${project.balPackageName}"
             into destinationDir
         }
     }

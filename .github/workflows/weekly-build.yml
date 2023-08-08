@@ -1,70 +1,68 @@
 name: Weekly build
 
-# Controls when the action will run.
-on: 
+on:
   schedule:
     - cron: '15 2 * * 1'
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-    # This workflow contains a single job called "build"
-    build:
-        # The type of runner that the job will run on
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
-        steps:
-            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-            - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-            # Build the java dependency
-            - name: Set up JDK 11
-              uses: actions/setup-java@v1
-              with:
-                  java-version: 11
-            - name: Grant execute permission for gradlew
-              run: chmod +x gradlew
-            - name: Build with Gradle
-              env:
-                  packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
-                  packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
-                  JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
-              run: |
-                  ./gradlew build
+      # Set up Java Environment
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
 
-            # Build the ballerina project
-            - name: Ballerina Build
-              uses: ballerina-platform/ballerina-action/@nightly
-              with:
-                  args:
-                      pack ./cosmosdb
-              env:
-                JAVA_HOME: /usr/lib/jvm/default-jvm
-            
-            # Test the ballerina project
-            - name: Ballerina Test
-              uses: ballerina-platform/ballerina-action/@nightly
-              with:
-                  args:
-                      test --test-report --code-coverage --coverage-format=xml ./cosmosdb
-              env:
-                BASE_URL: ${{ secrets.BASE_URL }}
-                MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
-                JAVA_HOME: /usr/lib/jvm/default-jvm
+      # Setup Ballerina Environment
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.0
+        with:
+          version: latest
 
-            - name: Upload coverage reports to Codecov
-              uses: codecov/codecov-action@v3
+      # Grant execute permission to the gradlew script
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-            # Send notification when build fails
-            - name: Notify failure
-              if: ${{ failure() }}
-              run: |
-                curl \
-                -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.BALLERINA_CHAT_ID}}/messages?key=${{secrets.BALLERINA_CHAT_KEY}}&token=${{secrets.BALLERINA_CHAT_TOKEN}}' \
-                --header 'Content-Type: application/json' \
-                -d '{"text": "*module-ballerinax-azure-cosmosdb* build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/weekly-build.yml|the weekly build page> for more information"}'
-                curl \
-                -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.CONNECTOR_CHAT_ID}}/messages?key=${{secrets.CONNECTOR_CHAT_KEY}}&token=${{secrets.CONNECTOR_CHAT_TOKEN}}' \
-                --header 'Content-Type: application/json' \
-                -d '{"text": "*module-ballerinax-azure-cosmosdb* build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/weekly-build.yml|the weekly build page> for more information"}'
+      # Build the project with Gradle
+      - name: Build with Gradle
+        env:
+          packageUser: ${{ secrets.BALLERINA_BOT_USERNAME }}
+          packagePAT: ${{ secrets.BALLERINA_BOT_TOKEN }}
+          JAVA_OPTS: -DBALLERINA_DEV_COMPILE_BALLERINA_ORG=true
+        run: |
+          ./gradlew build -x test
+
+      # Build Ballerina Project
+      - name: Ballerina Build
+        run: bal pack ./ballerina
+        env:
+          JAVA_HOME: /usr/lib/jvm/default-jvm
+
+      # Test Ballerina Project
+      - name: Ballerina Test
+        run: bal test --test-report --code-coverage --coverage-format=xml ./ballerina
+        env:
+          BASE_URL: ${{ secrets.BASE_URL }}
+          MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
+          JAVA_HOME: /usr/lib/jvm/default-jvm
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
+      # Send notification when build fails
+      - name: Notify failure
+        if: ${{ failure() }}
+        run: |
+          curl \
+          -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.BALLERINA_CHAT_ID}}/messages?key=${{secrets.BALLERINA_CHAT_KEY}}&token=${{secrets.BALLERINA_CHAT_TOKEN}}' \
+          --header 'Content-Type: application/json' \
+          -d '{"text": "*module-ballerinax-azure-cosmosdb* build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/weekly-build.yml|the weekly build page> for more information"}'
+          curl \
+          -X POST 'https://chat.googleapis.com/v1/spaces/${{secrets.CONNECTOR_CHAT_ID}}/messages?key=${{secrets.CONNECTOR_CHAT_KEY}}&token=${{secrets.CONNECTOR_CHAT_TOKEN}}' \
+          --header 'Content-Type: application/json' \
+          -d '{"text": "*module-ballerinax-azure-cosmosdb* build failure \nPlease visit <https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/weekly-build.yml|the weekly build page> for more information"}'
                 

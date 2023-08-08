@@ -23,7 +23,7 @@ plugins {
     id 'jacoco'
 }
 
-description = 'Ballerina - {{ title }} Native'
+description = 'Ballerina - Azure Cosmosdb Native'
 
 configurations {
     jacocoRuntime

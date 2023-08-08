@@ -24,17 +24,17 @@ version = "4.2.0"
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
-version = "4.1.86.Final"
+version = "4.1.94.Final"
 
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
-version = "4.1.86.Final"
+version = "4.1.94.Final"
 
 [[platform.java11.dependency]]
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
-version = "4.1.86.Final"
+version = "4.1.94.Final"
 
 [[platform.java11.dependency]]
 groupId = "io.projectreactor.netty"

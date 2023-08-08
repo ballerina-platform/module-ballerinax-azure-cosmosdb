@@ -23,7 +23,7 @@ plugins {
     id "net.researchgate.release" version "${researchgateReleaseVersion}"
 }
 
-description = 'Ballerina - Cosmosdb'
+description = 'Ballerina - Azure Cosmosdb'
 
 allprojects {
     group = project.group
@@ -56,7 +56,7 @@ allprojects {
         snapshotVersion= '-SNAPSHOT'
         timestampedVersionRegex = '.*-\\d{8}-\\d{6}-\\w.*\$'
         packageName = 'azure-cosmosdb'
-        ballerinaPackageName = 'azure-cosmosdb'
+        balPackageName = 'azure_cosmosdb'
     }
 }
 
