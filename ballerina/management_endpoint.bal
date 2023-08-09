@@ -182,7 +182,7 @@ public isolated client class ManagementClient {
         if (indexingPolicy != ()) {
             jsonPayload = check jsonPayload.mergeJson({indexingPolicy: check indexingPolicy.cloneWithType(json)});
         }
-        request.setJsonPayload(<@untainted>jsonPayload);
+        request.setJsonPayload(jsonPayload);
 
         http:Response response = check self.httpClient->post(requestPath, request);
         json jsonResponse = check handleResponse(response);
@@ -356,7 +356,7 @@ public isolated client class ManagementClient {
             id: userDefinedFunctionId,
             body: userDefinedFunction
         };
-        request.setJsonPayload(<@untainted>payload);
+        request.setJsonPayload(payload);
 
         http:Response response = check self.httpClient->put(requestPath, request);
         json jsonResponse = check handleResponse(response);
@@ -480,7 +480,7 @@ public isolated client class ManagementClient {
             triggerOperation: triggerOperation,
             triggerType: triggerType
         };
-        request.setJsonPayload(<@untainted>payload);
+        request.setJsonPayload(payload);
 
         http:Response response = check self.httpClient->put(requestPath, request);
         json jsonResponse = check handleResponse(response);
@@ -712,7 +712,7 @@ public isolated client class ManagementClient {
             permissionMode: permissionMode,
             'resource: resourcePath
         };
-        request.setJsonPayload(<@untainted>jsonPayload);
+        request.setJsonPayload(jsonPayload);
 
         http:Response response = check self.httpClient->put(requestPath, request);
         json jsonResponse = check handleResponse(response);

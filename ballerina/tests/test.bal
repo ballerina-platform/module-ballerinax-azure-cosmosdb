@@ -193,7 +193,7 @@ function testGetOneDatabase() {
 
     var result = azureCosmosManagementClient->getDatabase(databaseId);
     if (result is Database) {
-        database = <@untainted>result;
+        database = result;
         test:assertTrue(result.id == databaseId);
     } else {
         test:assertFail(msg = result.message());
@@ -288,7 +288,7 @@ function testGetOneContainer() {
     if (result is Error) {
         test:assertFail(msg = result.message());
     } else {
-        container = <@untainted>result;
+        container = result;
         test:assertTrue(result.id == containerId);
     }
 }
@@ -1157,9 +1157,9 @@ function testListOffers() {
     if (result is stream<Offer, error?>) {
         record {|Offer value;|}|error? offer = result.next();
         if (offer is record {|Offer value;|}) {
-            offerId = <@untainted>offer?.value?.id;
+            offerId = offer?.value?.id;
             runtime:sleep(1);
-            resourceId = <@untainted>offer?.value?.resourceId;
+            resourceId = offer?.value?.resourceId;
         } else {
             log:printInfo("Empty stream");
         }
@@ -1205,7 +1205,7 @@ function testReplaceOffer() {
             id: <string>offerId,
             resourceId: <string>resourceId
         };
-        var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
+        var result = azureCosmosManagementClient->replaceOffer(replaceOfferBody);
         if (result is Error) {
             test:assertFail(msg = result.message());
         } else {
@@ -1234,7 +1234,7 @@ function testReplaceOfferWithOptionalParameter() {
             id: <string>offerId,
             resourceId: <string>resourceId
         };
-        var result = azureCosmosManagementClient->replaceOffer(<@untainted>replaceOfferBody);
+        var result = azureCosmosManagementClient->replaceOffer(replaceOfferBody);
         if (result is Error) {
             test:assertFail(msg = result.message());
         } else {

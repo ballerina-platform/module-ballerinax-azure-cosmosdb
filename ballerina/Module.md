@@ -62,4 +62,4 @@ Once you follow the above steps. you can create a new document inside the Cosmos
 
 2. Use `bal run` command to compile and run the Ballerina program
 
-**[You can find a list of samples here](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/tree/main/cosmosdb/samples)**
+**[You can find a list of samples here](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/tree/main/examples)**

@@ -44,7 +44,7 @@ public function main() {
     if (offerList is stream<cosmosdb:Offer, error?>) {
         record {|cosmosdb:Offer value;|}|error? offer = offerList.next();
         if (offer is record {|cosmosdb:Offer value;|}) {
-            offerId = <@untainted>offer.value.id;
+            offerId = offer.value.id;
             resourceId = offer?.value?.resourceId;
         }
     }
@@ -65,7 +65,7 @@ public function main() {
             id: offerId,
             resourceId: resourceId
         };
-        cosmosdb:Offer offerReplaceResult = checkpanic managementClient->replaceOffer(<@untainted>replaceOfferBody);
+        cosmosdb:Offer offerReplaceResult = checkpanic managementClient->replaceOffer(replaceOfferBody);
     }
 
     // Replace Offer updating optional parameters
@@ -76,7 +76,7 @@ public function main() {
         string `SELECT * FROM ${containerId} f WHERE (f["_self"]) = "${container?.selfReference.toString()}"`;
     int maximumItemCount = 20;
     stream<cosmosdb:Offer, error?>|error result = checkpanic managementClient->
-        queryOffer(<@untainted>offersInContainerQuery);
+        queryOffer(offersInContainerQuery);
     log:printInfo("Success!");
 }
 

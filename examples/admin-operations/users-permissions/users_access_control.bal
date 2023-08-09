@@ -88,7 +88,7 @@ public function main() {
         string `dbs/${database?.resourceId.toString()}/colls/${container?.resourceId.toString()}`;
 
     cosmosdb:Permission|error permission = managementClient->createPermission(databaseId, userId, permissionId,
-        permissionMode, <@untainted>permissionResource);
+        permissionMode, permissionResource);
 
     if (permission is cosmosdb:Permission) {
         log:printInfo(permission.toString());
@@ -108,7 +108,7 @@ public function main() {
     //     permissionMode: newPermissionMode,
     //     resourcePath: newPermissionResource
     // };
-    // var result7 = azureCosmosClient->createPermission(databaseId, userId, <@untainted>newPermission, validityPeriod);
+    // var result7 = azureCosmosClient->createPermission(databaseId, userId, newPermission, validityPeriod);
     // if (result7 is cosmosdb:Permission) {
     //     io:println("Permission is successfully created!");
     // } else {

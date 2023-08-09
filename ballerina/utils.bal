@@ -115,7 +115,7 @@ isolated function prepareUrl(string[] paths) returns string {
             url = url + path;
         }
     }
-    return <@untainted>url;
+    return url;
 }
 
 # Attach mandatory basic headers to HTTP request.
@@ -400,7 +400,7 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 //         Document[] documents = [];
 //         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
 //         convertToDocumentArray(documents, array);
-//         return (<@untainted>documents).toStream();
+//         return (documents).toStream();
 //     } else if (payload.Offers is json) {
 //         json[] array = let var load = payload.Documents in load is json ? <json[]>load : [];
 //         return array.toStream();
@@ -521,9 +521,9 @@ isolated function handleHeaderOnlyResponse(http:Response httpResponse) returns @
 //         return error PayloadValidationError(INVALID_RECORD_TYPE_ERROR);
 //     }
 
-//     stream<record{}> newStream = (<@untainted>finalArray).toStream();
+//     stream<record{}> newStream = (finalArray).toStream();
 //     if (continuationHeader != EMPTY_STRING) {
-//         newStream = check retrieveStream(azureCosmosClient, path, headerMap, <@untainted>finalArray, continuationHeader);
+//         newStream = check retrieveStream(azureCosmosClient, path, headerMap, finalArray, continuationHeader);
 //     }
 //     return newStream;
 // }

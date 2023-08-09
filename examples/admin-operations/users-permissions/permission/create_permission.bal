@@ -36,7 +36,7 @@ public function main() {
         
     log:printInfo("Create permission for a user");
     cosmosdb:Permission|error result = managementClient->createPermission(databaseId, userId, permissionId, 
-        permissionMode, <@untainted>permissionResource);
+        permissionMode, permissionResource);
 
     if (result is cosmosdb:Permission) {
         log:printInfo(result.toString());
