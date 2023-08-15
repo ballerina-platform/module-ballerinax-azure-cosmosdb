@@ -176,7 +176,7 @@ function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
         stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
-        return stringUUID is string ? stringUUID : "";
+        return stringUUID ?: "";
     } else {
         return "";
     }
