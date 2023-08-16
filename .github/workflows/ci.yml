@@ -51,6 +51,8 @@ jobs:
         run: bal test --test-report --code-coverage --coverage-format=xml ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
+          BASE_URL: ${{ secrets.BASE_URL }}
+          MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }} 
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
