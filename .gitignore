@@ -1,17 +1,67 @@
-# resources folder
-/resources
+# Compiled class file
+*.class
+*.balx
+# Log file
+*.log
 
-# idea files
-*.idea
+#conf file
+ballerina.conf
+Config.toml
 
-# .ballerina files
-*.ballerina
+#lock file
+Ballerina.lock
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+!gradle-wrapper/*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# Ignore everything in this directory
+target
+.classpath
+.settings
+.project
+*.iml
+*.iws
+*.ipr
+.idea
+.m2
+.vscode/
+*.ballerina/
+
+# Ignore ballerina files
+accessToken.bal
+temp.bal.ballerina/
+target/
 .DS_Store
+
+#Ignore emp-wrapper java classes
+**/target
 
 # Ignore Gradle project-specific cache directory
 .gradle
 
+# Build files
+**/build/*
+
+# Json files created inside resources folder. Refer exception below.
+**/resources/*.json
+
+# Allow files in the bulk test folder
+!**/tests/resources/*
+
 # Ignore Gradle build output directory
 build
-
-*/bin

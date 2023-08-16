@@ -14,7 +14,27 @@
  * limitations under the License.
  *
  */
- 
-rootProject.name = 'module-ballerinax-azure-cosmosdb'
-include ':cosmosdb'
-include ':cosmosdb-native'
+
+plugins {
+    id "com.gradle.enterprise" version "3.2"
+}
+
+def projectName = 'azure-cosmosdb'
+rootProject.name = "ballerinax-${projectName}"
+
+include ":checkstyle"
+include ":${projectName}-native"
+include ":${projectName}-ballerina"
+include ":${projectName}-examples"
+
+project(':checkstyle').projectDir = file("build-config${File.separator}checkstyle")
+project(":${projectName}-native").projectDir = file('native')
+project(":${projectName}-ballerina").projectDir = file('ballerina')
+project(":${projectName}-examples").projectDir = file('examples')
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+        termsOfServiceAgree = 'yes'
+    }
+}
