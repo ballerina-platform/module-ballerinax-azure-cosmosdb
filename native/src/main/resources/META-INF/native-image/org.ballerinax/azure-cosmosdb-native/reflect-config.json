@@ -1,0 +1,536 @@
+[
+  {
+    "name": "com.azure.cosmos.implementation.ClientSideRequestStatistics$AddressResolutionStatistics",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "getEndTimeUTC",
+        "parameterTypes": []
+      },
+      {
+        "name": "getExceptionMessage",
+        "parameterTypes": []
+      },
+      {
+        "name": "getFaultInjectionEvaluationResults",
+        "parameterTypes": []
+      },
+      {
+        "name": "getFaultInjectionRuleId",
+        "parameterTypes": []
+      },
+      {
+        "name": "getStartTimeUTC",
+        "parameterTypes": []
+      },
+      {
+        "name": "getTargetEndpoint",
+        "parameterTypes": []
+      },
+      {
+        "name": "isForceCollectionRoutingMapRefresh",
+        "parameterTypes": []
+      },
+      {
+        "name": "isForceRefresh",
+        "parameterTypes": []
+      },
+      {
+        "name": "isInflightRequest",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.ClientSideRequestStatistics$ClientSideRequestStatisticsSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.ClientSideRequestStatistics$StoreResponseStatistics",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "getRequestOperationType",
+        "parameterTypes": []
+      },
+      {
+        "name": "getRequestResourceType",
+        "parameterTypes": []
+      },
+      {
+        "name": "getRequestResponseTimeUTC",
+        "parameterTypes": []
+      },
+      {
+        "name": "getRequestSessionToken",
+        "parameterTypes": []
+      },
+      {
+        "name": "getRequestStartTimeUTC",
+        "parameterTypes": []
+      },
+      {
+        "name": "getStoreResult",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.CompositeIndexUtilizationEntity",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.CosmosDiagnosticsSystemUsageSnapshot",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "getAvailableMemory",
+        "parameterTypes": []
+      },
+      {
+        "name": "getAvailableProcessors",
+        "parameterTypes": []
+      },
+      {
+        "name": "getSystemCpuLoad",
+        "parameterTypes": []
+      },
+      {
+        "name": "getUsedMemory",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.DatabaseAccount",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.DiagnosticsClientContext$DiagnosticsClientConfigSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.DiagnosticsInstantSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.DocumentCollection",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.IndexUtilizationInfo",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      },
+      {
+        "name": "setPotentialCompositeIndexes",
+        "parameterTypes": [
+          "java.util.List"
+        ]
+      },
+      {
+        "name": "setPotentialSingleIndexes",
+        "parameterTypes": [
+          "java.util.List"
+        ]
+      },
+      {
+        "name": "setUtilizedCompositeIndexes",
+        "parameterTypes": [
+          "java.util.List"
+        ]
+      },
+      {
+        "name": "setUtilizedSingleIndexes",
+        "parameterTypes": [
+          "java.util.List"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.MetadataDiagnosticsContext",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.MetadataDiagnosticsContext$MetaDataDiagnosticSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.MetadataDiagnosticsContext$MetadataType",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.OperationType",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.RequestTimeline",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.RequestTimeline$Event",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "getName",
+        "parameterTypes": []
+      },
+      {
+        "name": "getStartTime",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.ResourceType",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.RetryContext",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "getRetryCount",
+        "parameterTypes": []
+      },
+      {
+        "name": "getRetryLatency",
+        "parameterTypes": []
+      },
+      {
+        "name": "getStatusAndSubStatusCodes",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.SerializationDiagnosticsContext",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.SerializationDiagnosticsContext$SerializationDiagnosticsSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.SerializationDiagnosticsContext$SerializationType",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true
+  },
+  {
+    "name": "com.azure.cosmos.implementation.SingleIndexUtilizationEntity",
+    "allDeclaredFields": true,
+    "queryAllDeclaredMethods": true,
+    "queryAllDeclaredConstructors": true,
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      },
+      {
+        "name": "setFilterExpression",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "setFilterExpressionPrecision",
+        "parameterTypes": [
+          "boolean"
+        ]
+      },
+      {
+        "name": "setIndexDocumentExpression",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "setIndexImpactScore",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      },
+      {
+        "name": "setIndexPlanFullFidelity",
+        "parameterTypes": [
+          "boolean"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.RntbdConnectionStateListenerMetricsDiagnostics$RntbdConnectionStateListenerDiagnosticsJsonSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.StoreResultDiagnostics$StoreResultDiagnosticsSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdClientChannelPool$1"
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdContextNegotiator",
+    "methods": [
+      {
+        "name": "write",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.lang.Object",
+          "io.netty.channel.ChannelPromise"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdEndpointStatistics$RntbdEndpointStatsJsonSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdRequestEncoder"
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdRequestManager",
+    "methods": [
+      {
+        "name": "bind",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.net.SocketAddress",
+          "io.netty.channel.ChannelPromise"
+        ]
+      },
+      {
+        "name": "channelActive",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "channelInactive",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "channelRead",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.lang.Object"
+        ]
+      },
+      {
+        "name": "channelReadComplete",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "channelRegistered",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "channelUnregistered",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "channelWritabilityChanged",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "close",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "io.netty.channel.ChannelPromise"
+        ]
+      },
+      {
+        "name": "connect",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.net.SocketAddress",
+          "java.net.SocketAddress",
+          "io.netty.channel.ChannelPromise"
+        ]
+      },
+      {
+        "name": "deregister",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "io.netty.channel.ChannelPromise"
+        ]
+      },
+      {
+        "name": "disconnect",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "io.netty.channel.ChannelPromise"
+        ]
+      },
+      {
+        "name": "exceptionCaught",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.lang.Throwable"
+        ]
+      },
+      {
+        "name": "flush",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "read",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext"
+        ]
+      },
+      {
+        "name": "userEventTriggered",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.lang.Object"
+        ]
+      },
+      {
+        "name": "write",
+        "parameterTypes": [
+          "io.netty.channel.ChannelHandlerContext",
+          "java.lang.Object",
+          "io.netty.channel.ChannelPromise"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdResponseDecoder"
+  },
+  {
+    "name": "com.azure.cosmos.implementation.directconnectivity.rntbd.RntbdToken$PropertyFilter",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.implementation.routing.PartitionKeyInternal$PartitionKeyInternalJsonSerializer",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": []
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.models.PartitionKeyDefinition",
+    "methods": [
+      {
+        "name": "<init>",
+        "parameterTypes": [
+          "com.fasterxml.jackson.databind.node.ObjectNode"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "com.azure.cosmos.models.PartitionKind",
+    "methods": [
+      {
+        "name": "valueOf",
+        "parameterTypes": [
+          "java.lang.String"
+        ]
+      }
+    ]
+  }
+]
