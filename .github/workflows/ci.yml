@@ -1,9 +1,9 @@
 name: CI
 on:
   push:
-    branches-ignore:
-      - "automated/dependency_version_update"
-      - "automated/dependency_version_update_tmp"
+    branches:
+      - main
+      - 2201.[0-9]+.x
   repository_dispatch:
     types:
       check_connector_for_breaking_changes
@@ -45,14 +45,15 @@ jobs:
         run: bal pack ./ballerina
         env:
           JAVA_HOME: /usr/lib/jvm/default-jvm
-      
+
       # Test Ballerina Project
       - name: Ballerina Test
-        run: bal test --test-report --code-coverage --coverage-format=xml ./ballerina
+        if: github.event_name == 'push'
+        run: bal test --test-report --code-coverage --coverage-format=xml
         env:
-          JAVA_HOME: /usr/lib/jvm/default-jvm
           BASE_URL: ${{ secrets.BASE_URL }}
-          MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }} 
+          MASTER_OR_RESOURCE_TOKEN: ${{ secrets.MASTER_OR_RESOURCE_TOKEN }}
+          JAVA_HOME: /usr/lib/jvm/default-jvm
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
