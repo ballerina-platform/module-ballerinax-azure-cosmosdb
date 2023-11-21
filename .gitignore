@@ -1,15 +1,14 @@
-# Ignore Gradle project-specific cache directory
-.gradle
+# Compiled class file
+*.class
 
-# Build Files
-target
-build
+# Log file
+*.log
 
-# IDEA Files
-.idea/
-*.iml
-*.ipr
-*.iws
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
 
 # Package Files #
 !gradle/wrapper/gradle-wrapper.jar
@@ -21,25 +20,20 @@ build
 *.tar.gz
 *.rar
 
-# MacOS
-*.DS_Store
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
 
-# Ballerina
-velocity.log*
-*Ballerina.lock
+# Java related ignores
+build/
+target/
+.gradle/
 
-# VSCode
-.vscode
+# IDE-related files
+.idea
+.code
 .project
-.settings/
-ballerina/.project
-ballerina/.settings/
-build-config/checkstyle/.classpath
-build-config/checkstyle/.project
-build-config/checkstyle/.settings/
-native/.classpath
-native/.project
-native/.settings/
-test-utils/.classpath
-test-utils/.project
-test-utils/.settings/
+.settings
+.vscode
+
+# Ballerina related ignores
+Ballerina.lock
