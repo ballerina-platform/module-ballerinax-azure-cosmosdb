@@ -25,12 +25,6 @@ plugins {
 
 description = 'Ballerina - Azure Cosmosdb'
 
-ext.ballerinaLangVersion = project.ballerinaLangVersion
-ext.azureCosmosVersion = project.azureCosmosVersion
-ext.nettyVersion = project.nettyVersion
-ext.reactorNettyVersion = project.reactorNettyVersion
-ext.micrometerVersion = project.micrometerVersion
-
 allprojects {
     group = project.group
     version = project.version
