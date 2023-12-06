@@ -52,6 +52,7 @@ ballerina {
     langVersion = ballerinaLangVersion
     testCoverageParam = "--code-coverage --coverage-format=xml"
     isConnector = true
+    platform = "java17"
 }
 
 configurations {
