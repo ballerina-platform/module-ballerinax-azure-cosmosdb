@@ -33,49 +33,49 @@ artifactId = "netty-resolver-dns"
 version = "@netty.version@"
 path = "./lib/netty-resolver-dns-@netty.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
 version = "@netty.version@"
 path = "./lib/netty-handler-@netty.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
 version = "@netty.version@"
 path = "./lib/netty-transport-native-unix-common-@netty.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-core"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-core-@reactor.netty.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-@reactor.netty.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-http"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-http-@reactor.netty.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-observation"
 version = "@micrometer.version@"
 path = "./lib/micrometer-observation-@micrometer.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-core"
 version = "@micrometer.version@"
 path = "./lib/micrometer-core-@micrometer.version@.jar"
 
-[[platform.java11.dependency]]
+[[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-commons"
 version = "@micrometer.version@"
