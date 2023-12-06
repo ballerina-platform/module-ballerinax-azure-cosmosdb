@@ -37,3 +37,6 @@ target/
 
 # Ballerina related ignores
 Ballerina.lock
+
+# Gradle plugin related ignores
+docker.env
