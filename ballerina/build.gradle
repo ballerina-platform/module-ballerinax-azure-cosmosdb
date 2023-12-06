@@ -130,7 +130,6 @@ task commitTomlFiles {
 updateTomlFiles.dependsOn copyStdlibs
 
 build.dependsOn ":azure-cosmosdb-native:build"
-build.dependsOn "generatePomFileForMavenPublication"
 test.dependsOn ":azure-cosmosdb-native:build"
 publishToMavenLocal.dependsOn build
 publish.dependsOn build
