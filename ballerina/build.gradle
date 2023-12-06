@@ -127,9 +127,6 @@ task commitTomlFiles {
     }
 }
 
-updateTomlFiles.dependsOn copyStdlibs
-
+build.dependsOn copyToLib
 build.dependsOn ":azure-cosmosdb-native:build"
 test.dependsOn ":azure-cosmosdb-native:build"
-publishToMavenLocal.dependsOn build
-publish.dependsOn build
