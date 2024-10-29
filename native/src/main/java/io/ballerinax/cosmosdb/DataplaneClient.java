@@ -145,8 +145,8 @@ public class DataplaneClient {
     }
 
     public static Object patchDocument(Environment env, BString databaseId, BString containerId,
-                                        BString documentId, Object partitionKey, BMap document,
-                                        Object requestOptions) {
+                                       BString documentId, Object partitionKey, BMap document,
+                                       Object requestOptions) {
         try {
             CosmosContainer container = getContainer(databaseId, containerId);
             Object documentObject = objectMapper.readValue(document.toString(), Object.class);

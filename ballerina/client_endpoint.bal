@@ -165,15 +165,15 @@ public isolated client class DataPlaneClient {
         'class: "io.ballerinax.cosmosdb.DataplaneClient"
     } external;
 
-    // Patches a document.
-    // 
-    // + databaseId - ID of the database to which the container belongs
-    // + containerId - ID of the container which contains the document
-    // + documentId - ID of the document
-    // + partitionKey - The specific value related to the partition key field of the container
-    // + operations - An array of PatchOperation records specifying the operations to perform
-    // + requestOptions - Optional request options which can include a filterPredicate for conditional patching
-    // + return - DocumentResponse if successful, or error if failed
+    # Patches a document.
+    # 
+    # + databaseId - ID of the database to which the container belongs
+    # + containerId - ID of the container which contains the document
+    # + documentId - ID of the document
+    # + partitionKey - The specific value related to the partition key field of the container
+    # + operations - An array of PatchOperation records specifying the operations to perform
+    # + requestOptions - Optional request options which can include a filterPredicate for conditional patching
+    # + return - DocumentResponse if successful, or error if failed
     @display {label: "Patch Document"}
     remote isolated function patchDocument(@display {label: "Database ID"} string databaseId,
                                           @display {label: "Container ID"} string containerId,
