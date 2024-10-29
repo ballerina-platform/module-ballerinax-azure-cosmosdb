@@ -36,11 +36,6 @@ public function main() returns error? {
     log:printInfo("Patching a document in Cosmos DB");
 
     // Call to patchDocument should not include the condition directly
-    var response = azureCosmosClient->patchDocument(databaseId, containerId, documentId, patchOperations, partitionKeyValue);
-
-    if (response is cosmosdb:DocumentResponse) {
-        log:printInfo("Document patched successfully: " + response.toString());
-    } else {
-        log:printError("Failed to patch document: " + response.message());
-    }
+    cosmosdb:DocumentResponse response = check azureCosmosClient->patchDocument(databaseId, containerId, documentId, patchOperations, partitionKeyValue);
+    log:printInfo("Document patched successfully: " + response.toString());
 }
