@@ -144,6 +144,24 @@ public class DataplaneClient {
         }
     }
 
+    public static Object patchDocument(Environment env, BString databaseId, BString containerId,
+                                       BString documentId, Object partitionKey, BMap document,
+                                       Object requestOptions) {
+        try {
+            CosmosContainer container = getContainer(databaseId, containerId);
+            Object documentObject = objectMapper.readValue(document.toString(), Object.class);
+            CosmosPatchItemRequestOptions patchOptions = new CosmosPatchItemRequestOptions();
+            if (requestOptions != null) {
+                patchOptions = createRequestOptions(requestOptions);
+            }
+            CosmosPatchItemResponse response = container.patchItem(documentId.getValue(),
+                    createPartitionKey(partitionKey), documentObject, patchOptions);
+            return createDocumentResponse(response);
+        } catch (Exception e) {
+            return BallerinaErrorGenerator.createBallerinaDatabaseError(e);
+        }
+    }
+
     public static Object getDocumentList(Environment env, BObject client, BString databaseId, BString containerId,
                                          Object partitionKey, Object queryOptions, BTypedesc recordType) {
         try {
