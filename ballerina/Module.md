@@ -5,6 +5,14 @@ features provided by Cosmos DB such as operations on JavaScript language-integra
 permissions, etc.
 
 This module supports [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/) version `2018-12-31`.
+
+### Key Features
+
+- Execute CRUD operations on Azure Cosmos DB resources
+- Manage databases, containers, and documents
+- Support for SQL queries across partitions
+- Access stored procedures, triggers, and user-defined functions
+
 ## Prerequisites
 Before using this connector in your Ballerina application, complete the following:
 
