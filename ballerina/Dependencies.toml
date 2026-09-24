@@ -344,7 +344,7 @@ modules = [
 [[package]]
 org = "ballerinax"
 name = "azure_cosmosdb"
-version = "4.2.0"
+version = "4.3.0"
 dependencies = [
 	{org = "ballerina", name = "crypto"},
 	{org = "ballerina", name = "http"},

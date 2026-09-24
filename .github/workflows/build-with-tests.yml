@@ -1,0 +1,116 @@
+name: Build with Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      java-version:
+        description: JDK version (defaults to the one required by the Ballerina lang version)
+        required: false
+        type: string
+        default: ""
+      lang-version:
+        description: Ballerina lang version (defaults to the module's version, or the first one requiring the given JDK)
+        required: false
+        type: string
+        default: ""
+  workflow_call:
+    inputs:
+      java-version:
+        required: false
+        type: string
+        default: ""
+      lang-version:
+        required: false
+        type: string
+        default: ""
+
+jobs:
+  ubuntu-build:
+    name: Build with Tests
+    if: ${{ github.repository_owner == 'ballerina-platform' }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      - name: Resolve module Java version
+        id: module-java
+        uses: ballerina-platform/ballerina-library/.github/actions/resolve-java-version@main
+
+      - name: Resolve Ballerina lang version
+        id: lang
+        env:
+          JAVA_INPUT: ${{ inputs.java-version }}
+          LANG_INPUT: ${{ inputs.lang-version }}
+          MODULE_JAVA: ${{ steps.module-java.outputs.java-version }}
+          MODULE_LANG: ${{ steps.module-java.outputs.lang-version }}
+        run: |
+          LANG_VERSION="$LANG_INPUT"
+          if [ -z "$LANG_VERSION" ]; then
+            if [ -z "$JAVA_INPUT" ] || [ "$JAVA_INPUT" = "$MODULE_JAVA" ]; then
+              LANG_VERSION="$MODULE_LANG"
+            else
+              # First Ballerina lang version that requires each JDK tier
+              case "$JAVA_INPUT" in
+                17) LANG_VERSION="2201.8.0" ;;
+                21) LANG_VERSION="2201.11.0" ;;
+                25) LANG_VERSION="2201.14.0-20260911-112100-0f421c6f" ;;
+                *)
+                  echo "::error::java-version '$JAVA_INPUT' has no default lang-version mapping; pass an explicit lang-version input"
+                  exit 1
+                  ;;
+              esac
+            fi
+          fi
+
+          # Timestamped snapshots have no published distribution, so the CLI comes from nightly
+          if [[ "$LANG_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            SETUP_BALLERINA_VERSION="$LANG_VERSION"
+          else
+            SETUP_BALLERINA_VERSION="nightly"
+          fi
+
+          echo "Ballerina lang version: $LANG_VERSION (CLI: $SETUP_BALLERINA_VERSION)"
+          echo "lang-version=$LANG_VERSION" >> "$GITHUB_OUTPUT"
+          echo "setup-ballerina-version=$SETUP_BALLERINA_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve target Java version
+        id: target-java
+        uses: ballerina-platform/ballerina-library/.github/actions/resolve-java-version@main
+        with:
+          lang-version-override: ${{ steps.lang.outputs.lang-version }}
+
+      - name: Override Ballerina lang version
+        if: ${{ steps.lang.outputs.lang-version != steps.module-java.outputs.lang-version }}
+        env:
+          LANG_VERSION: ${{ steps.lang.outputs.lang-version }}
+        run: perl -pi -e 's/^\s*ballerinaLangVersion=.*/ballerinaLangVersion=$ENV{LANG_VERSION}/' gradle.properties
+
+      - name: Set Up Ballerina
+        uses: ballerina-platform/setup-ballerina@v1.1.5
+        with:
+          version: ${{ steps.lang.outputs.setup-ballerina-version }}
+
+      - name: Set up JDK ${{ inputs.java-version || steps.target-java.outputs.java-version }}
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ inputs.java-version || steps.target-java.outputs.java-version }}
+
+      - name: Set ENV Variables
+        run: |
+          echo -e '${{ toJson(secrets) }}' | jq -r 'to_entries[] | .key + "=" + .value' >> "$GITHUB_ENV"
+
+      - name: Build and Test the Package
+        env:
+          packageUser: ${{ github.actor }}
+          packagePAT: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./gradlew build -x test
+          ./gradlew test
+
+      - name: Generate CodeCov Report
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: ballerina-platform/${{ github.event.repository.name }}
