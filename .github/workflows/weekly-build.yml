@@ -4,12 +4,42 @@ on:
   schedule:
     - cron: "15 2 * * 1"
   workflow_dispatch:
+    inputs:
+      java-version:
+        description: JDK version (defaults to the one required by the Ballerina lang version)
+        required: false
+        type: string
+        default: ""
+      lang-version:
+        description: Ballerina lang version (defaults to the module's version, or the first one requiring the given JDK)
+        required: false
+        type: string
+        default: ""
 
 jobs:
-  call_workflow:
-    name: Run Weekly Build Workflow
-    if: ${{ github.repository_owner == 'ballerina-platform' }}
-    uses: ballerina-platform/ballerina-library/.github/workflows/daily-build-connector-template.yml@main
+  build:
+    name: Run Build with Tests Workflow
+    uses: ./.github/workflows/build-with-tests.yml
     secrets: inherit
     with:
-      repo-name: module-ballerinax-azure-cosmosdb
+      java-version: ${{ inputs.java-version }}
+      lang-version: ${{ inputs.lang-version }}
+
+  notify-failure:
+    name: Notify Failure
+    needs: build
+    if: ${{ failure() }}
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Notify failure
+        run: |
+          curl -X POST \
+          'https://api.github.com/repos/ballerina-platform/ballerina-release/dispatches' \
+          -H 'Accept: application/vnd.github.v3+json' \
+          -H 'Authorization: Bearer ${{ secrets.BALLERINA_BOT_TOKEN }}' \
+          --data "{
+            \"event_type\": \"notify-build-failure\",
+            \"client_payload\": {
+              \"repoName\": \"module-ballerinax-azure-cosmosdb\"
+            }
+          }"

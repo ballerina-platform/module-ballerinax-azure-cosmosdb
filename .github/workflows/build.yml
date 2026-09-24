@@ -1,4 +1,4 @@
-name: CI
+name: Build
 
 on:
   push:
@@ -16,3 +16,4 @@ jobs:
     secrets: inherit
     with:
       repo-name: module-ballerinax-azure-cosmosdb
+      additional-test-flags: "-x test"
