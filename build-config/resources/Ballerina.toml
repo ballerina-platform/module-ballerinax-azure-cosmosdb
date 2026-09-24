@@ -64,6 +64,12 @@ version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-http-@reactor.netty.version@.jar"
 
 [[platform.java17.dependency]]
+groupId = "io.projectreactor"
+artifactId = "reactor-core"
+version = "@reactor.core.version@"
+path = "./lib/reactor-core-@reactor.core.version@.jar"
+
+[[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-observation"
 version = "@micrometer.version@"
