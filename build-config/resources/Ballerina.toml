@@ -28,6 +28,72 @@ version = "@azure.cosmosdb.version@"
 path = "./lib/azure-cosmos-@azure.cosmosdb.version@.jar"
 
 [[platform.java17.dependency]]
+groupId = "com.azure"
+artifactId = "azure-core"
+version = "@azure.core.version@"
+path = "./lib/azure-core-@azure.core.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.azure"
+artifactId = "azure-json"
+version = "@azure.json.version@"
+path = "./lib/azure-json-@azure.json.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "io.projectreactor"
+artifactId = "reactor-core"
+version = "@reactor.core.version@"
+path = "./lib/reactor-core-@reactor.core.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "org.reactivestreams"
+artifactId = "reactive-streams"
+version = "@reactive.streams.version@"
+path = "./lib/reactive-streams-@reactive.streams.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.core"
+artifactId = "jackson-core"
+version = "@jackson.version@"
+path = "./lib/jackson-core-@jackson.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.core"
+artifactId = "jackson-databind"
+version = "@jackson.version@"
+path = "./lib/jackson-databind-@jackson.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.core"
+artifactId = "jackson-annotations"
+version = "@jackson.version@"
+path = "./lib/jackson-annotations-@jackson.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.datatype"
+artifactId = "jackson-datatype-jsr310"
+version = "@jackson.version@"
+path = "./lib/jackson-datatype-jsr310-@jackson.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.module"
+artifactId = "jackson-module-afterburner"
+version = "@jackson.version@"
+path = "./lib/jackson-module-afterburner-@jackson.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "io.dropwizard.metrics"
+artifactId = "metrics-core"
+version = "@dropwizard.metrics.version@"
+path = "./lib/metrics-core-@dropwizard.metrics.version@.jar"
+
+[[platform.java17.dependency]]
+groupId = "org.latencyutils"
+artifactId = "LatencyUtils"
+version = "@latency.utils.version@"
+path = "./lib/LatencyUtils-@latency.utils.version@.jar"
+
+[[platform.java17.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
 version = "@netty.version@"
