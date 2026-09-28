@@ -40,6 +40,12 @@ version = "@azure.json.version@"
 path = "./lib/azure-json-@azure.json.version@.jar"
 
 [[platform.java17.dependency]]
+groupId = "com.azure"
+artifactId = "azure-xml"
+version = "@azure.xml.version@"
+path = "./lib/azure-xml-@azure.xml.version@.jar"
+
+[[platform.java17.dependency]]
 groupId = "io.projectreactor"
 artifactId = "reactor-core"
 version = "@reactor.core.version@"

@@ -70,6 +70,9 @@ dependencies {
     externalJars(group: 'com.azure', name: 'azure-json', version: "${azureJsonVersion}") {
         transitive = false
     }
+    externalJars(group: 'com.azure', name: 'azure-xml', version: "${azureXmlVersion}") {
+        transitive = false
+    }
 
     /* Reactor dependencies */
     externalJars(group: 'io.projectreactor', name: 'reactor-core', version: "${reactorCoreVersion}") {
@@ -154,6 +157,7 @@ task updateTomlFiles {
         newConfig = newConfig.replace("@micrometer.version@", stdlibDependentMicrometerVersion)
         newConfig = newConfig.replace("@azure.core.version@", project.azureCoreVersion)
         newConfig = newConfig.replace("@azure.json.version@", project.azureJsonVersion)
+        newConfig = newConfig.replace("@azure.xml.version@", project.azureXmlVersion)
         newConfig = newConfig.replace("@reactor.core.version@", project.reactorCoreVersion)
         newConfig = newConfig.replace("@reactive.streams.version@", project.reactiveStreamsVersion)
         newConfig = newConfig.replace("@jackson.version@", project.jacksonVersion)
