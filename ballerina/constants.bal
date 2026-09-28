@@ -270,6 +270,6 @@ const COLON_WITH_SPACE = " : ";
 const FORWARD_SLASH = "/";
 const EMPTY_STRING = "";
 const NEW_LINE = "\n";
-const HTTPS_REGEX = "^(https):#";
+const HTTPS_REGEX = "^https?://";
 const TRUE = "true";
 const EMPTY_ARRAY_STRING = "[]";
