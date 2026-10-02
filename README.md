@@ -1,6 +1,6 @@
 Ballerina Azure Cosmos DB Connector
 ===================
-[![Build Status](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/workflows/CI/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/build.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/build.yml)
 [![codecov](https://codecov.io/gh/ballerina-platform/module-ballerinax-azure-cosmosdb/branch/main/graph/badge.svg)](https://codecov.io/gh/ballerina-platform/module-ballerinax-azure-cosmosdb)
 [![Trivy](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/trivy-scan.yml/badge.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/actions/workflows/trivy-scan.yml)
 [![GitHub Last Commit](https://img.shields.io/github/last-commit/ballerina-platform/module-ballerinax-azure-cosmosdb.svg)](https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb/commits/master)
