@@ -18,7 +18,6 @@ import ballerina/io;
 import ballerina/jballerina.java;
 import ballerina/log;
 import ballerina/os;
-import ballerina/regex;
 import ballerinax/azure_cosmosdb as cosmosdb;
 
 cosmosdb:ConnectionConfig config = {
@@ -168,7 +167,7 @@ function closeRc(io:ReadableCharacterChannel rc) {
 function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
+        stringUUID = 'string:substring(re `-`.replaceAll(stringUUID, ""), 1, 4);
         return stringUUID ?: "";
     } else {
         return "";
