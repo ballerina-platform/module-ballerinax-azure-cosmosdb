@@ -18,8 +18,8 @@ graalvmCompatible = true
 [[platform.java17.dependency]]
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
-version = "4.3.0"
-path = "../native/build/libs/azure-cosmosdb-native-4.3.0.jar"
+version = "4.3.0-SNAPSHOT"
+path = "../native/build/libs/azure-cosmosdb-native-4.3.0-SNAPSHOT.jar"
 
 [[platform.java17.dependency]]
 groupId = "com.azure"
