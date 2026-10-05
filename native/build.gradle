@@ -48,9 +48,9 @@ checkstyle {
 checkstyleMain.dependsOn(":checkstyle:downloadCheckstyleRuleFiles")
 
 spotbugsMain {
-    effort "max"
-    reportLevel "low"
-    reportsDir = file("$project.buildDir/reports/spotbugs")
+    effort = 'max'
+    reportLevel = 'low'
+    reportsDir = layout.buildDirectory.dir("reports/spotbugs")
     reports {
         html.enabled true
         text.enabled = true
