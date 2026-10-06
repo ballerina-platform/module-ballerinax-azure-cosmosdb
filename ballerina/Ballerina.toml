@@ -91,8 +91,8 @@ path = "./lib/jackson-module-afterburner-2.18.11.jar"
 [[platform.java21.dependency]]
 groupId = "io.dropwizard.metrics"
 artifactId = "metrics-core"
-version = "4.1.0"
-path = "./lib/metrics-core-4.1.0.jar"
+version = "4.1.36"
+path = "./lib/metrics-core-4.1.36.jar"
 
 [[platform.java21.dependency]]
 groupId = "org.latencyutils"
@@ -103,20 +103,20 @@ path = "./lib/LatencyUtils-2.0.3.jar"
 [[platform.java21.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
-version = "4.1.137.Final"
-path = "./lib/netty-resolver-dns-4.1.137.Final.jar"
+version = "4.1.138.Final"
+path = "./lib/netty-resolver-dns-4.1.138.Final.jar"
 
 [[platform.java21.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
-version = "4.1.137.Final"
-path = "./lib/netty-handler-4.1.137.Final.jar"
+version = "4.1.138.Final"
+path = "./lib/netty-handler-4.1.138.Final.jar"
 
 [[platform.java21.dependency]]
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
-version = "4.1.137.Final"
-path = "./lib/netty-transport-native-unix-common-4.1.137.Final.jar"
+version = "4.1.138.Final"
+path = "./lib/netty-transport-native-unix-common-4.1.138.Final.jar"
 
 [[platform.java21.dependency]]
 groupId = "io.projectreactor.netty"
