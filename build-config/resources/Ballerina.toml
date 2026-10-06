@@ -1,153 +1,154 @@
 [package]
-distribution = "2201.8.0"
+distribution = "2201.11.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
 version = "@toml.version@"
 authors = ["Ballerina"]
 keywords = ["Type/Connector", "IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft", "Area/Database"]
 icon = "icon.png"
+readme = "Package.md"
 repository = "https://github.com/ballerina-platform/module-ballerinax-azure-cosmosdb"
 license = ["Apache-2.0"]
 
 [build-options]
 observabilityIncluded=true
 
-[platform.java17]
+[platform.java21]
 graalvmCompatible = true
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
 version = "@project.version@"
 path = "../native/build/libs/azure-cosmosdb-native-@project.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.azure"
 artifactId = "azure-cosmos"
 version = "@azure.cosmosdb.version@"
 path = "./lib/azure-cosmos-@azure.cosmosdb.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.azure"
 artifactId = "azure-core"
 version = "@azure.core.version@"
 path = "./lib/azure-core-@azure.core.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.azure"
 artifactId = "azure-json"
 version = "@azure.json.version@"
 path = "./lib/azure-json-@azure.json.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.azure"
 artifactId = "azure-xml"
 version = "@azure.xml.version@"
 path = "./lib/azure-xml-@azure.xml.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.projectreactor"
 artifactId = "reactor-core"
 version = "@reactor.core.version@"
 path = "./lib/reactor-core-@reactor.core.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.reactivestreams"
 artifactId = "reactive-streams"
 version = "@reactive.streams.version@"
 path = "./lib/reactive-streams-@reactive.streams.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.fasterxml.jackson.core"
 artifactId = "jackson-core"
 version = "@jackson.version@"
 path = "./lib/jackson-core-@jackson.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.fasterxml.jackson.core"
 artifactId = "jackson-databind"
 version = "@jackson.version@"
 path = "./lib/jackson-databind-@jackson.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.fasterxml.jackson.core"
 artifactId = "jackson-annotations"
 version = "@jackson.version@"
 path = "./lib/jackson-annotations-@jackson.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.fasterxml.jackson.datatype"
 artifactId = "jackson-datatype-jsr310"
 version = "@jackson.version@"
 path = "./lib/jackson-datatype-jsr310-@jackson.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "com.fasterxml.jackson.module"
 artifactId = "jackson-module-afterburner"
 version = "@jackson.version@"
 path = "./lib/jackson-module-afterburner-@jackson.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.dropwizard.metrics"
 artifactId = "metrics-core"
 version = "@dropwizard.metrics.version@"
 path = "./lib/metrics-core-@dropwizard.metrics.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "org.latencyutils"
 artifactId = "LatencyUtils"
 version = "@latency.utils.version@"
 path = "./lib/LatencyUtils-@latency.utils.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
 version = "@netty.version@"
 path = "./lib/netty-resolver-dns-@netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
 version = "@netty.version@"
 path = "./lib/netty-handler-@netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
 version = "@netty.version@"
 path = "./lib/netty-transport-native-unix-common-@netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-core"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-core-@reactor.netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-@reactor.netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-http"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-http-@reactor.netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-observation"
 version = "@micrometer.version@"
 path = "./lib/micrometer-observation-@micrometer.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-core"
 version = "@micrometer.version@"
 path = "./lib/micrometer-core-@micrometer.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java21.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-commons"
 version = "@micrometer.version@"

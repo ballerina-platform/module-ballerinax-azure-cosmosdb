@@ -20,9 +20,9 @@ package io.ballerinax.cosmosdb;
 
 import com.azure.cosmos.models.CosmosStoredProcedureProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.ballerina.runtime.api.PredefinedTypes;
 import io.ballerina.runtime.api.creators.TypeCreator;
 import io.ballerina.runtime.api.creators.ValueCreator;
+import io.ballerina.runtime.api.types.PredefinedTypes;
 import io.ballerina.runtime.api.types.RecordType;
 import io.ballerina.runtime.api.types.UnionType;
 import io.ballerina.runtime.api.values.BObject;
