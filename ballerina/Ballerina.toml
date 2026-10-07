@@ -2,7 +2,7 @@
 distribution = "2201.8.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
-version = "4.2.0"
+version = "4.3.0"
 authors = ["Ballerina"]
 keywords = ["Type/Connector", "IT Operations/Databases", "Cost/Paid", "Vendor/Microsoft", "Area/Database"]
 icon = "icon.png"
@@ -18,66 +18,138 @@ graalvmCompatible = true
 [[platform.java17.dependency]]
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
-version = "4.2.0"
-path = "../native/build/libs/azure-cosmosdb-native-4.2.0.jar"
+version = "4.3.0-SNAPSHOT"
+path = "../native/build/libs/azure-cosmosdb-native-4.3.0-SNAPSHOT.jar"
 
 [[platform.java17.dependency]]
 groupId = "com.azure"
 artifactId = "azure-cosmos"
-version = "4.52.0"
-path = "./lib/azure-cosmos-4.52.0.jar"
+version = "4.83.0"
+path = "./lib/azure-cosmos-4.83.0.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.azure"
+artifactId = "azure-core"
+version = "1.59.1"
+path = "./lib/azure-core-1.59.1.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.azure"
+artifactId = "azure-json"
+version = "1.5.1"
+path = "./lib/azure-json-1.5.1.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.azure"
+artifactId = "azure-xml"
+version = "1.2.1"
+path = "./lib/azure-xml-1.2.1.jar"
+
+[[platform.java17.dependency]]
+groupId = "io.projectreactor"
+artifactId = "reactor-core"
+version = "3.7.19"
+path = "./lib/reactor-core-3.7.19.jar"
+
+[[platform.java17.dependency]]
+groupId = "org.reactivestreams"
+artifactId = "reactive-streams"
+version = "1.0.4"
+path = "./lib/reactive-streams-1.0.4.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.core"
+artifactId = "jackson-core"
+version = "2.18.11"
+path = "./lib/jackson-core-2.18.11.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.core"
+artifactId = "jackson-databind"
+version = "2.18.11"
+path = "./lib/jackson-databind-2.18.11.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.core"
+artifactId = "jackson-annotations"
+version = "2.18.11"
+path = "./lib/jackson-annotations-2.18.11.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.datatype"
+artifactId = "jackson-datatype-jsr310"
+version = "2.18.11"
+path = "./lib/jackson-datatype-jsr310-2.18.11.jar"
+
+[[platform.java17.dependency]]
+groupId = "com.fasterxml.jackson.module"
+artifactId = "jackson-module-afterburner"
+version = "2.18.11"
+path = "./lib/jackson-module-afterburner-2.18.11.jar"
+
+[[platform.java17.dependency]]
+groupId = "io.dropwizard.metrics"
+artifactId = "metrics-core"
+version = "4.1.0"
+path = "./lib/metrics-core-4.1.0.jar"
+
+[[platform.java17.dependency]]
+groupId = "org.latencyutils"
+artifactId = "LatencyUtils"
+version = "2.0.3"
+path = "./lib/LatencyUtils-2.0.3.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
-version = "4.1.100.Final"
-path = "./lib/netty-resolver-dns-4.1.100.Final.jar"
+version = "4.1.137.Final"
+path = "./lib/netty-resolver-dns-4.1.137.Final.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
-version = "4.1.100.Final"
-path = "./lib/netty-handler-4.1.100.Final.jar"
+version = "4.1.137.Final"
+path = "./lib/netty-handler-4.1.137.Final.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
-version = "4.1.100.Final"
-path = "./lib/netty-transport-native-unix-common-4.1.100.Final.jar"
+version = "4.1.137.Final"
+path = "./lib/netty-transport-native-unix-common-4.1.137.Final.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-core"
-version = "1.1.13"
-path = "./lib/reactor-netty-core-1.1.13.jar"
+version = "1.2.18"
+path = "./lib/reactor-netty-core-1.2.18.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty"
-version = "1.1.13"
-path = "./lib/reactor-netty-1.1.13.jar"
+version = "1.2.18"
+path = "./lib/reactor-netty-1.2.18.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-http"
-version = "1.1.13"
-path = "./lib/reactor-netty-http-1.1.13.jar"
+version = "1.2.18"
+path = "./lib/reactor-netty-http-1.2.18.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-observation"
-version = "1.12.0"
-path = "./lib/micrometer-observation-1.12.0.jar"
+version = "1.15.12"
+path = "./lib/micrometer-observation-1.15.12.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-core"
-version = "1.12.0"
-path = "./lib/micrometer-core-1.12.0.jar"
+version = "1.15.12"
+path = "./lib/micrometer-core-1.15.12.jar"
 
 [[platform.java17.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-commons"
-version = "1.12.0"
-path = "./lib/micrometer-commons-1.12.0.jar"
+version = "1.15.12"
+path = "./lib/micrometer-commons-1.15.12.jar"
 
