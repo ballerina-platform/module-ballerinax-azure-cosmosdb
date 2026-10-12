@@ -119,6 +119,12 @@ version = "@netty.version@"
 path = "./lib/netty-transport-native-unix-common-@netty.version@.jar"
 
 [[platform.java25.dependency]]
+groupId = "io.netty"
+artifactId = "netty-codec-classes-quic"
+version = "@netty.version@"
+path = "./lib/netty-codec-classes-quic-@netty.version@.jar"
+
+[[platform.java25.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-core"
 version = "@reactor.netty.version@"

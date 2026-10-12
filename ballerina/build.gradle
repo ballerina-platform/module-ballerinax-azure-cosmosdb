@@ -126,6 +126,10 @@ dependencies {
     externalJars(group: 'io.netty', name: 'netty-transport-native-unix-common', version: "${nettyVersion}") {
         transitive = false
     }
+    // reactor-netty 1.3 calls Quic.isAvailable() when it sets up TLS, so the QUIC classes must be on the classpath
+    externalJars(group: 'io.netty', name: 'netty-codec-classes-quic', version: "${nettyVersion}") {
+        transitive = false
+    }
 
     /* Reactor Netty dependencies */
     externalJars(group: 'io.projectreactor.netty', name: 'reactor-netty', version: "${reactorNettyVersion}") {
