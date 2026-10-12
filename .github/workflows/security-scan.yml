@@ -1,4 +1,4 @@
-name: Trivy
+name: Security Scan
 
 on:
   workflow_dispatch:
@@ -7,7 +7,10 @@ on:
 
 jobs:
   call_workflow:
-    name: Run Trivy Scan Workflow
+    name: Run Security Scan Workflow
     if: ${{ github.repository_owner == 'ballerina-platform' }}
-    uses: ballerina-platform/ballerina-library/.github/workflows/trivy-scan-template.yml@main
-    secrets: inherit
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    uses: ballerina-platform/ballerina-library/.github/workflows/security-scan-template.yml@main
