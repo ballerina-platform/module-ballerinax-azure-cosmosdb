@@ -71,7 +71,51 @@ dependencies {
     externalJars(group: 'com.azure', name: 'azure-cosmos', version: "${azureCosmosVersion}") {
         transitive = false
     }
-    
+    externalJars(group: 'com.azure', name: 'azure-core', version: "${azureCoreVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.azure', name: 'azure-json', version: "${azureJsonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.azure', name: 'azure-xml', version: "${azureXmlVersion}") {
+        transitive = false
+    }
+
+    /* Reactor dependencies */
+    externalJars(group: 'io.projectreactor', name: 'reactor-core', version: "${reactorCoreVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'org.reactivestreams', name: 'reactive-streams', version: "${reactiveStreamsVersion}") {
+        transitive = false
+    }
+
+    /* Jackson dependencies */
+    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: "${jacksonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: "${jacksonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: "${jacksonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310',
+            version: "${jacksonVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'com.fasterxml.jackson.module', name: 'jackson-module-afterburner',
+            version: "${jacksonVersion}") {
+        transitive = false
+    }
+
+    /* Metrics dependencies */
+    externalJars(group: 'io.dropwizard.metrics', name: 'metrics-core', version: "${dropwizardMetricsVersion}") {
+        transitive = false
+    }
+    externalJars(group: 'org.latencyutils', name: 'LatencyUtils', version: "${latencyUtilsVersion}") {
+        transitive = false
+    }
+
     /* Netty dependencies */
     externalJars(group: 'io.netty', name: 'netty-resolver-dns', version: "${nettyVersion}") {
         transitive = false
@@ -93,9 +137,6 @@ dependencies {
     externalJars(group: 'io.projectreactor.netty', name: 'reactor-netty-http', version: "${reactorNettyVersion}") {
         transitive = false
     }
-    externalJars(group: 'io.projectreactor', name: 'reactor-core', version: "${reactorCoreVersion}") {
-        transitive = false
-    }
 
     /* Micrometer dependencies */
     externalJars(group: 'io.micrometer', name: 'micrometer-core', version: "${micrometerVersion}") {
@@ -114,15 +155,21 @@ task updateTomlFiles {
         def stdlibDependentAzureCosmosVersion = project.azureCosmosVersion
         def stdlibDependentNettyVersion = project.nettyVersion
         def stdlibDependentReactorNettyVersion = project.reactorNettyVersion;
-        def stdlibDependentReactorCoreVersion = project.reactorCoreVersion;
         def stdlibDependentMicrometerVersion = project.micrometerVersion;
         def newConfig = ballerinaTomlFilePlaceHolder.text.replace("@project.version@", project.version)
         newConfig = newConfig.replace("@toml.version@", tomlVersion)
         newConfig = newConfig.replace("@azure.cosmosdb.version@", stdlibDependentAzureCosmosVersion)
         newConfig = newConfig.replace("@netty.version@", stdlibDependentNettyVersion)
         newConfig = newConfig.replace("@reactor.netty.version@", stdlibDependentReactorNettyVersion)
-        newConfig = newConfig.replace("@reactor.core.version@", stdlibDependentReactorCoreVersion)
         newConfig = newConfig.replace("@micrometer.version@", stdlibDependentMicrometerVersion)
+        newConfig = newConfig.replace("@azure.core.version@", project.azureCoreVersion)
+        newConfig = newConfig.replace("@azure.json.version@", project.azureJsonVersion)
+        newConfig = newConfig.replace("@azure.xml.version@", project.azureXmlVersion)
+        newConfig = newConfig.replace("@reactor.core.version@", project.reactorCoreVersion)
+        newConfig = newConfig.replace("@reactive.streams.version@", project.reactiveStreamsVersion)
+        newConfig = newConfig.replace("@jackson.version@", project.jacksonVersion)
+        newConfig = newConfig.replace("@dropwizard.metrics.version@", project.dropwizardMetricsVersion)
+        newConfig = newConfig.replace("@latency.utils.version@", project.latencyUtilsVersion)
         ballerinaTomlFile.text = newConfig
     }
 }
@@ -144,3 +191,5 @@ task commitTomlFiles {
 build.dependsOn copyToLib
 build.dependsOn ":azure-cosmosdb-native:build"
 test.dependsOn ":azure-cosmosdb-native:build"
+publishToMavenLocal.dependsOn build
+publish.dependsOn build
