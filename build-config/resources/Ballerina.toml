@@ -1,5 +1,5 @@
 [package]
-distribution = "2201.8.0"
+distribution = "2201.14.0"
 org= "ballerinax"
 name= "azure_cosmosdb"
 version = "@toml.version@"
@@ -12,76 +12,76 @@ license = ["Apache-2.0"]
 [build-options]
 observabilityIncluded=true
 
-[platform.java17]
+[platform.java25]
 graalvmCompatible = true
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.ballerinax"
 artifactId = "cosmosdb"
 version = "@project.version@"
 path = "../native/build/libs/azure-cosmosdb-native-@project.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "com.azure"
 artifactId = "azure-cosmos"
 version = "@azure.cosmosdb.version@"
 path = "./lib/azure-cosmos-@azure.cosmosdb.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.netty"
 artifactId = "netty-resolver-dns"
 version = "@netty.version@"
 path = "./lib/netty-resolver-dns-@netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.netty"
 artifactId = "netty-handler"
 version = "@netty.version@"
 path = "./lib/netty-handler-@netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.netty"
 artifactId = "netty-transport-native-unix-common"
 version = "@netty.version@"
 path = "./lib/netty-transport-native-unix-common-@netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-core"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-core-@reactor.netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-@reactor.netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.projectreactor.netty"
 artifactId = "reactor-netty-http"
 version = "@reactor.netty.version@"
 path = "./lib/reactor-netty-http-@reactor.netty.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.projectreactor"
 artifactId = "reactor-core"
 version = "@reactor.core.version@"
 path = "./lib/reactor-core-@reactor.core.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-observation"
 version = "@micrometer.version@"
 path = "./lib/micrometer-observation-@micrometer.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-core"
 version = "@micrometer.version@"
 path = "./lib/micrometer-core-@micrometer.version@.jar"
 
-[[platform.java17.dependency]]
+[[platform.java25.dependency]]
 groupId = "io.micrometer"
 artifactId = "micrometer-commons"
 version = "@micrometer.version@"
