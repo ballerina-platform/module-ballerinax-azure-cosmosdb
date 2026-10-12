@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [Unreleased]
 
 ### Changed
+- Migrated to Java 25 and bumped the minimum supported Ballerina distribution to Swan Lake Update 14 (`2201.14.0`)
+- Updated Netty to `4.2.18.Final`, `reactor-netty` to `1.3.7` and `reactor-core` to `3.8.7`, and added `netty-codec-classes-quic` required by `reactor-netty` `1.3`
+- Upgraded Gradle to `9.5.1` and the Ballerina Gradle plugin to `4.0.0`
+- Replaced the Trivy scan workflow with the centralized security scan, and the live tests now run weekly or on demand
+
+## [4.4.0] - 2026-10-12
+
+### Changed
 - Migrated to Java 21 and bumped the minimum supported Ballerina distribution to Swan Lake Update 11 (`2201.11.0`)
 - Updated Netty to `4.1.138.Final` and `metrics-core` to `4.1.36`
 

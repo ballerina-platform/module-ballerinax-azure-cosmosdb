@@ -17,3 +17,4 @@ jobs:
     secrets: inherit
     with:
       repo-name: module-ballerinax-azure-cosmosdb
+      additional-test-flags: "-x test"
