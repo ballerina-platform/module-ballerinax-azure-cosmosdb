@@ -19,7 +19,6 @@ import ballerina/url;
 import ballerina/http;
 import ballerina/jballerina.java;
 import ballerina/lang.array;
-import ballerina/regex;
 import ballerina/time;
 
 # Extract the type of token used for accessing the Cosmos DB.
@@ -40,12 +39,27 @@ isolated function getTokenType(string token) returns string {
 # + url - The Base URL given by the user from which we want to extract host
 # + return - String representing the resource id
 isolated function getHost(string url) returns string {
-    string replacedString = regex:replace(url, HTTPS_REGEX, EMPTY_STRING);
+    string replacedString = HTTPS_REGEX.replace(url, EMPTY_STRING);
     int? lastIndex = replacedString.lastIndexOf(FORWARD_SLASH);
     if (lastIndex is int) {
         replacedString = replacedString.substring(0, lastIndex);
     }
     return replacedString;
+}
+
+# Split a URL path on `/`, dropping any trailing empty segments.
+# 
+# + url - The URL to split
+# + return - The segments of the URL
+isolated function splitByForwardSlash(string url) returns string[] {
+    string[] urlParts = re `/`.split(url);
+    if (urlParts.length() == 1) {
+        return urlParts;
+    }
+    while (urlParts.length() > 0 && urlParts[urlParts.length() - 1] == EMPTY_STRING) {
+        _ = urlParts.pop();
+    }
+    return urlParts;
 }
 
 # Extract the resource type related to Cosmos DB from a given URL.
@@ -54,7 +68,7 @@ isolated function getHost(string url) returns string {
 # + return - String representing the resource type
 isolated function getResourceType(string url) returns string {
     string resourceType = EMPTY_STRING;
-    string[] urlParts = regex:split(url, FORWARD_SLASH);
+    string[] urlParts = splitByForwardSlash(url);
     int count = urlParts.length() - 1;
     if (count % 2 != 0) {
         resourceType = urlParts[count];
@@ -73,7 +87,7 @@ isolated function getResourceType(string url) returns string {
 # + return - String representing the resource id
 isolated function getResourceId(string url) returns string {
     string resourceId = EMPTY_STRING;
-    string[] urlParts = regex:split(url, FORWARD_SLASH);
+    string[] urlParts = splitByForwardSlash(url);
     int count = urlParts.length() - 1;
     string resourceType = getResourceType(url);
     if (resourceType == RESOURCE_TYPE_OFFERS) {

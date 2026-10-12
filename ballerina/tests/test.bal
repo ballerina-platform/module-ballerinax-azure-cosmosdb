@@ -19,7 +19,6 @@ import ballerina/lang.runtime;
 import ballerina/lang.'string;
 import ballerina/log;
 import ballerina/os;
-import ballerina/regex;
 import ballerina/test;
 
 configurable string & readonly baseURL = os:getEnv("BASE_URL");
@@ -1313,7 +1312,7 @@ function afterFunc() returns error? {
 function createRandomUUIDWithoutHyphens() returns string {
     string? stringUUID = java:toString(createRandomUUID());
     if (stringUUID is string) {
-        stringUUID = 'string:substring(regex:replaceAll(stringUUID, "-", ""), 1, 4);
+        stringUUID = 'string:substring(re `-`.replaceAll(stringUUID, ""), 1, 4);
         return stringUUID ?: "";
     } else {
         return EMPTY_STRING;
