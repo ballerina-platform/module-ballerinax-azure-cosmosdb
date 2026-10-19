@@ -1,0 +1,6 @@
+# ballerina:13 / ballerina:14 are false positives: the matches are identifier names containing "token"/"authorization"
+# (header name `x-ms-session-token`, token type names "master"/"resource", token version "1.0", error message
+# strings, and local variables/record fields holding values computed at runtime). No credential is embedded.
+# The constants are part of the module's source and renaming them would gain nothing; no secret is assigned a fixed value.
+[rule]
+exclude = ["ballerina:13", "ballerina:14"]
