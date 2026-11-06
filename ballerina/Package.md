@@ -1,7 +1,19 @@
-Connects to [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/)  from Ballerina.
+Connects to [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/).
 
-## Package overview
-The `azure_cosmosdb` is a [Ballerina](https://ballerina.io/) connector for Azure Cosmos DB.
+## Overview
+The `azure_cosmosdb` connector provides the capability to connect to Azure Cosmos DB and execute CRUD (Create, Read, Update, and Delete) operations
+for databases and containers, to execute SQL queries to query containers, etc. In addition, it allows the special
+features provided by Cosmos DB such as operations on JavaScript language-integrated queries, management of users and
+permissions, etc.
+
+This connector supports [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/) version `2018-12-31`.
+
+### Key Features
+
+- Execute CRUD operations on Azure Cosmos DB resources
+- Manage databases, containers, and documents
+- Support for SQL queries across partitions
+- Access stored procedures, triggers, and user-defined functions
 
 ### Compatibility
 |                      | Version                       |
