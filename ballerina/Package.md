@@ -1,17 +1,17 @@
 Connects to [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/).
 
 ## Overview
-The `azure_cosmosdb` connector provides the capability to connect to Azure Cosmos DB and execute CRUD (Create, Read, Update, and Delete) operations
-for databases and containers, to execute SQL queries to query containers, etc. In addition, it allows the special
-features provided by Cosmos DB such as operations on JavaScript language-integrated queries, management of users and
-permissions, etc.
+The Azure Cosmos DB connector provides the capability to connect to Azure Cosmos DB, to create, read, list, and delete
+databases and containers, to perform CRUD (Create, Read, Update, and Delete) operations on documents, and to execute SQL
+queries against containers. In addition, it supports features specific to Cosmos DB such as JavaScript language-integrated
+queries (stored procedures, triggers, and user-defined functions), and the management of users and permissions.
 
-This connector supports [Azure Cosmos DB(SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/) version `2018-12-31`.
+This connector works with the [Azure Cosmos DB (SQL) API](https://docs.microsoft.com/en-us/rest/api/cosmos-db/).
 
 ### Key Features
 
-- Execute CRUD operations on Azure Cosmos DB resources
-- Manage databases, containers, and documents
+- Create, read, list, and delete databases and containers
+- Create, read, update, and delete documents
 - Support for SQL queries across partitions
 - Access stored procedures, triggers, and user-defined functions
 
